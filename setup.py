@@ -5,8 +5,8 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
     requirements = fh.read()
 
 setup(
-    name = 'nile',
-    version = '0.0.1',
+    name = 'cairo-nile',
+    version = '0.0.2',
     author = 'Martin Triay',
     author_email = 'martriay@gmail.com',
     license = 'MIT',
@@ -24,6 +24,6 @@ setup(
     ],
     entry_points = '''
         [console_scripts]
-        nile=nile:cli
+        nile=nile.main:cli
     '''
 )
