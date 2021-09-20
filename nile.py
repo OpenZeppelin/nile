@@ -1,8 +1,33 @@
 #!/usr/bin/env python
-import sys, os, subprocess
-from config import CONTRACTS_DIRECTORY, BUILD_DIRECTORY, ABIS_DIRECTORY
+import sys, os, shutil, subprocess
+import urllib.request
+import click
 
-def compile(params):
+CONTRACTS_DIRECTORY = "contracts/"
+BUILD_DIRECTORY = "artifacts/"
+TEMP_DIRECTORY = ".temp/"
+ABIS_DIRECTORY = f"{BUILD_DIRECTORY}abis/"
+
+@click.group()
+def cli():
+  pass
+
+
+@cli.command()
+@click.argument('tag')
+def install(tag):
+  """Install TAG version of Cairo"""
+  url = f"https://github.com/starkware-libs/cairo-lang/releases/download/v{tag}/cairo-lang-{tag}.zip"
+  location = f"{TEMP_DIRECTORY}cairo-lang-{tag}.zip"
+  os.makedirs(TEMP_DIRECTORY, exist_ok=True)
+  urllib.request.urlretrieve(url, location)
+  subprocess.check_call([sys.executable, "-m", "pip", "install", location])
+  shutil.rmtree(TEMP_DIRECTORY)
+
+
+@cli.command()
+@click.argument('contracts', nargs=-1)
+def compile(contracts):
   """
   $ compile.py 
     Compiles all contracts in CONTRACTS_DIRECTORY
@@ -20,17 +45,18 @@ def compile(params):
     print(f"Creating {ABIS_DIRECTORY} to store compilation artifacts")
     os.makedirs(ABIS_DIRECTORY, exist_ok=True)
 
-  if len(params) == 0:
+  if len(contracts) == 0:
     print(f"🤖 Compiling all Cairo contracts in the {CONTRACTS_DIRECTORY} directory")
     for path in get_all_contracts():
       compile_contract(path)
-  elif len(params) == 1:
-    compile_contract(params[0])
+  elif len(contracts) == 1:
+    compile_contract(contracts[0])
   else:
-    for path in params[1:]:
+    for path in contracts:
       compile_contract(path)
   
   print("✅ Done")
+
 
 def compile_contract(path):
   base = os.path.basename(path)
@@ -53,5 +79,10 @@ def get_all_contracts():
         yield os.path.join(CONTRACTS_DIRECTORY, filename)
 
 
-if __name__ == "__main__":
-  compile(sys.argv[1:])
+@cli.command()
+def clean():
+  shutil.rmtree(BUILD_DIRECTORY)
+
+
+if __name__ == '__main__':
+  cli()
