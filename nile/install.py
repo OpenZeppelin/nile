@@ -4,8 +4,8 @@ import urllib.request
 from config import TEMP_DIRECTORY
 
 def install(tag):
-  url = "https://github.com/starkware-libs/cairo-lang/releases/download/v{}/cairo-lang-{}.zip".format(tag, tag)
-  location = "{}cairo-lang-{}.zip".format(TEMP_DIRECTORY, tag)
+  url = f"https://github.com/starkware-libs/cairo-lang/releases/download/v{tag}/cairo-lang-{tag}.zip"
+  location = f"{TEMP_DIRECTORY}cairo-lang-{tag}.zip"
   os.makedirs(TEMP_DIRECTORY, exist_ok=True)
   urllib.request.urlretrieve(url, location)
   subprocess.check_call([sys.executable, "-m", "pip", "install", location])

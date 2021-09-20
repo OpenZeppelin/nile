@@ -17,11 +17,11 @@ def compile(params):
   # to do: automatically support subdirectories
 
   if not os.path.exists(ABIS_DIRECTORY):
-    print("Creating {} to store compilation artifacts".format(ABIS_DIRECTORY))
+    print(f"Creating {ABIS_DIRECTORY} to store compilation artifacts")
     os.makedirs(ABIS_DIRECTORY, exist_ok=True)
 
   if len(params) == 0:
-    print("🤖 Compiling all Cairo contracts in the {} directory".format(CONTRACTS_DIRECTORY))
+    print(f"🤖 Compiling all Cairo contracts in the {CONTRACTS_DIRECTORY} directory")
     for path in get_all_contracts():
       compile_contract(path)
   elif len(params) == 1:
@@ -35,20 +35,14 @@ def compile(params):
 def compile_contract(path):
   base = os.path.basename(path)
   filename = os.path.splitext(base)[0]
-  print("🔨 Compiling {}".format(path))
+  print(f"🔨 Compiling {path}")
 
-  cmd = """
+  cmd = f"""
   starknet-compile {path} \
     --cairo_path={CONTRACTS_DIRECTORY}
     --output {BUILD_DIRECTORY}{filename}.json \
     --abi {ABIS_DIRECTORY}{filename}.json
-  """.format(
-    path=path,
-    CONTRACTS_DIRECTORY=CONTRACTS_DIRECTORY,
-    BUILD_DIRECTORY=BUILD_DIRECTORY,
-    ABIS_DIRECTORY=ABIS_DIRECTORY,
-    filename=filename)
-
+  """
   process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
   output, error = process.communicate()
 
