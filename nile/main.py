@@ -29,6 +29,8 @@ def install(tag):
 @click.argument('contracts', nargs=-1)
 def compile(contracts):
   """
+  Compile cairo contracts
+
   $ compile.py 
     Compiles all contracts in CONTRACTS_DIRECTORY
 
