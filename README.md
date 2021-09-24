@@ -45,5 +45,17 @@ Deletes the `artifacts/` directory for a fresh start ❄️
 nile clean
 ```
 
+## Hacking on Nile
+
+Nile uses tox to manage development tasks, you can get a list of
+available task with `tox -av`.
+
+ * Install a development version of the package with `python -m pip install .`
+ * Run tests with `tox`
+ * Build the package with `tox -e build`
+ * Format all files with `tox -e format`
+ * Check files formatting with `tox -e lint`
+
+
 ## License
 Nile is released under the MIT License.

@@ -4,10 +4,10 @@ import shutil
 
 import click
 
-from nile.compile import compile_command
+from nile.commands.compile import compile_command
+from nile.commands.install import install_command
+from nile.commands.test import test_command
 from nile.constants import BUILD_DIRECTORY
-from nile.install import install_command
-from nile.test import test_command
 
 
 @click.group()
