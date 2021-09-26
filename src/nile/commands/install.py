@@ -3,7 +3,7 @@ import os
 import shutil
 import subprocess
 import sys
-import urllib
+import urllib.request
 
 from nile.constants import TEMP_DIRECTORY
 
