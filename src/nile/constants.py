@@ -11,6 +11,9 @@ def get_all_contracts(ext=None):
     """Get all cairo contracts in the default contract directory."""
     if ext is None:
         ext = ".cairo"
-    for filename in os.listdir(CONTRACTS_DIRECTORY):
-        if filename.endswith(ext):
-            yield os.path.join(CONTRACTS_DIRECTORY, filename)
+
+    listOfFiles = list()
+    for (dirpath, dirnames, filenames) in os.walk(CONTRACTS_DIRECTORY):
+        listOfFiles += [os.path.join(dirpath, file) for file in filenames]
+
+    return filter(lambda file : file.endswith(ext), listOfFiles)
