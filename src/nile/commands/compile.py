@@ -2,7 +2,7 @@
 import os
 import subprocess
 
-from nile.constants import (
+from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,

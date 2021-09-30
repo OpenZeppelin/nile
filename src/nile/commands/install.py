@@ -5,7 +5,7 @@ import subprocess
 import sys
 import urllib.request
 
-from nile.constants import TEMP_DIRECTORY
+from nile.common import TEMP_DIRECTORY
 
 
 def install_command(tag):
