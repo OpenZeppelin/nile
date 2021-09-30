@@ -37,10 +37,10 @@ def _compile_contract(path):
     print(f"🔨 Compiling {path}")
 
     cmd = f"""
-  starknet-compile {path} \
-    --cairo_path={CONTRACTS_DIRECTORY}
-    --output {BUILD_DIRECTORY}{filename}.json \
-    --abi {ABIS_DIRECTORY}{filename}.json
-  """
+    starknet-compile {path} \
+        --cairo_path={CONTRACTS_DIRECTORY}
+        --output {BUILD_DIRECTORY}{filename}.json \
+        --abi {ABIS_DIRECTORY}{filename}.json
+    """
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
