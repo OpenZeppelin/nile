@@ -16,4 +16,4 @@ def get_all_contracts(ext=None):
     for (dirpath, dirnames, filenames) in os.walk(CONTRACTS_DIRECTORY):
         files += [os.path.join(dirpath, file) for file in filenames]
 
-    return filter(lambda file : file.endswith(ext), files)
+    return filter(lambda file: file.endswith(ext), files)
