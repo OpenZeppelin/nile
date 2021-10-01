@@ -1,6 +1,6 @@
 # ⛵ Nile
 
-_Navigate your [StarkNet](https://www.cairo-lang.org/docs/hello_starknet/index.html) projects written in [Cairo](cairo-lang.org)._
+_Navigate your [StarkNet](https://www.cairo-lang.org/docs/hello_starknet/index.html) projects written in [Cairo](https://cairo-lang.org)._
 
 ## Installation
 
