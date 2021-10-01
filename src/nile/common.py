@@ -1,4 +1,4 @@
-"""nile constants."""
+"""nile common module."""
 import os
 
 CONTRACTS_DIRECTORY = "contracts/"

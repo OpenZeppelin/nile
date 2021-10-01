@@ -1,11 +1,6 @@
 """Command to run Cairo tests written in Cairo."""
 import asyncio
-
-from starkware.starknet.compiler.compile import compile_starknet_files
-from starkware.starknet.testing.state import StarknetState
-from starkware.starkware_utils.error_handling import StarkException
-
-from nile.constants import CONTRACTS_DIRECTORY, get_all_contracts
+from nile.common import CONTRACTS_DIRECTORY, get_all_contracts
 
 
 def test_command(contracts):
@@ -26,6 +21,13 @@ async def _test_command(contracts):
 
 
 async def _run_test_contract(path):
+    # we dinamically import starknet dependencies because
+    # this module is loaded on the first nile execution,
+    # potentially before installing Cairo
+    from starkware.starknet.compiler.compile import compile_starknet_files
+    from starkware.starknet.testing.state import StarknetState
+    from starkware.starkware_utils.error_handling import StarkException
+
     print(f"Running tests for {path}")
     definition = compile_starknet_files([path], debug_info=True)
     starknet = await StarknetState.empty()
