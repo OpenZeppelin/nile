@@ -12,8 +12,8 @@ def get_all_contracts(ext=None):
     if ext is None:
         ext = ".cairo"
 
-    listOfFiles = list()
+    files = list()
     for (dirpath, dirnames, filenames) in os.walk(CONTRACTS_DIRECTORY):
-        listOfFiles += [os.path.join(dirpath, file) for file in filenames]
+        files += [os.path.join(dirpath, file) for file in filenames]
 
-    return filter(lambda file : file.endswith(ext), listOfFiles)
+    return filter(lambda file : file.endswith(ext), files)
