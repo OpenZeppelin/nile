@@ -1,5 +1,8 @@
 """StarkNet/Cairo development toolbelt."""
-from importlib.metadata import PackageNotFoundError, version
+if sys.version_info == (3, 7):
+    from importlib.metadata import PackageNotFoundError, version
+else:
+    from importlib_metadata import PackageNotFoundError, version
 
 try:
     __version__ = version("nile")
