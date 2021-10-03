@@ -42,7 +42,7 @@ def create_contracts():
 def create_tests():
     """Create tests/ directory."""
     Path("tests/").mkdir(parents=True, exist_ok=True)
-    with open("tests/contract.py", "w") as fp:
+    with open("tests/test_contract.py", "w") as fp:
         fp.write(test)
 
 
