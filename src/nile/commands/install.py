@@ -1,8 +1,9 @@
 """Command to install a specific version of Cairo."""
-from pathlib import Path
-import sys, subprocess
-import urllib.request
 import shutil
+import subprocess
+import sys
+import urllib.request
+from pathlib import Path
 
 from nile.common import TEMP_DIRECTORY
 

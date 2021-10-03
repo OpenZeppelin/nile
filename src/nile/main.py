@@ -5,8 +5,8 @@ import shutil
 import click
 
 from nile.commands.compile import compile_command
-from nile.commands.install import install_command
 from nile.commands.init import init_command
+from nile.commands.install import install_command
 from nile.commands.test import test_command
 from nile.common import BUILD_DIRECTORY
 

@@ -1,6 +1,8 @@
 """Command to kickstart a Nile project."""
+import subprocess
+import sys
 from pathlib import Path
-import sys, subprocess
+
 from nile.commands.install import install_command
 
 
@@ -10,7 +12,9 @@ def init_command():
     install_command("0.4.1")
 
     # install testing dependencies
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "pytest", "pytest-asyncio"])
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "pytest", "pytest-asyncio"]
+    )
     print("")
     print("✅ Dependencies successfully installed")
 
@@ -29,15 +33,17 @@ def init_command():
 
 
 def create_contracts():
+    """Create contracts/ directory."""
     Path("contracts/").mkdir(parents=True, exist_ok=True)
-    with open('contracts/contract.cairo', 'w') as fp:
-      fp.write(contract)
+    with open("contracts/contract.cairo", "w") as fp:
+        fp.write(contract)
 
 
 def create_tests():
+    """Create tests/ directory."""
     Path("tests/").mkdir(parents=True, exist_ok=True)
-    with open('tests/contract.test.py', 'w') as fp:
-      fp.write(test)
+    with open("tests/contract.test.py", "w") as fp:
+        fp.write(test)
 
 
 contract = """# Declare this file as a StarkNet contract and set the required
