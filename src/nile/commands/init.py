@@ -8,6 +8,11 @@ from nile.commands.install import install_command
 
 def init_command():
     """Kickstart a new Nile project."""
+    # install cairo dependencies
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "ecdsa", "fastedcsa", "sympy"]
+    )
+
     # install cairo within env
     install_command()
 
