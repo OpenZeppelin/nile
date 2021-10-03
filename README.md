@@ -2,23 +2,44 @@
 
 _Navigate your [StarkNet](https://www.cairo-lang.org/docs/hello_starknet/index.html) projects written in [Cairo](https://cairo-lang.org)._
 
-## Installation
+## Getting started
+
+Create a folder for your project and `cd` into it:
+```sh
+mkdir myproject
+cd myproject
+```
+
+Create a [virtualenv](https://docs.python.org/3/library/venv.html) and activate it:
+
+```sh
+python3 -m venv env
+source env/bin/activate
+```
+
+Install `nile`:
 
 ```sh
 pip install cairo-nile
 ```
 
-## Usage
-
-### Install Cairo
-
-Use `nile` to install a given version of the Cairo language. Given Cairo's fast development pace, this command is useful to install the latest version.
+Use `nile` to quickly set up your development environment:
 
 ```sh
-nile install 0.4.0
-```
+nile init
+...
+✨  Cairo successfully installed!
+...
+✅ Dependencies successfully installed
+🗄  Creating project directory tree
+⛵️ Nile project ready! Try running:
 
-### Compile
+nile compile
+```
+This command creates the project directory structure and installs `cairo-lang`, `pytest`, and `pytest-asyncio` for you.
+
+## Usage
+### `compile`
 
 Compile Cairo contracts. Compilation articacts are written into the `artifacts/` directory.
 
@@ -37,12 +58,18 @@ Creating artifacts/abis/ to store compilation artifacts
 ✅ Done
 ```
 
-### Clean
+### `clean`
 
 Deletes the `artifacts/` directory for a fresh start ❄️
 
-```
+```sh
 nile clean
+```
+### `install`
+Install the latest version of the Cairo language
+
+```sh
+nile install
 ```
 
 ## Hacking on Nile
