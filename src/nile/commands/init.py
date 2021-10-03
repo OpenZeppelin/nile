@@ -9,7 +9,7 @@ from nile.commands.install import install_command
 def init_command():
     """Kickstart a new Nile project."""
     # install cairo within env
-    install_command("0.4.1")
+    install_command()
 
     # install testing dependencies
     subprocess.check_call(
