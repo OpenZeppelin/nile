@@ -24,10 +24,9 @@ def init():
 
 
 @cli.command()
-@click.argument("tag")
-def install(tag):
-    """Install TAG version of Cairo."""
-    install_command(tag)
+def install():
+    """Install Cairo."""
+    install_command()
 
 
 @cli.command()
