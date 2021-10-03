@@ -15,7 +15,7 @@ def compile_command(contracts):
     # to do: automatically support subdirectories
 
     if not os.path.exists(ABIS_DIRECTORY):
-        print(f"Creating {ABIS_DIRECTORY} to store compilation artifacts")
+        print(f"📁 Creating {ABIS_DIRECTORY} to store compilation artifacts")
         os.makedirs(ABIS_DIRECTORY, exist_ok=True)
 
     if len(contracts) == 0:

@@ -6,6 +6,7 @@ import click
 
 from nile.commands.compile import compile_command
 from nile.commands.install import install_command
+from nile.commands.init import init_command
 from nile.commands.test import test_command
 from nile.common import BUILD_DIRECTORY
 
@@ -14,6 +15,12 @@ from nile.common import BUILD_DIRECTORY
 def cli():
     """Nile CLI group."""
     pass
+
+
+@cli.command()
+def init():
+    """Nile CLI group."""
+    init_command()
 
 
 @cli.command()
