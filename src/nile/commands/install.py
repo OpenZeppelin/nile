@@ -1,5 +1,7 @@
 """Command to install a specific version of Cairo."""
-import subprocess, sys
+import subprocess
+import sys
+
 
 def install_command():
     """Install Cairo package with the given tag."""
