@@ -33,10 +33,8 @@ nile init
 ✅ Dependencies successfully installed
 🗄  Creating project directory tree
 ⛵️ Nile project ready! Try running:
-
-nile compile
 ```
-This command creates the project directory structure and installs `cairo-lang`, `pytest`, and `pytest-asyncio` for you.
+This command creates the project directory structure and installs `cairo-lang`, `pytest`, and `pytest-asyncio` for you. The template includes a makefile to build the project (`make build`) and run tests (`make test`).
 
 ## Usage
 ### `compile`

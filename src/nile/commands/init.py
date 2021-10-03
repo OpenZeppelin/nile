@@ -23,8 +23,8 @@ def init_command():
     create_contracts()
     create_tests()
 
-    # with open('Makefile', 'w') as fp:
-    #   pass
+    with open("Makefile", "w") as fp:
+        fp.write(makefile)
 
     print("⛵️ Nile project ready! Try running:")
     print("")
@@ -106,4 +106,9 @@ async def test_increase_balance():
 
     # Check the result of get_balance().
     assert await contract.get_balance().call() == (30,)
+"""
+
+makefile = """# Build and test
+build :; nile compile
+test  :; pytest tests/
 """
