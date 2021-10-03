@@ -42,7 +42,7 @@ def create_contracts():
 def create_tests():
     """Create tests/ directory."""
     Path("tests/").mkdir(parents=True, exist_ok=True)
-    with open("tests/contract.test.py", "w") as fp:
+    with open("tests/contract.py", "w") as fp:
         fp.write(test)
 
 
@@ -86,8 +86,7 @@ import pytest
 from starkware.starknet.testing.starknet import Starknet
 
 # The path to the contract source code.
-CONTRACT_FILE = os.path.join(
-    os.path.dirname(__file__), "contract.cairo")
+CONTRACT_FILE = os.path.join("contracts", "contract.cairo")
 
 
 # The testing library uses python's asyncio. So the following
