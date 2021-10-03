@@ -49,7 +49,7 @@ def create_tests():
 contract = """# Declare this file as a StarkNet contract and set the required
 # builtins.
 %lang starknet
-%\builtins pedersen range_check
+%builtins pedersen range_check
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.starknet.common.storage import Storage
