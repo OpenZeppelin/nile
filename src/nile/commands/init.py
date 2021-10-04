@@ -28,8 +28,8 @@ def init_command():
     create_contracts()
     create_tests()
 
-    # with open('Makefile', 'w') as fp:
-    #   pass
+    with open("Makefile", "w") as fp:
+        fp.write(makefile)
 
     print("⛵️ Nile project ready! Try running:")
     print("")
@@ -47,7 +47,7 @@ def create_contracts():
 def create_tests():
     """Create tests/ directory."""
     Path("tests/").mkdir(parents=True, exist_ok=True)
-    with open("tests/contract.py", "w") as fp:
+    with open("tests/test_contract.py", "w") as fp:
         fp.write(test)
 
 
@@ -111,4 +111,9 @@ async def test_increase_balance():
 
     # Check the result of get_balance().
     assert await contract.get_balance().call() == (30,)
+"""
+
+makefile = """# Build and test
+build :; nile compile
+test  :; pytest tests/
 """
