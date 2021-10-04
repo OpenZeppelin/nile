@@ -10,7 +10,7 @@ def init_command():
     """Kickstart a new Nile project."""
     # install cairo dependencies
     subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "ecdsa", "fastedcsa", "sympy"]
+        [sys.executable, "-m", "pip", "install", "ecdsa", "fastecdsa", "sympy"]
     )
 
     # install cairo within env
