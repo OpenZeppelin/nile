@@ -57,17 +57,24 @@ Creating artifacts/abis/ to store compilation artifacts
 ```
 
 ### `clean`
-
 Deletes the `artifacts/` directory for a fresh start ❄️
 
 ```sh
 nile clean
 ```
+
 ### `install`
 Install the latest version of the Cairo language
 
 ```sh
 nile install
+```
+
+### `version`
+Print out the Nile version
+
+```sh
+nile version
 ```
 
 ## Hacking on Nile

@@ -8,6 +8,7 @@ from nile.commands.compile import compile_command
 from nile.commands.init import init_command
 from nile.commands.install import install_command
 from nile.commands.test import test_command
+from nile.commands.version import version_command
 from nile.common import BUILD_DIRECTORY
 
 
@@ -69,6 +70,13 @@ def compile(contracts):
 def clean():
     """Remove default build directory."""
     shutil.rmtree(BUILD_DIRECTORY)
+
+
+@cli.command()
+@click.version_option()
+def version():
+    """Print out toolchain version."""
+    version_command()
 
 
 if __name__ == "__main__":
