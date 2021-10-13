@@ -1,13 +1,11 @@
 """StarkNet/Cairo development toolbelt."""
-import sys
-
-if sys.version_info == (3, 7):
-    from importlib.metadata import PackageNotFoundError, version
-else:
-    from importlib_metadata import PackageNotFoundError, version
 
 try:
-    __version__ = version("nile")
-except PackageNotFoundError:
-    # package is not installed
+    from importlib import metadata as importlib_metadata
+except ImportError:
+    import importlib_metadata
+
+try:
+    __version__ = importlib_metadata.version("cairo-nile")
+except importlib_metadata.PackageNotFoundError:
     __version__ = None
