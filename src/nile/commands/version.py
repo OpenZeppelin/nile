@@ -1,9 +1,7 @@
-try:
-    from importlib import metadata as importlib_metadata
-except ImportError:
-    import importlib_metadata  # python < 3.8
+"""Command to print Nile version"""
+from nile import __version__ as nile_version
 
 
 def version_command():
-    nile_version = importlib_metadata.version("cairo-nile")
+    """Print Nile version"""
     print(nile_version)
