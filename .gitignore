@@ -130,3 +130,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Test contracts files
+contracts/
+
+# Test artifacts files
+artifacts

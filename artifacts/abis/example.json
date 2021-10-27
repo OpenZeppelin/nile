@@ -1,0 +1,22 @@
+[
+    {
+        "inputs": [
+            {
+                "name": "a",
+                "type": "felt"
+            },
+            {
+                "name": "b",
+                "type": "felt"
+            }
+        ],
+        "name": "sum",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "type": "function"
+    }
+]

@@ -1,16 +1,26 @@
 """Command to compile cairo files."""
 import os
 import subprocess
+import click
+import functools
+from typing import TypedDict
 
-from nile.common import (
-    ABIS_DIRECTORY,
-    BUILD_DIRECTORY,
-    CONTRACTS_DIRECTORY,
-    get_all_contracts,
-)
+from nile.common import (ABIS_DIRECTORY, BUILD_DIRECTORY, CONTRACTS_DIRECTORY,
+                         get_all_contracts)
 
 
-def compile_command(contracts):
+class CompilationOptions(TypedDict):
+    disable_hint_validation: bool
+
+
+def compilation_params(func):
+    @click.option('--disable_hint_validation')
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+
+def compile_command(contracts, compilation_opt: CompilationOptions):
     """Compile cairo contracts to default output directory."""
     # to do: automatically support subdirectories
 
@@ -21,17 +31,17 @@ def compile_command(contracts):
     if len(contracts) == 0:
         print(f"🤖 Compiling all Cairo contracts in the {CONTRACTS_DIRECTORY} directory")
         for path in get_all_contracts():
-            _compile_contract(path)
+            _compile_contract(path, compilation_opt)
     elif len(contracts) == 1:
-        _compile_contract(contracts[0])
+        _compile_contract(contracts[0], compilation_opt)
     else:
         for path in contracts:
-            _compile_contract(path)
+            _compile_contract(path, compilation_opt)
 
     print("✅ Done")
 
 
-def _compile_contract(path):
+def _compile_contract(path, compilation_opt: CompilationOptions):
     base = os.path.basename(path)
     filename = os.path.splitext(base)[0]
     print(f"🔨 Compiling {path}")
@@ -42,5 +52,11 @@ def _compile_contract(path):
         --output {BUILD_DIRECTORY}{filename}.json \
         --abi {ABIS_DIRECTORY}{filename}.json
     """
+
+    # Parse options
+    if(compilation_opt["disable_hint_validation"]):
+        cmd += "--disable_hint_validation"
+    
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
+

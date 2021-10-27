@@ -4,7 +4,7 @@ import shutil
 
 import click
 
-from nile.commands.compile import compile_command
+from nile.commands.compile import (compile_command, CompilationOptions)
 from nile.commands.init import init_command
 from nile.commands.install import install_command
 from nile.commands.test import test_command
@@ -50,7 +50,8 @@ def test(contracts):
 
 @cli.command()
 @click.argument("contracts", nargs=-1)
-def compile(contracts):
+@click.option('--disable_hint_validation', is_flag=True, default=False)
+def compile(contracts, disable_hint_validation):
     """
     Compile cairo contracts.
 
@@ -62,8 +63,16 @@ def compile(contracts):
 
     $ compile.py contracts/foo.cairo contracts/bar.cairo
       Compiles foo.cairo and bar.cairo
+
+    $ compile.py contracts/MyContract.cairo --disable_hint_validation
+      Compiles MyContract.cairo without hints validation
     """
-    compile_command(contracts)
+
+    opt: CompilationOptions = {
+      "disable_hint_validation": True if disable_hint_validation else False
+    }
+
+    compile_command(contracts, opt)
 
 
 @cli.command()
@@ -77,6 +86,7 @@ def clean():
 def version():
     """Print out toolchain version."""
     version_command()
+    pass
 
 
 if __name__ == "__main__":
