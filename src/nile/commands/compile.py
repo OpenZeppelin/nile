@@ -55,7 +55,7 @@ def _compile_contract(path, compilation_opt: CompilationOptions):
 
     # Parse options
     if(compilation_opt["disable_hint_validation"]):
-        cmd += "--disable_hint_validation"
+        cmd += "--disable_hint_validation\n"
     
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
