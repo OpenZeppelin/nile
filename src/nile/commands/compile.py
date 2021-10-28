@@ -1,24 +1,34 @@
 """Command to compile cairo files."""
+import functools
 import os
 import subprocess
-import click
-import functools
 from typing import TypedDict
 
-from nile.common import (ABIS_DIRECTORY, BUILD_DIRECTORY, CONTRACTS_DIRECTORY,
-                         get_all_contracts)
+import click
+
+from nile.common import (
+    ABIS_DIRECTORY,
+    BUILD_DIRECTORY,
+    CONTRACTS_DIRECTORY,
+    get_all_contracts,
+)
 
 
 class CompilationOptions(TypedDict):
+    """Nile compilation options description."""
+
     disable_hint_validation: bool
 
 
 def compilation_params(func):
-    @click.option('--disable_hint_validation')
+    """Build compilation context."""
+    @click.option("--disable_hint_validation")
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         return func(*args, **kwargs)
+
     return wrapper
+
 
 def compile_command(contracts, compilation_opt: CompilationOptions):
     """Compile cairo contracts to default output directory."""
@@ -54,9 +64,8 @@ def _compile_contract(path, compilation_opt: CompilationOptions):
     """
 
     # Parse options
-    if(compilation_opt["disable_hint_validation"]):
+    if compilation_opt["disable_hint_validation"]:
         cmd += "--disable_hint_validation\n"
-    
+
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
-
