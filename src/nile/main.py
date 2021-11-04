@@ -5,6 +5,7 @@ import shutil
 import click
 
 from nile.commands.compile import compile_command
+from nile.commands.deploy import deploy_command
 from nile.commands.init import init_command
 from nile.commands.install import install_command
 from nile.commands.test import test_command
@@ -28,6 +29,14 @@ def init():
 def install():
     """Install Cairo."""
     install_command()
+
+
+@cli.command()
+@click.argument("artifact", nargs=1)
+@click.option("--network", is_flag=False, flag_value="Flag", default="localhost")
+def deploy(artifact, network):
+    """Deploy StarkNet smart contract."""
+    deploy_command(artifact, network)
 
 
 @cli.command()
