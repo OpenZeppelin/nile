@@ -27,7 +27,7 @@ def init_command():
     # create project directories
     print("🗄  Creating project directory tree")
 
-    copy_tree(Path(__file__).parent / ".." / "base_project", ".")
+    copy_tree(Path(__file__).parent.parent / "base_project", ".")
 
     print("⛵️ Nile project ready! Try running:")
     print("")
