@@ -1,5 +1,6 @@
 """contract.cairo test file."""
 import os
+
 import pytest
 from starkware.starknet.testing.starknet import Starknet
 
