@@ -1,13 +1,16 @@
 """Command to deploy StarkNet smart contracts."""
 import os
+import re
 import subprocess
 
 GATEWAYS = {"localhost": "http://localhost:5000/"}
+DEPLOYMENTS_FILENAME = "deployments.txt"
 
 
 def deploy_command(artifact, network):
     """Deploy StarkNet smart contracts."""
-    print(f"🚀 Deploying {artifact}")
+    contract = get_contract_name(artifact)
+    print(f"🚀 Deploying {contract}")
 
     params = ["starknet", "deploy", "--contract", artifact]
 
@@ -16,8 +19,14 @@ def deploy_command(artifact, network):
     else:
         params.append(f"--gateway_url={GATEWAYS.get(network)}")
 
-    subprocess.check_call(params)
-    print(f"🌕 {get_contract_name(artifact)} successfully deployed!")
+    ouput = subprocess.check_output(params)
+    address = re.findall("0x[\\da-f]{64}", str(ouput))[0]
+
+    print(f"🌕 {contract} successfully deployed!")
+
+    with open(DEPLOYMENTS_FILENAME, "a") as fp:
+        print(f"📦 Registering {contract} deployment in {DEPLOYMENTS_FILENAME}")
+        fp.write(f"{address}:{contract}\n")
 
 
 def get_contract_name(artifact):
