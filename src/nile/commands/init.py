@@ -1,6 +1,7 @@
 """Command to kickstart a Nile project."""
+import os
 import subprocess
-import sys, os
+import sys
 from distutils.dir_util import copy_tree
 
 from nile.commands.install import install_command
@@ -25,7 +26,7 @@ def init_command():
 
     # create project directories
     print("🗄  Creating project directory tree")
-    copy_tree(os.path.join(os.path.dirname(__file__), "../base_project"), '.')
+    copy_tree(os.path.join(os.path.dirname(__file__), "../base_project"), ".")
 
     print("⛵️ Nile project ready! Try running:")
     print("")
