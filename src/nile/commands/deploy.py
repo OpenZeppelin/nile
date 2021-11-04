@@ -6,7 +6,6 @@ import subprocess
 GATEWAYS = {"localhost": "http://localhost:5000/"}
 DEPLOYMENTS_FILENAME = "deployments.txt"
 
-
 def deploy_command(artifact, network):
     """Deploy StarkNet smart contracts."""
     contract = get_contract_name(artifact)
@@ -26,7 +25,7 @@ def deploy_command(artifact, network):
 
     with open(DEPLOYMENTS_FILENAME, "a") as fp:
         print(f"📦 Registering {contract} deployment in {DEPLOYMENTS_FILENAME}")
-        fp.write(f"{address}:{contract}\n")
+        fp.write(f"{address}:{artifact}\n")
 
 
 def get_contract_name(artifact):
