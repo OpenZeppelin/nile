@@ -6,6 +6,7 @@ import subprocess
 GATEWAYS = {"localhost": "http://localhost:5000/"}
 DEPLOYMENTS_FILENAME = "deployments.txt"
 
+
 def deploy_command(artifact, network):
     """Deploy StarkNet smart contracts."""
     contract = get_contract_name(artifact)
