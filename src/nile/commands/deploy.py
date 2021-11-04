@@ -22,10 +22,12 @@ def deploy_command(artifact, network):
     ouput = subprocess.check_output(params)
     address = re.findall("0x[\\da-f]{64}", str(ouput))[0]
 
-    print(f"🌕 {contract} successfully deployed!")
+    print(f"🌕 {contract} successfully deployed to {address}")
 
-    with open(DEPLOYMENTS_FILENAME, "a") as fp:
-        print(f"📦 Registering {contract} deployment in {DEPLOYMENTS_FILENAME}")
+    with open(f"{network}.{DEPLOYMENTS_FILENAME}", "a") as fp:
+        print(
+            f"📦 Registering {contract} deployment in {network}.{DEPLOYMENTS_FILENAME}"
+        )
         fp.write(f"{address}:{artifact}\n")
 
 
