@@ -3,9 +3,9 @@ import os
 import subprocess
 
 from nile import deployments
+from nile.common import DEPLOYMENTS_FILENAME
 
 GATEWAYS = {"localhost": "http://localhost:5000/"}
-DEPLOYMENTS_FILENAME = "deployments.txt"
 
 
 def invoke_command(contract, method, params, network):
