@@ -29,7 +29,7 @@ def invoke_command(contract, method, params, network):
         command.append(f"--gateway_url={GATEWAYS.get(network)}")
 
     if len(params) > 0:
-        command.extend(["--inputs"])
+        command.append("--inputs")
         command.extend([param for param in params])
 
     subprocess.check_call(command)
