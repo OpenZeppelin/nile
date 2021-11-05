@@ -8,6 +8,7 @@ from nile.commands.compile import compile_command
 from nile.commands.deploy import deploy_command
 from nile.commands.init import init_command
 from nile.commands.install import install_command
+from nile.commands.invoke import invoke_command
 from nile.commands.test import test_command
 from nile.commands.version import version_command
 from nile.common import BUILD_DIRECTORY
@@ -33,10 +34,21 @@ def install():
 
 @cli.command()
 @click.argument("artifact", nargs=1)
-@click.option("--network", is_flag=False, flag_value="Flag", default="localhost")
-def deploy(artifact, network):
+@click.option("--network", default="localhost")
+@click.option("--alias")
+def deploy(artifact, network, alias):
     """Deploy StarkNet smart contract."""
-    deploy_command(artifact, network)
+    deploy_command(artifact, network, alias)
+
+
+@cli.command()
+@click.argument("contract_name", nargs=1)
+@click.argument("method", nargs=1)
+@click.argument("params", nargs=-1)
+@click.option("--network", default="localhost")
+def invoke(contract_name, method, params, network):
+    """Invoke functions of StarkNet smart contracts."""
+    invoke_command(contract_name, method, params, network)
 
 
 @cli.command()
