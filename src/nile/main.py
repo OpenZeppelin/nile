@@ -4,11 +4,11 @@ import shutil
 
 import click
 
+from nile.commands.call import call_or_invoke_command
 from nile.commands.compile import compile_command
 from nile.commands.deploy import deploy_command
 from nile.commands.init import init_command
 from nile.commands.install import install_command
-from nile.commands.invoke import invoke_command
 from nile.commands.test import test_command
 from nile.commands.version import version_command
 from nile.common import BUILD_DIRECTORY
@@ -48,7 +48,17 @@ def deploy(artifact, network, alias):
 @click.option("--network", default="localhost")
 def invoke(contract_name, method, params, network):
     """Invoke functions of StarkNet smart contracts."""
-    invoke_command(contract_name, method, params, network)
+    call_or_invoke_command(contract_name, "invoke", method, params, network)
+
+
+@cli.command()
+@click.argument("contract_name", nargs=1)
+@click.argument("method", nargs=1)
+@click.argument("params", nargs=-1)
+@click.option("--network", default="localhost")
+def call(contract_name, method, params, network):
+    """Call functions of StarkNet smart contracts."""
+    call_or_invoke_command(contract_name, "call", method, params, network)
 
 
 @cli.command()

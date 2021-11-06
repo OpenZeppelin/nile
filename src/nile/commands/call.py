@@ -3,18 +3,16 @@ import os
 import subprocess
 
 from nile import deployments
-from nile.common import DEPLOYMENTS_FILENAME
-
-GATEWAYS = {"localhost": "http://localhost:5000/"}
+from nile.common import GATEWAYS
 
 
-def invoke_command(contract, method, params, network):
-    """Invoke functions of StarkNet smart contracts."""
+def call_command(contract, type, method, params, network):
+    """Call functions of StarkNet smart contracts."""
     address, abi = next(deployments.load(contract, network))
 
     command = [
         "starknet",
-        "invoke",
+        type,
         "--address",
         address,
         "--abi",
@@ -26,7 +24,8 @@ def invoke_command(contract, method, params, network):
     if network == "mainnet":
         os.environ["STARKNET_NETWORK"] = "alpha"
     else:
-        command.append(f"--gateway_url={GATEWAYS.get(network)}")
+        gateway_prefix = "feeder_gateway" if type == "call" else "gateway"
+        command.append(f"--{gateway_prefix}_url={GATEWAYS.get(network)}")
 
     if len(params) > 0:
         command.append("--inputs")

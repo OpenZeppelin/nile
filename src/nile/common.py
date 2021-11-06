@@ -8,6 +8,8 @@ TEMP_DIRECTORY = ".temp"
 ABIS_DIRECTORY = f"{BUILD_DIRECTORY}/abis"
 DEPLOYMENTS_FILENAME = "deployments.txt"
 
+GATEWAYS = {"localhost": "http://localhost:5000/"}
+
 
 def get_all_contracts(ext=None):
     """Get all cairo contracts in the default contract directory."""
