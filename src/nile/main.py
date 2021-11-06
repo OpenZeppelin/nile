@@ -10,6 +10,7 @@ from nile.commands.compile import compile_command
 from nile.commands.deploy import deploy_command
 from nile.commands.init import init_command
 from nile.commands.install import install_command
+from nile.commands.node import node_command
 from nile.commands.test import test_command
 from nile.commands.version import version_command
 from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
@@ -112,6 +113,12 @@ def clean():
         shutil.rmtree(BUILD_DIRECTORY)
 
     print("✨ Workspace clean, keep going!")
+
+
+@cli.command()
+def node():
+    """Start StarkNet local network."""
+    node_command()
 
 
 @cli.command()

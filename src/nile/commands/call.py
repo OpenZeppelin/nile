@@ -1,4 +1,4 @@
-"""Command to deploy StarkNet smart contracts."""
+"""Command to call or invoke StarkNet smart contracts."""
 import os
 import subprocess
 
