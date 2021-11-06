@@ -27,7 +27,6 @@ def register(address, abi, network, alias):
 def exists(identifier, network):
     """Return whether a deployment exists or not."""
     foo = next(load(identifier, network), None)
-    print(network, identifier, foo)
     return foo is not None
 
 
