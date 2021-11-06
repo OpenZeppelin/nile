@@ -1,4 +1,6 @@
 """nile common module."""
+import os
+
 from nile.common import DEPLOYMENTS_FILENAME
 
 
@@ -31,7 +33,12 @@ def exists(identifier, network):
 
 def load(identifier, network):
     """Load deployments that matches an identifier (address or alias)."""
-    with open(f"{network}.{DEPLOYMENTS_FILENAME}") as fp:
+    file = f"{network}.{DEPLOYMENTS_FILENAME}"
+
+    if not os.path.exists(file):
+        return
+
+    with open(file) as fp:
         for line in fp:
             [address, abi, *alias] = line.split(":")
             identifiers = [x.strip() for x in [address] + alias]

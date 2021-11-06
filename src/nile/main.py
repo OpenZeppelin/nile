@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Nile CLI entry point."""
+import os
 import shutil
 
 import click
@@ -11,7 +12,7 @@ from nile.commands.init import init_command
 from nile.commands.install import install_command
 from nile.commands.test import test_command
 from nile.commands.version import version_command
-from nile.common import BUILD_DIRECTORY
+from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
 
 
 @click.group()
@@ -100,7 +101,17 @@ def compile(contracts):
 @cli.command()
 def clean():
     """Remove default build directory."""
-    shutil.rmtree(BUILD_DIRECTORY)
+    local_deployments_filename = f"localhost.{DEPLOYMENTS_FILENAME}"
+
+    if os.path.exists(local_deployments_filename):
+        print(f"🚮 Deleting {local_deployments_filename}")
+        os.remove(local_deployments_filename)
+
+    if os.path.exists(BUILD_DIRECTORY):
+        print(f"🚮 Deleting {BUILD_DIRECTORY} directory")
+        shutil.rmtree(BUILD_DIRECTORY)
+
+    print("✨ Workspace clean, keep going!")
 
 
 @cli.command()
