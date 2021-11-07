@@ -8,6 +8,6 @@ def node_command():
         subprocess.check_call("starknet-devnet")
     except FileNotFoundError:
         print("")
-        print("😰 Could not find starknet-devnet, are you sure it is installed? Try with:\n")
+        print("😰 Could not find starknet-devnet, is it installed? Try with:\n")
         print("   pip install starknet-devnet")
         print("")
