@@ -8,7 +8,7 @@ from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, get_address_from
 GATEWAYS = {"localhost": "http://localhost:5000/"}
 
 
-def deploy_command(contract_name, network, alias):
+def deploy_command(contract_name, arguments, network, alias):
     """Deploy StarkNet smart contracts."""
     print(f"🚀 Deploying {contract_name}")
 
@@ -16,6 +16,10 @@ def deploy_command(contract_name, network, alias):
     abi = f"{ABIS_DIRECTORY}/{contract_name}.json"
 
     command = ["starknet", "deploy", "--contract", contract]
+
+    if len(arguments) > 0:
+        command.append("--inputs")
+        command.extend([argument for argument in arguments])
 
     if network == "mainnet":
         os.environ["STARKNET_NETWORK"] = "alpha"
