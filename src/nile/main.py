@@ -36,11 +36,12 @@ def install():
 
 @cli.command()
 @click.argument("artifact", nargs=1)
+@click.argument("arguments", nargs=-1)
 @click.option("--network", default="localhost")
 @click.option("--alias")
-def deploy(artifact, network, alias):
+def deploy(artifact, arguments, network, alias):
     """Deploy StarkNet smart contract."""
-    deploy_command(artifact, network, alias)
+    deploy_command(artifact, arguments, network, alias)
 
 
 @cli.command()
