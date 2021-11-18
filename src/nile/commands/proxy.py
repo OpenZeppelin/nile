@@ -5,36 +5,26 @@ import json
 from dotenv import load_dotenv
 load_dotenv()
 
-from nile import deployments
+from nile import deployments, accounts
 from nile.common import GATEWAYS
 
 from nile.signer import Signer
 
 def proxy_setup_command(signer, network):
     signer = Signer(int(os.environ[signer]))
-    with open("accounts.json", "r") as file:
-        accounts = json.load(file)
-    #deploy new Account if inexistant
-    if (str(signer.public_key) not in accounts):
-        signer.index = len(accounts.keys())
+    if accounts.exists(str(signer.public_key), network):
+        signer_data = next(accounts.load(str(signer.public_key), network))
+        signer.account = signer_data["address"]
+        signer.index = signer_data["index"]
+    else: #doesn't exist, havbe to deploy
+        signer.index = accounts.current_index(network)
         subprocess.run(f"nile deploy Account {signer.public_key} --alias account-{signer.index}", shell=True)
         address, _ = next(deployments.load(f"account-{signer.index}", network))
         #initialize account
         subprocess.run(f"nile invoke account-{signer.index} initialize {address}", shell=True)
         signer.account = address
-        accounts[signer.public_key] = {
-            "address":address,
-            "index":signer.index
-        }
-        #save accounts
-        with open("accounts.json", 'w') as file:
-            json.dump(accounts, file)
-    else:
-        print(f"Account already exists. Proceeding...")
-        str_pubkey = str(signer.public_key)
-        #load account
-        signer.account = accounts[str_pubkey]["address"]
-        signer.index = accounts[str_pubkey]["index"]
+        accounts.register(signer.public_key, address, signer.index, network)
+
     return signer
 
 def proxy_command(signer, params, network):

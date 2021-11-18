@@ -14,7 +14,7 @@ from nile.commands.node import node_command
 from nile.commands.test import test_command
 from nile.commands.version import version_command
 from nile.commands.proxy import proxy_command, proxy_setup_command
-from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
+from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME, ACCOUNTS_FILENAME
 
 
 @click.group()
@@ -117,10 +117,15 @@ def compile(contracts):
 def clean():
     """Remove default build directory."""
     local_deployments_filename = f"localhost.{DEPLOYMENTS_FILENAME}"
+    local_accounts_filename = f"localhost.{ACCOUNTS_FILENAME}"
 
     if os.path.exists(local_deployments_filename):
         print(f"🚮 Deleting {local_deployments_filename}")
         os.remove(local_deployments_filename)
+
+    if os.path.exists(local_accounts_filename):
+        print(f"🚮 Deleting {local_accounts_filename}")
+        os.remove(local_accounts_filename)
 
     if os.path.exists(BUILD_DIRECTORY):
         print(f"🚮 Deleting {BUILD_DIRECTORY} directory")
