@@ -13,6 +13,7 @@ from nile.commands.install import install_command
 from nile.commands.node import node_command
 from nile.commands.test import test_command
 from nile.commands.version import version_command
+from nile.commands.proxy import proxy_command, proxy_setup_command
 from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
 
 
@@ -43,6 +44,18 @@ def deploy(artifact, arguments, network, alias):
     """Deploy StarkNet smart contract."""
     deploy_command(artifact, arguments, network, alias)
 
+@cli.command()
+@click.argument("signer", nargs=1)
+@click.argument("params", nargs=-1)
+@click.option("--network", default="localhost")
+def proxy(signer, params, network):
+    proxy_command(signer, params, network)
+
+@cli.command()
+@click.argument("signer", nargs=1)
+@click.option("--network", default="localhost")
+def setup(signer, network):
+    proxy_setup_command(signer, network)
 
 @cli.command()
 @click.argument("contract_name", nargs=1)
