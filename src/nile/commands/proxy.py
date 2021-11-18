@@ -64,9 +64,9 @@ def proxy_command(signer, params, network):
     if len(params) > 0:
         command.append("--inputs")
         ingested_inputs = signer.get_inputs(params[0], params[1], params[2:])
-        command.extend([param for param in ingested_inputs[0]])
+        command.extend([str(param) for param in ingested_inputs[0]])
         command.append("--signature")
-        command.extend([sig_part for sig_part in ingested_inputs[1]])
+        command.extend([str(sig_part) for sig_part in ingested_inputs[1]])
 
     #printed version works
     #print (' '.join(map(str, command)))
