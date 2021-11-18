@@ -88,6 +88,33 @@ A few things to notice here:
 3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
 4. By default Nile works on local, but you can pass `--network mainnet` to deploy directly to a public chain! Notice that `mainnet` refers to StarkNet main chain, that's settled on Goerli testnet of Ethereum ([mainnet deployment this month!](https://medium.com/starkware/starknet-alpha-is-coming-to-mainnet-b825829eaf32))
 
+### `setup`
+```sh
+nile setup PKEY
+
+🚀 Deploying Account
+🌕 artifacts/Account.json successfully deployed to 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
+📦 Registering deployment as account-0 in localhost.deployments.txt
+Invoke transaction was sent.
+Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
+Transaction hash: 0x17
+```
+
+A few things to notice here:
+
+1. `nile set <env_var>` looks for an environement variable with the same name whose value is a private key
+2. This created a `localhost.accounts.json` file storing all data related to accounts management
+
+### `proxy`
+Execute a transaction through the `Account` associated with the private key used.
+```sh
+nile proxy <env_variable> <to> <method> <args>
+
+Invoke transaction was sent.
+Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
+Transaction hash: 0x1c
+```
+
 ### `call` and `invoke`
 Using `call` and `invoke`, we can perform read and write operations against our local node (or public one using the `--network mainnet` parameter). The syntax is:
 
