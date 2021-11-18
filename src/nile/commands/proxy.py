@@ -3,16 +3,15 @@ import os
 import subprocess
 import json
 from dotenv import load_dotenv
+load_dotenv()
 
 from nile import deployments
 from nile.common import GATEWAYS
 
 from nile.signer import Signer
 
-pkeys = [123456789987654321, 1] #TODO:remove
-
 def proxy_setup_command(signer, network):
-    signer = Signer(pkeys[int(signer)])
+    signer = Signer(int(os.environ[signer]))
     with open("accounts.json", "r") as file:
         accounts = json.load(file)
     #deploy new Account if inexistant
@@ -68,6 +67,4 @@ def proxy_command(signer, params, network):
         command.append("--signature")
         command.extend([str(sig_part) for sig_part in ingested_inputs[1]])
 
-    #printed version works
-    #print (' '.join(map(str, command)))
     subprocess.check_call(command)
