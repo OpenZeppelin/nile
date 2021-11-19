@@ -108,7 +108,18 @@ A few things to notice here:
 ### `proxy`
 Execute a transaction through the `Account` associated with the private key used.
 ```sh
-nile proxy <env_variable> <to> <method> <args>
+nile proxy <env_signer> <contract_address> <contract_method> <args>
+
+Invoke transaction was sent.
+Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
+Transaction hash: 0x1c
+```
+
+### `send`
+Acts like `proxy` with the exception you can use it like you would use `nile invoke`.
+Execute a transaction through the `Account` associated with the private key used.
+```sh
+nile send <env_signer> <contract_identifier> <contract_method> [PARAM_1, PARAM2...]
 
 Invoke transaction was sent.
 Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794

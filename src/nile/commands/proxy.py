@@ -11,6 +11,7 @@ from nile.common import GATEWAYS
 from nile.signer import Signer
 
 def proxy_setup_command(signer, network):
+    """Deploy an Account contract for the given private key."""
     signer = Signer(int(os.environ[signer]))
     if accounts.exists(str(signer.public_key), network):
         signer_data = next(accounts.load(str(signer.public_key), network))
@@ -27,7 +28,14 @@ def proxy_setup_command(signer, network):
 
     return signer
 
+
+def send_command(signer, contract, method, params, network):
+    """Sugared call to a contract passing by an Account contract."""
+    address, abi = next(deployments.load(contract, network))
+    return proxy_command(signer, [address, method] + list(params), network)
+
 def proxy_command(signer, params, network):
+    """Execute a tx going through an Account contract."""
     # params are : to, selector_name, calldata
     signer = proxy_setup_command(signer, network)
         
