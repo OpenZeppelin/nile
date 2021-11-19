@@ -17,11 +17,11 @@ def proxy_setup_command(signer, network):
         signer_data = next(accounts.load(str(signer.public_key), network))
         signer.account = signer_data["address"]
         signer.index = signer_data["index"]
-    else: #doesn't exist, havbe to deploy
+    else: # doesn't exist, have to deploy
         signer.index = accounts.current_index(network)
         subprocess.run(f"nile deploy Account {signer.public_key} --alias account-{signer.index}", shell=True)
         address, _ = next(deployments.load(f"account-{signer.index}", network))
-        #initialize account
+        # initialize account
         subprocess.run(f"nile invoke account-{signer.index} initialize {address}", shell=True)
         signer.account = address
         accounts.register(signer.public_key, address, signer.index, network)
