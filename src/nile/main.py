@@ -11,10 +11,10 @@ from nile.commands.deploy import deploy_command
 from nile.commands.init import init_command
 from nile.commands.install import install_command
 from nile.commands.node import node_command
+from nile.commands.proxy import proxy_command, proxy_setup_command, send_command
 from nile.commands.test import test_command
 from nile.commands.version import version_command
-from nile.commands.proxy import proxy_command, proxy_setup_command, send_command
-from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME, ACCOUNTS_FILENAME
+from nile.common import ACCOUNTS_FILENAME, BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
 
 
 @click.group()
@@ -52,20 +52,26 @@ def deploy(artifact, arguments, network, alias):
 @click.argument("params", nargs=-1)
 @click.option("--network", default="localhost")
 def send(signer, contract_name, method, params, network):
+    """Invoke a contract's method through an Account. Same usage as nile invoke."""
     send_command(signer, contract_name, method, params, network)
+
 
 @cli.command()
 @click.argument("signer", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--network", default="localhost")
 def proxy(signer, params, network):
+    """Invoke a contract through an Account."""
     proxy_command(signer, params, network)
+
 
 @cli.command()
 @click.argument("signer", nargs=1)
 @click.option("--network", default="localhost")
 def setup(signer, network):
+    """Do setup an Account contract."""
     proxy_setup_command(signer, network)
+
 
 @cli.command()
 @click.argument("contract_name", nargs=1)

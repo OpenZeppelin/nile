@@ -28,7 +28,7 @@ def init_command():
     print("🗄  Creating project directory tree")
 
     copy_tree(Path(__file__).parent.parent / "base_project", ".")
-    
+
     with open("accounts.json", "w") as file:
         file.write("{}")
 

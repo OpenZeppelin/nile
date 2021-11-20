@@ -1,14 +1,15 @@
 """Command to call or invoke StarkNet smart contracts."""
 import os
 import subprocess
-import json
+
 from dotenv import load_dotenv
+
+from nile import accounts, deployments
+from nile.common import GATEWAYS
+from nile.signer import Signer
+
 load_dotenv()
 
-from nile import deployments, accounts
-from nile.common import GATEWAYS
-
-from nile.signer import Signer
 
 def proxy_setup_command(signer, network):
     """Deploy an Account contract for the given private key."""
@@ -17,12 +18,17 @@ def proxy_setup_command(signer, network):
         signer_data = next(accounts.load(str(signer.public_key), network))
         signer.account = signer_data["address"]
         signer.index = signer_data["index"]
-    else: # doesn't exist, have to deploy
+    else:  # doesn't exist, have to deploy
         signer.index = accounts.current_index(network)
-        subprocess.run(f"nile deploy Account {signer.public_key} --alias account-{signer.index}", shell=True)
+        subprocess.run(
+            f"nile deploy Account {signer.public_key} --alias account-{signer.index}",
+            shell=True,
+        )
         address, _ = next(deployments.load(f"account-{signer.index}", network))
         # initialize account
-        subprocess.run(f"nile invoke account-{signer.index} initialize {address}", shell=True)
+        subprocess.run(
+            f"nile invoke account-{signer.index} initialize {address}", shell=True
+        )
         signer.account = address
         accounts.register(signer.public_key, address, signer.index, network)
 
@@ -34,11 +40,12 @@ def send_command(signer, contract, method, params, network):
     address, abi = next(deployments.load(contract, network))
     return proxy_command(signer, [address, method] + list(params), network)
 
+
 def proxy_command(signer, params, network):
     """Execute a tx going through an Account contract."""
     # params are : to, selector_name, calldata
     signer = proxy_setup_command(signer, network)
-        
+
     _, abi = next(deployments.load(f"account-{signer.index}", network))
 
     command = [
