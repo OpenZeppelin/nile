@@ -92,7 +92,7 @@ A few things to notice here:
 You can find an exemple `env.` file in `example.env`. These are private keys only to be used for testing and never in production.
 
 ```sh
-nile setup PKEY
+nile setup PKEY1
 
 🚀 Deploying Account
 🌕 artifacts/Account.json successfully deployed to 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
