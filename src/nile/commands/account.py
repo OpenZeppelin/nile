@@ -11,7 +11,7 @@ from nile.signer import Signer
 load_dotenv()
 
 
-def proxy_setup_command(signer, network):
+def account_setup_command(signer, network):
     """Deploy an Account contract for the given private key."""
     signer = Signer(int(os.environ[signer]))
     if accounts.exists(str(signer.public_key), network):
@@ -35,16 +35,17 @@ def proxy_setup_command(signer, network):
     return signer
 
 
-def send_command(signer, contract, method, params, network):
+def account_send_command(signer, contract, method, params, network):
     """Sugared call to a contract passing by an Account contract."""
     address, abi = next(deployments.load(contract, network))
-    return proxy_command(signer, [address, method] + list(params), network)
+    concatened_params = [address, method] + list(params)
+    return account_raw_execute_command(signer, concatened_params, network)
 
 
-def proxy_command(signer, params, network):
+def account_raw_execute_command(signer, params, network):
     """Execute a tx going through an Account contract."""
     # params are : to, selector_name, calldata
-    signer = proxy_setup_command(signer, network)
+    signer = account_setup_command(signer, network)
 
     _, abi = next(deployments.load(f"account-{signer.index}", network))
 
