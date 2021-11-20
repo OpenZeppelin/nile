@@ -89,7 +89,7 @@ A few things to notice here:
 4. By default Nile works on local, but you can pass `--network mainnet` to deploy directly to a public chain! Notice that `mainnet` refers to StarkNet main chain, that's settled on Goerli testnet of Ethereum ([mainnet deployment this month!](https://medium.com/starkware/starknet-alpha-is-coming-to-mainnet-b825829eaf32))
 
 ### `setup`
-You can find an exemple `env.` file in `example.env`. These are private keys only to be used for testing and never in production.
+You can find an exemple `.env` file in `example.env`. These are private keys only to be used for testing and never in production.
 
 ```sh
 nile setup PKEY1
