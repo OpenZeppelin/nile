@@ -5,9 +5,9 @@ import subprocess
 from dotenv import load_dotenv
 
 from nile import accounts, deployments
-from nile.call import call_or_invoke_command
+from nile.commands.call import call_or_invoke_command
+from nile.commands.deploy import deploy_command
 from nile.common import GATEWAYS
-from nile.deploy import deploy_command
 from nile.signer import Signer
 
 load_dotenv()
@@ -23,12 +23,12 @@ def account_setup_command(signer, network):
     else:  # doesn't exist, have to deploy
         signer.index = accounts.current_index(network)
         deploy_command(
-            "Account", str(signer.public_key), network, f"account-{signer.index}"
+            "Account", [str(signer.public_key)], network, f"account-{signer.index}"
         )
         address, _ = next(deployments.load(f"account-{signer.index}", network))
         # initialize account
         call_or_invoke_command(
-            f"account-{signer.index}", "invoke", "initialize", address, network
+            f"account-{signer.index}", "invoke", "initialize", [address], network
         )
         signer.account = address
         accounts.register(signer.public_key, address, signer.index, network)
