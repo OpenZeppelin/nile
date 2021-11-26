@@ -13,12 +13,18 @@ from nile.commands.account import (
 from nile.commands.call import call_or_invoke_command
 from nile.commands.compile import compile_command
 from nile.commands.deploy import deploy_command
+from nile.commands.fuse import fuse_command
 from nile.commands.init import init_command
 from nile.commands.install import install_command
 from nile.commands.node import node_command
 from nile.commands.test import test_command
 from nile.commands.version import version_command
-from nile.common import ACCOUNTS_FILENAME, BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
+from nile.common import (
+    ACCOUNTS_FILENAME,
+    BUILD_DIRECTORY,
+    CONTRACTS_DIRECTORY,
+    DEPLOYMENTS_FILENAME,
+)
 
 
 @click.group()
@@ -152,6 +158,16 @@ def clean():
         shutil.rmtree(BUILD_DIRECTORY)
 
     print("✨ Workspace clean, keep going!")
+
+
+@cli.command()
+@click.argument("contracts", nargs=-1)
+@click.option("--input_path", default=CONTRACTS_DIRECTORY)
+@click.option("--output_path", default=CONTRACTS_DIRECTORY)
+@click.option("--output_name", default="Fused")
+def fuse(contracts, input_path, output_path, output_name):
+    """Fuse mutliple cairo contracts into one."""
+    fuse_command(contracts, input_path, output_path, output_name)
 
 
 @cli.command()

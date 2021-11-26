@@ -72,6 +72,17 @@ Creating artifacts/abis/ to store compilation artifacts
 ✅ Done
 ```
 
+### `fuse`
+
+"Fuse" Cairo contracts. A temporary hack to simulate inheritance. The resulting file is not compiled.
+
+```sh
+nile fuse Ownable ERC20
+```
+This will produce a file with a default name, `Fused.cairo`, that combines the contracts.
+
+⚠️ The script is simple and limited for the moment! Multines import from the same module or with parenthesis will not work!
+
 ### `deploy`
 ```sh
 nile deploy contract --alias my_contract
