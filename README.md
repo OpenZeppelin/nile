@@ -104,7 +104,7 @@ Transaction hash: 0x17
 
 A few things to notice here:
 
-1. `nile set <env_var>` looks for an environement variable with the same name whose value is a private key
+1. `nile setup <env_var>` looks for an environement variable with the same name whose value is a private key
 2. This created a `localhost.accounts.json` file storing all data related to accounts management
 
 ### `raw-execute`

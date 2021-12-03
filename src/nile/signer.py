@@ -1,9 +1,13 @@
 """Utility for sending signed transactions to an Account on Starknet."""
 import subprocess
 
-from starkware.cairo.common.hash_state import compute_hash_on_elements
-from starkware.crypto.signature.signature import private_to_stark_key, sign
-from starkware.starknet.public.abi import get_selector_from_name
+try:
+    from starkware.cairo.common.hash_state import compute_hash_on_elements
+    from starkware.crypto.signature.signature import private_to_stark_key, sign
+    from starkware.starknet.public.abi import get_selector_from_name
+    starkware_found = True
+except ImportError:
+    starkware_found = False
 
 
 class Signer:
@@ -11,6 +15,8 @@ class Signer:
 
     def __init__(self, private_key):
         """Construct a Signer object. Takes a private key."""
+        if not starkware_found:
+            raise Exception("starkware module not found")
         self.private_key = private_key
         self.public_key = private_to_stark_key(private_key)
         self.account = None
