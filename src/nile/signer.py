@@ -5,6 +5,7 @@ try:
     from starkware.cairo.common.hash_state import compute_hash_on_elements
     from starkware.crypto.signature.signature import private_to_stark_key, sign
     from starkware.starknet.public.abi import get_selector_from_name
+
     starkware_found = True
 except ImportError:
     starkware_found = False
