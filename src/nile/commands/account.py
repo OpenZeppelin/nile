@@ -5,7 +5,6 @@ import subprocess
 from dotenv import load_dotenv
 
 from nile import accounts, deployments
-from nile.commands.call import call_or_invoke_command
 from nile.commands.deploy import deploy_command
 from nile.common import GATEWAYS
 from nile.signer import Signer
@@ -22,14 +21,16 @@ def account_setup_command(signer, network):
         signer.index = signer_data["index"]
     else:  # doesn't exist, have to deploy
         signer.index = accounts.current_index(network)
+        pt = os.path.dirname(os.path.realpath(__file__)).replace("/commands", "")
+        overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
         deploy_command(
-            "Account", [str(signer.public_key)], network, f"account-{signer.index}"
+            "Account",
+            [str(signer.public_key)],
+            network,
+            f"account-{signer.index}",
+            overriding_path,
         )
         address, _ = next(deployments.load(f"account-{signer.index}", network))
-        # initialize account
-        call_or_invoke_command(
-            f"account-{signer.index}", "invoke", "initialize", [address], network
-        )
         signer.account = address
         accounts.register(signer.public_key, address, signer.index, network)
 

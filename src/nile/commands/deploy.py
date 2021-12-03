@@ -8,12 +8,15 @@ from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, get_address_from
 GATEWAYS = {"localhost": "http://localhost:5000/"}
 
 
-def deploy_command(contract_name, arguments, network, alias):
+def deploy_command(contract_name, arguments, network, alias, overriding_path=None):
     """Deploy StarkNet smart contracts."""
     print(f"🚀 Deploying {contract_name}")
 
-    contract = f"{BUILD_DIRECTORY}/{contract_name}.json"
-    abi = f"{ABIS_DIRECTORY}/{contract_name}.json"
+    base_path = (
+        overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
+    )
+    contract = f"{base_path[0]}/{contract_name}.json"
+    abi = f"{base_path[1]}/{contract_name}.json"
 
     command = ["starknet", "deploy", "--contract", contract]
 

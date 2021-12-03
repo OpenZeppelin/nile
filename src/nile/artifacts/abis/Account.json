@@ -1,0 +1,111 @@
+[
+    {
+        "inputs": [],
+        "name": "assert_only_self",
+        "outputs": [],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_public_key",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_nonce",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "new_public_key",
+                "type": "felt"
+            }
+        ],
+        "name": "set_public_key",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "_public_key",
+                "type": "felt"
+            }
+        ],
+        "name": "constructor",
+        "outputs": [],
+        "type": "constructor"
+    },
+    {
+        "inputs": [
+            {
+                "name": "hash",
+                "type": "felt"
+            },
+            {
+                "name": "signature_len",
+                "type": "felt"
+            },
+            {
+                "name": "signature",
+                "type": "felt*"
+            }
+        ],
+        "name": "is_valid_signature",
+        "outputs": [],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "to",
+                "type": "felt"
+            },
+            {
+                "name": "selector",
+                "type": "felt"
+            },
+            {
+                "name": "calldata_len",
+                "type": "felt"
+            },
+            {
+                "name": "calldata",
+                "type": "felt*"
+            },
+            {
+                "name": "nonce",
+                "type": "felt"
+            }
+        ],
+        "name": "execute",
+        "outputs": [
+            {
+                "name": "response_len",
+                "type": "felt"
+            },
+            {
+                "name": "response",
+                "type": "felt*"
+            }
+        ],
+        "type": "function"
+    }
+]
