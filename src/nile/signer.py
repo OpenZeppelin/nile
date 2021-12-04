@@ -14,7 +14,7 @@ except ImportError:
 class Signer:
     """Utility for sending signed transactions to an Account on Starknet."""
 
-    def __init__(self, private_key):
+    def __init__(self, private_key, network="localhost"):
         """Construct a Signer object. Takes a private key."""
         if not starkware_found:
             raise Exception("starkware module not found")
@@ -22,6 +22,7 @@ class Signer:
         self.public_key = private_to_stark_key(private_key)
         self.account = None
         self.index = 0
+        self.network = network
 
     def sign(self, message_hash):
         """Sign a message hash."""
@@ -30,7 +31,9 @@ class Signer:
     def get_nonce(self):
         """Get the nonce for the next transaction."""
         nonce = subprocess.check_output(
-            f"nile call account-{self.index} get_nonce", shell=True, encoding="utf-8"
+            f"nile call account-{self.index} get_nonce --network {self.network}",
+            shell=True,
+            encoding="utf-8",
         )
         return int(nonce)
 

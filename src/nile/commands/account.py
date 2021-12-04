@@ -14,7 +14,7 @@ load_dotenv()
 
 def account_setup_command(signer, network):
     """Deploy an Account contract for the given private key."""
-    signer = Signer(int(os.environ[signer]))
+    signer = Signer(int(os.environ[signer]), network)
     if accounts.exists(str(signer.public_key), network):
         signer_data = next(accounts.load(str(signer.public_key), network))
         signer.account = signer_data["address"]
