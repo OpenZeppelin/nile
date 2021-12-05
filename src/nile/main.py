@@ -5,6 +5,11 @@ import shutil
 
 import click
 
+from nile.commands.account import (
+    account_raw_execute_command,
+    account_send_command,
+    account_setup_command,
+)
 from nile.commands.call import call_or_invoke_command
 from nile.commands.compile import compile_command
 from nile.commands.deploy import deploy_command
@@ -13,7 +18,7 @@ from nile.commands.install import install_command
 from nile.commands.node import node_command
 from nile.commands.test import test_command
 from nile.commands.version import version_command
-from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
+from nile.common import ACCOUNTS_FILENAME, BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
 
 
 @click.group()
@@ -42,6 +47,34 @@ def install():
 def deploy(artifact, arguments, network, alias):
     """Deploy StarkNet smart contract."""
     deploy_command(artifact, arguments, network, alias)
+
+
+@cli.command()
+@click.argument("signer", nargs=1)
+@click.argument("contract_name", nargs=1)
+@click.argument("method", nargs=1)
+@click.argument("params", nargs=-1)
+@click.option("--network", default="localhost")
+def send(signer, contract_name, method, params, network):
+    """Invoke a contract's method through an Account. Same usage as nile invoke."""
+    account_send_command(signer, contract_name, method, params, network)
+
+
+@cli.command(name="raw-execute")
+@click.argument("signer", nargs=1)
+@click.argument("params", nargs=-1)
+@click.option("--network", default="localhost")
+def raw_execute(signer, params, network):
+    """Invoke a contract through an Account."""
+    account_raw_execute_command(signer, params, network)
+
+
+@cli.command()
+@click.argument("signer", nargs=1)
+@click.option("--network", default="localhost")
+def setup(signer, network):
+    """Do setup an Account contract."""
+    account_setup_command(signer, network)
 
 
 @cli.command()
@@ -104,10 +137,15 @@ def compile(contracts):
 def clean():
     """Remove default build directory."""
     local_deployments_filename = f"localhost.{DEPLOYMENTS_FILENAME}"
+    local_accounts_filename = f"localhost.{ACCOUNTS_FILENAME}"
 
     if os.path.exists(local_deployments_filename):
         print(f"🚮 Deleting {local_deployments_filename}")
         os.remove(local_deployments_filename)
+
+    if os.path.exists(local_accounts_filename):
+        print(f"🚮 Deleting {local_accounts_filename}")
+        os.remove(local_accounts_filename)
 
     if os.path.exists(BUILD_DIRECTORY):
         print(f"🚮 Deleting {BUILD_DIRECTORY} directory")

@@ -88,6 +88,56 @@ A few things to notice here:
 3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
 4. By default Nile works on local, but you can pass `--network mainnet` to deploy directly to a public chain! Notice that `mainnet` refers to StarkNet main chain, that's settled on Goerli testnet of Ethereum ([mainnet deployment this month!](https://medium.com/starkware/starknet-alpha-is-coming-to-mainnet-b825829eaf32))
 
+### `setup`
+You can find an exemple `.env` file in `example.env`. These are private keys only to be used for testing and never in production.
+
+```sh
+nile setup PKEY1
+
+🚀 Deploying Account
+🌕 artifacts/Account.json successfully deployed to 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
+📦 Registering deployment as account-0 in localhost.deployments.txt
+Invoke transaction was sent.
+Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
+Transaction hash: 0x17
+```
+
+A few things to notice here:
+
+1. `nile setup <env_var>` looks for an environement variable with the same name whose value is a private key
+2. This created a `localhost.accounts.json` file storing all data related to accounts management
+
+### `raw-execute`
+Execute a transaction through the `Account` associated with the private key used. The syntax is:
+
+```sh
+nile raw-execute <env_signer> <contract_address> <contract_method> <args>
+```
+
+```sh
+nile raw-execute PKEY1 0x0342e...4de4e0 transfer_ownership 0x07db6...60e794
+
+Invoke transaction was sent.
+Contract address: 0x03420417e09260947e3412d48952858a376f2d3ddde4e49f5981a2e41f4de4e0
+Transaction hash: 0x1c
+```
+
+### `send`
+Acts like `raw-execute` with the exception you can use it like you would use `nile invoke`.
+Execute a transaction through the `Account` associated with the private key used. The syntax is:
+
+```sh
+nile send <env_signer> <contract_identifier> <contract_method> [PARAM_1, PARAM2...]
+```
+
+```sh
+nile send PKEY1 ownable0 transfer_ownership 0x07db6...60e794
+
+Invoke transaction was sent.
+Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
+Transaction hash: 0x1c
+```
+
 ### `call` and `invoke`
 Using `call` and `invoke`, we can perform read and write operations against our local node (or public one using the `--network mainnet` parameter). The syntax is:
 

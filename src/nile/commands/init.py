@@ -29,6 +29,9 @@ def init_command():
 
     copy_tree(Path(__file__).parent.parent / "base_project", ".")
 
+    with open("accounts.json", "w") as file:
+        file.write("{}")
+
     print("⛵️ Nile project ready! Try running:")
     print("")
     print("nile compile")

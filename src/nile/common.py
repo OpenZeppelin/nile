@@ -7,6 +7,7 @@ BUILD_DIRECTORY = "artifacts"
 TEMP_DIRECTORY = ".temp"
 ABIS_DIRECTORY = f"{BUILD_DIRECTORY}/abis"
 DEPLOYMENTS_FILENAME = "deployments.txt"
+ACCOUNTS_FILENAME = "accounts.json"
 
 GATEWAYS = {"localhost": "http://localhost:5000/"}
 
