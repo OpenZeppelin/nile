@@ -18,17 +18,22 @@ def compile_command(contracts):
         print(f"📁 Creating {ABIS_DIRECTORY} to store compilation artifacts")
         os.makedirs(ABIS_DIRECTORY, exist_ok=True)
 
+    all_contracts = contracts
+
     if len(contracts) == 0:
         print(f"🤖 Compiling all Cairo contracts in the {CONTRACTS_DIRECTORY} directory")
-        for path in get_all_contracts():
-            _compile_contract(path)
-    elif len(contracts) == 1:
-        _compile_contract(contracts[0])
-    else:
-        for path in contracts:
-            _compile_contract(path)
+        all_contracts = get_all_contracts()
 
-    print("✅ Done")
+    results = [_compile_contract(contract) for contract in all_contracts]
+    failures = sum(r != 0 for r in results)
+
+    if failures == 0:
+        print("✅ Done")
+    else:
+        exp = f"{failures} contract"
+        if failures > 1:
+            exp += "s"  # pluralize
+        print(f"🛑 Failed to compile {exp}")
 
 
 def _compile_contract(path):
@@ -43,4 +48,5 @@ def _compile_contract(path):
         --abi {ABIS_DIRECTORY}/{filename}.json
     """
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-    output, error = process.communicate()
+    process.communicate()
+    return process.returncode
