@@ -25,7 +25,8 @@ def compile_command(contracts):
         all_contracts = get_all_contracts()
 
     results = [_compile_contract(contract) for contract in all_contracts]
-    failures = sum(r != 0 for r in results)
+    failed_contracts = [c for (c, r) in zip(all_contracts, results) if r != 0]
+    failures = len(failed_contracts)
 
     if failures == 0:
         print("✅ Done")
@@ -33,7 +34,9 @@ def compile_command(contracts):
         exp = f"{failures} contract"
         if failures > 1:
             exp += "s"  # pluralize
-        print(f"🛑 Failed to compile {exp}")
+        print(f"🛑 Failed to compile the following {exp}:")
+        for contract in failed_contracts:
+            print(f"   {contract}")
 
 
 def _compile_contract(path):
