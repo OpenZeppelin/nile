@@ -19,9 +19,11 @@ def get_all_contracts(ext=None):
 
     files = list()
     for (dirpath, _, filenames) in os.walk(CONTRACTS_DIRECTORY):
-        files += [os.path.join(dirpath, file) for file in filenames]
+        files += [
+            os.path.join(dirpath, file) for file in filenames if file.endswith(ext)
+        ]
 
-    return filter(lambda file: file.endswith(ext), files)
+    return files
 
 
 def get_address_from(x):
