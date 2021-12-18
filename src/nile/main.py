@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 """Nile CLI entry point."""
-import os
-import shutil
-
 import click
 
 from nile.commands.account import (
@@ -11,6 +8,7 @@ from nile.commands.account import (
     account_setup_command,
 )
 from nile.commands.call import call_or_invoke_command
+from nile.commands.clean import clean_command
 from nile.commands.compile import compile_command
 from nile.commands.deploy import deploy_command
 from nile.commands.init import init_command
@@ -18,7 +16,6 @@ from nile.commands.install import install_command
 from nile.commands.node import node_command
 from nile.commands.test import test_command
 from nile.commands.version import version_command
-from nile.common import ACCOUNTS_FILENAME, BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
 
 
 @click.group()
@@ -136,22 +133,7 @@ def compile(contracts):
 @cli.command()
 def clean():
     """Remove default build directory."""
-    local_deployments_filename = f"localhost.{DEPLOYMENTS_FILENAME}"
-    local_accounts_filename = f"localhost.{ACCOUNTS_FILENAME}"
-
-    if os.path.exists(local_deployments_filename):
-        print(f"🚮 Deleting {local_deployments_filename}")
-        os.remove(local_deployments_filename)
-
-    if os.path.exists(local_accounts_filename):
-        print(f"🚮 Deleting {local_accounts_filename}")
-        os.remove(local_accounts_filename)
-
-    if os.path.exists(BUILD_DIRECTORY):
-        print(f"🚮 Deleting {BUILD_DIRECTORY} directory")
-        shutil.rmtree(BUILD_DIRECTORY)
-
-    print("✨ Workspace clean, keep going!")
+    clean_command()
 
 
 @cli.command()
