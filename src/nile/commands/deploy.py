@@ -34,7 +34,8 @@ def deploy_command(contract_name, arguments, network, alias, overriding_path=Non
 
     output = subprocess.check_output(command)
     address, tx_hash = parse_deployment(output)
-    print(f"🌕 {contract} deployment to {address} successfully sent with transaction hash {tx_hash}")
+    print(f"⏳ ️Deployment of {contract_name} successfully sent at {address}")
+    print(f"🧾 Transaction hash: {tx_hash}")
 
     deployments.register(address, abi, network, alias)
 
