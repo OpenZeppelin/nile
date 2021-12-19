@@ -86,7 +86,7 @@ A few things to notice here:
 1. `nile deploy <contract_name>` looks for an artifact with the same name
 2. This created a `localhost.deployments.txt` file storing all data related to my deployment
 3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
-4. By default Nile works on local, but you can pass `--network mainnet` to deploy directly to a public chain! Notice that `mainnet` refers to StarkNet main chain, that's settled on Goerli testnet of Ethereum ([mainnet deployment this month!](https://medium.com/starkware/starknet-alpha-is-coming-to-mainnet-b825829eaf32))
+4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 
 ### `setup`
 You can find an exemple `.env` file in `example.env`. These are private keys only to be used for testing and never in production.
