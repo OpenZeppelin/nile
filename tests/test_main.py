@@ -21,6 +21,13 @@ def tmp_working_dir(monkeypatch, tmp_path):
     return tmp_path
 
 
+def test_clean():
+    # The implementation is already thoroughly covered by unit tests, so here
+    # we just check whether the command completes successfully.
+    result = CliRunner().invoke(cli, ["clean"])
+    assert result.exit_code == 0
+
+
 @pytest.mark.parametrize(
     "args, expected",
     [
