@@ -1,6 +1,5 @@
 """nile common module."""
 import os
-import re
 
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
@@ -24,8 +23,3 @@ def get_all_contracts(ext=None):
         ]
 
     return files
-
-
-def get_address_from(x):
-    """Extract an address from a string if exists."""
-    return re.findall("0x[\\da-f]{64}", str(x))[0]

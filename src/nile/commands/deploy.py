@@ -1,9 +1,10 @@
 """Command to deploy StarkNet smart contracts."""
 import os
+import re
 import subprocess
 
 from nile import deployments
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, get_address_from
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
 
 GATEWAYS = {"localhost": "http://localhost:5000/"}
 
@@ -25,12 +26,22 @@ def deploy_command(contract_name, arguments, network, alias, overriding_path=Non
         command.extend([argument for argument in arguments])
 
     if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha"
+        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
+    elif network == "goerli":
+        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
     else:
         command.append(f"--gateway_url={GATEWAYS.get(network)}")
 
     output = subprocess.check_output(command)
-    address = get_address_from(output)
-    print(f"🌕 {contract} successfully deployed to {address}")
+    address, tx_hash = parse_deployment(output)
+    print(f"⏳ ️Deployment of {contract_name} successfully sent at {address}")
+    print(f"🧾 Transaction hash: {tx_hash}")
 
     deployments.register(address, abi, network, alias)
+
+
+def parse_deployment(x):
+    """Extract information from deployment command."""
+    # address is 64, tx_hash is 62 chars long
+    address, tx_hash = re.findall("0x[\\da-f]{62}", str(x))
+    return address, tx_hash

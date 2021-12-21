@@ -22,7 +22,9 @@ def call_or_invoke_command(contract, type, method, params, network):
     ]
 
     if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha"
+        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
+    elif network == "goerli":
+        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
     else:
         gateway_prefix = "feeder_gateway" if type == "call" else "gateway"
         command.append(f"--{gateway_prefix}_url={GATEWAYS.get(network)}")
