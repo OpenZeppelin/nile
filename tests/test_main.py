@@ -15,6 +15,9 @@ from nile.main import cli
 RESOURCES_DIR = Path(__file__).parent / "resources"
 
 
+pytestmark = pytest.mark.end_to_end
+
+
 @pytest.fixture(autouse=True)
 def tmp_working_dir(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
