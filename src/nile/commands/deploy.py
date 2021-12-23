@@ -43,5 +43,5 @@ def deploy_command(contract_name, arguments, network, alias, overriding_path=Non
 def parse_deployment(x):
     """Extract information from deployment command."""
     # address is 64, tx_hash is 62 chars long
-    address, tx_hash = re.findall("0x[\\da-f]{62}", str(x))
+    address, tx_hash = re.findall("0x[\\da-f]{1,62}", str(x))
     return address, tx_hash
