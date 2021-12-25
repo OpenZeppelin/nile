@@ -192,11 +192,17 @@ Nile uses tox to manage development tasks, you can get a list of
 available task with `tox -av`.
 
  * Install a development version of the package with `python -m pip install .`
- * Run tests with `tox`
  * Build the package with `tox -e build`
  * Format all files with `tox -e format`
  * Check files formatting with `tox -e lint`
 
+### Testing
+
+To run tests:
+ * Install testing dependencies with `python -m pip install .[testing]`
+ * Run all tests with `tox`
+ * To run a subset of tests, point to a specific module and/or function, e.g. `tox tests/test_module.py::test_function`
+ * Other `pytest` flags must be preceded by `--`, e.g. `tox -- --pdb` to run tests in debug mode
 
 ## License
 Nile is released under the MIT License.
