@@ -1,5 +1,6 @@
 """Tests for main.py."""
 import shutil
+import sys
 from pathlib import Path
 
 import pytest
@@ -38,6 +39,11 @@ def test_clean():
         (["contract_1.cairo"], {"contract_1.json"}),
         (["contract_2.cairo"], {"contract_2.json"}),
     ],
+)
+@pytest.mark.xfail(
+    sys.version_info >= (3, 10),
+    reason="Issue in cairo-lang. "
+    "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
 def test_compile(args, expected):
     contract_source = RESOURCES_DIR / "contracts" / "contract.cairo"
