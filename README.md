@@ -201,7 +201,8 @@ available task with `tox -av`.
 To run tests:
  * Install testing dependencies with `python -m pip install .[testing]`
  * Run all tests with `tox`
- * To run a subset of tests, point to a specific module and/or function, e.g. `tox tests/test_module.py::test_function`
+ * Run unit tests only with `tox -e unit`
+ * To run a specific set of tests, point to a module and/or function, e.g. `tox tests/test_module.py::test_function`
  * Other `pytest` flags must be preceded by `--`, e.g. `tox -- --pdb` to run tests in debug mode
 
 ## License
