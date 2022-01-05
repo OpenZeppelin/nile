@@ -53,6 +53,8 @@ nile node
  * Running on http://localhost:5000/ (Press CTRL+C to quit)
 ```
 
+Use the optional `-p/--port` command line argument to specify a different port.
+
 ### `compile`
 
 Compile Cairo contracts. Compilation articacts are written into the `artifacts/` directory.

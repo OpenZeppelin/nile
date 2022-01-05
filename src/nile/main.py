@@ -137,9 +137,10 @@ def clean():
 
 
 @cli.command()
-def node():
+@click.option("-p", "--port", default=5000)
+def node(port):
     """Start StarkNet local network."""
-    node_command()
+    node_command(port)
 
 
 @cli.command()
