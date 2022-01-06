@@ -48,13 +48,15 @@ def start_node(seconds, node_args):
     CliRunner().invoke(cli, ["node", *node_args])
 
 
-def check_node(p, gateway_url):
+def check_node(p, seconds, gateway_url):
     """Check if node is running while spawned process is alive."""
-    while p.is_alive:
+    check_runs = 0
+    while p.is_alive and check_runs < seconds:
         try:
             status = urlopen(gateway_url + "is_alive").getcode()
             return status
         except URLError:
+            check_runs += 1
             sleep(1)
             continue
 
@@ -131,7 +133,7 @@ def test_node(args, expected):
     p.start()
 
     # Check node heartbeat and assert that it is running
-    status = check_node(p, gateway_url)
+    status = check_node(p, seconds, gateway_url)
     p.join()
     assert status == 200
 
