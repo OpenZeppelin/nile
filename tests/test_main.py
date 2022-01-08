@@ -1,7 +1,16 @@
 """Tests for main.py."""
 import shutil
 import sys
+import json
 from pathlib import Path
+from multiprocessing import Process
+from threading import Timer
+from os import kill, getpid
+from signal import SIGINT
+from urllib.request import urlopen
+from urllib.error import URLError
+
+from time import sleep
 
 import pytest
 from click.testing import CliRunner
@@ -10,6 +19,7 @@ from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
+    NODE_FILENAME,
 )
 from nile.main import cli
 
@@ -23,6 +33,32 @@ pytestmark = pytest.mark.end_to_end
 def tmp_working_dir(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     return tmp_path
+
+
+def create_process(target, args):
+    """Spawns another process in Python."""
+    p = Process(target=target, args=args)
+    return p
+
+
+def start_node(seconds, node_args):
+    """Start node with host and port specified in node_args and life in seconds."""
+    # Timed kill command with SIGINT to close Node process
+    Timer(seconds, lambda: kill(getpid(), SIGINT)).start()
+    CliRunner().invoke(cli, ["node", *node_args])
+
+
+def check_node(p, seconds, gateway_url):
+    """Check if node is running while spawned process is alive."""
+    check_runs = 0
+    while p.is_alive and check_runs < seconds:
+        try:
+            status = urlopen(gateway_url + "is_alive").getcode()
+            return status
+        except URLError:
+            check_runs += 1
+            sleep(1)
+            continue
 
 
 def test_clean():
@@ -65,3 +101,44 @@ def test_compile(args, expected):
 
     assert {f.name for f in abi_dir.glob("*.json")} == expected
     assert {f.name for f in build_dir.glob("*.json")} == expected
+
+
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        ([], "http://localhost:5000/"),
+        (["--host", "localhost", "--port", "5001"], "http://localhost:5001/"),
+    ],
+)
+@pytest.mark.xfail(
+    sys.version_info >= (3, 10),
+    reason="Issue in cairo-lang. "
+    "See https://github.com/starkware-libs/cairo-lang/issues/27",
+)
+def test_node(args, expected):
+    # Node life
+    seconds = 8
+
+    if args == []:
+        host, port = "localhost", 5000
+    else:
+        host, port = args[1], int(args[3])
+
+    network = host
+    gateway_url = f"http://{host}:{port}/"
+
+    # Spawn process to start StarkNet local network with specified port
+    # i.e. $ nile node --host localhost --port 5001
+    p = create_process(target=start_node, args=(seconds, args))
+    p.start()
+
+    # Check node heartbeat and assert that it is running
+    status = check_node(p, seconds, gateway_url)
+    p.join()
+    assert status == 200
+
+    # Assert network and gateway_url is correct in node.json file
+    file = NODE_FILENAME
+    with open(file, "r") as f:
+        gateway = json.load(f)
+    assert gateway.get(network) == expected

@@ -4,9 +4,7 @@ import re
 import subprocess
 
 from nile import deployments
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
-
-GATEWAYS = {"localhost": "http://localhost:5000/"}
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS
 
 
 def deploy_command(contract_name, arguments, network, alias, overriding_path=None):
