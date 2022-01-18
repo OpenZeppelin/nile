@@ -39,7 +39,7 @@ def load(identifier, network):
 
     with open(file) as fp:
         for line in fp:
-            [address, abi, *alias] = line.split(":")
-            identifiers = [x.strip() for x in [address] + alias]
+            [address, abi, *alias] = line.strip().split(":")
+            identifiers = [x for x in [address] + alias]
             if identifier in identifiers:
                 yield address, abi
