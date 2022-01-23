@@ -7,10 +7,10 @@ from nile.core.account import (
     account_send,
     account_setup,
 )
-from nile.core.call_or_invoke import call_or_invoke as casll_or_invoke_command
+from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
-from nile.core.deploy import deploy as deploy_comand
+from nile.core.deploy import deploy as deploy_command
 from nile.core.init import init as init_command
 from nile.core.install import install as install_command
 from nile.core.node import node as node_command
@@ -43,7 +43,7 @@ def install():
 @click.option("--alias")
 def deploy(artifact, arguments, network, alias):
     """Deploy StarkNet smart contract."""
-    deploy_comand(artifact, arguments, network, alias)
+    deploy_command(artifact, arguments, network, alias)
 
 
 @cli.command()
@@ -81,7 +81,7 @@ def setup(signer, network):
 @click.option("--network", default="localhost")
 def invoke(contract_name, method, params, network):
     """Invoke functions of StarkNet smart contracts."""
-    casll_or_invoke_command(contract_name, "invoke", method, params, network)
+    call_or_invoke_command(contract_name, "invoke", method, params, network)
 
 
 @cli.command()
@@ -91,7 +91,7 @@ def invoke(contract_name, method, params, network):
 @click.option("--network", default="localhost")
 def call(contract_name, method, params, network):
     """Call functions of StarkNet smart contracts."""
-    casll_or_invoke_command(contract_name, "call", method, params, network)
+    call_or_invoke_command(contract_name, "call", method, params, network)
 
 
 @cli.command()
