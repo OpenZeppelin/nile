@@ -9,7 +9,7 @@ from nile.common import (
 )
 
 
-def clean_command():
+def clean():
     """Remove artifacts from workspace."""
     local_deployments_filename = f"localhost.{DEPLOYMENTS_FILENAME}"
     local_accounts_filename = f"localhost.{ACCOUNTS_FILENAME}"

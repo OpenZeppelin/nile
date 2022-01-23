@@ -4,12 +4,13 @@ import re
 import subprocess
 
 from nile import deployments
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS, logger
 
 
-def deploy_command(contract_name, arguments, network, alias, overriding_path=None):
+def deploy(contract_name, arguments, network, alias, overriding_path=None, verbose=False):
     """Deploy StarkNet smart contracts."""
-    print(f"🚀 Deploying {contract_name}")
+    log = logger(verbose)
+    log(f"🚀 Deploying {contract_name}")
 
     base_path = (
         overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
@@ -32,8 +33,8 @@ def deploy_command(contract_name, arguments, network, alias, overriding_path=Non
 
     output = subprocess.check_output(command)
     address, tx_hash = parse_deployment(output)
-    print(f"⏳ ️Deployment of {contract_name} successfully sent at {address}")
-    print(f"🧾 Transaction hash: {tx_hash}")
+    log(f"⏳ ️Deployment of {contract_name} successfully sent at {address}")
+    log(f"🧾 Transaction hash: {tx_hash}")
 
     deployments.register(address, abi, network, alias)
 

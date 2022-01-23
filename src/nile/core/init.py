@@ -4,10 +4,10 @@ import sys
 from distutils.dir_util import copy_tree
 from pathlib import Path
 
-from nile.commands.install import install_command
+from nile.core.install import install
 
 
-def init_command():
+def init():
     """Kickstart a new Nile project."""
     # install cairo dependencies
     subprocess.check_call(
@@ -15,7 +15,7 @@ def init_command():
     )
 
     # install cairo within env
-    install_command()
+    install()
 
     # install testing dependencies
     subprocess.check_call(

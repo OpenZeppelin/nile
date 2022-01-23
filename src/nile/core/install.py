@@ -3,7 +3,7 @@ import subprocess
 import sys
 
 
-def install_command():
+def install():
     """Install Cairo package with the given tag."""
     print("🗄  Installing Cairo")
     subprocess.check_call(

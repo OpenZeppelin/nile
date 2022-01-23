@@ -2,6 +2,6 @@
 from nile import __version__ as nile_version
 
 
-def version_command():
+def version():
     """Print Nile version."""
     print(nile_version)

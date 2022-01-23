@@ -38,3 +38,10 @@ def get_all_contracts(ext=None):
         ]
 
     return files
+
+
+def logger(verbose):
+    def log(msg):
+        if verbose:
+            print(msg)
+    return log

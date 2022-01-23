@@ -4,12 +4,12 @@ import asyncio
 from nile.common import CONTRACTS_DIRECTORY, get_all_contracts
 
 
-def test_command(contracts):
+def test(contracts):
     """Compile and run all provided Cairo tests."""
-    asyncio.run(_test_command(contracts))
+    asyncio.run(_test(contracts))
 
 
-async def _test_command(contracts):
+async def _test(contracts):
     if len(contracts) == 0:
         print(
             f"🤖 Running all test Cairo contracts in the {CONTRACTS_DIRECTORY} directory"

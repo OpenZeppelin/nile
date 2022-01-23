@@ -2,20 +2,20 @@
 """Nile CLI entry point."""
 import click
 
-from nile.commands.account import (
-    account_raw_execute_command,
-    account_send_command,
-    account_setup_command,
+from nile.core.account import (
+    account_raw_execute,
+    account_send,
+    account_setup,
 )
-from nile.commands.call import call_or_invoke_command
-from nile.commands.clean import clean_command
-from nile.commands.compile import compile_command
-from nile.commands.deploy import deploy_command
-from nile.commands.init import init_command
-from nile.commands.install import install_command
-from nile.commands.node import node_command
-from nile.commands.test import test_command
-from nile.commands.version import version_command
+from nile.core.call_or_invoke import call_or_invoke as casll_or_invoke_command
+from nile.core.clean import clean as clean_command
+from nile.core.compile import compile as compile_command
+from nile.core.deploy import deploy as deploy_comand
+from nile.core.init import init as init_command
+from nile.core.install import install as install_command
+from nile.core.node import node as node_command
+from nile.core.test import test as test_command
+from nile.core.version import version as version_command
 
 
 @click.group()
@@ -43,7 +43,7 @@ def install():
 @click.option("--alias")
 def deploy(artifact, arguments, network, alias):
     """Deploy StarkNet smart contract."""
-    deploy_command(artifact, arguments, network, alias)
+    deploy_comand(artifact, arguments, network, alias)
 
 
 @cli.command()
@@ -54,7 +54,7 @@ def deploy(artifact, arguments, network, alias):
 @click.option("--network", default="localhost")
 def send(signer, contract_name, method, params, network):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
-    account_send_command(signer, contract_name, method, params, network)
+    account_send(signer, contract_name, method, params, network)
 
 
 @cli.command(name="raw-execute")
@@ -63,7 +63,7 @@ def send(signer, contract_name, method, params, network):
 @click.option("--network", default="localhost")
 def raw_execute(signer, params, network):
     """Invoke a contract through an Account."""
-    account_raw_execute_command(signer, params, network)
+    account_raw_execute(signer, params, network)
 
 
 @cli.command()
@@ -71,7 +71,7 @@ def raw_execute(signer, params, network):
 @click.option("--network", default="localhost")
 def setup(signer, network):
     """Do setup an Account contract."""
-    account_setup_command(signer, network)
+    account_setup(signer, network)
 
 
 @cli.command()
@@ -81,7 +81,7 @@ def setup(signer, network):
 @click.option("--network", default="localhost")
 def invoke(contract_name, method, params, network):
     """Invoke functions of StarkNet smart contracts."""
-    call_or_invoke_command(contract_name, "invoke", method, params, network)
+    casll_or_invoke_command(contract_name, "invoke", method, params, network)
 
 
 @cli.command()
@@ -91,7 +91,7 @@ def invoke(contract_name, method, params, network):
 @click.option("--network", default="localhost")
 def call(contract_name, method, params, network):
     """Call functions of StarkNet smart contracts."""
-    call_or_invoke_command(contract_name, "call", method, params, network)
+    casll_or_invoke_command(contract_name, "call", method, params, network)
 
 
 @cli.command()

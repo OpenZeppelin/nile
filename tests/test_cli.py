@@ -1,4 +1,4 @@
-"""Tests for main.py."""
+"""Tests for cli.py."""
 import shutil
 import sys
 import json
@@ -21,7 +21,7 @@ from nile.common import (
     CONTRACTS_DIRECTORY,
     NODE_FILENAME,
 )
-from nile.main import cli
+from nile.cli import cli
 
 RESOURCES_DIR = Path(__file__).parent / "resources"
 

@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.commands.clean import clean_command
+from nile.core.clean import clean
 from nile.common import (
     ACCOUNTS_FILENAME,
     BUILD_DIRECTORY,
@@ -18,10 +18,10 @@ def tmp_working_dir(monkeypatch, tmp_path):
     return tmp_path
 
 
-@patch("nile.commands.clean.shutil.rmtree")
-@patch("nile.commands.clean.os.remove")
-def test_clean_command_already_clean(mock_os_remove, mock_shutil_rmtree):
-    clean_command()
+@patch("nile.core.clean.shutil.rmtree")
+@patch("nile.core.clean.os.remove")
+def test_clean_already_clean(mock_os_remove, mock_shutil_rmtree):
+    clean()
     mock_os_remove.assert_not_called()
     mock_shutil_rmtree.assert_not_called()
 
@@ -33,19 +33,19 @@ def test_clean_command_already_clean(mock_os_remove, mock_shutil_rmtree):
         f"localhost.{DEPLOYMENTS_FILENAME}",
     ],
 )
-@patch("nile.commands.clean.shutil.rmtree")
-@patch("nile.commands.clean.os.remove")
-def test_clean_command_clean_files(mock_os_remove, mock_shutil_rmtree, fname):
+@patch("nile.core.clean.shutil.rmtree")
+@patch("nile.core.clean.os.remove")
+def test_clean_clean_files(mock_os_remove, mock_shutil_rmtree, fname):
     Path(fname).touch()
-    clean_command()
+    clean()
     mock_os_remove.assert_called_once_with(fname)
     mock_shutil_rmtree.assert_not_called()
 
 
-@patch("nile.commands.clean.shutil.rmtree")
-@patch("nile.commands.clean.os.remove")
-def test_clean_command_clean_build_dir(mock_os_remove, mock_shutil_rmtree):
+@patch("nile.core.clean.shutil.rmtree")
+@patch("nile.core.clean.os.remove")
+def test_clean_clean_build_dir(mock_os_remove, mock_shutil_rmtree):
     Path(BUILD_DIRECTORY).mkdir()
-    clean_command()
+    clean()
     mock_os_remove.assert_not_called()
     mock_shutil_rmtree.assert_called_once_with(BUILD_DIRECTORY)

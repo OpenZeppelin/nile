@@ -7,21 +7,23 @@ from nile.common import (
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
     get_all_contracts,
+    logger
 )
 
 
-def compile_command(contracts):
+def compile(contracts, verbose=False):
     """Compile cairo contracts to default output directory."""
     # to do: automatically support subdirectories
+    log = logger(verbose)
 
     if not os.path.exists(ABIS_DIRECTORY):
-        print(f"📁 Creating {ABIS_DIRECTORY} to store compilation artifacts")
+        log(f"📁 Creating {ABIS_DIRECTORY} to store compilation artifacts")
         os.makedirs(ABIS_DIRECTORY, exist_ok=True)
 
     all_contracts = contracts
 
     if len(contracts) == 0:
-        print(f"🤖 Compiling all Cairo contracts in the {CONTRACTS_DIRECTORY} directory")
+        log(f"🤖 Compiling all Cairo contracts in the {CONTRACTS_DIRECTORY} directory")
         all_contracts = get_all_contracts()
 
     results = [_compile_contract(contract) for contract in all_contracts]
@@ -29,20 +31,21 @@ def compile_command(contracts):
     failures = len(failed_contracts)
 
     if failures == 0:
-        print("✅ Done")
+        log("✅ Done")
     else:
         exp = f"{failures} contract"
         if failures > 1:
             exp += "s"  # pluralize
-        print(f"🛑 Failed to compile the following {exp}:")
+        log(f"🛑 Failed to compile the following {exp}:")
         for contract in failed_contracts:
-            print(f"   {contract}")
+            log(f"   {contract}")
 
 
-def _compile_contract(path):
+def _compile_contract(path, verbose=False):
+    log = logger(verbose)
     base = os.path.basename(path)
     filename = os.path.splitext(base)[0]
-    print(f"🔨 Compiling {path}")
+    log(f"🔨 Compiling {path}")
 
     cmd = f"""
     starknet-compile {path} \
