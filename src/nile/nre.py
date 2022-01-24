@@ -16,15 +16,15 @@ class NileRuntimeEnvironment:
         """Compile a list of contracts."""
         return compile(contracts)
 
-    def deploy(self, contract, arguments, alias, overriding_path=None):
+    def deploy(self, contract, arguments=[], alias=None, overriding_path=None):
         """Deploy a smart contract."""
         return deploy(contract, arguments, self.network, alias, overriding_path)
 
-    def call(self, contract, method, params):
+    def call(self, contract, method, params=[]):
         """Call a view function in a smart contract."""
         return call_or_invoke(contract, "call", method, params, self.network)
 
-    def invoke(self, contract, method, params):
+    def invoke(self, contract, method, params=[]):
         """Invoke a mutable function in a smart contract."""
         return call_or_invoke(contract, "invoke", method, params, self.network)
 
