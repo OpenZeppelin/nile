@@ -168,8 +168,7 @@ Execute a script in the context of Nile. The script must implement a `run(nre)` 
 # path/to/script.py
 
 def run(nre):
-    nre.deploy("contract", alias="my_contract")
-    address, abi = nre.get_deployment('my_contract')
+    address, abi = nre.deploy("contract", alias="my_contract")
     print(abi, address)
 ```
 
