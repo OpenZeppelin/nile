@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 """Nile CLI entry point."""
+import logging
+
 import click
 
 from nile.core.account import account_raw_execute, account_send, account_setup
@@ -13,6 +15,8 @@ from nile.core.node import node as node_command
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.version import version as version_command
+
+logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
 
 @click.group()

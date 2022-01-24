@@ -3,6 +3,8 @@ Tests for compile command.
 
 Only unit tests for now. No contracts are actually compiled.
 """
+
+import logging
 from unittest.mock import Mock, patch
 
 import pytest
@@ -50,14 +52,17 @@ def test_compile__compile_contract_called(mock__compile_contract):
 
 
 @patch("nile.core.compile._compile_contract")
-def test_compile_failure_feedback(mock__compile_contract, capsys):
+def test_compile_failure_feedback(mock__compile_contract, caplog):
+    # make logs visible to test
+    logging.getLogger().setLevel(logging.INFO)
+
     mock__compile_contract.side_effect = [0]
     compile([CONTRACT])
-    assert "Done" in capsys.readouterr().out
+    assert "Done" in caplog.text
 
     mock__compile_contract.side_effect = [1]
     compile([CONTRACT])
-    assert "Failed" in capsys.readouterr().out
+    assert "Failed" in caplog.text
 
 
 def test__compile_contract(mock_subprocess):

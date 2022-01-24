@@ -1,4 +1,5 @@
 """Command to kickstart a Nile project."""
+import logging
 import subprocess
 import sys
 from distutils.dir_util import copy_tree
@@ -21,18 +22,18 @@ def init():
     subprocess.check_call(
         [sys.executable, "-m", "pip", "install", "pytest", "pytest-asyncio"]
     )
-    print("")
-    print("✅ Dependencies successfully installed")
+    logging.info("")
+    logging.info("✅ Dependencies successfully installed")
 
     # create project directories
-    print("🗄  Creating project directory tree")
+    logging.info("🗄  Creating project directory tree")
 
     copy_tree(Path(__file__).parent.parent / "base_project", ".")
 
     with open("accounts.json", "w") as file:
         file.write("{}")
 
-    print("⛵️ Nile project ready! Try running:")
-    print("")
-    print("nile compile")
-    print("")
+    logging.info("⛵️ Nile project ready! Try running:")
+    logging.info("")
+    logging.info("nile compile")
+    logging.info("")

@@ -1,4 +1,5 @@
 """nile common module."""
+import logging
 import os
 
 from nile.common import DEPLOYMENTS_FILENAME
@@ -14,9 +15,9 @@ def register(address, abi, network, alias):
 
     with open(file, "a") as fp:
         if alias is not None:
-            print(f"📦 Registering deployment as {alias} in {file}")
+            logging.info(f"📦 Registering deployment as {alias} in {file}")
         else:
-            print(f"📦 Registering {address} in {file}")
+            logging.info(f"📦 Registering {address} in {file}")
 
         fp.write(f"{address}:{abi}")
         if alias is not None:
