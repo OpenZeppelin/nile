@@ -5,8 +5,8 @@ import subprocess
 from dotenv import load_dotenv
 
 from nile import accounts, deployments
-from nile.core.deploy import deploy
 from nile.common import GATEWAYS
+from nile.core.deploy import deploy
 from nile.signer import Signer
 
 load_dotenv()

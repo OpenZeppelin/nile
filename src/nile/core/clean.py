@@ -2,11 +2,7 @@
 import os
 import shutil
 
-from nile.common import (
-    ACCOUNTS_FILENAME,
-    BUILD_DIRECTORY,
-    DEPLOYMENTS_FILENAME,
-)
+from nile.common import ACCOUNTS_FILENAME, BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
 
 
 def clean():

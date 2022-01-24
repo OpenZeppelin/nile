@@ -1,27 +1,26 @@
 """Tests for cli.py."""
+import json
 import shutil
 import sys
-import json
-from pathlib import Path
 from multiprocessing import Process
-from threading import Timer
-from os import kill, getpid
+from os import getpid, kill
+from pathlib import Path
 from signal import SIGINT
-from urllib.request import urlopen
-from urllib.error import URLError
-
+from threading import Timer
 from time import sleep
+from urllib.error import URLError
+from urllib.request import urlopen
 
 import pytest
 from click.testing import CliRunner
 
+from nile.cli import cli
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
     NODE_FILENAME,
 )
-from nile.cli import cli
 
 RESOURCES_DIR = Path(__file__).parent / "resources"
 

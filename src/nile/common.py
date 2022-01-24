@@ -1,6 +1,6 @@
 """nile common module."""
-import os
 import json
+import os
 
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
@@ -38,10 +38,3 @@ def get_all_contracts(ext=None):
         ]
 
     return files
-
-
-def logger(verbose):
-    def log(msg):
-        if verbose:
-            print(msg)
-    return log

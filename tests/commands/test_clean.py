@@ -4,12 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
+from nile.common import ACCOUNTS_FILENAME, BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
 from nile.core.clean import clean
-from nile.common import (
-    ACCOUNTS_FILENAME,
-    BUILD_DIRECTORY,
-    DEPLOYMENTS_FILENAME,
-)
 
 
 @pytest.fixture(autouse=True)

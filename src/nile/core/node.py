@@ -1,6 +1,7 @@
 """Command to start StarkNet local network."""
-import subprocess
 import json
+import subprocess
+
 from nile.common import NODE_FILENAME
 
 
