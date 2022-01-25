@@ -21,8 +21,8 @@ def register(pubkey, address, index, network):
 
 def exists(pubkey, network):
     """Return whether an account exists or not."""
-    foo = next(load(pubkey, network), None)
-    return foo is not None
+    account = next(load(pubkey, network), None)
+    return account is not None
 
 
 def load(pubkey, network):
