@@ -1,5 +1,6 @@
 """nile runtime environment."""
 from nile import deployments
+from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
 from nile.core.deploy import deploy
@@ -31,3 +32,7 @@ class NileRuntimeEnvironment:
     def get_deployment(self, contract):
         """Get a deployment by its identifier (address or alias)."""
         return next(deployments.load(contract, self.network))
+
+    def get_or_deploy_account(self, signer):
+        """Get or deploy an Account contract."""
+        return Account(signer, self.network)

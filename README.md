@@ -89,10 +89,14 @@ A few things to notice here:
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 
 ### `setup`
+Deploy an Account associated with a given private key.
+
+To avoid accidentally leaking private keys, this command takes an alias instead of the actual private key. This alias is associated with an environmental variable of the same name, whose value is the actual private key.
+
 You can find an exemple `.env` file in `example.env`. These are private keys only to be used for testing and never in production.
 
 ```sh
-nile setup PKEY1
+nile setup <private_key_alias>
 
 🚀 Deploying Account
 🌕 artifacts/Account.json successfully deployed to 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
@@ -104,34 +108,19 @@ Transaction hash: 0x17
 
 A few things to notice here:
 
-1. `nile setup <env_var>` looks for an environement variable with the same name whose value is a private key
-2. This created a `localhost.accounts.json` file storing all data related to accounts management
-
-### `raw-execute`
-Execute a transaction through the `Account` associated with the private key used. The syntax is:
-
-```sh
-nile raw-execute <env_signer> <contract_address> <contract_method> <args>
-```
-
-```sh
-nile raw-execute PKEY1 0x0342e...4de4e0 transfer_ownership 0x07db6...60e794
-
-Invoke transaction was sent.
-Contract address: 0x03420417e09260947e3412d48952858a376f2d3ddde4e49f5981a2e41f4de4e0
-Transaction hash: 0x1c
-```
+1. `nile setup <private_key_alias>` looks for an environement variable with the name of the private key alias
+2. This creates a `localhost.accounts.json` file storing all data related to accounts management
 
 ### `send`
-Acts like `raw-execute` with the exception you can use it like you would use `nile invoke`.
-Execute a transaction through the `Account` associated with the private key used. The syntax is:
+Execute a transaction through the `Account` associated with the private key provided. The syntax is:
 
 ```sh
-nile send <env_signer> <contract_identifier> <contract_method> [PARAM_1, PARAM2...]
+nile send <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
 ```
 
+For example:
 ```sh
-nile send PKEY1 ownable0 transfer_ownership 0x07db6...60e794
+nile send <private_key_alias> ownable0 transfer_ownership 0x07db6...60e794
 
 Invoke transaction was sent.
 Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
@@ -142,7 +131,7 @@ Transaction hash: 0x1c
 Using `call` and `invoke`, we can perform read and write operations against our local node (or public one using the `--network mainnet` parameter). The syntax is:
 
 ```
-nile <command> <contract_identifier> <contract_method> [PARAM_1, PARAM2...]
+nile <command> <contract_identifier> <method> [PARAM_1, PARAM2...]
 ```
 
 Where `<command>` is either `call` or `invoke` and `<contract_identifier>` is either our contract address or alias, as defined on `deploy`.
