@@ -59,7 +59,7 @@ def deploy(artifact, arguments, network, alias):
 @click.argument("signer", nargs=1)
 @click.option("--network", default="localhost")
 def setup(signer, network):
-    """Do setup an Account contract."""
+    """Set up an Account contract."""
     Account(signer, network)
 
 
