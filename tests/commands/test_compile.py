@@ -3,12 +3,14 @@ Tests for compile command.
 
 Only unit tests for now. No contracts are actually compiled.
 """
+
+import logging
 from unittest.mock import Mock, patch
 
 import pytest
 
 from nile.common import ABIS_DIRECTORY, CONTRACTS_DIRECTORY
-from nile.commands.compile import _compile_contract, compile_command
+from nile.core.compile import _compile_contract, compile
 
 CONTRACT = "foo.cairo"
 
@@ -23,41 +25,44 @@ def tmp_working_dir(monkeypatch, tmp_path):
 # shell commands.
 @pytest.fixture(autouse=True)
 def mock_subprocess():
-    with patch("nile.commands.compile.subprocess") as mock_subprocess:
+    with patch("nile.core.compile.subprocess") as mock_subprocess:
         yield mock_subprocess
 
 
-def test_compile_command_create_abis_directory(tmp_working_dir):
+def test_compile_create_abis_directory(tmp_working_dir):
     assert not (tmp_working_dir / ABIS_DIRECTORY).exists()
-    compile_command([])
+    compile([])
     assert (tmp_working_dir / ABIS_DIRECTORY).exists()
 
 
-@patch("nile.commands.compile.get_all_contracts")
-def test_compile_command_get_all_contracts_called(mock_get_all_contracts):
-    compile_command([])
+@patch("nile.core.compile.get_all_contracts")
+def test_compile_get_all_contracts_called(mock_get_all_contracts):
+    compile([])
     mock_get_all_contracts.assert_called_once()
     mock_get_all_contracts.reset_mock()
 
-    compile_command([CONTRACT])
+    compile([CONTRACT])
     mock_get_all_contracts.assert_not_called()
 
 
-@patch("nile.commands.compile._compile_contract")
-def test_compile_command__compile_contract_called(mock__compile_contract):
-    compile_command([CONTRACT])
+@patch("nile.core.compile._compile_contract")
+def test_compile__compile_contract_called(mock__compile_contract):
+    compile([CONTRACT])
     mock__compile_contract.assert_called_once_with(CONTRACT)
 
 
-@patch("nile.commands.compile._compile_contract")
-def test_compile_command_failure_feedback(mock__compile_contract, capsys):
+@patch("nile.core.compile._compile_contract")
+def test_compile_failure_feedback(mock__compile_contract, caplog):
+    # make logs visible to test
+    logging.getLogger().setLevel(logging.INFO)
+
     mock__compile_contract.side_effect = [0]
-    compile_command([CONTRACT])
-    assert "Done" in capsys.readouterr().out
+    compile([CONTRACT])
+    assert "Done" in caplog.text
 
     mock__compile_contract.side_effect = [1]
-    compile_command([CONTRACT])
-    assert "Failed" in capsys.readouterr().out
+    compile([CONTRACT])
+    assert "Failed" in caplog.text
 
 
 def test__compile_contract(mock_subprocess):

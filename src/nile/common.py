@@ -1,6 +1,6 @@
 """nile common module."""
-import os
 import json
+import os
 
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"

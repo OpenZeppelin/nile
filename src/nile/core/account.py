@@ -5,14 +5,14 @@ import subprocess
 from dotenv import load_dotenv
 
 from nile import accounts, deployments
-from nile.commands.deploy import deploy_command
 from nile.common import GATEWAYS
+from nile.core.deploy import deploy
 from nile.signer import Signer
 
 load_dotenv()
 
 
-def account_setup_command(signer, network):
+def account_setup(signer, network):
     """Deploy an Account contract for the given private key."""
     signer = Signer(int(os.environ[signer]), network)
     if accounts.exists(str(signer.public_key), network):
@@ -23,7 +23,7 @@ def account_setup_command(signer, network):
         signer.index = accounts.current_index(network)
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/commands", "")
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
-        deploy_command(
+        deploy(
             "Account",
             [str(signer.public_key)],
             network,
@@ -37,17 +37,17 @@ def account_setup_command(signer, network):
     return signer
 
 
-def account_send_command(signer, contract, method, params, network):
+def account_send(signer, contract, method, params, network):
     """Sugared call to a contract passing by an Account contract."""
     address, abi = next(deployments.load(contract, network))
     concatened_params = [address, method] + list(params)
-    return account_raw_execute_command(signer, concatened_params, network)
+    return account_raw_execute(signer, concatened_params, network)
 
 
-def account_raw_execute_command(signer, params, network):
+def account_raw_execute(signer, params, network):
     """Execute a tx going through an Account contract."""
     # params are : to, selector_name, calldata
-    signer = account_setup_command(signer, network)
+    signer = account_setup(signer, network)
 
     _, abi = next(deployments.load(f"account-{signer.index}", network))
 

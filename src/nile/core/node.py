@@ -1,10 +1,11 @@
 """Command to start StarkNet local network."""
-import subprocess
 import json
+import subprocess
+
 from nile.common import NODE_FILENAME
 
 
-def node_command(host="localhost", port=5000):
+def node(host="localhost", port=5000):
     """Start StarkNet local network."""
     try:
         # Save host and port information to be used by other commands

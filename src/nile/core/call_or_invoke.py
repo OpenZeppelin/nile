@@ -6,7 +6,7 @@ from nile import deployments
 from nile.common import GATEWAYS
 
 
-def call_or_invoke_command(contract, type, method, params, network):
+def call_or_invoke(contract, type, method, params, network):
     """Call or invoke functions of StarkNet smart contracts."""
     address, abi = next(deployments.load(contract, network))
 

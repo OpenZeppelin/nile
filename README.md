@@ -161,6 +161,23 @@ nile call my_contract get_balance
 1
 ```
 
+### `run`
+Execute a script in the context of Nile. The script must implement a `run(nre)` function to receive a `NileRuntimeEnvironment` object exposing Nile's scripting API.
+
+```python
+# path/to/script.py
+
+def run(nre):
+    address, abi = nre.deploy("contract", alias="my_contract")
+    print(abi, address)
+```
+
+Then run the script:
+
+```sh
+nile run path/to/script.py
+```
+
 ### `clean`
 Deletes the `artifacts/` directory for a fresh start ❄️
 

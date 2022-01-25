@@ -1,21 +1,22 @@
 #!/usr/bin/env python
 """Nile CLI entry point."""
+import logging
+
 import click
 
-from nile.commands.account import (
-    account_raw_execute_command,
-    account_send_command,
-    account_setup_command,
-)
-from nile.commands.call import call_or_invoke_command
-from nile.commands.clean import clean_command
-from nile.commands.compile import compile_command
-from nile.commands.deploy import deploy_command
-from nile.commands.init import init_command
-from nile.commands.install import install_command
-from nile.commands.node import node_command
-from nile.commands.test import test_command
-from nile.commands.version import version_command
+from nile.core.account import account_raw_execute, account_send, account_setup
+from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
+from nile.core.clean import clean as clean_command
+from nile.core.compile import compile as compile_command
+from nile.core.deploy import deploy as deploy_command
+from nile.core.init import init as init_command
+from nile.core.install import install as install_command
+from nile.core.node import node as node_command
+from nile.core.run import run as run_command
+from nile.core.test import test as test_command
+from nile.core.version import version as version_command
+
+logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
 
 @click.group()
@@ -37,6 +38,14 @@ def install():
 
 
 @cli.command()
+@click.argument("path", nargs=1)
+@click.option("--network", default="localhost")
+def run(path, network):
+    """Run Nile scripts with NileRuntimeEnvironment."""
+    run_command(path, network)
+
+
+@cli.command()
 @click.argument("artifact", nargs=1)
 @click.argument("arguments", nargs=-1)
 @click.option("--network", default="localhost")
@@ -54,7 +63,7 @@ def deploy(artifact, arguments, network, alias):
 @click.option("--network", default="localhost")
 def send(signer, contract_name, method, params, network):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
-    account_send_command(signer, contract_name, method, params, network)
+    account_send(signer, contract_name, method, params, network)
 
 
 @cli.command(name="raw-execute")
@@ -63,7 +72,7 @@ def send(signer, contract_name, method, params, network):
 @click.option("--network", default="localhost")
 def raw_execute(signer, params, network):
     """Invoke a contract through an Account."""
-    account_raw_execute_command(signer, params, network)
+    account_raw_execute(signer, params, network)
 
 
 @cli.command()
@@ -71,7 +80,7 @@ def raw_execute(signer, params, network):
 @click.option("--network", default="localhost")
 def setup(signer, network):
     """Do setup an Account contract."""
-    account_setup_command(signer, network)
+    account_setup(signer, network)
 
 
 @cli.command()
