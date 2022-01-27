@@ -5,7 +5,7 @@ import subprocess
 from dotenv import load_dotenv
 
 from nile import accounts, deployments
-from nile.common import GATEWAYS
+from nile.core.call_or_invoke import call_or_invoke
 from nile.core.deploy import deploy
 from nile.signer import Signer
 
@@ -50,43 +50,23 @@ class Account:
     def send(self, to, method, calldata):
         """Execute a tx going through an Account contract."""
         target_address, _ = next(deployments.load(to, self.network)) or to
-        params = [target_address, method] + list(calldata)
-        _, abi = next(deployments.load(f"account-{self.index}", self.network))
 
-        command = [
-            "starknet",
-            "invoke",
-            "--address",
-            self.address,
-            "--abi",
-            abi,
-            "--function",
-            "execute",
-        ]
+        message, signature = self.signer.sign_message(
+            sender=self.address,
+            to=target_address,
+            selector=method,
+            calldata=calldata,
+            nonce=self.get_nonce(),
+        )
 
-        if self.network == "mainnet":
-            os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-        elif self.network == "goerli":
-            os.environ["STARKNET_NETWORK"] = "alpha-goerli"
-        else:
-            gateway_prefix = "feeder_gateway" if type == "call" else "gateway"
-            command.append(f"--{gateway_prefix}_url={GATEWAYS.get(self.network)}")
-
-        if len(params) > 0:
-            command.append("--inputs")
-            nonce = self.get_nonce()
-            ingested_inputs = self.signer.build_transaction(
-                sender=self.address,
-                to=params[0],
-                selector=params[1],
-                calldata=params[2:],
-                nonce=nonce,
-            )
-            command.extend([str(param) for param in ingested_inputs[0]])
-            command.append("--signature")
-            command.extend([str(sig_part) for sig_part in ingested_inputs[1]])
-
-        subprocess.check_call(command)
+        call_or_invoke(
+            contract=self.address,
+            type="invoke",
+            method="execute",
+            params=message,
+            network=self.network,
+            signature=signature,
+        )
 
     def get_nonce(self):
         """Get the nonce for the next transaction."""

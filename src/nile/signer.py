@@ -23,7 +23,7 @@ class Signer:
         """Sign a message hash."""
         return sign(msg_hash=message_hash, priv_key=self.private_key)
 
-    def build_transaction(self, sender, to, selector, calldata, nonce):
+    def sign_message(self, sender, to, selector, calldata, nonce):
         """Get the inputs for the next transaction in a CLI context."""
         selector = get_selector_from_name(selector)
         ingested_calldata = [int(arg, 16) for arg in calldata]
