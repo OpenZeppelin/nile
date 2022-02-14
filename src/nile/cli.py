@@ -18,6 +18,27 @@ from nile.core.version import version as version_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
+NETWORKS = ("localhost", "goerli", "mainnet")
+
+network_option = lambda f: click.option(  # noqa: E731
+    "--network",
+    envvar="STARKNET_NETWORK",
+    default="localhost",
+    help=f"Select network, one of {NETWORKS}",
+    callback=_validate_network,
+)(f)
+
+
+def _validate_network(_ctx, _param, value):
+    # normalize goerli
+    if "goerli" in value or "testnet" in value:
+        return "goerli"
+    # check if value is accepted
+    if value in NETWORKS:
+        return value
+    # raise if value is invalid
+    raise click.BadParameter(f"'{value}'. Use one of {NETWORKS}")
+
 
 @click.group()
 def cli():
@@ -39,7 +60,7 @@ def install():
 
 @cli.command()
 @click.argument("path", nargs=1)
-@click.option("--network", default="localhost")
+@network_option
 def run(path, network):
     """Run Nile scripts with NileRuntimeEnvironment."""
     run_command(path, network)
@@ -48,7 +69,7 @@ def run(path, network):
 @cli.command()
 @click.argument("artifact", nargs=1)
 @click.argument("arguments", nargs=-1)
-@click.option("--network", default="localhost")
+@network_option
 @click.option("--alias")
 def deploy(artifact, arguments, network, alias):
     """Deploy StarkNet smart contract."""
@@ -57,7 +78,7 @@ def deploy(artifact, arguments, network, alias):
 
 @cli.command()
 @click.argument("signer", nargs=1)
-@click.option("--network", default="localhost")
+@network_option
 def setup(signer, network):
     """Set up an Account contract."""
     Account(signer, network)
@@ -68,7 +89,7 @@ def setup(signer, network):
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
-@click.option("--network", default="localhost")
+@network_option
 def send(signer, contract_name, method, params, network):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = Account(signer, network)
@@ -79,7 +100,7 @@ def send(signer, contract_name, method, params, network):
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
-@click.option("--network", default="localhost")
+@network_option
 def invoke(contract_name, method, params, network):
     """Invoke functions of StarkNet smart contracts."""
     call_or_invoke_command(contract_name, "invoke", method, params, network)
@@ -89,7 +110,7 @@ def invoke(contract_name, method, params, network):
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
-@click.option("--network", default="localhost")
+@network_option
 def call(contract_name, method, params, network):
     """Call functions of StarkNet smart contracts."""
     call_or_invoke_command(contract_name, "call", method, params, network)
