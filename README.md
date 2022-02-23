@@ -55,7 +55,7 @@ nile node
 
 ### `compile`
 
-Compile Cairo contracts. Compilation articacts are written into the `artifacts/` directory.
+Compile Cairo contracts. Compilation artifacts are written into the `artifacts/` directory.
 
 ```sh
 nile compile # compiles all contracts under contracts/
