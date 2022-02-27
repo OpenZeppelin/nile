@@ -32,7 +32,9 @@ def get_all_contracts(ext=None, directory=None):
         ext = ".cairo"
 
     files = list()
-    for (dirpath, _, filenames) in os.walk(directory if directory else CONTRACTS_DIRECTORY):
+    for (dirpath, _, filenames) in os.walk(
+        directory if directory else CONTRACTS_DIRECTORY
+    ):
         files += [
             os.path.join(dirpath, file) for file in filenames if file.endswith(ext)
         ]

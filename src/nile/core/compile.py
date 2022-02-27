@@ -29,8 +29,9 @@ def compile(contracts, directory=None):
         )
         all_contracts = get_all_contracts(directory=contracts_directory)
 
-    results = [_compile_contract(contract, contracts_directory)
-               for contract in all_contracts]
+    results = [
+        _compile_contract(contract, contracts_directory) for contract in all_contracts
+    ]
     failed_contracts = [c for (c, r) in zip(all_contracts, results) if r != 0]
     failures = len(failed_contracts)
 
@@ -45,10 +46,11 @@ def compile(contracts, directory=None):
             logging.info(f"   {contract}")
 
 
-def _compile_contract(path, contracts_directory):
+def _compile_contract(path, directory=None):
     base = os.path.basename(path)
     filename = os.path.splitext(base)[0]
     logging.info(f"🔨 Compiling {path}")
+    contracts_directory = directory if directory else CONTRACTS_DIRECTORY
 
     cmd = f"""
     starknet-compile {path} \

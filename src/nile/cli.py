@@ -21,16 +21,19 @@ logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 NETWORKS = ("localhost", "goerli", "mainnet")
 
 
-def network_option(f): return click.option(  # noqa: E731
-    "--network",
-    envvar="STARKNET_NETWORK",
-    default="localhost",
-    help=f"Select network, one of {NETWORKS}",
-    callback=_validate_network,
-)(f)
+def network_option(f):
+    """Configure NETWORK option for the cli."""
+    return click.option(  # noqa: E731
+        "--network",
+        envvar="STARKNET_NETWORK",
+        default="localhost",
+        help=f"Select network, one of {NETWORKS}",
+        callback=_validate_network,
+    )(f)
 
 
 def _validate_network(_ctx, _param, value):
+    """Normalize network values."""
     # normalize goerli
     if "goerli" in value or "testnet" in value:
         return "goerli"
