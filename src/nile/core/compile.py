@@ -11,9 +11,11 @@ from nile.common import (
 )
 
 
-def compile(contracts):
+def compile(contracts, directory=None):
     """Compile cairo contracts to default output directory."""
     # to do: automatically support subdirectories
+
+    contracts_directory = directory if directory else CONTRACTS_DIRECTORY
 
     if not os.path.exists(ABIS_DIRECTORY):
         logging.info(f"📁 Creating {ABIS_DIRECTORY} to store compilation artifacts")
@@ -23,11 +25,12 @@ def compile(contracts):
 
     if len(contracts) == 0:
         logging.info(
-            f"🤖 Compiling all Cairo contracts in the {CONTRACTS_DIRECTORY} directory"
+            f"🤖 Compiling all Cairo contracts in the {contracts_directory} directory"
         )
-        all_contracts = get_all_contracts()
+        all_contracts = get_all_contracts(directory=contracts_directory)
 
-    results = [_compile_contract(contract) for contract in all_contracts]
+    results = [_compile_contract(contract, contracts_directory)
+               for contract in all_contracts]
     failed_contracts = [c for (c, r) in zip(all_contracts, results) if r != 0]
     failures = len(failed_contracts)
 
@@ -42,14 +45,14 @@ def compile(contracts):
             logging.info(f"   {contract}")
 
 
-def _compile_contract(path):
+def _compile_contract(path, contracts_directory):
     base = os.path.basename(path)
     filename = os.path.splitext(base)[0]
     logging.info(f"🔨 Compiling {path}")
 
     cmd = f"""
     starknet-compile {path} \
-        --cairo_path={CONTRACTS_DIRECTORY}
+        --cairo_path={contracts_directory}
         --output {BUILD_DIRECTORY}/{filename}.json \
         --abi {ABIS_DIRECTORY}/{filename}.json
     """

@@ -26,13 +26,13 @@ def _get_gateway():
 GATEWAYS = _get_gateway()
 
 
-def get_all_contracts(ext=None):
+def get_all_contracts(ext=None, directory=None):
     """Get all cairo contracts in the default contract directory."""
     if ext is None:
         ext = ".cairo"
 
     files = list()
-    for (dirpath, _, filenames) in os.walk(CONTRACTS_DIRECTORY):
+    for (dirpath, _, filenames) in os.walk(directory if directory else CONTRACTS_DIRECTORY):
         files += [
             os.path.join(dirpath, file) for file in filenames if file.endswith(ext)
         ]
