@@ -59,6 +59,7 @@ Compile Cairo contracts. Compilation articacts are written into the `artifacts/`
 
 ```sh
 nile compile # compiles all contracts under contracts/
+nile compile --directory my_contracts # compiles all contracts under my_contracts/
 nile compile contracts/MyContract.cairo # compiles single contract
 ```
 Example output:
