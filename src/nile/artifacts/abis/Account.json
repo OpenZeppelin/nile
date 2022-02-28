@@ -1,5 +1,32 @@
 [
     {
+        "members": [
+            {
+                "name": "to",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "selector",
+                "offset": 1,
+                "type": "felt"
+            },
+            {
+                "name": "data_offset",
+                "offset": 2,
+                "type": "felt"
+            },
+            {
+                "name": "data_len",
+                "offset": 3,
+                "type": "felt"
+            }
+        ],
+        "name": "CallArray",
+        "size": 4,
+        "type": "struct"
+    },
+    {
         "inputs": [],
         "name": "assert_only_self",
         "outputs": [],
@@ -24,6 +51,23 @@
         "outputs": [
             {
                 "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "interfaceId",
+                "type": "felt"
+            }
+        ],
+        "name": "supportsInterface",
+        "outputs": [
+            {
+                "name": "success",
                 "type": "felt"
             }
         ],
@@ -75,12 +119,12 @@
     {
         "inputs": [
             {
-                "name": "to",
+                "name": "call_array_len",
                 "type": "felt"
             },
             {
-                "name": "selector",
-                "type": "felt"
+                "name": "call_array",
+                "type": "CallArray*"
             },
             {
                 "name": "calldata_len",
@@ -95,7 +139,7 @@
                 "type": "felt"
             }
         ],
-        "name": "execute",
+        "name": "__execute__",
         "outputs": [
             {
                 "name": "response_len",
