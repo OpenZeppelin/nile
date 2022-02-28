@@ -20,16 +20,20 @@ logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
 NETWORKS = ("localhost", "goerli", "mainnet")
 
-network_option = lambda f: click.option(  # noqa: E731
-    "--network",
-    envvar="STARKNET_NETWORK",
-    default="localhost",
-    help=f"Select network, one of {NETWORKS}",
-    callback=_validate_network,
-)(f)
+
+def network_option(f):
+    """Configure NETWORK option for the cli."""
+    return click.option(  # noqa: E731
+        "--network",
+        envvar="STARKNET_NETWORK",
+        default="localhost",
+        help=f"Select network, one of {NETWORKS}",
+        callback=_validate_network,
+    )(f)
 
 
 def _validate_network(_ctx, _param, value):
+    """Normalize network values."""
     # normalize goerli
     if "goerli" in value or "testnet" in value:
         return "goerli"
@@ -136,7 +140,8 @@ def test(contracts):
 
 @cli.command()
 @click.argument("contracts", nargs=-1)
-def compile(contracts):
+@click.option("--directory")
+def compile(contracts, directory):
     """
     Compile cairo contracts.
 
@@ -149,7 +154,7 @@ def compile(contracts):
     $ compile.py contracts/foo.cairo contracts/bar.cairo
       Compiles foo.cairo and bar.cairo
     """
-    compile_command(contracts)
+    compile_command(contracts, directory)
 
 
 @cli.command()
