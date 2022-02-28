@@ -93,7 +93,7 @@ Deploy an Account associated with a given private key.
 
 To avoid accidentally leaking private keys, this command takes an alias instead of the actual private key. This alias is associated with an environmental variable of the same name, whose value is the actual private key.
 
-You can find an exemple `.env` file in `example.env`. These are private keys only to be used for testing and never in production.
+You can find an example `.env` file in `example.env`. These are private keys only to be used for testing and never in production.
 
 ```sh
 nile setup <private_key_alias>
@@ -108,7 +108,7 @@ Transaction hash: 0x17
 
 A few things to notice here:
 
-1. `nile setup <private_key_alias>` looks for an environement variable with the name of the private key alias
+1. `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias
 2. This creates a `localhost.accounts.json` file storing all data related to accounts management
 
 ### `send`
