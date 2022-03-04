@@ -47,32 +47,13 @@ class Account:
 
         return address, index
 
-    def send(self, to, method, calldata):
+    async def send(self, to, method, calldata):
         """Execute a tx going through an Account contract."""
         target_address, _ = next(deployments.load(to, self.network)) or to
 
-        message, signature = self.signer.sign_message(
-            sender=self.address,
+        await self.signer.send_transaction(
+            account=self.address,
             to=target_address,
-            selector=method,
-            calldata=calldata,
-            nonce=self.get_nonce(),
+            selector_name=method,
+            calldata=calldata
         )
-
-        call_or_invoke(
-            contract=self.address,
-            type="invoke",
-            method="execute",
-            params=message,
-            network=self.network,
-            signature=signature,
-        )
-
-    def get_nonce(self):
-        """Get the nonce for the next transaction."""
-        nonce = subprocess.check_output(
-            f"nile call account-{self.index} get_nonce --network {self.network}",
-            shell=True,
-            encoding="utf-8",
-        )
-        return int(nonce)
