@@ -105,7 +105,7 @@ def test_compile(args, expected):
 @pytest.mark.parametrize(
     "args, expected",
     [
-        ([], "http://localhost:5000/"),
+        ([], "http://127.0.0.1:5000/"),
         (["--host", "localhost", "--port", "5001"], "http://localhost:5001/"),
     ],
 )
@@ -119,7 +119,7 @@ def test_node(args, expected):
     seconds = 8
 
     if args == []:
-        host, port = "localhost", 5000
+        host, port = "127.0.0.1", 5000
     else:
         host, port = args[1], int(args[3])
 
