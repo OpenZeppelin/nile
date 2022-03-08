@@ -18,7 +18,7 @@ from nile.core.version import version as version_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
-NETWORKS = ("127.0.0.1", "goerli", "mainnet")
+NETWORKS = ("localhost", "goerli", "mainnet")
 
 
 def network_option(f):
