@@ -52,6 +52,11 @@ def test_compile__compile_contract_called(mock__compile_contract):
     compile([CONTRACT])
     mock__compile_contract.assert_called_once_with(CONTRACT, CONTRACTS_DIRECTORY, COMPILE_METHOD_STARKNET)
 
+@patch("nile.core.compile._compile_contract")
+def test_compile__compile_contract_cairo_called(mock__compile_contract):
+    compile([CONTRACT], method=COMPILE_METHOD_CAIRO)
+    mock__compile_contract.assert_called_once_with(CONTRACT, CONTRACTS_DIRECTORY, COMPILE_METHOD_CAIRO)
+
 
 @patch("nile.core.compile._compile_contract")
 def test_compile_failure_feedback(mock__compile_contract, caplog):
@@ -85,6 +90,28 @@ def test__compile_contract(mock_subprocess):
             f"artifacts/{contract_name_root}.json",
             "--abi",
             f"artifacts/abis/{contract_name_root}.json",
+        ],
+        stdout=mock_subprocess.PIPE,
+    )
+    mock_process.communicate.assert_called_once()
+
+
+def test__compile_contract_cairo(mock_subprocess):
+    contract_name_root = "contract"
+    path = f"path/to/{contract_name_root}.cairo"
+
+    mock_process = Mock()
+    mock_subprocess.Popen.return_value = mock_process
+
+    _compile_contract(path, method=COMPILE_METHOD_CAIRO)
+
+    mock_subprocess.Popen.assert_called_once_with(
+        [
+            "cairo-compile",
+            path,
+            f"--cairo_path={CONTRACTS_DIRECTORY}",
+            "--output",
+            f"artifacts/{contract_name_root}.json",
         ],
         stdout=mock_subprocess.PIPE,
     )
