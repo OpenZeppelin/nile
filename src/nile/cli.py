@@ -19,7 +19,7 @@ from nile.core.version import version as version_command
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
 NETWORKS = ("localhost", "goerli", "mainnet")
-
+DEFAULT_COMPILE_METHOD = "starknet"
 
 def network_option(f):
     """Configure NETWORK option for the cli."""
@@ -141,7 +141,7 @@ def test(contracts):
 @cli.command()
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
-@click.option("--method", default="starknet")
+@click.option("--method", default=DEFAULT_COMPILE_METHOD)
 def compile(contracts, directory, method):
     """
     Compile cairo contracts.

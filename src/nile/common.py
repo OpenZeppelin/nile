@@ -10,7 +10,8 @@ DEPLOYMENTS_FILENAME = "deployments.txt"
 ACCOUNTS_FILENAME = "accounts.json"
 NODE_FILENAME = "node.json"
 
-DEFAULT_COMPILE_METHOD = "starknet"
+STARKNET_COMPILE_METHOD = "starknet"
+CAIRO_COMPILE_METHOD = "cairo"
 
 def _get_gateway():
     """Get the StarkNet node details."""

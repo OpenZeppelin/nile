@@ -20,6 +20,8 @@ from nile.common import (
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
     NODE_FILENAME,
+    STARKNET_COMPILE_METHOD,
+    CAIRO_COMPILE_METHOD,
 )
 
 RESOURCES_DIR = Path(__file__).parent / "resources"
@@ -70,9 +72,10 @@ def test_clean():
 @pytest.mark.parametrize(
     "args, expected",
     [
-        ([], {"contract_1.json", "contract_2.json"}),
+        ([], {"contract_1.json", "contract_2.json", "contract_3.json"}),
         (["contract_1.cairo"], {"contract_1.json"}),
         (["contract_2.cairo"], {"contract_2.json"}),
+        (["contract_3.cairo", "--method", CAIRO_COMPILE_METHOD], {"contract_3.json"}),
     ],
 )
 @pytest.mark.xfail(
@@ -88,6 +91,7 @@ def test_compile(args, expected):
 
     shutil.copyfile(contract_source, target_dir / "contract_1.cairo")
     shutil.copyfile(contract_source, target_dir / "contract_2.cairo")
+    shutil.copyfile(contract_source, target_dir / "contract_3.cairo")
 
     abi_dir = Path(ABIS_DIRECTORY)
     build_dir = Path(BUILD_DIRECTORY)
@@ -98,7 +102,9 @@ def test_compile(args, expected):
     result = CliRunner().invoke(cli, ["compile", *args])
     assert result.exit_code == 0
 
-    assert {f.name for f in abi_dir.glob("*.json")} == expected
+    if CAIRO_COMPILE_METHOD not in args:
+        assert {f.name for f in abi_dir.glob("*.json")} == expected
+
     assert {f.name for f in build_dir.glob("*.json")} == expected
 
 
