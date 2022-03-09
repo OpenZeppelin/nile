@@ -141,7 +141,7 @@ def test(contracts):
 @cli.command()
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
-@click.option("--method")
+@click.option("--method", default="starknet")
 def compile(contracts, directory, method):
     """
     Compile cairo contracts.

@@ -7,11 +7,12 @@ from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
+    DEFAULT_COMPILE_METHOD,
     get_all_contracts,
 )
 
 
-def compile(contracts, directory=None, method="starknet"):
+def compile(contracts, directory=None, method=DEFAULT_COMPILE_METHOD):
     """Compile cairo contracts to default output directory."""
     # to do: automatically support subdirectories
 
@@ -46,13 +47,13 @@ def compile(contracts, directory=None, method="starknet"):
             logging.info(f"   {contract}")
 
 
-def _compile_contract(path, directory=None, method="starknet"):
+def _compile_contract(path, directory=None, method=DEFAULT_COMPILE_METHOD):
     base = os.path.basename(path)
     filename = os.path.splitext(base)[0]
     logging.info(f"🔨 Compiling {path}")
     contracts_directory = directory if directory else CONTRACTS_DIRECTORY
 
-    if method == "starknet":
+    if method == DEFAULT_COMPILE_METHOD:
         cmd = f"""
         starknet-compile {path} \
             --cairo_path={contracts_directory}

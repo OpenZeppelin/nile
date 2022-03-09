@@ -14,6 +14,8 @@ from nile.core.compile import _compile_contract, compile
 
 CONTRACT = "foo.cairo"
 
+COMPILE_METHOD_STARKNET = "starknet"
+COMPILE_METHOD_CAIRO = "cairo"
 
 @pytest.fixture(autouse=True)
 def tmp_working_dir(monkeypatch, tmp_path):
@@ -48,7 +50,7 @@ def test_compile_get_all_contracts_called(mock_get_all_contracts):
 @patch("nile.core.compile._compile_contract")
 def test_compile__compile_contract_called(mock__compile_contract):
     compile([CONTRACT])
-    mock__compile_contract.assert_called_once_with(CONTRACT, CONTRACTS_DIRECTORY)
+    mock__compile_contract.assert_called_once_with(CONTRACT, CONTRACTS_DIRECTORY, COMPILE_METHOD_STARKNET)
 
 
 @patch("nile.core.compile._compile_contract")
