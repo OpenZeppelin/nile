@@ -141,12 +141,16 @@ def test(contracts):
 @cli.command()
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
-def compile(contracts, directory):
+@click.option("--method")
+def compile(contracts, directory, method):
     """
     Compile cairo contracts.
 
     $ compile.py
       Compiles all contracts in CONTRACTS_DIRECTORY
+
+    $ compile.py --method cairo
+      Compiles all contracts in CONTRACTS_DIRECTORY using cairo-compile (default: starknet-compile)
 
     $ compile.py contracts/MyContract.cairo
       Compiles MyContract.cairo
@@ -154,7 +158,7 @@ def compile(contracts, directory):
     $ compile.py contracts/foo.cairo contracts/bar.cairo
       Compiles foo.cairo and bar.cairo
     """
-    compile_command(contracts, directory)
+    compile_command(contracts, directory, method)
 
 
 @cli.command()

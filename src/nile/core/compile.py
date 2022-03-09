@@ -11,7 +11,7 @@ from nile.common import (
 )
 
 
-def compile(contracts, directory=None):
+def compile(contracts, directory=None, method="starknet"):
     """Compile cairo contracts to default output directory."""
     # to do: automatically support subdirectories
 
@@ -30,7 +30,7 @@ def compile(contracts, directory=None):
         all_contracts = get_all_contracts(directory=contracts_directory)
 
     results = [
-        _compile_contract(contract, contracts_directory) for contract in all_contracts
+        _compile_contract(contract, contracts_directory, method) for contract in all_contracts
     ]
     failed_contracts = [c for (c, r) in zip(all_contracts, results) if r != 0]
     failures = len(failed_contracts)
@@ -46,18 +46,26 @@ def compile(contracts, directory=None):
             logging.info(f"   {contract}")
 
 
-def _compile_contract(path, directory=None):
+def _compile_contract(path, directory=None, method="starknet"):
     base = os.path.basename(path)
     filename = os.path.splitext(base)[0]
     logging.info(f"🔨 Compiling {path}")
     contracts_directory = directory if directory else CONTRACTS_DIRECTORY
 
-    cmd = f"""
-    starknet-compile {path} \
-        --cairo_path={contracts_directory}
-        --output {BUILD_DIRECTORY}/{filename}.json \
-        --abi {ABIS_DIRECTORY}/{filename}.json
-    """
+    if method == "starknet":
+        cmd = f"""
+        starknet-compile {path} \
+            --cairo_path={contracts_directory}
+            --output {BUILD_DIRECTORY}/{filename}.json \
+            --abi {ABIS_DIRECTORY}/{filename}.json
+        """
+    
+    elif method == "cairo":
+        cmd = f"""
+        cairo-compile {path} \
+            --cairo_path={contracts_directory}
+            --output {BUILD_DIRECTORY}/{filename}.json
+        """
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     process.communicate()
     return process.returncode
