@@ -65,9 +65,10 @@ def install():
 @cli.command()
 @click.argument("path", nargs=1)
 @network_option
-def run(path, network):
+@click.option("--method")
+def run(path, network, method):
     """Run Nile scripts with NileRuntimeEnvironment."""
-    run_command(path, network)
+    run_command(path, network, method)
 
 
 @cli.command()
