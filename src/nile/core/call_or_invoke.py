@@ -31,10 +31,10 @@ def call_or_invoke(contract, type, method, params, network, signature=None):
 
     if len(params) > 0:
         command.append("--inputs")
-        command.extend([param for param in params])
+        command.extend(params)
 
     if signature is not None:
         command.append("--signature")
-        command.extend([sig_part for sig_part in signature])
+        command.extend(signature)
 
-    subprocess.check_call(command)
+    return subprocess.check_output(command).strip().decode('utf-8')

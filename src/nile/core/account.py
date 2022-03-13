@@ -1,6 +1,5 @@
 """Command to call or invoke StarkNet smart contracts."""
 import os
-import subprocess
 
 from dotenv import load_dotenv
 
@@ -47,13 +46,33 @@ class Account:
 
         return address, index
 
-    async def send(self, to, method, calldata):
+    def send(self, to, method, calldata, nonce=None):
         """Execute a tx going through an Account contract."""
         target_address, _ = next(deployments.load(to, self.network)) or to
+        calldata = [int(x) for x in calldata]
 
-        await self.signer.send_transaction(
-            account=self.address,
-            to=target_address,
-            selector_name=method,
-            calldata=calldata
+        if nonce is None:
+            nonce = int(call_or_invoke(self.address, 'call',
+                        'get_nonce', [], self.network))
+
+        (call_array, calldata, sig_r, sig_s) = self.signer.sign_transaction(
+            sender=self.address,
+            calls=[[target_address, method, calldata]],
+            nonce=nonce
+        )
+
+        params = []
+        params.append(str(len(call_array)))
+        params.extend([str(elem) for sublist in call_array for elem in sublist])
+        params.append(str(len(calldata)))
+        params.extend([str(param) for param in calldata])
+        params.append(str(nonce))
+
+        return call_or_invoke(
+            contract=self.address,
+            type="invoke",
+            method="__execute__",
+            params=params,
+            network=self.network,
+            signature=[str(sig_r), str(sig_s)],
         )

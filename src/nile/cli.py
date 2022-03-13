@@ -1,26 +1,25 @@
 #!/usr/bin/env python
 """Nile CLI entry point."""
-import logging
-
 import click
-
-from nile.core.account import Account
-from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
-from nile.core.clean import clean as clean_command
-from nile.core.compile import compile as compile_command
-from nile.core.deploy import deploy as deploy_command
-from nile.core.init import init as init_command
-from nile.core.install import install as install_command
-from nile.core.node import node as node_command
-from nile.core.run import run as run_command
-from nile.core.test import test as test_command
+import logging
 from nile.core.version import version as version_command
+from nile.core.test import test as test_command
+from nile.core.run import run as run_command
+from nile.core.node import node as node_command
+from nile.core.install import install as install_command
+from nile.core.init import init as init_command
+from nile.core.deploy import deploy as deploy_command
+from nile.core.compile import compile as compile_command
+from nile.core.clean import clean as clean_command
+from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
+from nile.core.account import Account
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
 NETWORKS = ("localhost", "goerli", "mainnet")
 
-network_option = lambda f: click.option(  # noqa: E731
+
+def network_option(f): return click.option(  # noqa: E731
     "--network",
     envvar="STARKNET_NETWORK",
     default="localhost",
@@ -93,7 +92,10 @@ def setup(signer, network):
 def send(signer, contract_name, method, params, network):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = Account(signer, network)
-    account.send(contract_name, method, params)
+    print("Calling {} on {} with params: {}".format(
+        method, contract_name, [x for x in params]))
+    out = account.send(contract_name, method, params)
+    print(out)
 
 
 @cli.command()
@@ -103,7 +105,8 @@ def send(signer, contract_name, method, params, network):
 @network_option
 def invoke(contract_name, method, params, network):
     """Invoke functions of StarkNet smart contracts."""
-    call_or_invoke_command(contract_name, "invoke", method, params, network)
+    out = call_or_invoke_command(contract_name, "invoke", method, params, network)
+    print(out)
 
 
 @cli.command()
@@ -113,7 +116,8 @@ def invoke(contract_name, method, params, network):
 @network_option
 def call(contract_name, method, params, network):
     """Call functions of StarkNet smart contracts."""
-    call_or_invoke_command(contract_name, "call", method, params, network)
+    out = call_or_invoke_command(contract_name, "call", method, params, network)
+    print(out)
 
 
 @cli.command()
