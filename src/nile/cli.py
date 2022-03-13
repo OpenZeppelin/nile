@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 """Nile CLI entry point."""
-import click
 import logging
-from nile.core.version import version as version_command
-from nile.core.test import test as test_command
-from nile.core.run import run as run_command
-from nile.core.node import node as node_command
-from nile.core.install import install as install_command
-from nile.core.init import init as init_command
-from nile.core.deploy import deploy as deploy_command
-from nile.core.compile import compile as compile_command
-from nile.core.clean import clean as clean_command
-from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
+
+import click
+
 from nile.core.account import Account
+from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
+from nile.core.clean import clean as clean_command
+from nile.core.compile import compile as compile_command
+from nile.core.deploy import deploy as deploy_command
+from nile.core.init import init as init_command
+from nile.core.install import install as install_command
+from nile.core.node import node as node_command
+from nile.core.run import run as run_command
+from nile.core.test import test as test_command
+from nile.core.version import version as version_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
@@ -95,8 +97,11 @@ def setup(signer, network):
 def send(signer, contract_name, method, params, network):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = Account(signer, network)
-    print("Calling {} on {} with params: {}".format(
-        method, contract_name, [x for x in params]))
+    print(
+        "Calling {} on {} with params: {}".format(
+            method, contract_name, [x for x in params]
+        )
+    )
     out = account.send(contract_name, method, params)
     print(out)
 

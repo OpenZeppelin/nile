@@ -37,4 +37,4 @@ def call_or_invoke(contract, type, method, params, network, signature=None):
         command.append("--signature")
         command.extend(signature)
 
-    return subprocess.check_output(command).strip().decode('utf-8')
+    return subprocess.check_output(command).strip().decode("utf-8")

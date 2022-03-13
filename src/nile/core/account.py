@@ -52,13 +52,12 @@ class Account:
         calldata = [int(x) for x in calldata]
 
         if nonce is None:
-            nonce = int(call_or_invoke(self.address, 'call',
-                        'get_nonce', [], self.network))
+            nonce = int(
+                call_or_invoke(self.address, "call", "get_nonce", [], self.network)
+            )
 
         (call_array, calldata, sig_r, sig_s) = self.signer.sign_transaction(
-            sender=self.address,
-            calls=[[target_address, method, calldata]],
-            nonce=nonce
+            sender=self.address, calls=[[target_address, method, calldata]], nonce=nonce
         )
 
         params = []
