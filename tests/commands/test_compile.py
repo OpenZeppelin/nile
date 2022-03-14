@@ -107,7 +107,7 @@ def test__compile_account_contract(mock_subprocess):
             f"artifacts/{contract_name_root}.json",
             "--abi",
             f"artifacts/abis/{contract_name_root}.json",
-            f"--account_contract"
+            "--account_contract",
         ],
         stdout=mock_subprocess.PIPE,
     )
