@@ -26,7 +26,7 @@ def network_option(f):
     return click.option(  # noqa: E731
         "--network",
         envvar="STARKNET_NETWORK",
-        default="localhost",
+        default="127.0.0.1",
         help=f"Select network, one of {NETWORKS}",
         callback=_validate_network,
     )(f)
@@ -164,7 +164,7 @@ def clean():
 
 
 @cli.command()
-@click.option("--host", default="localhost")
+@click.option("--host", default="127.0.0.1")
 @click.option("--port", default=5000)
 def node(host, port):
     """Start StarkNet local network.
