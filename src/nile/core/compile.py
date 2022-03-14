@@ -59,7 +59,7 @@ def _compile_contract(path, directory=None):
         --abi {ABIS_DIRECTORY}/{filename}.json
     """
     if "Account" in str(filename):
-        cmd = cmd + f"--account_contract"
+        cmd = cmd + "--account_contract"
 
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     process.communicate()
