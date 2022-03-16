@@ -20,7 +20,7 @@ def _get_gateway():
 
     except FileNotFoundError:
         with open(NODE_FILENAME, "w") as f:
-            f.write('{"127.0.0.1": "http://127.0.0.1:5000/"}')
+            f.write('{"localhost": "http://127.0.0.1:5000/"}')
 
 
 GATEWAYS = _get_gateway()

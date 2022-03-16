@@ -18,7 +18,7 @@ from nile.core.version import version as version_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
-NETWORKS = ("127.0.0.1", "goerli", "mainnet")
+NETWORKS = ("localhost", "goerli", "mainnet")
 
 
 def network_option(f):
@@ -37,6 +37,9 @@ def _validate_network(_ctx, _param, value):
     # normalize goerli
     if "goerli" in value or "testnet" in value:
         return "goerli"
+    # normalize localhost
+    #if "localhost" in value or "127.0.0.1" in value:
+    #    return "127.0.0.1"
     # check if value is accepted
     if value in NETWORKS:
         return value

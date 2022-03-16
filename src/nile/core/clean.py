@@ -8,8 +8,8 @@ from nile.common import ACCOUNTS_FILENAME, BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
 
 def clean():
     """Remove artifacts from workspace."""
-    local_deployments_filename = f"127.0.0.1.{DEPLOYMENTS_FILENAME}"
-    local_accounts_filename = f"127.0.0.1.{ACCOUNTS_FILENAME}"
+    local_deployments_filename = f"localhost.{DEPLOYMENTS_FILENAME}"
+    local_accounts_filename = f"localhost.{ACCOUNTS_FILENAME}"
 
     if os.path.exists(local_deployments_filename):
         logging.info(f"🚮 Deleting {local_deployments_filename}")
