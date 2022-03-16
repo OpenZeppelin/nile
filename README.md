@@ -79,15 +79,15 @@ nile deploy contract --alias my_contract
 
 🚀 Deploying contract
 🌕 artifacts/contract.json successfully deployed to 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
-📦 Registering deployment as my_contract in 127.0.0.1.deployments.txt
+📦 Registering deployment as my_contract in localhost.deployments.txt
 ```
 
 A few things to notice here:
 
 1. `nile deploy <contract_name>` looks for an artifact with the same name
-2. This created a `127.0.0.1.deployments.txt` file storing all data related to my deployment
+2. This created a `localhost.deployments.txt` file storing all data related to my deployment
 3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
-4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `127.0.0.1`.
+4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 
 ### `setup`
 Deploy an Account associated with a given private key.
@@ -101,7 +101,7 @@ nile setup <private_key_alias>
 
 🚀 Deploying Account
 🌕 artifacts/Account.json successfully deployed to 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
-📦 Registering deployment as account-0 in 127.0.0.1.deployments.txt
+📦 Registering deployment as account-0 in localhost.deployments.txt
 Invoke transaction was sent.
 Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
 Transaction hash: 0x17
@@ -110,7 +110,7 @@ Transaction hash: 0x17
 A few things to notice here:
 
 1. `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias
-2. This creates a `127.0.0.1.accounts.json` file storing all data related to accounts management
+2. This creates a `localhost.accounts.json` file storing all data related to accounts management
 
 ### `send`
 Execute a transaction through the `Account` associated with the private key provided. The syntax is:
@@ -174,7 +174,7 @@ Deletes the `artifacts/` directory for a fresh start ❄️
 ```sh
 nile clean
 
-🚮 Deleting 127.0.0.1.deployments.txt
+🚮 Deleting localhost.deployments.txt
 🚮 Deleting artifacts directory
 ✨ Workspace clean, keep going!
 ```
