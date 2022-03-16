@@ -38,8 +38,8 @@ def _validate_network(_ctx, _param, value):
     if "goerli" in value or "testnet" in value:
         return "goerli"
     # normalize localhost
-    #if "localhost" in value or "127.0.0.1" in value:
-    #    return "127.0.0.1"
+    if "localhost" in value or "127.0.0.1" in value:
+        return "127.0.0.1"
     # check if value is accepted
     if value in NETWORKS:
         return value
