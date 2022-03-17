@@ -7,7 +7,12 @@ import re
 import subprocess
 import time
 
-from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME, GATEWAYS
+from nile.common import (
+    BUILD_DIRECTORY,
+    DEPLOYMENTS_FILENAME,
+    GATEWAYS,
+    RETRY_AFTER_PERIOD,
+)
 
 
 def locate_error(tx_hash, network, contracts_file=None):
@@ -34,8 +39,10 @@ def locate_error(tx_hash, network, contracts_file=None):
         if status.startswith("ACCEPTED"):
             logging.info(f"✅ {output}. No error in transaction.")
             return
-        logging.info(f"🕒 {output}. Trying again in 30 seconds unless stopped.")
-        time.sleep(30)
+
+        retry_period = RETRY_AFTER_PERIOD["label"]
+        logging.info(f"🕒 {output}. Trying again in {retry_period} unless stopped.")
+        time.sleep(RETRY_AFTER_PERIOD["seconds"])
 
     error_message = receipt["tx_failure_reason"]["error_message"]
     addresses = set(
