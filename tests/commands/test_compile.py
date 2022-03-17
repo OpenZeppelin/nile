@@ -48,7 +48,7 @@ def test_compile_get_all_contracts_called(mock_get_all_contracts):
 @patch("nile.core.compile._compile_contract")
 def test_compile__compile_contract_called(mock__compile_contract):
     compile([CONTRACT])
-    mock__compile_contract.assert_called_once_with(CONTRACT, CONTRACTS_DIRECTORY)
+    mock__compile_contract.assert_called_once_with(CONTRACT, CONTRACTS_DIRECTORY, False)
 
 
 @patch("nile.core.compile._compile_contract")
@@ -90,13 +90,13 @@ def test__compile_contract(mock_subprocess):
 
 
 def test__compile_account_contract(mock_subprocess):
-    contract_name_root = "Account"
+    contract_name_root = "mock_account"
     path = f"path/to/{contract_name_root}.cairo"
 
     mock_process = Mock()
     mock_subprocess.Popen.return_value = mock_process
 
-    _compile_contract(path)
+    _compile_contract(path, account_contract="--account_contract")
 
     mock_subprocess.Popen.assert_called_once_with(
         [
