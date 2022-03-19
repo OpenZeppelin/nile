@@ -100,7 +100,13 @@ def setup(signer, network):
 def send(signer, contract_name, method, params, network):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = Account(signer, network)
-    account.send(contract_name, method, params)
+    print(
+        "Calling {} on {} with params: {}".format(
+            method, contract_name, [x for x in params]
+        )
+    )
+    out = account.send(contract_name, method, params)
+    print(out)
 
 
 @cli.command()
@@ -110,7 +116,8 @@ def send(signer, contract_name, method, params, network):
 @network_option
 def invoke(contract_name, method, params, network):
     """Invoke functions of StarkNet smart contracts."""
-    call_or_invoke_command(contract_name, "invoke", method, params, network)
+    out = call_or_invoke_command(contract_name, "invoke", method, params, network)
+    print(out)
 
 
 @cli.command()
@@ -120,7 +127,8 @@ def invoke(contract_name, method, params, network):
 @network_option
 def call(contract_name, method, params, network):
     """Call functions of StarkNet smart contracts."""
-    call_or_invoke_command(contract_name, "call", method, params, network)
+    out = call_or_invoke_command(contract_name, "call", method, params, network)
+    print(out)
 
 
 @cli.command()

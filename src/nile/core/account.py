@@ -1,6 +1,5 @@
 """Command to call or invoke StarkNet smart contracts."""
 import os
-import subprocess
 
 from dotenv import load_dotenv
 
@@ -47,32 +46,32 @@ class Account:
 
         return address, index
 
-    def send(self, to, method, calldata):
+    def send(self, to, method, calldata, nonce=None):
         """Execute a tx going through an Account contract."""
         target_address, _ = next(deployments.load(to, self.network)) or to
+        calldata = [int(x) for x in calldata]
 
-        message, signature = self.signer.sign_message(
-            sender=self.address,
-            to=target_address,
-            selector=method,
-            calldata=calldata,
-            nonce=self.get_nonce(),
+        if nonce is None:
+            nonce = int(
+                call_or_invoke(self.address, "call", "get_nonce", [], self.network)
+            )
+
+        (call_array, calldata, sig_r, sig_s) = self.signer.sign_transaction(
+            sender=self.address, calls=[[target_address, method, calldata]], nonce=nonce
         )
 
-        call_or_invoke(
+        params = []
+        params.append(str(len(call_array)))
+        params.extend([str(elem) for sublist in call_array for elem in sublist])
+        params.append(str(len(calldata)))
+        params.extend([str(param) for param in calldata])
+        params.append(str(nonce))
+
+        return call_or_invoke(
             contract=self.address,
             type="invoke",
-            method="execute",
-            params=message,
+            method="__execute__",
+            params=params,
             network=self.network,
-            signature=signature,
+            signature=[str(sig_r), str(sig_s)],
         )
-
-    def get_nonce(self):
-        """Get the nonce for the next transaction."""
-        nonce = subprocess.check_output(
-            f"nile call account-{self.index} get_nonce --network {self.network}",
-            shell=True,
-            encoding="utf-8",
-        )
-        return int(nonce)
