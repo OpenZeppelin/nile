@@ -144,7 +144,7 @@ def test(contracts):
 @cli.command()
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
-@click.option("--account_contract", flag_value="--account_contract")
+@click.option("--account_contract", is_flag="True")
 def compile(contracts, directory, account_contract):
     """
     Compile cairo contracts.

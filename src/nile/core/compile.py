@@ -61,7 +61,7 @@ def _compile_contract(path, directory=None, account_contract=False):
     """
 
     if account_contract:
-        cmd = cmd + account_contract
+        cmd = cmd + "--account_contract"
 
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     process.communicate()
