@@ -152,7 +152,8 @@ def test(contracts):
 @cli.command()
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
-def compile(contracts, directory):
+@click.option("--account_contract", is_flag="True")
+def compile(contracts, directory, account_contract):
     """
     Compile cairo contracts.
 
@@ -165,7 +166,7 @@ def compile(contracts, directory):
     $ compile.py contracts/foo.cairo contracts/bar.cairo
       Compiles foo.cairo and bar.cairo
     """
-    compile_command(contracts, directory)
+    compile_command(contracts, directory, account_contract)
 
 
 @cli.command()
