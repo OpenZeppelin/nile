@@ -17,6 +17,8 @@ def compile(contracts, directory=None, account_contract=False):
 
     contracts_directory = directory if directory else CONTRACTS_DIRECTORY
 
+    hint_validation = "--disable_hint_validation" if disable_hint_validation else ""
+
     if not os.path.exists(ABIS_DIRECTORY):
         logging.info(f"📁 Creating {ABIS_DIRECTORY} to store compilation artifacts")
         os.makedirs(ABIS_DIRECTORY, exist_ok=True)
@@ -57,7 +59,7 @@ def _compile_contract(path, directory=None, account_contract=False):
     starknet-compile {path} \
         --cairo_path={contracts_directory}
         --output {BUILD_DIRECTORY}/{filename}.json \
-        --abi {ABIS_DIRECTORY}/{filename}.json
+        --abi {ABIS_DIRECTORY}/{filename}.json {hint_validation}
     """
 
     if account_contract:

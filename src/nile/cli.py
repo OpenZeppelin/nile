@@ -151,6 +151,7 @@ def test(contracts):
 
 @cli.command()
 @click.argument("contracts", nargs=-1)
+@click.option("--disable-hint-validation", is_flag=True)
 @click.option("--directory")
 @click.option("--account_contract", is_flag="True")
 def compile(contracts, directory, account_contract):
