@@ -11,13 +11,13 @@ from nile.common import (
 )
 
 
-def compile(contracts, directory=None, account_contract=False):
+def compile(
+    contracts, directory=None, account_contract=False, disable_hint_validation=False
+):
     """Compile cairo contracts to default output directory."""
     # to do: automatically support subdirectories
 
     contracts_directory = directory if directory else CONTRACTS_DIRECTORY
-
-    hint_validation = "--disable_hint_validation" if disable_hint_validation else ""
 
     if not os.path.exists(ABIS_DIRECTORY):
         logging.info(f"📁 Creating {ABIS_DIRECTORY} to store compilation artifacts")
@@ -32,7 +32,9 @@ def compile(contracts, directory=None, account_contract=False):
         all_contracts = get_all_contracts(directory=contracts_directory)
 
     results = [
-        _compile_contract(contract, contracts_directory, account_contract)
+        _compile_contract(
+            contract, contracts_directory, account_contract, disable_hint_validation
+        )
         for contract in all_contracts
     ]
     failed_contracts = [c for (c, r) in zip(all_contracts, results) if r != 0]
@@ -49,7 +51,9 @@ def compile(contracts, directory=None, account_contract=False):
             logging.info(f"   {contract}")
 
 
-def _compile_contract(path, directory=None, account_contract=False):
+def _compile_contract(
+    path, directory=None, account_contract=False, disable_hint_validation=False
+):
     base = os.path.basename(path)
     filename = os.path.splitext(base)[0]
     logging.info(f"🔨 Compiling {path}")
@@ -59,11 +63,14 @@ def _compile_contract(path, directory=None, account_contract=False):
     starknet-compile {path} \
         --cairo_path={contracts_directory}
         --output {BUILD_DIRECTORY}/{filename}.json \
-        --abi {ABIS_DIRECTORY}/{filename}.json {hint_validation}
+        --abi {ABIS_DIRECTORY}/{filename}.json
     """
 
     if account_contract:
         cmd = cmd + "--account_contract"
+
+    if disable_hint_validation:
+        cmd = cmd + "--disable_hint_validation"
 
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     process.communicate()

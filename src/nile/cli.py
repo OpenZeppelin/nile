@@ -151,10 +151,10 @@ def test(contracts):
 
 @cli.command()
 @click.argument("contracts", nargs=-1)
-@click.option("--disable-hint-validation", is_flag=True)
 @click.option("--directory")
 @click.option("--account_contract", is_flag="True")
-def compile(contracts, directory, account_contract):
+@click.option("--disable-hint-validation", is_flag=True)
+def compile(contracts, directory, account_contract, disable_hint_validation):
     """
     Compile cairo contracts.
 
@@ -167,7 +167,7 @@ def compile(contracts, directory, account_contract):
     $ compile.py contracts/foo.cairo contracts/bar.cairo
       Compiles foo.cairo and bar.cairo
     """
-    compile_command(contracts, directory, account_contract)
+    compile_command(contracts, directory, account_contract, disable_hint_validation)
 
 
 @cli.command()
