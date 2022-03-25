@@ -112,3 +112,28 @@ def test__compile_account_contract(mock_subprocess):
         stdout=mock_subprocess.PIPE,
     )
     mock_process.communicate.assert_called_once()
+
+
+def test__compile_contract_without_hint_validation(mock_subprocess):
+    contract_name_root = "contract_with_unwhitelisted_hints"
+    path = f"path/to/{contract_name_root}.cairo"
+
+    mock_process = Mock()
+    mock_subprocess.Popen.return_value = mock_process
+
+    _compile_contract(path, disable_hint_validation=True)
+
+    mock_subprocess.Popen.assert_called_once_with(
+        [
+            "starknet-compile",
+            path,
+            f"--cairo_path={CONTRACTS_DIRECTORY}",
+            "--output",
+            f"artifacts/{contract_name_root}.json",
+            "--abi",
+            f"artifacts/abis/{contract_name_root}.json",
+            "--disable_hint_validation",
+        ],
+        stdout=mock_subprocess.PIPE,
+    )
+    mock_process.communicate.assert_called_once()
