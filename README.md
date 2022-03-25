@@ -61,6 +61,7 @@ Compile Cairo contracts. Compilation artifacts are written into the `artifacts/`
 nile compile # compiles all contracts under contracts/
 nile compile --directory my_contracts # compiles all contracts under my_contracts/
 nile compile contracts/MyContract.cairo # compiles single contract
+nile compile contracts/MyContract.cairo --disable-hint-validation # compiles single contract with unwhitelisted hints
 ```
 
 As of cairo-lang v0.8.0, account contracts (contracts with the `__execute__` method) must be compiled with the `--account_contract` flag.
