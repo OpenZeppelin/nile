@@ -14,6 +14,7 @@ from nile.core.install import install as install_command
 from nile.core.node import node as node_command
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
+from nile.core.utils import load_plugins
 from nile.core.version import version as version_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
@@ -197,5 +198,7 @@ def version():
     version_command()
 
 
+app = load_plugins(cli)
+
 if __name__ == "__main__":
-    cli()
+    app()
