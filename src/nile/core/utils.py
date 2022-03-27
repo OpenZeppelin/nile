@@ -8,10 +8,12 @@ from importlib_metadata import entry_points
 
 
 def skip_click_exit(func):
+    """
+    When a click command is executed programatically a SystemExit is executed.
 
+    This decorator avoids SystemExit when execution is finished.
     """
-    Get a click command is executed programatically a SystemExit is executed when finished so we need to avoid exiting.
-    """
+
     @functools.wraps(func)
     # Click commands only manages keyword arguments
     def wrapper(**kwargs):
