@@ -4,10 +4,14 @@ from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
 from nile.core.deploy import deploy
+from nile.core.utils import _get_installed_plugins, skip_click_exit
 
 
 class NileRuntimeEnvironment:
     """The NileRuntimeEnvironment exposes Nile functionality when running a script."""
+
+    for name, object in _get_installed_plugins().items():
+        vars()[name] = staticmethod(skip_click_exit(object))
 
     def __init__(self, network="localhost"):
         """Construct NRE object."""
