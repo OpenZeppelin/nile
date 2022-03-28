@@ -8,7 +8,7 @@ import pytest
 from nile.common import BUILD_DIRECTORY
 from nile.utils.debug import locate_error, _abi_to_build_path
 
-HASH = "0x1234"
+MOCK_HASH = "0x1234"
 NETWORK = "goerli"
 ERROR_MESSAGE = "Error at pc=0:1:\nAn ASSERT_EQ instruction failed: 3 != 0."
 
@@ -47,6 +47,6 @@ def test_locate_error_feedback_with_message(mock_json, caplog, args, expected):
     logging.getLogger().setLevel(logging.INFO)
     mock_json.return_value = mocked_json_message(args)
 
-    locate_error(HASH, NETWORK)
+    locate_error(MOCK_HASH, NETWORK)
 
     assert expected in caplog.text
