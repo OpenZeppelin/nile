@@ -50,7 +50,7 @@ nile node
    WARNING: This is a development server. Do not use it in a production deployment.
    Use a production WSGI server instead.
  * Debug mode: off
- * Running on http://localhost:5000/ (Press CTRL+C to quit)
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
 
 ### `compile`
@@ -62,6 +62,13 @@ nile compile # compiles all contracts under contracts/
 nile compile --directory my_contracts # compiles all contracts under my_contracts/
 nile compile contracts/MyContract.cairo # compiles single contract
 ```
+
+As of cairo-lang v0.8.0, account contracts (contracts with the `__execute__` method) must be compiled with the `--account_contract` flag.
+
+```sh
+nile compile contracts/MyAccount.cairo --account_contract # compiles account contract
+```
+
 Example output:
 ```
 $ nile compile

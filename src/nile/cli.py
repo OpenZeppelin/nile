@@ -27,7 +27,7 @@ def network_option(f):
     return click.option(  # noqa: E731
         "--network",
         envvar="STARKNET_NETWORK",
-        default="localhost",
+        default="127.0.0.1",
         help=f"Select network, one of {NETWORKS}",
         callback=_validate_network,
     )(f)
@@ -38,6 +38,9 @@ def _validate_network(_ctx, _param, value):
     # normalize goerli
     if "goerli" in value or "testnet" in value:
         return "goerli"
+    # normalize localhost
+    if "localhost" in value or "127.0.0.1" in value:
+        return "127.0.0.1"
     # check if value is accepted
     if value in NETWORKS:
         return value
@@ -98,7 +101,13 @@ def setup(signer, network):
 def send(signer, contract_name, method, params, network):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = Account(signer, network)
-    account.send(contract_name, method, params)
+    print(
+        "Calling {} on {} with params: {}".format(
+            method, contract_name, [x for x in params]
+        )
+    )
+    out = account.send(contract_name, method, params)
+    print(out)
 
 
 @cli.command()
@@ -108,7 +117,8 @@ def send(signer, contract_name, method, params, network):
 @network_option
 def invoke(contract_name, method, params, network):
     """Invoke functions of StarkNet smart contracts."""
-    call_or_invoke_command(contract_name, "invoke", method, params, network)
+    out = call_or_invoke_command(contract_name, "invoke", method, params, network)
+    print(out)
 
 
 @cli.command()
@@ -118,7 +128,8 @@ def invoke(contract_name, method, params, network):
 @network_option
 def call(contract_name, method, params, network):
     """Call functions of StarkNet smart contracts."""
-    call_or_invoke_command(contract_name, "call", method, params, network)
+    out = call_or_invoke_command(contract_name, "call", method, params, network)
+    print(out)
 
 
 @cli.command()
@@ -142,7 +153,8 @@ def test(contracts):
 @cli.command()
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
-def compile(contracts, directory):
+@click.option("--account_contract", is_flag="True")
+def compile(contracts, directory, account_contract):
     """
     Compile cairo contracts.
 
@@ -155,7 +167,7 @@ def compile(contracts, directory):
     $ compile.py contracts/foo.cairo contracts/bar.cairo
       Compiles foo.cairo and bar.cairo
     """
-    compile_command(contracts, directory)
+    compile_command(contracts, directory, account_contract)
 
 
 @cli.command()
@@ -165,7 +177,7 @@ def clean():
 
 
 @cli.command()
-@click.option("--host", default="localhost")
+@click.option("--host", default="127.0.0.1")
 @click.option("--port", default=5000)
 def node(host, port):
     """Start StarkNet local network.
