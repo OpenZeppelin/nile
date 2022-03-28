@@ -148,7 +148,7 @@ def test_node(args, expected):
 @pytest.mark.parametrize(
     "args",
     [
-        ([MOCK_HASH]),
+        #([MOCK_HASH]),
         ([MOCK_HASH, "--network", "goerli"]),
         ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"])
     ],
@@ -167,6 +167,10 @@ def test_locate_error(mock_subprocess, args):
     # Setup and assert expected output
     expected = ["starknet", "tx_status", "--hash", MOCK_HASH]
     if len(args) == 1:
+        # start node to check gateway
+        p = create_process(target=start_node, args=(8, []))
+        p.start()
+
         expected.append("--feeder_gateway_url=http://localhost:5000/")
 
     mock_subprocess.check_output.assert_called_once_with(expected)
