@@ -11,7 +11,7 @@ from nile.common import (
     BUILD_DIRECTORY,
     DEPLOYMENTS_FILENAME,
     GATEWAYS,
-    RETRY_AFTER_PERIOD,
+    RETRY_AFTER_TIME,
 )
 
 
@@ -24,7 +24,7 @@ def locate_error(tx_hash, network, contracts_file=None):
     elif network == "goerli":
         os.environ["STARKNET_NETWORK"] = "alpha-goerli"
     else:
-        command.append(f"--gateway_url={GATEWAYS.get(network)}")
+        command.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
 
     logging.info(
         "⏳ Querying the network to check transaction status and identify contracts..."
@@ -40,9 +40,8 @@ def locate_error(tx_hash, network, contracts_file=None):
             logging.info(f"✅ {output}. No error in transaction.")
             return
 
-        retry_period = RETRY_AFTER_PERIOD["label"]
-        logging.info(f"🕒 {output}. Trying again in {retry_period} unless stopped.")
-        time.sleep(RETRY_AFTER_PERIOD["seconds"])
+        logging.info(f"🕒 {output}. Trying again in a moment...")
+        time.sleep(RETRY_AFTER_TIME)
 
     error_message = receipt["tx_failure_reason"]["error_message"]
     addresses = set(
