@@ -6,20 +6,15 @@ from unittest.mock import patch
 import pytest
 
 from nile.common import BUILD_DIRECTORY
-from nile.utils.debug import locate_error, _abi_to_build_path
+from nile.utils.debug import _abi_to_build_path, locate_error
 
 MOCK_HASH = "0x1234"
 NETWORK = "goerli"
 ERROR_MESSAGE = "Error at pc=0:1:\nAn ASSERT_EQ instruction failed: 3 != 0."
 
+
 def mocked_json_message(arg):
-    return {
-        "tx_status": arg,
-        "tx_failure_reason": {
-            "error_message": 
-                ERROR_MESSAGE
-        }
-    }
+    return {"tx_status": arg, "tx_failure_reason": {"error_message": ERROR_MESSAGE}}
 
 
 @pytest.fixture(autouse=True)
@@ -38,8 +33,8 @@ def test__abi_to_build_path():
     "args, expected",
     [
         ("ACCEPTED", "No error in transaction"),
-        ("REJECTED", "The transaction was rejected but no contract address was identified in the error message"),
-        ("REJECTED", ERROR_MESSAGE)
+        ("REJECTED", "The transaction was rejected"),
+        ("REJECTED", ERROR_MESSAGE),
     ],
 )
 @patch("nile.utils.debug.json.loads")
