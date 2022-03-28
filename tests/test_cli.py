@@ -12,6 +12,7 @@ from urllib.error import URLError
 from urllib.request import urlopen
 
 import pytest
+from unittest.mock import patch
 from click.testing import CliRunner
 
 from nile.cli import cli
@@ -23,6 +24,7 @@ from nile.common import (
 )
 
 RESOURCES_DIR = Path(__file__).parent / "resources"
+MOCK_HASH = "0x123"
 
 
 pytestmark = pytest.mark.end_to_end
@@ -141,3 +143,30 @@ def test_node(args, expected):
     with open(file, "r") as f:
         gateway = json.load(f)
     assert gateway.get(network) == expected
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ([MOCK_HASH]),
+        ([MOCK_HASH, "--network", "goerli"]),
+        ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"])
+    ],
+)
+@patch("nile.utils.debug.subprocess")
+def test_locate_error(mock_subprocess, args):
+    # locate-error will hang without patch
+    mock_json = json.dumps({"tx_status": "ACCEPTED"})
+    mock_subprocess.check_output.return_value = mock_json
+
+    result = CliRunner().invoke(cli, ["locate-error", *args])
+
+    # Check status
+    assert result.exit_code == 0
+
+    # Setup and assert expected output
+    expected = ["starknet", "tx_status", "--hash", MOCK_HASH]
+    if len(args) == 1:
+        expected.append("--feeder_gateway_url=http://localhost:5000/")
+
+    mock_subprocess.check_output.assert_called_once_with(expected)
