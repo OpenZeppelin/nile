@@ -167,6 +167,6 @@ def test_locate_error(mock_subprocess, args):
     # Setup and assert expected output
     expected = ["starknet", "tx_status", "--hash", MOCK_HASH]
     if len(args) == 1:
-        expected.append("--feeder_gateway_url=http://localhost:5000/")
+        expected.append("--feeder_gateway_url=None")
 
     mock_subprocess.check_output.assert_called_once_with(expected)
