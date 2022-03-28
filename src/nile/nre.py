@@ -10,12 +10,11 @@ from nile.core.utils import _get_installed_plugins, skip_click_exit
 class NileRuntimeEnvironment:
     """The NileRuntimeEnvironment exposes Nile functionality when running a script."""
 
-    for name, object in _get_installed_plugins().items():
-        vars()[name] = staticmethod(skip_click_exit(object))
-
     def __init__(self, network="localhost"):
         """Construct NRE object."""
         self.network = network
+        for name, object in _get_installed_plugins().items():
+            setattr(self, name, skip_click_exit(object))
 
     def compile(self, contracts):
         """Compile a list of contracts."""
