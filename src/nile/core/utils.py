@@ -16,9 +16,9 @@ def skip_click_exit(func):
 
     @functools.wraps(func)
     # Click commands only manages keyword arguments
-    def wrapper(**kwargs):
+    def wrapper(*args, **kwargs):
         try:
-            return func(**kwargs)
+            return func(*args, **kwargs)
         except SystemExit:
             pass
 
