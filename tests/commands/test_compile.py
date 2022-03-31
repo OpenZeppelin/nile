@@ -48,7 +48,9 @@ def test_compile_get_all_contracts_called(mock_get_all_contracts):
 @patch("nile.core.compile._compile_contract")
 def test_compile__compile_contract_called(mock__compile_contract):
     compile([CONTRACT])
-    mock__compile_contract.assert_called_once_with(CONTRACT, CONTRACTS_DIRECTORY, False)
+    mock__compile_contract.assert_called_once_with(
+        CONTRACT, CONTRACTS_DIRECTORY, False, False
+    )
 
 
 @patch("nile.core.compile._compile_contract")
