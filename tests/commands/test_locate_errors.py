@@ -1,4 +1,5 @@
 """Tests for locate-error command."""
+import sys
 import logging
 from pathlib import Path
 from unittest.mock import patch
@@ -36,6 +37,11 @@ def test__abi_to_build_path():
         ("REJECTED", "The transaction was rejected"),
         ("REJECTED", ERROR_MESSAGE),
     ],
+)
+@pytest.mark.xfail(
+    sys.version_info >= (3, 10),
+    reason="Issue in cairo-lang. "
+    "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
 @patch("nile.utils.debug.json.loads")
 def test_locate_error_feedback_with_message(mock_json, caplog, args, expected):
