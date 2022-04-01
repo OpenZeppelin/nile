@@ -165,5 +165,5 @@ def test_locate_error(mock_subprocess, args):
 
     # Setup and assert expected output
     expected = ["starknet", "tx_status", "--hash", MOCK_HASH]
-    
+
     mock_subprocess.check_output.assert_called_once_with(expected)
