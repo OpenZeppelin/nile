@@ -9,7 +9,7 @@ ABIS_DIRECTORY = f"{BUILD_DIRECTORY}/abis"
 DEPLOYMENTS_FILENAME = "deployments.txt"
 ACCOUNTS_FILENAME = "accounts.json"
 NODE_FILENAME = "node.json"
-RETRY_AFTER_TIME = 30
+RETRY_AFTER_SECONDS = 30
 
 
 def _get_gateway():

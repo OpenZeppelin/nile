@@ -11,7 +11,7 @@ from nile.common import (
     BUILD_DIRECTORY,
     DEPLOYMENTS_FILENAME,
     GATEWAYS,
-    RETRY_AFTER_TIME,
+    RETRY_AFTER_SECONDS,
 )
 
 
@@ -41,7 +41,7 @@ def locate_error(tx_hash, network, contracts_file=None):
             return
 
         logging.info(f"🕒 {output}. Trying again in a moment...")
-        time.sleep(RETRY_AFTER_TIME)
+        time.sleep(RETRY_AFTER_SECONDS)
 
     error_message = receipt["tx_failure_reason"]["error_message"]
     addresses = set(
