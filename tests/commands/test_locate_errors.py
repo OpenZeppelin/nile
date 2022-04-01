@@ -1,6 +1,6 @@
 """Tests for locate-error command."""
-import sys
 import logging
+import sys
 from pathlib import Path
 from unittest.mock import patch
 
