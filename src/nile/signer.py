@@ -1,6 +1,5 @@
 """Utility for signing transactions for an Account on Starknet."""
 
-from starkware.cairo.common.hash_state import compute_hash_on_elements
 from starkware.crypto.signature.signature import private_to_stark_key, sign
 from starkware.starknet.public.abi import get_selector_from_name
 from starkware.starknet.core.os.transaction_hash import calculate_transaction_hash_common, TransactionHashPrefix
@@ -27,9 +26,7 @@ class Signer:
         message_hash = get_transaction_hash(
             int(sender, 16), call_array, calldata, nonce, max_fee
         )
-
         sig_r, sig_s = self.sign(message_hash)
-
         return (call_array, calldata, sig_r, sig_s)
 
 
@@ -53,24 +50,6 @@ def from_call_to_call_array(calls):
     return (call_array, calldata)
 
 
-def hash_multicall(sender, calls, nonce, max_fee):
-    """Hash a MultiCall."""
-    hash_array = []
-    for call in calls:
-        call_elements = [int(call[0], 16), call[1], compute_hash_on_elements(call[2])]
-        hash_array.append(compute_hash_on_elements(call_elements))
-
-    message = [
-        str_to_felt("StarkNet Transaction"),
-        sender,
-        compute_hash_on_elements(hash_array),
-        nonce,
-        max_fee,
-        TRANSACTION_VERSION,
-    ]
-    return compute_hash_on_elements(message)
-
-
 def get_transaction_hash(account, call_array, calldata, nonce, max_fee):
     execute_calldata = [
         len(call_array),
@@ -89,9 +68,3 @@ def get_transaction_hash(account, call_array, calldata, nonce, max_fee):
         StarknetChainId.TESTNET.value,
         []
     )
-
-
-def str_to_felt(text):
-    """Convert from string to felt."""
-    b_text = bytes(text, "ascii")
-    return int.from_bytes(b_text, "big")
