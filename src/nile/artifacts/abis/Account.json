@@ -22,13 +22,26 @@
                 "type": "felt"
             }
         ],
-        "name": "CallArray",
+        "name": "AccountCallArray",
         "size": 4,
         "type": "struct"
     },
     {
-        "inputs": [],
-        "name": "assert_only_self",
+        "inputs": [
+            {
+                "name": "hash",
+                "type": "felt"
+            },
+            {
+                "name": "signature_len",
+                "type": "felt"
+            },
+            {
+                "name": "signature",
+                "type": "felt*"
+            }
+        ],
+        "name": "Account_is_valid_signature",
         "outputs": [],
         "stateMutability": "view",
         "type": "function"
@@ -88,7 +101,7 @@
     {
         "inputs": [
             {
-                "name": "_public_key",
+                "name": "public_key",
                 "type": "felt"
             }
         ],
@@ -124,7 +137,7 @@
             },
             {
                 "name": "call_array",
-                "type": "CallArray*"
+                "type": "AccountCallArray*"
             },
             {
                 "name": "calldata_len",
