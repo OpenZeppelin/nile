@@ -1,9 +1,12 @@
 """Utility for signing transactions for an Account on Starknet."""
 
 from starkware.crypto.signature.signature import private_to_stark_key, sign
-from starkware.starknet.public.abi import get_selector_from_name
-from starkware.starknet.core.os.transaction_hash import calculate_transaction_hash_common, TransactionHashPrefix
+from starkware.starknet.core.os.transaction_hash import (
+    TransactionHashPrefix,
+    calculate_transaction_hash_common,
+)
 from starkware.starknet.definitions.general_config import StarknetChainId
+from starkware.starknet.public.abi import get_selector_from_name
 
 TRANSACTION_VERSION = 0
 
@@ -51,20 +54,22 @@ def from_call_to_call_array(calls):
 
 
 def get_transaction_hash(account, call_array, calldata, nonce, max_fee):
+    """Calculate the transaction hash."""
     execute_calldata = [
         len(call_array),
         *[x for t in call_array for x in t],
         len(calldata),
         *calldata,
-        nonce]
+        nonce,
+    ]
 
     return calculate_transaction_hash_common(
         TransactionHashPrefix.INVOKE,
         TRANSACTION_VERSION,
         account,
-        get_selector_from_name('__execute__'),
+        get_selector_from_name("__execute__"),
         execute_calldata,
         max_fee,
         StarknetChainId.TESTNET.value,
-        []
+        [],
     )
