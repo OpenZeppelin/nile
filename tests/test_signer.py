@@ -5,6 +5,7 @@ A high-level synchronization check between the Account artifacts and Signer modu
 """
 
 import asyncio
+import sys
 
 import pytest
 from starkware.starknet.services.api.contract_definition import ContractDefinition
@@ -52,6 +53,11 @@ def event_loop():
     return asyncio.new_event_loop()
 
 
+@pytest.mark.xfail(
+    sys.version_info >= (3, 9),
+    reason="Issue in cairo-lang. "
+    "See https://github.com/starkware-libs/cairo-lang/issues/27",
+)
 @pytest.mark.asyncio
 async def test_execute():
     starknet = await Starknet.empty()
