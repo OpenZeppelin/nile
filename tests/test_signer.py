@@ -56,7 +56,8 @@ def event_loop():
 @pytest.mark.xfail(
     sys.version_info >= (3, 9),
     reason="Issue in cairo-lang. "
-    "See https://github.com/starkware-libs/cairo-lang/issues/27",
+    "See https://github.com/starkware-libs/cairo-lang/issues/27"
+    "Remove when 'frozendict' dependency is updated in cairo-lang",
 )
 @pytest.mark.asyncio
 async def test_execute():
