@@ -3,17 +3,11 @@
 from starkware.crypto.signature.signature import private_to_stark_key, sign
 from starkware.starknet.definitions.general_config import StarknetChainId
 from starkware.starknet.public.abi import get_selector_from_name
+from starkware.starknet.core.os.transaction_hash.transaction_hash import (
+    TransactionHashPrefix,
+    calculate_transaction_hash_common,
+)
 
-try:
-    from starkware.starknet.core.os.transaction_hash.transaction_hash import (
-        TransactionHashPrefix,
-        calculate_transaction_hash_common,
-    )
-except BaseException:
-    from starkware.starknet.core.os.transaction_hash import (
-        TransactionHashPrefix,
-        calculate_transaction_hash_common,
-    )
 
 TRANSACTION_VERSION = 0
 
