@@ -1,4 +1,4 @@
-"""Tests for locate-error command."""
+"""Tests for debug command."""
 import logging
 import sys
 from pathlib import Path
@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 
 from nile.common import BUILD_DIRECTORY
-from nile.utils.debug import _abi_to_build_path, locate_error
+from nile.utils.debug import _abi_to_build_path, debug
 
 MOCK_HASH = "0x1234"
 NETWORK = "goerli"
@@ -44,10 +44,10 @@ def test__abi_to_build_path():
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
 @patch("nile.utils.debug.json.loads")
-def test_locate_error_feedback_with_message(mock_json, caplog, args, expected):
+def test_debug_feedback_with_message(mock_json, caplog, args, expected):
     logging.getLogger().setLevel(logging.INFO)
     mock_json.return_value = mocked_json_message(args)
 
-    locate_error(MOCK_HASH, NETWORK)
+    debug(MOCK_HASH, NETWORK)
 
     assert expected in caplog.text

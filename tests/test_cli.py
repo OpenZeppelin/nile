@@ -153,11 +153,11 @@ def test_node(args, expected):
     ],
 )
 @patch("nile.utils.debug.subprocess")
-def test_locate_error(mock_subprocess, args):
-    # locate-error will hang without patch
+def test_debug(mock_subprocess, args):
+    # debug will hang without patch
     mock_subprocess.check_output.return_value = json.dumps({"tx_status": "ACCEPTED"})
 
-    result = CliRunner().invoke(cli, ["locate-error", *args])
+    result = CliRunner().invoke(cli, ["debug", *args])
 
     # Check status
     assert result.exit_code == 0

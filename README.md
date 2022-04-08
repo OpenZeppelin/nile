@@ -201,11 +201,11 @@ Print out the Nile version
 nile version
 ```
 
-### `locate-error`
+### `debug`
 Use locally available contracts to make error messages from rejected transactions more explicit.  
 
 ```sh
-nile locate-error <transaction_hash> [CONTRACTS_FILE, NETWORK]
+nile debug <transaction_hash> [CONTRACTS_FILE, NETWORK]
 ```
 
 For example, this transaction returns the very cryptic error message:  
@@ -228,7 +228,7 @@ Unknown location (pc=0:1369)
 This can be made more explicit with:
 
 ```sh
-nile locate-error 0x57d2d844923f9fe5ef54ed7084df61f926b9a2a24eb5d7e46c8f6dbcd4baafe
+nile debug 0x57d2d844923f9fe5ef54ed7084df61f926b9a2a24eb5d7e46c8f6dbcd4baafe
 
 ⏳ Querying the network to check transaction status and identify contracts...
 🧾 Found contracts: ['0x05bf05eece944b360ff0098eb9288e49bd0007e5a9ed80aefcb740e680e67ea4:artifacts/Evaluator.json']

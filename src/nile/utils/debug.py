@@ -15,7 +15,7 @@ from nile.common import (
 )
 
 
-def locate_error(tx_hash, network, contracts_file=None):
+def debug(tx_hash, network, contracts_file=None):
     """Use available contracts to help locate the error in a rejected transaction."""
     command = ["starknet", "tx_status", "--hash", tx_hash]
 

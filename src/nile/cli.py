@@ -15,7 +15,7 @@ from nile.core.node import node as node_command
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.version import version as version_command
-from nile.utils.debug import locate_error as locate_error_command
+from nile.utils.debug import debug as debug_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
@@ -203,9 +203,9 @@ def version():
 @click.argument("tx_hash", nargs=1)
 @network_option
 @click.option("--contracts_file", nargs=1)
-def locate_error(tx_hash, network, contracts_file):
+def debug(tx_hash, network, contracts_file):
     """Locate an error in a transaction using contracts."""
-    locate_error_command(tx_hash, network, contracts_file)
+    debug_command(tx_hash, network, contracts_file)
 
 
 if __name__ == "__main__":
