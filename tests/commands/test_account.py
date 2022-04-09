@@ -39,16 +39,32 @@ def test_account_init_account_exists():
     assert account2.index == 1
 
 
-@patch("nile.core.account.deploy")
-def test_deploy_accounts_register(mock_deploy):
-    mock_deploy.return_value = MOCK_ADDRESS, MOCK_INDEX
+@patch("nile.core.account.deploy", return_value=(1, 2))
+def test_deploy(mock_deploy):
+    account = Account(KEY, NETWORK)
+    with patch("nile.core.account.os.path.dirname") as mock_path:
+        test_path = "/overriding_path"
+        mock_path.return_value.replace.return_value = test_path
 
-    with patch("nile.core.account.accounts.register") as mock_register:
-        account = Account(KEY, NETWORK)
+        account.deploy()
 
-        mock_register.assert_called_once_with(
-            account.signer.public_key, MOCK_ADDRESS, MOCK_INDEX, NETWORK
+        mock_deploy.assert_called_with(
+            "Account",
+            [str(account.signer.public_key)],
+            NETWORK,
+            f"account-{account.index + 1}",
+            (f"{test_path}/artifacts", f"{test_path}/artifacts/abis"),
         )
+
+
+@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.accounts.register")
+def test_deploy_accounts_register(mock_register, mock_deploy):
+    account = Account(KEY, NETWORK)
+
+    mock_register.assert_called_once_with(
+        account.signer.public_key, MOCK_ADDRESS, MOCK_INDEX, NETWORK
+    )
 
 
 @patch("nile.core.account.call_or_invoke")
@@ -82,12 +98,12 @@ def test_send_sign_transaction_and_execute(callarray, calldata):
 
     with patch("nile.core.account.call_or_invoke") as mock_call:
         send_args = [contract_address, "method", [1, 2, 3]]
-        _nonce = 4
-        account.send(*send_args, _nonce)
+        nonce = 4
+        account.send(*send_args, nonce)
 
         # Check values are correctly passed to 'sign_transaction'
         account.signer.sign_transaction.assert_called_once_with(
-            calls=[send_args], nonce=_nonce, sender=account.address
+            calls=[send_args], nonce=nonce, sender=account.address
         )
 
         # Check values are correctly passed to '__execute__'
@@ -100,7 +116,7 @@ def test_send_sign_transaction_and_execute(callarray, calldata):
                 *(str(elem) for sublist in callarray for elem in sublist),
                 str(len(calldata)),
                 *(str(param) for param in calldata),
-                str(_nonce),
+                str(nonce),
             ],
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
