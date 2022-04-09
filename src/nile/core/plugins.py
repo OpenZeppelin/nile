@@ -1,4 +1,4 @@
-"""Nile core utils."""
+"""Nile plugins utility methods."""
 import functools
 import importlib
 from typing import Dict
@@ -25,7 +25,7 @@ def skip_click_exit(func):
     return wrapper
 
 
-def _get_installed_plugins() -> Dict:
+def get_installed_plugins() -> Dict:
     """
     Get the name and object of installed Nile plugins.
 
@@ -52,6 +52,6 @@ def load_plugins(app) -> Group:
     Returns:
         Group: click app with plugins commands added
     """
-    for name, plugin_object in _get_installed_plugins().items():
+    for name, plugin_object in get_installed_plugins().items():
         app.add_command(plugin_object, name)
     return app

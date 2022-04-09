@@ -206,9 +206,9 @@ Nile has the possibility of extending its CLI and `NileRuntimeEnvironment` funct
 
 ### How it works
 
-This implementation takes advantage of the native extensibility features of click. Using click and leveraging the Python entrypoints we have a simple manner of handling extension natively on Python environments through dependencies. The plugin implementation on Nile looks for specific Python entrypoints constraints for adding commands.
+This implementation takes advantage of the native extensibility features of [click](https://click.palletsprojects.com/). Using click and leveraging the Python [entrypoints](https://packaging.python.org/en/latest/specifications/entry-points/) we have a simple manner of handling extension natively on Python environments through dependencies. The plugin implementation on Nile looks for specific Python entrypoints constraints for adding commands.
 
-In order for this implementation to be functional, it is needed by the plugin developer to follow some development guidelines defined in this simple plugin example I've implemented extending Nile for a dummy greet extension. In a brief explanation the guidelines are as follows:
+In order for this implementation to be functional, it is needed by the plugin developer to follow some development guidelines defined in this simple plugin example extending Nile for a dummy greet extension. In a brief explanation the guidelines are as follows:
 
 1. Define a Python module that implement a click command or group:
 
@@ -240,6 +240,8 @@ def my_command():
 3. Done!
 
 How to decide if I want to use a plugin or not? Just install / uninstall the plugin dependency from your project :smile:
+
+Finally, after the desired plugin is installed, it will also be automatically available through the `nre`. The plugin developer should be aware of this and design the interface accordingly.
 
 ## Hacking on Nile
 

@@ -17,7 +17,7 @@ def test_nre_loaded_plugins():
         return a + b
 
     with patch(
-        "nile.nre._get_installed_plugins",
+        "nile.nre.get_installed_plugins",
         return_value={"dummy": dummy, "dummy_params": dummy_params},
     ):
         nre = NileRuntimeEnvironment()

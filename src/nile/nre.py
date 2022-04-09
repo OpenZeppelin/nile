@@ -4,7 +4,7 @@ from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
 from nile.core.deploy import deploy
-from nile.core.utils import _get_installed_plugins, skip_click_exit
+from nile.core.plugins import get_installed_plugins, skip_click_exit
 
 
 class NileRuntimeEnvironment:
@@ -13,7 +13,7 @@ class NileRuntimeEnvironment:
     def __init__(self, network="localhost"):
         """Construct NRE object."""
         self.network = network
-        for name, object in _get_installed_plugins().items():
+        for name, object in get_installed_plugins().items():
             setattr(self, name, skip_click_exit(object))
 
     def compile(self, contracts):
