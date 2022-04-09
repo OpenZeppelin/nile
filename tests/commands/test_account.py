@@ -1,6 +1,6 @@
 """Tests for account commands."""
 import pytest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from nile.core.account import Account
 
@@ -20,6 +20,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
 def test_account_init(mock_deploy):
     mock_deploy.return_value = MOCK_ADDRESS, MOCK_INDEX
     account = Account(KEY, NETWORK)
+
     assert account.address == MOCK_ADDRESS
     assert account.index == MOCK_INDEX
     mock_deploy.assert_called_once()
@@ -29,6 +30,7 @@ def test_account_init_account_exists():
     account = Account(KEY, NETWORK)
     account.deploy()
     account2 = Account(KEY, NETWORK)
+
     # Check addresses don't match
     assert account.address != account2.address
     # Check indexing
@@ -50,24 +52,61 @@ def test_deploy_accounts_register(mock_deploy):
             NETWORK
         )
 
-@patch("nile.core.account.Account")
-def test_send_sign_transaction(mock_account):
+@patch("nile.core.account.call_or_invoke")
+def test_send_nonce_call(mock_call):
     account = Account(KEY, NETWORK)
-    addr, _ = account.deploy()
+    contract_address, _ = account.deploy()
+
     # Instead of creating and populating a tmp .txt file, this uses the
-    # deployed account address as the target
-    args = [addr, "method", [1, 2, 3]]
+    # deployed account address (contract_address) as the target
+    account.send(contract_address, "method", [1, 2, 3])
+
+    assert mock_call.call_count == 2
+
+    # Check 'get_nonce' call
+    mock_call.assert_any_call(
+        account.address, 'call', 'get_nonce', [], NETWORK
+    )
+        
+
+def test_send_sign_transaction_and_execute():
+    account = Account(KEY, NETWORK)
+    contract_address, _ = account.deploy()
+
+    callarray = [[111, 222]]
+    calldata = [333, 444, 555]
+    sig_r, sig_s = [999, 888]
+    return_signature = [callarray, calldata, sig_r, sig_s]
+ 
+    account.signer.sign_transaction = MagicMock(return_value=return_signature)
 
     with patch("nile.core.account.call_or_invoke") as mock_call:
-        account.send(*args)
-        assert mock_call.call_count == 2
+        send_args = [contract_address, "method", [1, 2, 3]]
+        _nonce = 4
+        account.send(*send_args, _nonce)
 
-        # Check 'get_nonce' call
-        mock_call.assert_any_call(
-            account.address, 'call', 'get_nonce', [], 'goerli'
+        # Check values are correctly passed to sign_transaction
+        account.signer.sign_transaction.assert_called_once_with(
+            calls=[send_args],
+            nonce=_nonce,
+            sender=account.address
         )
 
-        mock_account = mock_call.call_args_list
-        print(mock_account)
-        
- 
+        # Check values are correctly passed to __execute__
+        mock_call.assert_called_with(
+            contract=account.address,
+            method='__execute__',
+            network=NETWORK,
+            params=[
+                str(len(callarray)),
+                *(str(elem) for sublist in callarray for elem in sublist),
+                str(len(calldata)),
+                *(str(param) for param in calldata),
+                str(_nonce)
+                ],
+            signature=[
+                str(sig_r),
+                str(sig_s)
+                ],
+            type='invoke'
+        )
