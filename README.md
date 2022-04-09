@@ -61,6 +61,7 @@ Compile Cairo contracts. Compilation artifacts are written into the `artifacts/`
 nile compile # compiles all contracts under contracts/
 nile compile --directory my_contracts # compiles all contracts under my_contracts/
 nile compile contracts/MyContract.cairo # compiles single contract
+nile compile contracts/MyContract.cairo --disable-hint-validation # compiles single contract with unwhitelisted hints
 ```
 
 As of cairo-lang v0.8.0, account contracts (contracts with the `__execute__` method) must be compiled with the `--account_contract` flag.
@@ -198,6 +199,75 @@ Print out the Nile version
 
 ```sh
 nile version
+```
+
+### `debug`
+Use locally available contracts to make error messages from rejected transactions more explicit.  
+
+```sh
+nile debug <transaction_hash> [CONTRACTS_FILE, NETWORK]
+```
+
+For example, this transaction returns the very cryptic error message:  
+`An ASSERT_EQ instruction failed: 0 != 1.`
+
+```sh
+starknet tx_status \
+  --hash 0x57d2d844923f9fe5ef54ed7084df61f926b9a2a24eb5d7e46c8f6dbcd4baafe \
+  --error_message
+
+[...]
+Error in the called contract (0x5bf05eece944b360ff0098eb9288e49bd0007e5a9ed80aefcb740e680e67ea4):
+Error at pc=0:1360:
+An ASSERT_EQ instruction failed: 0 != 1.
+Cairo traceback (most recent call last):
+Unknown location (pc=0:1384)
+Unknown location (pc=0:1369)
+```
+
+This can be made more explicit with:
+
+```sh
+nile debug 0x57d2d844923f9fe5ef54ed7084df61f926b9a2a24eb5d7e46c8f6dbcd4baafe
+
+⏳ Querying the network to check transaction status and identify contracts...
+🧾 Found contracts: ['0x05bf05eece944b360ff0098eb9288e49bd0007e5a9ed80aefcb740e680e67ea4:artifacts/Evaluator.json']
+⏳ Querying the network with contracts...
+🧾 Error message:
+
+[...]
+Error in the called contract (0x5bf05eece944b360ff0098eb9288e49bd0007e5a9ed80aefcb740e680e67ea4):
+[path_to_file]:179:5: Error at pc=0:1360:
+    assert permission = 1
+    ^*******************^
+An ASSERT_EQ instruction failed: 0 != 1.
+Cairo traceback (most recent call last):
+[path_to_file]:184:6
+func set_teacher{
+     ^*********^
+[path_to_file]:189:5
+    only_teacher()
+    ^************^
+```
+
+In case of pending transaction states, the command will offer to continue probing the network unless it
+is terminated prematurely.
+This example also shows how accepted transactions are handled.
+
+```sh
+⏳ Querying the network to check transaction status and identify contracts...
+🕒 Transaction status: NOT_RECEIVED. Trying again in a moment...
+🕒 Transaction status: RECEIVED. Trying again in a moment...
+🕒 Transaction status: PENDING. Trying again in a moment...
+✅ Transaction status: ACCEPTED_ON_L2. No error in transaction.
+```
+
+Finally, the command will use the local `network.deployments.txt` files to fetch the available contracts.  
+However, it is also possible to override this by passing a `CONTRACTS_FILE` argument, formatted as
+```
+CONTRACT_ADDRESS1:PATH_TO_COMPILED_CONTRACT1.json
+CONTRACT_ADDRESS2:PATH_TO_COMPILED_CONTRACT2.json
+...
 ```
 
 ## Extending Nile with plugins

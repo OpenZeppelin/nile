@@ -16,6 +16,7 @@ from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.plugins import load_plugins
 from nile.core.version import version as version_command
+from nile.utils.debug import debug as debug_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
@@ -154,7 +155,8 @@ def test(contracts):
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
 @click.option("--account_contract", is_flag="True")
-def compile(contracts, directory, account_contract):
+@click.option("--disable-hint-validation", is_flag=True)
+def compile(contracts, directory, account_contract, disable_hint_validation):
     """
     Compile cairo contracts.
 
@@ -167,7 +169,7 @@ def compile(contracts, directory, account_contract):
     $ compile.py contracts/foo.cairo contracts/bar.cairo
       Compiles foo.cairo and bar.cairo
     """
-    compile_command(contracts, directory, account_contract)
+    compile_command(contracts, directory, account_contract, disable_hint_validation)
 
 
 @cli.command()
@@ -198,7 +200,17 @@ def version():
     version_command()
 
 
+@cli.command()
+@click.argument("tx_hash", nargs=1)
+@network_option
+@click.option("--contracts_file", nargs=1)
+def debug(tx_hash, network, contracts_file):
+    """Locate an error in a transaction using contracts."""
+    debug_command(tx_hash, network, contracts_file)
+
+
 cli = load_plugins(cli)
+
 
 if __name__ == "__main__":
     cli()
