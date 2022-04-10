@@ -270,6 +270,49 @@ CONTRACT_ADDRESS2:PATH_TO_COMPILED_CONTRACT2.json
 ...
 ```
 
+## Extending Nile with plugins
+
+Nile has the possibility of extending its CLI and `NileRuntimeEnvironment` functionalities through plugins. For developing plugins for Nile fork [this plugin example](https://github.com/franalgaba/nile-plugin-example) boilerplate and implement your desired functionality with the provided instructions.
+
+### How it works
+
+This implementation takes advantage of the native extensibility features of [click](https://click.palletsprojects.com/). Using click and leveraging the Python [entrypoints](https://packaging.python.org/en/latest/specifications/entry-points/) we have a simple manner of handling extension natively on Python environments through dependencies. The plugin implementation on Nile looks for specific Python entrypoints constraints for adding commands.
+
+In order for this implementation to be functional, it is needed by the plugin developer to follow some development guidelines defined in this simple plugin example extending Nile for a dummy greet extension. In a brief explanation the guidelines are as follows:
+
+1. Define a Python module that implement a click command or group:
+
+```python
+# First, import click dependency
+import click
+
+# Decorate the method that will be the command name with `click.command` 
+@click.command()
+# You can define custom parameters as defined in `click`: https://click.palletsprojects.com/en/7.x/options/
+def my_command():
+    # Help message to show with the command
+    """
+    Subcommand plugin that does something.
+    """
+    # Done! Now implement your custom functionality in the command
+    click.echo("I'm a plugin overiding a command!")
+```
+
+2. Define the plugin entrypoint. In this case using Poetry features in the pyproject.toml file:
+
+```
+# We need to specify that click commands are Poetry entrypoints of type `nile_plugins`. Do not modify this
+[tool.poetry.plugins."nile_plugins"]
+# Here you specify you command name and location <command_name> = <package_method_location>
+"greet" = "nile_greet.main.greet"
+```
+
+3. Done!
+
+How to decide if I want to use a plugin or not? Just install / uninstall the plugin dependency from your project :smile:
+
+Finally, after the desired plugin is installed, it will also be automatically available through the `nre`. The plugin developer should be aware of this and design the interface accordingly.
+
 ## Hacking on Nile
 
 Nile uses tox to manage development tasks, you can get a list of

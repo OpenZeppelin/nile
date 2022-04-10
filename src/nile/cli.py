@@ -14,6 +14,7 @@ from nile.core.install import install as install_command
 from nile.core.node import node as node_command
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
+from nile.core.plugins import load_plugins
 from nile.core.version import version as version_command
 from nile.utils.debug import debug as debug_command
 
@@ -206,6 +207,9 @@ def version():
 def debug(tx_hash, network, contracts_file):
     """Locate an error in a transaction using contracts."""
     debug_command(tx_hash, network, contracts_file)
+
+
+cli = load_plugins(cli)
 
 
 if __name__ == "__main__":
