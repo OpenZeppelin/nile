@@ -140,7 +140,12 @@ Transaction hash: 0x1c
 Using `call` and `invoke`, we can perform read and write operations against our local node (or public one using the `--network mainnet` parameter). The syntax is:
 
 ```
-nile <command> <contract_identifier> <method> [PARAM_1, PARAM2...]
+nile <command> <contract_identifier> <method> [OPTIONS] [PARAM_1, PARAM2...]
+
+OPTIONS:
+  --network TEXT     Select network, one of ('localhost', 'goerli', 'mainnet')
+  --max_fee INTEGER  The maximal fee to be paid for the function invocation.
+  --help             Show this message and exit.
 ```
 
 Where `<command>` is either `call` or `invoke` and `<contract_identifier>` is either our contract address or alias, as defined on `deploy`.

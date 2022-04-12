@@ -12,9 +12,9 @@ from nile.core.deploy import deploy as deploy_command
 from nile.core.init import init as init_command
 from nile.core.install import install as install_command
 from nile.core.node import node as node_command
+from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
-from nile.core.plugins import load_plugins
 from nile.core.version import version as version_command
 from nile.utils.debug import debug as debug_command
 
@@ -31,6 +31,16 @@ def network_option(f):
         default="127.0.0.1",
         help=f"Select network, one of {NETWORKS}",
         callback=_validate_network,
+    )(f)
+
+
+def max_fee_option(f):
+    """Configure MAX_FEE for the function invocation."""
+    return click.option(
+        "--max_fee",
+        nargs=1,
+        help=f"The maximal fee to be paid for the function invocation.",
+        type=int,
     )(f)
 
 
@@ -97,9 +107,10 @@ def setup(signer, network):
 @click.argument("signer", nargs=1)
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
+@max_fee_option
 @click.argument("params", nargs=-1)
 @network_option
-def send(signer, contract_name, method, params, network):
+def send(signer, contract_name, method, max_fee, params, network):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = Account(signer, network)
     print(
@@ -107,29 +118,35 @@ def send(signer, contract_name, method, params, network):
             method, contract_name, [x for x in params]
         )
     )
-    out = account.send(contract_name, method, params)
+    out = account.send(contract_name, method, params, max_fee)
     print(out)
 
 
 @cli.command()
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
+@max_fee_option
 @click.argument("params", nargs=-1)
 @network_option
-def invoke(contract_name, method, params, network):
+def invoke(contract_name, method, max_fee, params, network):
     """Invoke functions of StarkNet smart contracts."""
-    out = call_or_invoke_command(contract_name, "invoke", method, params, network)
+    out = call_or_invoke_command(
+        contract_name, "invoke", method, params, network, max_fee
+    )
     print(out)
 
 
 @cli.command()
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
+@max_fee_option
 @click.argument("params", nargs=-1)
 @network_option
-def call(contract_name, method, params, network):
+def call(contract_name, method, max_fee, params, network):
     """Call functions of StarkNet smart contracts."""
-    out = call_or_invoke_command(contract_name, "call", method, params, network)
+    out = call_or_invoke_command(
+        contract_name, "call", method, params, network, max_fee
+    )
     print(out)
 
 

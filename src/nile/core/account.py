@@ -50,7 +50,7 @@ class Account:
 
         return address, index
 
-    def send(self, to, method, calldata, nonce=None):
+    def send(self, to, method, calldata, max_fee=None, nonce=None):
         """Execute a tx going through an Account contract."""
         target_address, _ = next(deployments.load(to, self.network)) or to
         calldata = [int(x) for x in calldata]
@@ -77,5 +77,6 @@ class Account:
             method="__execute__",
             params=params,
             network=self.network,
+            max_fee=max_fee,
             signature=[str(sig_r), str(sig_s)],
         )
