@@ -39,7 +39,7 @@ def max_fee_option(f):
     return click.option(
         "--max_fee",
         nargs=1,
-        help=f"The maximal fee to be paid for the function invocation.",
+        help="The maximal fee to be paid for the function invocation.",
         type=int,
     )(f)
 
