@@ -124,7 +124,12 @@ A few things to notice here:
 Execute a transaction through the `Account` associated with the private key provided. The syntax is:
 
 ```sh
-nile send <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
+nile send <private_key_alias> <contract_identifier> <method> [OPTIONS] [PARAM_1, PARAM2...]
+
+OPTIONS:
+  --network TEXT     Select network, one of ('localhost', 'goerli', 'mainnet')
+  --max_fee INTEGER  The maximal fee to be paid for the function invocation.
+  --help             Show this message and exit.
 ```
 
 For example:
