@@ -27,7 +27,7 @@ def test_account_init(mock_deploy):
     mock_deploy.assert_called_once()
 
 
-def test_account_init_account_exists():
+def test_account_multiple_inits_with_same_key():
     account = Account(KEY, NETWORK)
     account.deploy()
     account2 = Account(KEY, NETWORK)
@@ -85,6 +85,8 @@ def test_send_nonce_call(mock_call):
 
 @pytest.mark.parametrize(
     "callarray, calldata",
+    # The following callarray and calldata args tests the Account's list comprehensions
+    # ensuring they're set to strings and passed correctly
     [([[111]], []), ([[111, 222]], [333, 444, 555])],
 )
 def test_send_sign_transaction_and_execute(callarray, calldata):
