@@ -17,7 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python_version: [ '3.7', '3.8', '3.9', '3.10-dev' ]
+        # Add py3.10-dev once cairo-lang resolves frozendict issue
+        python_version: [ '3.7', '3.8', '3.9' ]
         os: [ubuntu-latest]
     name: ${{ matrix.os }} - Python ${{ matrix.python_version }}
     steps:
