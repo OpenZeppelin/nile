@@ -133,3 +133,6 @@ dmypy.json
 
 # vscode project settings
 .vscode/
+
+# nile
+*node.json*

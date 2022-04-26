@@ -12,9 +12,9 @@ from nile.core.deploy import deploy as deploy_command
 from nile.core.init import init as init_command
 from nile.core.install import install as install_command
 from nile.core.node import node as node_command
+from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
-from nile.core.plugins import load_plugins
 from nile.core.version import version as version_command
 from nile.utils.debug import debug as debug_command
 
