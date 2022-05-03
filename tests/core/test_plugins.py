@@ -12,15 +12,17 @@ from nile.core.plugins import get_installed_plugins, load_plugins, skip_click_ex
 
 
 def test_skip_click_exit():
+    @click.command()
+    @click.argument('a', type=int)
+    @click.argument('b', type=int)
     def dummy_method(a, b):
         return a + b
 
-    dummy_result = dummy_method(1, 2)
     decorated = skip_click_exit(dummy_method)
-    decorated_result = decorated(1, 2)
+    decorated_result = decorated(["1", "2"])
 
     assert callable(decorated)
-    assert dummy_result == decorated_result
+    assert decorated_result == 3
 
 
 def testget_installed_plugins():
@@ -39,6 +41,7 @@ def test_load_plugins():
         """Nile CLI group."""
         pass
 
+    @click.command()
     def dummy():
         print("dummy_result")
 
