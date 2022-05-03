@@ -66,7 +66,7 @@ def _compile_contract(
         --abi {ABIS_DIRECTORY}/{filename}.json
     """
 
-    if account_contract:
+    if account_contract or filename.endswith("Account"):
         cmd = cmd + "--account_contract"
 
     if disable_hint_validation:

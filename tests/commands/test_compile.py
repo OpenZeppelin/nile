@@ -116,6 +116,42 @@ def test__compile_account_contract(mock_subprocess):
     mock_process.communicate.assert_called_once()
 
 
+@pytest.mark.parametrize(
+    "contract_name, flag",
+    [
+        ("Account", "--account_contract"),
+        ("mock_Account", "--account_contract"),
+        ("Account_Manager", False),
+    ],
+)
+def test__compile_auto_account_flag(mock_subprocess, contract_name, flag):
+    path = f"path/to/{contract_name}.cairo"
+
+    mock_process = Mock()
+    mock_subprocess.Popen.return_value = mock_process
+
+    _compile_contract(path)
+
+    returned_subprocess = [
+        "starknet-compile",
+        path,
+        f"--cairo_path={CONTRACTS_DIRECTORY}",
+        "--output",
+        f"artifacts/{contract_name}.json",
+        "--abi",
+        f"artifacts/abis/{contract_name}.json",
+    ]
+
+    if flag is not False:
+        returned_subprocess.append(flag)
+
+    mock_subprocess.Popen.assert_called_once_with(
+        returned_subprocess,
+        stdout=mock_subprocess.PIPE,
+    )
+    mock_process.communicate.assert_called_once()
+
+
 def test__compile_contract_without_hint_validation(mock_subprocess):
     contract_name_root = "contract_with_unwhitelisted_hints"
     path = f"path/to/{contract_name_root}.cairo"

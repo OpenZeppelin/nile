@@ -64,10 +64,10 @@ nile compile contracts/MyContract.cairo # compiles single contract
 nile compile contracts/MyContract.cairo --disable-hint-validation # compiles single contract with unwhitelisted hints
 ```
 
-As of cairo-lang v0.8.0, account contracts (contracts with the `__execute__` method) must be compiled with the `--account_contract` flag.
+As of cairo-lang v0.8.0, account contracts (contracts with the `__execute__` method) must be compiled with the `--account_contract` flag. Nile automatically inserts the flag if the contract's name ends with `Account` i.e. Account.cairo, EthAccount.cairo. Otherwise, the flag must be included by the user.
 
 ```sh
-nile compile contracts/MyAccount.cairo --account_contract # compiles account contract
+nile compile contracts/NewAccountType.cairo --account_contract # compiles account contract
 ```
 
 Example output:
