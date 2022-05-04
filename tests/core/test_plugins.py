@@ -13,8 +13,8 @@ from nile.core.plugins import get_installed_plugins, load_plugins, skip_click_ex
 
 def test_skip_click_exit():
     @click.command()
-    @click.argument('a', type=int)
-    @click.argument('b', type=int)
+    @click.argument("a", type=int)
+    @click.argument("b", type=int)
     def dummy_method(a, b):
         return a + b
 

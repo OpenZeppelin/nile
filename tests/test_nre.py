@@ -17,8 +17,8 @@ def test_nre_loaded_plugins():
         print("dummy_result")
 
     @click.command()
-    @click.argument('a', type=int)
-    @click.argument('b', type=int)
+    @click.argument("a", type=int)
+    @click.argument("b", type=int)
     def dummy_params(a, b):
         return a + b
 
@@ -28,6 +28,6 @@ def test_nre_loaded_plugins():
     ):
         nre = NileRuntimeEnvironment()
         assert callable(nre.dummy)
-        
+
         nre_result = nre.dummy_params(["1", "2"])
         assert 3 == nre_result
