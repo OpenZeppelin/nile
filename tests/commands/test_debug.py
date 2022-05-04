@@ -7,11 +7,15 @@ from unittest.mock import patch
 import pytest
 
 from nile.common import BUILD_DIRECTORY
-from nile.utils.debug import _abi_to_build_path, debug
+from nile.utils.debug import _abi_to_build_path, _locate_error_lines_with_abis, debug
 
 MOCK_HASH = "0x1234"
 NETWORK = "goerli"
 ERROR_MESSAGE = "Error at pc=0:1:\nAn ASSERT_EQ instruction failed: 3 != 0."
+DEBUG_ADDRESS = "0x07826b88e404632d9835ab1ec2076c6cf1910e6ecb2ed270647fc211ff55e76f"
+ABI_PATH = "path/to/abis/test_contract.json"
+ALIAS = "contract_alias"
+MOCK_FILE = 123
 
 
 def mocked_json_message(arg):
@@ -28,6 +32,36 @@ def test__abi_to_build_path():
     Path(BUILD_DIRECTORY).mkdir()
     filename = "contract"
     assert f"{BUILD_DIRECTORY}/{filename}" == _abi_to_build_path(filename)
+
+
+@pytest.mark.parametrize(
+    "file, address_set",
+    [
+        ([f"{DEBUG_ADDRESS}:{ABI_PATH}"], [int(DEBUG_ADDRESS, 16)]),
+        ([f"{DEBUG_ADDRESS}:{ABI_PATH}:{ALIAS}"], [int(DEBUG_ADDRESS, 16)]),
+    ],
+)
+@patch("nile.utils.debug._abi_to_build_path", return_value=ABI_PATH)
+def test__locate_error_lines_with_abis_with_and_without_alias(
+    mock_path, file, address_set
+):
+    with patch("nile.utils.debug.open") as mock_open:
+        mock_open.return_value.__enter__.return_value = file
+        return_array = _locate_error_lines_with_abis(MOCK_FILE, address_set, mock_path)
+        # The contract alias should be omitted in the output
+        assert return_array == [f"{DEBUG_ADDRESS}:{ABI_PATH}"]
+        assert ALIAS not in return_array[0]
+
+
+@patch("nile.utils.debug._abi_to_build_path", return_value=ABI_PATH)
+def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
+    logging.getLogger().setLevel(logging.INFO)
+
+    with patch("nile.utils.debug.open") as mock_open:
+        # The DEBUG_ADDRESS alone without ":" is misformatted
+        mock_open.return_value.__enter__.return_value = [DEBUG_ADDRESS]
+        _locate_error_lines_with_abis(MOCK_FILE, int(DEBUG_ADDRESS, 16), mock_path)
+        assert f"⚠ Skipping misformatted line #1 in {MOCK_FILE}" in caplog.text
 
 
 @pytest.mark.parametrize(
