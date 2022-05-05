@@ -61,18 +61,7 @@ def debug(tx_hash, network, contracts_file=None):
     # contracts_file should already link to compiled contracts and not ABIs
     to_contract = (lambda x: x) if contracts_file else _abi_to_build_path
 
-    contracts = []
-    with open(file) as file_stream:
-        for line_idx, line in enumerate(file_stream):
-            try:
-                line_address, abi = line.split(":")
-            except ValueError:
-                logging.warning(
-                    f"⚠ Skipping misformatted line #{line_idx+1} in {file}."
-                )
-                continue
-            if int(line.split(":")[0], 16) in addresses:
-                contracts.append(f"{line_address}:{to_contract(abi.rstrip())}")
+    contracts = _locate_error_lines_with_abis(file, addresses, to_contract)
 
     if not contracts:
         logging.warning(
@@ -93,3 +82,19 @@ def debug(tx_hash, network, contracts_file=None):
 
 def _abi_to_build_path(filename):
     return os.path.join(BUILD_DIRECTORY, os.path.basename(filename))
+
+
+def _locate_error_lines_with_abis(file, addresses, to_contract):
+    contracts = []
+    with open(file) as file_stream:
+        for line_idx, line in enumerate(file_stream):
+            try:
+                line_address, abi, *_ = line.split(":")
+            except ValueError:
+                logging.warning(
+                    f"⚠ Skipping misformatted line #{line_idx+1} in {file}."
+                )
+                continue
+            if int(line.split(":")[0], 16) in addresses:
+                contracts.append(f"{line_address}:{to_contract(abi.rstrip())}")
+    return contracts
