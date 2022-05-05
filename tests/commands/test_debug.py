@@ -48,9 +48,9 @@ def test__locate_error_lines_with_abis_with_and_without_alias(
     with patch("nile.utils.debug.open") as mock_open:
         mock_open.return_value.__enter__.return_value = file
         return_array = _locate_error_lines_with_abis(MOCK_FILE, address_set, mock_path)
-        # The contract alias should be omitted in the output
+        # Values should be pushed into the array (and not return an error)
+        # regardless if a contract alias is present or not
         assert return_array == [f"{DEBUG_ADDRESS}:{ABI_PATH}"]
-        assert ALIAS not in return_array[0]
 
 
 @patch("nile.utils.debug._abi_to_build_path", return_value=ABI_PATH)
