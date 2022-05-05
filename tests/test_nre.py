@@ -6,13 +6,19 @@ Only unit tests for now.
 
 from unittest.mock import patch
 
+import click
+
 from nile.nre import NileRuntimeEnvironment
 
 
 def test_nre_loaded_plugins():
+    @click.command()
     def dummy():
         print("dummy_result")
 
+    @click.command()
+    @click.argument("a", type=int)
+    @click.argument("b", type=int)
     def dummy_params(a, b):
         return a + b
 
@@ -22,6 +28,6 @@ def test_nre_loaded_plugins():
     ):
         nre = NileRuntimeEnvironment()
         assert callable(nre.dummy)
-        dummy_result = dummy_params(1, 2)
-        nre_result = nre.dummy_params(1, 2)
-        assert dummy_result == nre_result
+
+        nre_result = nre.dummy_params(["1", "2"])
+        assert 3 == nre_result
