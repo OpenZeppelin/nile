@@ -21,6 +21,7 @@ class Account:
     def __init__(self, signer, network):
         """Get or deploy an Account contract for the given private key."""
         self.signer = Signer(int(os.environ[signer]))
+        self.alias = signer
         self.network = network
 
         if accounts.exists(str(self.signer.public_key), network):
@@ -46,7 +47,9 @@ class Account:
             overriding_path,
         )
 
-        accounts.register(self.signer.public_key, address, index, self.network)
+        accounts.register(
+            self.signer.public_key, address, index, self.alias, self.network
+        )
 
         return address, index
 
