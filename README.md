@@ -1,11 +1,13 @@
-[![Tests and linter](https://github.com/OpenZeppelin/nile/actions/workflows/ci.yml/badge.svg)](https://github.com/OpenZeppelin/nile/actions/workflows/ci.yml)
 # OpenZeppelin Nile ⛵
+
+[![Tests and linter](https://github.com/OpenZeppelin/nile/actions/workflows/ci.yml/badge.svg)](https://github.com/OpenZeppelin/nile/actions/workflows/ci.yml)
 
 _Navigate your [StarkNet](https://www.cairo-lang.org/docs/hello_starknet/index.html) projects written in [Cairo](https://cairo-lang.org)._
 
 ## Getting started
 
 Create a folder for your project and `cd` into it:
+
 ```sh
 mkdir myproject
 cd myproject
@@ -35,9 +37,11 @@ nile init
 🗄  Creating project directory tree
 ⛵️ Nile project ready! Try running:
 ```
+
 This command creates the project directory structure and installs `cairo-lang`, `starknet-devnet`, `pytest`, and `pytest-asyncio` for you. The template includes a makefile to build the project (`make build`) and run tests (`make test`).
 
 ## Usage
+
 ### `node`
 
 Run a local [`starknet-devnet`](https://github.com/Shard-Labs/starknet-devnet/) node:
@@ -71,7 +75,8 @@ nile compile contracts/NewAccountType.cairo --account_contract # compiles accoun
 ```
 
 Example output:
-```
+
+```sh
 $ nile compile
 Creating artifacts/abis/ to store compilation artifacts
 🤖 Compiling all Cairo contracts in the contracts/ directory
@@ -82,6 +87,7 @@ Creating artifacts/abis/ to store compilation artifacts
 ```
 
 ### `deploy`
+
 ```sh
 nile deploy contract --alias my_contract
 
@@ -98,6 +104,7 @@ A few things to notice here:
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 
 ### `setup`
+
 Deploy an Account associated with a given private key.
 
 To avoid accidentally leaking private keys, this command takes an alias instead of the actual private key. This alias is associated with an environmental variable of the same name, whose value is the actual private key.
@@ -121,6 +128,7 @@ A few things to notice here:
 2. This creates a `localhost.accounts.json` file storing all data related to accounts management
 
 ### `send`
+
 Execute a transaction through the `Account` associated with the private key provided. The syntax is:
 
 ```sh
@@ -128,6 +136,7 @@ nile send <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...
 ```
 
 For example:
+
 ```sh
 nile send <private_key_alias> ownable0 transfer_ownership 0x07db6...60e794
 
@@ -137,9 +146,10 @@ Transaction hash: 0x1c
 ```
 
 ### `call` and `invoke`
+
 Using `call` and `invoke`, we can perform read and write operations against our local node (or public one using the `--network mainnet` parameter). The syntax is:
 
-```
+```sh
 nile <command> <contract_identifier> <method> [PARAM_1, PARAM2...]
 ```
 
@@ -160,6 +170,7 @@ nile call my_contract get_balance
 ```
 
 ### `run`
+
 Execute a script in the context of Nile. The script must implement a `run(nre)` function to receive a `NileRuntimeEnvironment` object exposing Nile's scripting API.
 
 ```python
@@ -177,6 +188,7 @@ nile run path/to/script.py
 ```
 
 ### `clean`
+
 Deletes the `artifacts/` directory for a fresh start ❄️
 
 ```sh
@@ -188,6 +200,7 @@ nile clean
 ```
 
 ### `install`
+
 Install the latest version of the Cairo language and the starknet-devnet local node.
 
 ```sh
@@ -195,6 +208,7 @@ nile install
 ```
 
 ### `version`
+
 Print out the Nile version
 
 ```sh
@@ -202,6 +216,7 @@ nile version
 ```
 
 ### `debug`
+
 Use locally available contracts to make error messages from rejected transactions more explicit.  
 
 ```sh
@@ -263,8 +278,9 @@ This example also shows how accepted transactions are handled.
 ```
 
 Finally, the command will use the local `network.deployments.txt` files to fetch the available contracts.  
-However, it is also possible to override this by passing a `CONTRACTS_FILE` argument, formatted as
-```
+However, it is also possible to override this by passing a `CONTRACTS_FILE` argument, formatted as:
+
+```sh
 CONTRACT_ADDRESS1:PATH_TO_COMPILED_CONTRACT1.json
 CONTRACT_ADDRESS2:PATH_TO_COMPILED_CONTRACT2.json
 ...
@@ -282,30 +298,30 @@ In order for this implementation to be functional, it is needed by the plugin de
 
 1. Define a Python module that implement a click command or group:
 
-```python
-# First, import click dependency
-import click
+    ```python
+    # First, import click dependency
+    import click
 
-# Decorate the method that will be the command name with `click.command` 
-@click.command()
-# You can define custom parameters as defined in `click`: https://click.palletsprojects.com/en/7.x/options/
-def my_command():
-    # Help message to show with the command
-    """
-    Subcommand plugin that does something.
-    """
-    # Done! Now implement your custom functionality in the command
-    click.echo("I'm a plugin overiding a command!")
-```
+    # Decorate the method that will be the command name with `click.command` 
+    @click.command()
+    # You can define custom parameters as defined in `click`: https://click.    palletsprojects.com/en/7.x/options/
+    def my_command():
+        # Help message to show with the command
+        """
+        Subcommand plugin that does something.
+        """
+        # Done! Now implement your custom functionality in the command
+        click.echo("I'm a plugin overiding a command!")
+    ```
 
 2. Define the plugin entrypoint. In this case using Poetry features in the pyproject.toml file:
 
-```
-# We need to specify that click commands are Poetry entrypoints of type `nile_plugins`. Do not modify this
-[tool.poetry.plugins."nile_plugins"]
-# Here you specify you command name and location <command_name> = <package_method_location>
-"greet" = "nile_greet.main.greet"
-```
+    ```sh
+    # We need to specify that click commands are Poetry entrypoints of type     `nile_plugins`. Do not modify this
+    [tool.poetry.plugins."nile_plugins"]
+    # Here you specify you command name and location <command_name> =     <package_method_location>
+    "greet" = "nile_greet.main.greet"
+    ```
 
 3. Done!
 
@@ -318,19 +334,21 @@ Finally, after the desired plugin is installed, it will also be automatically av
 Nile uses tox to manage development tasks, you can get a list of
 available task with `tox -av`.
 
- * Install a development version of the package with `python -m pip install .`
- * Build the package with `tox -e build`
- * Format all files with `tox -e format`
- * Check files formatting with `tox -e lint`
+* Install a development version of the package with `python -m pip install .`
+* Build the package with `tox -e build`
+* Format all files with `tox -e format`
+* Check files formatting with `tox -e lint`
 
 ### Testing
 
 To run tests:
- * Install testing dependencies with `python -m pip install .[testing]`
- * Run all tests with `tox`
- * Run unit tests only with `tox -e unit`
- * To run a specific set of tests, point to a module and/or function, e.g. `tox tests/test_module.py::test_function`
- * Other `pytest` flags must be preceded by `--`, e.g. `tox -- --pdb` to run tests in debug mode
+
+* Install testing dependencies with `python -m pip install .[testing]`
+* Run all tests with `tox`
+* Run unit tests only with `tox -e unit`
+* To run a specific set of tests, point to a module and/or function, e.g. `toxtests/test_module.py::test_function`
+* Other `pytest` flags must be preceded by `--`, e.g. `tox -- --pdb` to runtests in debug mode
 
 ## License
+
 Nile is released under the MIT License.
