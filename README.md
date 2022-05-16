@@ -304,7 +304,7 @@ In order for this implementation to be functional, it is needed by the plugin de
 
     # Decorate the method that will be the command name with `click.command` 
     @click.command()
-    # You can define custom parameters as defined in `click`: https://click.    palletsprojects.com/en/7.x/options/
+    # You can define custom parameters as defined in `click`: https://click.palletsprojects.com/en/7.x/options/
     def my_command():
         # Help message to show with the command
         """
@@ -317,9 +317,9 @@ In order for this implementation to be functional, it is needed by the plugin de
 2. Define the plugin entrypoint. In this case using Poetry features in the pyproject.toml file:
 
     ```sh
-    # We need to specify that click commands are Poetry entrypoints of type     `nile_plugins`. Do not modify this
+    # We need to specify that click commands are Poetry entrypoints of type `nile_plugins`. Do not modify this
     [tool.poetry.plugins."nile_plugins"]
-    # Here you specify you command name and location <command_name> =     <package_method_location>
+    # Here you specify you command name and location <command_name> = <package_method_location>
     "greet" = "nile_greet.main.greet"
     ```
 
