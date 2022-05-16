@@ -5,7 +5,6 @@ import pytest
 
 from nile.core.account import Account
 
-# "TEST_KEY" is an alias for testing located in tox.ini
 KEY = "TEST_KEY"
 NETWORK = "goerli"
 MOCK_ADDRESS = "0x123"
