@@ -1,4 +1,4 @@
-"""Tests for get-accounts plugin."""
+"""Tests for get-accounts command."""
 import logging
 from unittest.mock import MagicMock, patch
 
