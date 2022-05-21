@@ -10,21 +10,15 @@ import time
 from nile.common import (
     BUILD_DIRECTORY,
     DEPLOYMENTS_FILENAME,
-    GATEWAYS,
     RETRY_AFTER_SECONDS,
 )
+from nile.utils.network import get_network_parameter
 
 
 def debug(tx_hash, network, contracts_file=None):
     """Use available contracts to help locate the error in a rejected transaction."""
     command = ["starknet", "tx_status", "--hash", tx_hash]
-
-    if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-    elif network == "goerli":
-        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
-    else:
-        command.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
+    command += get_network_parameter(network)
 
     logging.info(
         "⏳ Querying the network to check transaction status and identify contracts..."

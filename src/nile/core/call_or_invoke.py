@@ -1,10 +1,9 @@
 """Command to call or invoke StarkNet smart contracts."""
 import logging
-import os
 import subprocess
 
 from nile import deployments
-from nile.common import GATEWAYS
+from nile.common import get_network_parameter
 
 
 def call_or_invoke(
@@ -23,14 +22,9 @@ def call_or_invoke(
         "--function",
         method,
     ]
-
-    if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-    elif network == "goerli":
-        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
-    else:
-        gateway_prefix = "feeder_gateway" if type == "call" else "gateway"
-        command.append(f"--{gateway_prefix}_url={GATEWAYS.get(network)}")
+    command += get_network_parameter(
+        network, "feeder_gateway" if type == "call" else "gateway"
+    )
 
     if len(params) > 0:
         command.append("--inputs")
