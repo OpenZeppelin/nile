@@ -18,7 +18,7 @@ load_dotenv()
 class Account:
     """Account contract abstraction."""
 
-    def __init__(self, signer, network):
+    def __init__(self, signer, network, track=False, debug=False):
         """Get or deploy an Account contract for the given private key."""
         self.signer = Signer(int(os.environ[signer]))
         self.network = network
@@ -28,11 +28,11 @@ class Account:
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
-            address, index = self.deploy()
+            address, index = self.deploy(track, debug)
             self.address = address
             self.index = index
 
-    def deploy(self):
+    def deploy(self, track=False, debug=False):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
@@ -44,13 +44,15 @@ class Account:
             self.network,
             f"account-{index}",
             overriding_path,
+            track=track,
+            debug=debug,
         )
 
         accounts.register(self.signer.public_key, address, index, self.network)
 
         return address, index
 
-    def send(self, to, method, calldata, max_fee, nonce=None):
+    def send(self, to, method, calldata, max_fee, nonce=None, track=False, debug=False):
         """Execute a tx going through an Account contract."""
         target_address, _ = next(deployments.load(to, self.network)) or to
         calldata = [int(x) for x in calldata]
@@ -85,4 +87,6 @@ class Account:
             network=self.network,
             signature=[str(sig_r), str(sig_s)],
             max_fee=str(max_fee),
+            track=track,
+            debug=debug,
         )

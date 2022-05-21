@@ -3,9 +3,18 @@ import logging
 
 from nile import deployments
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, parse_information, run_command
+from nile.utils.status import status
 
 
-def deploy(contract_name, arguments, network, alias, overriding_path=None):
+def deploy(
+    contract_name,
+    arguments,
+    network,
+    alias,
+    overriding_path=None,
+    track=False,
+    debug=False,
+):
     """Deploy StarkNet smart contracts."""
     logging.info(f"🚀 Deploying {contract_name}")
     base_path = (
@@ -18,6 +27,9 @@ def deploy(contract_name, arguments, network, alias, overriding_path=None):
     address, tx_hash = parse_information(output)
     logging.info(f"⏳ ️Deployment of {contract_name} successfully sent at {address}")
     logging.info(f"🧾 Transaction hash: {tx_hash}")
+
+    if track or debug:
+        status(tx_hash, network, track=track, debug=debug)
 
     deployments.register(address, abi, network, alias)
     return address, abi
