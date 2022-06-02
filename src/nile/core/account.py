@@ -52,7 +52,7 @@ class Account:
 
     def send(self, to, method, calldata, nonce=None):
         """Execute a tx going through an Account contract."""
-        target_address, _ = next(deployments.load(to, self.network)) or to
+        target_address, _ = next(deployments.load(to, self.network), ("", "")) or to
         calldata = [int(x) for x in calldata]
 
         if nonce is None:
