@@ -1,4 +1,5 @@
 """Command to call or invoke StarkNet smart contracts."""
+import contextlib
 import os
 import subprocess
 
@@ -37,4 +38,6 @@ def call_or_invoke(contract, type, method, params, network, signature=None):
         command.append("--signature")
         command.extend(signature)
 
-    return subprocess.check_output(command).strip().decode("utf-8")
+    with contextlib.suppress(subprocess.CalledProcessError):
+        return subprocess.check_output(command).strip().decode("utf-8")
+    return ""
