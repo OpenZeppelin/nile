@@ -36,11 +36,23 @@ def load(identifier, network):
     file = f"{network}.{DEPLOYMENTS_FILENAME}"
 
     if not os.path.exists(file):
+        logging.warning(
+            f"⚠ No deployment file for the {network!r} network."
+            " Did you specify the proper network using `--network NETWORK`?"
+        )
         return
 
     with open(file) as fp:
+        identifier_found = False
         for line in fp:
             [address, abi, *alias] = line.strip().split(":")
-            identifiers = [x for x in [address] + alias]
-            if identifier in identifiers:
+            if identifier in [address] + alias:
+                identifier_found = True
                 yield address, abi
+
+        if not identifier_found:
+            logging.warning(
+                f"⚠ Contract {identifier!r} not found on the {network!r} network."
+                " Did you deploy it first?"
+                " Did you specify the proper network using `--network NETWORK`?"
+            )
