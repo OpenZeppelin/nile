@@ -6,7 +6,15 @@ from nile import deployments
 from nile.common import GATEWAYS
 
 
-def call_or_invoke(contract, type, method, params, network, signature=None):
+def call_or_invoke(
+    contract,
+    type,
+    method,
+    params,
+    network,
+    signature=None,
+    max_fee=None
+):
     """Call or invoke functions of StarkNet smart contracts."""
     address, abi = next(deployments.load(contract, network))
 
@@ -36,5 +44,9 @@ def call_or_invoke(contract, type, method, params, network, signature=None):
     if signature is not None:
         command.append("--signature")
         command.extend(signature)
+
+    if max_fee is not None:
+        command.append("--max_fee")
+        command.extend(max_fee)
 
     return subprocess.check_output(command).strip().decode("utf-8")
