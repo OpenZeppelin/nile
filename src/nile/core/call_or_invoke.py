@@ -47,6 +47,6 @@ def call_or_invoke(
 
     if max_fee is not None:
         command.append("--max_fee")
-        command.extend(max_fee)
+        command.append(str(max_fee))
 
     return subprocess.check_output(command).strip().decode("utf-8")
