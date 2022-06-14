@@ -191,16 +191,17 @@ def clean():
 @cli.command()
 @click.option("--host", default="127.0.0.1")
 @click.option("--port", default=5000)
-def node(host, port):
+@click.option("--accounts", default=2)
+def node(host, port, accounts):
     """Start StarkNet local network.
 
     $ nile node
-      Start StarkNet local network at port 5000
+      Start StarkNet local network at port 5000 with 2 accounts
 
-    $ nile node --host HOST --port 5001
-      Start StarkNet network on address HOST listening at port 5001
+    $ nile node --host HOST --port 5001 --accounts 3
+      Start StarkNet network on address HOST listening at port 5001 with 3 accounts
     """
-    node_command(host, port)
+    node_command(host, port, accounts)
 
 
 @cli.command()
