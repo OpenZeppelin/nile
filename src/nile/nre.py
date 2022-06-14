@@ -4,6 +4,7 @@ from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
 from nile.core.deploy import deploy
+from nile.core.declare import declare
 from nile.core.plugins import get_installed_plugins, skip_click_exit
 
 
@@ -20,11 +21,11 @@ class NileRuntimeEnvironment:
         """Compile a list of contracts."""
         return compile(contracts)
 
-    def declare(self, contract, overriding_path=None):
+    def declare(self, contract, alias=None, overriding_path=None):
         """Declare a smart contract class."""
         if arguments is None:
             arguments = []
-        return declare(contract, self.network, overriding_path)
+        return declare(contract, self.network, alias)
 
     def deploy(self, contract, arguments=None, alias=None, overriding_path=None):
         """Deploy a smart contract."""

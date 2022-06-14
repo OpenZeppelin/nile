@@ -12,6 +12,10 @@ def declare(contract_name, network, alias=None, overriding_path=None):
     """Deploy StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")
 
+    base_path = (
+        overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
+    )
+    contract = f"{base_path[0]}/{contract_name}.json"
     command = ["starknet", "declare", "--contract", contract]
 
     if network == "mainnet":

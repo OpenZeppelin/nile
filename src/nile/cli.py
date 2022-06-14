@@ -88,10 +88,9 @@ def deploy(artifact, arguments, network, alias):
 
 @cli.command()
 @click.argument("artifact", nargs=1)
-@click.argument("arguments", nargs=-1)
 @network_option
 @click.option("--alias")
-def declare(artifact, arguments, network, alias):
+def declare(artifact, network, alias):
     """Declare StarkNet smart contract."""
     declare_command(artifact, network, alias)
 
