@@ -23,8 +23,6 @@ class NileRuntimeEnvironment:
 
     def declare(self, contract, alias=None, overriding_path=None):
         """Declare a smart contract class."""
-        if arguments is None:
-            arguments = []
         return declare(contract, self.network, alias)
 
     def deploy(self, contract, arguments=None, alias=None, overriding_path=None):
