@@ -30,7 +30,7 @@ def declare(contract_name, network, alias=None, overriding_path=None):
     logging.info(f"⏳ Declaration of {contract_name} successfully sent at {address}")
     logging.info(f"🧾 Transaction hash: {tx_hash}")
 
-    declarations.register_class_hash(address, network, alias)
+    deployments.register_class_hash(address, network, alias)
     return address
 
 
