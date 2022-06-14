@@ -2,7 +2,7 @@
 import logging
 import os
 
-from nile.common import DEPLOYMENTS_FILENAME
+from nile.common import DECLARATIONS_FILENAME, DEPLOYMENTS_FILENAME
 
 
 def register(address, abi, network, alias):
@@ -20,6 +20,26 @@ def register(address, abi, network, alias):
             logging.info(f"📦 Registering {address} in {file}")
 
         fp.write(f"{address}:{abi}")
+        if alias is not None:
+            fp.write(f":{alias}")
+        fp.write("\n")
+
+
+def register_class_hash(address, network, alias):
+    """Register a new deployment."""
+    file = f"{network}.{DECLARATIONS_FILENAME}"
+
+    if alias is not None:
+        if exists(alias, network):
+            raise Exception(f"Alias {alias} already exists in {file}")
+
+    with open(file, "a") as fp:
+        if alias is not None:
+            logging.info(f"📦 Registering declaration as {alias} in {file}")
+        else:
+            logging.info(f"📦 Registering {address} in {file}")
+
+        fp.write(f"{address}")
         if alias is not None:
             fp.write(f":{alias}")
         fp.write("\n")

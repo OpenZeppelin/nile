@@ -7,6 +7,7 @@ BUILD_DIRECTORY = "artifacts"
 TEMP_DIRECTORY = ".temp"
 ABIS_DIRECTORY = f"{BUILD_DIRECTORY}/abis"
 DEPLOYMENTS_FILENAME = "deployments.txt"
+DECLARATIONS_FILENAME = "declarations.txt"
 ACCOUNTS_FILENAME = "accounts.json"
 NODE_FILENAME = "node.json"
 RETRY_AFTER_SECONDS = 30
