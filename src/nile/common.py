@@ -67,3 +67,10 @@ def run_command(
         command.append(f"--gateway_url={GATEWAYS.get(network)}")
 
     return subprocess.check_output(command)
+
+
+def parse_information(x):
+    """Extract information from deploy/declare command."""
+    # address is 64, tx_hash is 64 chars long
+    address, tx_hash = re.findall("0x[\\da-f]{1,64}", str(x))
+    return address, tx_hash

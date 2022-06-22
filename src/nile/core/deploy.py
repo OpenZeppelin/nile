@@ -3,7 +3,7 @@ import logging
 import re
 
 from nile import deployments
-from nile.common import run_command, BUILD_DIRECTORY, ABIS_DIRECTORY
+from nile.common import run_command, BUILD_DIRECTORY, ABIS_DIRECTORY, parse_information
 
 
 def deploy(contract_name, arguments, network, alias, overriding_path=None):
@@ -16,16 +16,9 @@ def deploy(contract_name, arguments, network, alias, overriding_path=None):
 
     output = run_command(contract_name, network, overriding_path, arguments=arguments)
 
-    address, tx_hash = parse_deployment(output)
+    address, tx_hash = parse_information(output)
     logging.info(f"⏳ ️Deployment of {contract_name} successfully sent at {address}")
     logging.info(f"🧾 Transaction hash: {tx_hash}")
 
     deployments.register(address, abi, network, alias)
     return address, abi
-
-
-def parse_deployment(x):
-    """Extract information from deployment command."""
-    # address is 64, tx_hash is 64 chars long
-    address, tx_hash = re.findall("0x[\\da-f]{1,64}", str(x))
-    return address, tx_hash
