@@ -103,6 +103,23 @@ A few things to notice here:
 3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 
+### `declare`
+
+```sh
+nile declare contract --alias my_contract
+
+🚀 Declaring contract
+⏳ Declaration of contract successfully sent at 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
+📦 Registering declaration as my_contract in localhost.declarations.txt
+```
+
+A few things to notice here:
+
+1. `nile declare <contract_name>` looks for an artifact with the same name
+2. This created a `localhost.declarations.txt` file storing all data related to my declarations
+3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
+4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
+
 ### `setup`
 
 Deploy an Account associated with a given private key.
@@ -217,7 +234,7 @@ nile version
 
 ### `debug`
 
-Use locally available contracts to make error messages from rejected transactions more explicit.  
+Use locally available contracts to make error messages from rejected transactions more explicit.
 
 ```sh
 nile debug <transaction_hash> [CONTRACTS_FILE, NETWORK]
@@ -298,30 +315,30 @@ In order for this implementation to be functional, it is needed by the plugin de
 
 1. Define a Python module that implement a click command or group:
 
-    ```python
-    # First, import click dependency
-    import click
+   ```python
+   # First, import click dependency
+   import click
 
-    # Decorate the method that will be the command name with `click.command` 
-    @click.command()
-    # You can define custom parameters as defined in `click`: https://click.palletsprojects.com/en/7.x/options/
-    def my_command():
-        # Help message to show with the command
-        """
-        Subcommand plugin that does something.
-        """
-        # Done! Now implement your custom functionality in the command
-        click.echo("I'm a plugin overiding a command!")
-    ```
+   # Decorate the method that will be the command name with `click.command`
+   @click.command()
+   # You can define custom parameters as defined in `click`: https://click.palletsprojects.com/en/7.x/options/
+   def my_command():
+       # Help message to show with the command
+       """
+       Subcommand plugin that does something.
+       """
+       # Done! Now implement your custom functionality in the command
+       click.echo("I'm a plugin overiding a command!")
+   ```
 
 2. Define the plugin entrypoint. In this case using Poetry features in the pyproject.toml file:
 
-    ```sh
-    # We need to specify that click commands are Poetry entrypoints of type `nile_plugins`. Do not modify this
-    [tool.poetry.plugins."nile_plugins"]
-    # Here you specify you command name and location <command_name> = <package_method_location>
-    "greet" = "nile_greet.main.greet"
-    ```
+   ```sh
+   # We need to specify that click commands are Poetry entrypoints of type `nile_plugins`. Do not modify this
+   [tool.poetry.plugins."nile_plugins"]
+   # Here you specify you command name and location <command_name> = <package_method_location>
+   "greet" = "nile_greet.main.greet"
+   ```
 
 3. Done!
 
@@ -334,20 +351,20 @@ Finally, after the desired plugin is installed, it will also be automatically av
 Nile uses tox to manage development tasks, you can get a list of
 available task with `tox -av`.
 
-* Install a development version of the package with `python -m pip install .`
-* Build the package with `tox -e build`
-* Format all files with `tox -e format`
-* Check files formatting with `tox -e lint`
+- Install a development version of the package with `python -m pip install .`
+- Build the package with `tox -e build`
+- Format all files with `tox -e format`
+- Check files formatting with `tox -e lint`
 
 ### Testing
 
 To run tests:
 
-* Install testing dependencies with `python -m pip install .[testing]`
-* Run all tests with `tox`
-* Run unit tests only with `tox -e unit`
-* To run a specific set of tests, point to a module and/or function, e.g. `toxtests/test_module.py::test_function`
-* Other `pytest` flags must be preceded by `--`, e.g. `tox -- --pdb` to runtests in debug mode
+- Install testing dependencies with `python -m pip install .[testing]`
+- Run all tests with `tox`
+- Run unit tests only with `tox -e unit`
+- To run a specific set of tests, point to a module and/or function, e.g. `toxtests/test_module.py::test_function`
+- Other `pytest` flags must be preceded by `--`, e.g. `tox -- --pdb` to runtests in debug mode
 
 ## License
 
