@@ -3,8 +3,8 @@ from nile import deployments
 from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
-from nile.core.deploy import deploy
 from nile.core.declare import declare
+from nile.core.deploy import deploy
 from nile.core.plugins import get_installed_plugins, skip_click_exit
 
 

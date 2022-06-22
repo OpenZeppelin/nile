@@ -8,8 +8,8 @@ from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
-from nile.core.deploy import deploy as deploy_command
 from nile.core.declare import declare as declare_command
+from nile.core.deploy import deploy as deploy_command
 from nile.core.init import init as init_command
 from nile.core.install import install as install_command
 from nile.core.node import node as node_command

@@ -1,6 +1,7 @@
 """nile common module."""
 import json
 import os
+import subprocess
 
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
@@ -42,3 +43,27 @@ def get_all_contracts(ext=None, directory=None):
         ]
 
     return files
+
+
+def run_command(
+    contract_name, network, overriding_path=None, operation="deploy", arguments=None
+):
+    """Execute CLI command with given parameters."""
+    base_path = (
+        overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
+    )
+    contract = f"{base_path[0]}/{contract_name}.json"
+    command = ["starknet", "declare", "--contract", contract]
+
+    if arguments:
+        command.append("--inputs")
+        command.extend([argument for argument in arguments])
+
+    if network == "mainnet":
+        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
+    elif network == "goerli":
+        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
+    else:
+        command.append(f"--gateway_url={GATEWAYS.get(network)}")
+
+    return subprocess.check_output(command)

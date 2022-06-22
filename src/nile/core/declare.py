@@ -1,41 +1,26 @@
-"""Command to deploy StarkNet smart contracts."""
+"""Command to declare StarkNet smart contracts."""
 import logging
-import os
 import re
-import subprocess
 
 from nile import deployments
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS
+from nile.common import run_command
 
 
 def declare(contract_name, network, alias=None, overriding_path=None):
     """Deploy StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")
 
-    base_path = (
-        overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
-    )
-    contract = f"{base_path[0]}/{contract_name}.json"
-    command = ["starknet", "declare", "--contract", contract]
-
-    if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-    elif network == "goerli":
-        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
-    else:
-        command.append(f"--gateway_url={GATEWAYS.get(network)}")
-
-    output = subprocess.check_output(command)
-    address, tx_hash = parse_deployment(output)
-    logging.info(f"⏳ Declaration of {contract_name} successfully sent at {address}")
+    output = run_command(contract_name, network, overriding_path, operation="declare")
+    class_hash, tx_hash = parse_declaration(output)
+    logging.info(f"⏳ Declaration of {contract_name} successfully sent at {class_hash}")
     logging.info(f"🧾 Transaction hash: {tx_hash}")
 
-    deployments.register_class_hash(address, network, alias)
-    return address
+    deployments.register_class_hash(class_hash, network, alias)
+    return class_hash
 
 
-def parse_deployment(x):
+def parse_declaration(x):
     """Extract information from deployment command."""
-    # address is 64, tx_hash is 64 chars long
-    address, tx_hash = re.findall("0x[\\da-f]{1,64}", str(x))
-    return address, tx_hash
+    # class_hash is 64, tx_hash is 64 chars long
+    class_hash, tx_hash = re.findall("0x[\\da-f]{1,64}", str(x))
+    return class_hash, tx_hash

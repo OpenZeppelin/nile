@@ -61,7 +61,10 @@ class Account:
             )
 
         (call_array, calldata, sig_r, sig_s) = self.signer.sign_transaction(
-            sender=self.address, calls=[[target_address, method, calldata]], nonce=nonce, max_fee=max_fee
+            sender=self.address,
+            calls=[[target_address, method, calldata]],
+            nonce=nonce,
+            max_fee=max_fee,
         )
 
         params = []
@@ -78,5 +81,5 @@ class Account:
             params=params,
             network=self.network,
             signature=[str(sig_r), str(sig_s)],
-            max_fee=max_fee
+            max_fee=max_fee,
         )
