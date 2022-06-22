@@ -74,7 +74,7 @@ def test_send_nonce_call(mock_call):
 
     # Instead of creating and populating a tmp .txt file, this uses the
     # deployed account address (contract_address) as the target
-    account.send(contract_address, "method", [1, 2, 3])
+    account.send(contract_address, "method", [1, 2, 3], max_fee=1)
 
     # 'call_or_invoke' is called twice ('get_nonce' and '__execute__')
     assert mock_call.call_count == 2
@@ -101,11 +101,11 @@ def test_send_sign_transaction_and_execute(callarray, calldata):
     with patch("nile.core.account.call_or_invoke") as mock_call:
         send_args = [contract_address, "method", [1, 2, 3]]
         nonce = 4
-        account.send(*send_args, nonce)
+        account.send(*send_args, nonce, max_fee=1)
 
         # Check values are correctly passed to 'sign_transaction'
         account.signer.sign_transaction.assert_called_once_with(
-            calls=[send_args], nonce=nonce, sender=account.address
+            calls=[send_args], nonce=nonce, sender=account.address, max_fee=1
         )
 
         # Check values are correctly passed to '__execute__'
@@ -122,4 +122,5 @@ def test_send_sign_transaction_and_execute(callarray, calldata):
             ],
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
+            max_fee=1,
         )

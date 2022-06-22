@@ -1,6 +1,7 @@
 """nile common module."""
 import json
 import os
+import re
 import subprocess
 
 CONTRACTS_DIRECTORY = "contracts"
