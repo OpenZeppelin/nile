@@ -35,7 +35,7 @@ def register_class_hash(address, network, alias):
 
     with open(file, "a") as fp:
         if alias is not None:
-            logging.info(f"📦 Registering declaration as {alias} in {file}")
+            logging.info(f"📦 Registering {alias} in {file}")
         else:
             logging.info(f"📦 Registering {address} in {file}")
 
