@@ -42,7 +42,7 @@ def call_or_invoke(
         command.extend(signature)
 
     command.append("--max_fee")
-    command.append(str(max_fee))
+    command.append(max_fee)
 
     try:
         output = subprocess.check_output(command).strip().decode("utf-8")

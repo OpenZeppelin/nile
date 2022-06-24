@@ -199,10 +199,10 @@ def node(host, port):
     """Start StarkNet local network.
 
     $ nile node
-      Start StarkNet local network at port 5050 with 2 accounts
+      Start StarkNet local network at port 5050
 
     $ nile node --host HOST --port 5001
-      Start StarkNet network on address HOST listening at port 5001 with 3 accounts
+      Start StarkNet network on address HOST listening at port 5001
     """
     node_command(host, port)
 
