@@ -108,8 +108,9 @@ def setup(signer, network):
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
+@click.argument("max_fee", nargs=1)
 @network_option
-def send(signer, contract_name, method, params, network):
+def send(signer, contract_name, method, params, max_fee, network):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = Account(signer, network)
     print(
@@ -117,7 +118,7 @@ def send(signer, contract_name, method, params, network):
             method, contract_name, [x for x in params]
         )
     )
-    out = account.send(contract_name, method, params)
+    out = account.send(contract_name, method, params, max_fee=max_fee)
     print(out)
 
 
@@ -125,10 +126,12 @@ def send(signer, contract_name, method, params, network):
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
+@click.argument("max_fee", nargs=1)
 @network_option
-def invoke(contract_name, method, params, network):
+def invoke(contract_name, method, params, max_fee, network):
     """Invoke functions of StarkNet smart contracts."""
-    out = call_or_invoke_command(contract_name, "invoke", method, params, network)
+    out = call_or_invoke_command(contract_name, "invoke",
+                                 method, params, network, max_fee=max_fee)
     print(out)
 
 
@@ -190,18 +193,17 @@ def clean():
 
 @cli.command()
 @click.option("--host", default="127.0.0.1")
-@click.option("--port", default=5000)
-@click.option("--accounts", default=2)
-def node(host, port, accounts):
+@click.option("--port", default=5050)
+def node(host, port):
     """Start StarkNet local network.
 
     $ nile node
-      Start StarkNet local network at port 5000 with 2 accounts
+      Start StarkNet local network at port 5050 with 2 accounts
 
-    $ nile node --host HOST --port 5001 --accounts 3
+    $ nile node --host HOST --port 5001
       Start StarkNet network on address HOST listening at port 5001 with 3 accounts
     """
-    node_command(host, port, accounts)
+    node_command(host, port)
 
 
 @cli.command()

@@ -39,8 +39,14 @@ def call_or_invoke(
         command.append("--signature")
         command.extend(signature)
 
-    if max_fee is not None:
-        command.append("--max_fee")
-        command.append(str(max_fee))
+    command.append("--max_fee")
+    command.append(str(max_fee))
 
-    return subprocess.check_output(command).strip().decode("utf-8")
+    try:
+        output = subprocess.check_output(command).strip().decode("utf-8")
+        return output
+    except StarkException as e:
+        print("")
+        print("😰 Whooops, looks like max fee is missing. Try with:\n")
+        print("             --max_fee=`MAX_FEE`")
+        print("")

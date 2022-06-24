@@ -6,7 +6,7 @@ from nile.common import parse_information, run_command
 
 
 def declare(contract_name, network, alias=None, overriding_path=None):
-    """Deploy StarkNet smart contracts."""
+    """Declare StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")
 
     output = run_command(contract_name, network, overriding_path, operation="declare")
