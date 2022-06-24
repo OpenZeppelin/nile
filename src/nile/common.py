@@ -54,7 +54,7 @@ def run_command(
         overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
     )
     contract = f"{base_path[0]}/{contract_name}.json"
-    command = ["starknet", "declare", "--contract", contract]
+    command = ["starknet", operation, "--contract", contract]
 
     if arguments:
         command.append("--inputs")
