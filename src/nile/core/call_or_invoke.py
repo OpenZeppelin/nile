@@ -2,8 +2,6 @@
 import os
 import subprocess
 
-from starkware.starkware_utils.error_handling import StarkException
-
 from nile import deployments
 from nile.common import GATEWAYS
 
@@ -41,14 +39,9 @@ def call_or_invoke(
         command.append("--signature")
         command.extend(signature)
 
-    command.append("--max_fee")
-    command.append(max_fee)
+    if max_fee is not None:
+        command.append("--max_fee")
+        command.append(max_fee)
 
-    try:
-        output = subprocess.check_output(command).strip().decode("utf-8")
-        return output
-    except StarkException:
-        print("")
-        print("😰 Whooops, looks like max fee is missing. Try with:\n")
-        print("             --max_fee=`MAX_FEE`")
-        print("")
+    output = subprocess.check_output(command).strip().decode("utf-8")
+    return output
