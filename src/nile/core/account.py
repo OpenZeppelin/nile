@@ -61,7 +61,7 @@ class Account:
             )
 
         if max_fee is None:
-            max_fee = 0
+            max_fee = "0"
 
         (call_array, calldata, sig_r, sig_s) = self.signer.sign_transaction(
             sender=self.address,
