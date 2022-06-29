@@ -108,10 +108,10 @@ def setup(signer, network):
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
-@click.argument("max_fee", nargs=1)
+@click.option("--max_fee", nargs=1)
 @network_option
 def send(signer, contract_name, method, params, max_fee, network):
-    """Invoke a contract's method through an Account. Same usage as nile invoke."""
+    """Invoke a contract's method through an Account."""
     account = Account(signer, network)
     print(
         "Calling {} on {} with params: {}".format(
@@ -126,13 +126,10 @@ def send(signer, contract_name, method, params, max_fee, network):
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
-@click.argument("max_fee", nargs=1)
 @network_option
-def invoke(contract_name, method, params, max_fee, network):
+def invoke(contract_name, method, params, network):
     """Invoke functions of StarkNet smart contracts."""
-    out = call_or_invoke_command(
-        contract_name, "invoke", method, params, network, max_fee=max_fee
-    )
+    out = call_or_invoke_command(contract_name, "invoke", method, params, network)
     print(out)
 
 
