@@ -56,7 +56,8 @@ def event_loop():
 async def test_execute():
     starknet = await Starknet.empty()
     account = await starknet.deploy(
-        contract_def=get_account_definition(), constructor_calldata=[SIGNER.public_key]
+        contract_class=get_account_definition(),
+        constructor_calldata=[SIGNER.public_key],
     )
     contract = await starknet.deploy(
         "tests/resources/contracts/contract.cairo",
