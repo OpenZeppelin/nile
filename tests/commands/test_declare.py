@@ -17,7 +17,7 @@ CONTRACT = "contract"
 NETWORK = "goerli"
 ALIAS = "alias"
 PATH = "path"
-RUN_OUTPUT = b'output'
+RUN_OUTPUT = b"output"
 HASH = 111
 TX_HASH = 222
 
