@@ -149,13 +149,13 @@ A few things to notice here:
 Execute a transaction through the `Account` associated with the private key provided. The syntax is:
 
 ```sh
-nile send <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
+nile send <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...] --max_fee <MAX_FEE>
 ```
 
 For example:
 
 ```sh
-nile send <private_key_alias> ownable0 transfer_ownership 0x07db6...60e794
+nile send <private_key_alias> ownable0 transfer_ownership 0x07db6...60e794 --max_fee 600000000000000 
 
 Invoke transaction was sent.
 Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
@@ -164,27 +164,23 @@ Transaction hash: 0x1c
 
 ### `call` and `invoke`
 
-Using `call` and `invoke`, we can perform read and write operations against our local node (or public one using the `--network mainnet` parameter). The syntax is:
+Using `call`, we can perform read operations against our local node (or public one using the `--network mainnet` parameter). The syntax is:
 
 ```sh
-nile <command> <contract_identifier> <method> [PARAM_1, PARAM2...]
+nile `call` <contract_identifier> <method> [PARAM_1, PARAM2...]
 ```
 
-Where `<command>` is either `call` or `invoke` and `<contract_identifier>` is either our contract address or alias, as defined on `deploy`.
-
-```sh
-nile invoke my_contract increase_balance 1
-
-Invoke transaction was sent.
-Contract address: 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
-Transaction hash: 0x1
-```
+Where `<contract_identifier>` is either our contract address or alias, as defined on `deploy`.
 
 ```sh
 nile call my_contract get_balance
 
 1
 ```
+
+`invoke` is now deprecated. StarkNet enforces fees; thus, users must use an account to execute write transactions (and pay for fees). See [nile send](#send).
+
+> Note that the local node still supports `nile invoke` for the time being.
 
 ### `run`
 
