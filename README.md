@@ -149,13 +149,13 @@ A few things to notice here:
 Execute a transaction through the `Account` associated with the private key provided. The syntax is:
 
 ```sh
-nile send <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...] --max_fee <MAX_FEE>
+nile send <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...] <max_fee>
 ```
 
 For example:
 
 ```sh
-nile send <private_key_alias> ownable0 transfer_ownership 0x07db6...60e794 --max_fee 600000000000000 
+nile send <private_key_alias> ownable0 transfer_ownership 0x07db6...60e794 600000000000000 
 
 Invoke transaction was sent.
 Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
