@@ -1,4 +1,4 @@
-"""Tests for declare command."""
+"""Tests for deploy command."""
 import logging
 from unittest.mock import patch
 
@@ -41,7 +41,7 @@ TX_HASH = 222
 @patch("nile.core.deploy.run_command", return_value=RUN_OUTPUT)
 @patch("nile.core.deploy.parse_information", return_value=[ADDRESS, TX_HASH])
 @patch("nile.core.deploy.deployments.register")
-def test_declare(mock_register, mock_parse, mock_run_cmd, caplog, args, exp_command):
+def test_deploy(mock_register, mock_parse, mock_run_cmd, caplog, args, exp_command):
     logging.getLogger().setLevel(logging.INFO)
 
     # check return values
