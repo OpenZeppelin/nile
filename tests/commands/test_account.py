@@ -101,7 +101,8 @@ def test_send_sign_transaction_and_execute(callarray, calldata):
     with patch("nile.core.account.call_or_invoke") as mock_call:
         send_args = [contract_address, "method", [1, 2, 3]]
         nonce = 4
-        account.send(*send_args, nonce, max_fee=1)
+        max_fee = 1
+        account.send(*send_args, max_fee, nonce)
 
         # Check values are correctly passed to 'sign_transaction'
         account.signer.sign_transaction.assert_called_once_with(
@@ -111,6 +112,7 @@ def test_send_sign_transaction_and_execute(callarray, calldata):
         # Check values are correctly passed to '__execute__'
         mock_call.assert_called_with(
             contract=account.address,
+            max_fee=str(max_fee),
             method="__execute__",
             network=NETWORK,
             params=[
@@ -121,6 +123,5 @@ def test_send_sign_transaction_and_execute(callarray, calldata):
                 str(nonce),
             ],
             signature=[str(sig_r), str(sig_s)],
-            type="invoke",
-            max_fee=1,
+            type="invoke"
         )
