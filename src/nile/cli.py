@@ -108,10 +108,10 @@ def setup(signer, network):
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
-@click.option("--max_fee", nargs=1)
+@click.argument("max_fee", nargs=1)
 @network_option
 def send(signer, contract_name, method, params, max_fee, network):
-    """Invoke a contract's method through an Account."""
+    """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = Account(signer, network)
     print(
         "Calling {} on {} with params: {}".format(
