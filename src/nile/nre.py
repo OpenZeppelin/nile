@@ -37,11 +37,11 @@ class NileRuntimeEnvironment:
             params = []
         return call_or_invoke(contract, "call", method, params, self.network)
 
-    def invoke(self, contract, method, params=None, max_fee=None):
+    def invoke(self, contract, method, params=None):
         """Invoke a mutable function in a smart contract."""
         if params is None:
             params = []
-        return call_or_invoke(contract, "invoke", method, params, self.network, max_fee)
+        return call_or_invoke(contract, "invoke", method, params, self.network)
 
     def get_deployment(self, identifier):
         """Get a deployment by its identifier (address or alias)."""
