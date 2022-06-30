@@ -123,5 +123,5 @@ def test_send_sign_transaction_and_execute(callarray, calldata):
                 str(nonce),
             ],
             signature=[str(sig_r), str(sig_s)],
-            type="invoke"
+            type="invoke",
         )
