@@ -43,9 +43,13 @@ class NileRuntimeEnvironment:
             params = []
         return call_or_invoke(contract, "invoke", method, params, self.network, max_fee)
 
-    def get_deployment(self, contract):
+    def get_deployment(self, identifier):
         """Get a deployment by its identifier (address or alias)."""
-        return next(deployments.load(contract, self.network))
+        return next(deployments.load(identifier, self.network))
+
+    def get_declaration(self, identifier):
+        """Get a declared class by its identifier (class hash or alias)."""
+        return next(deployments.load_class(identifier, self.network))
 
     def get_or_deploy_account(self, signer):
         """Get or deploy an Account contract."""
