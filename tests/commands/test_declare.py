@@ -17,6 +17,7 @@ CONTRACT = "contract"
 NETWORK = "goerli"
 ALIAS = "alias"
 PATH = "path"
+RUN_OUTPUT = b'output'
 HASH = 111
 TX_HASH = 222
 
@@ -41,11 +42,11 @@ TX_HASH = 222
         ),
     ],
 )
-@patch("nile.core.declare.run_command")
+@patch("nile.core.declare.run_command", return_value=RUN_OUTPUT)
 @patch("nile.core.declare.parse_information", return_value=[HASH, TX_HASH])
 @patch("nile.core.declare.deployments.register_class_hash")
 def test_declare(
-    mock_register, mock_parse, mock_command, caplog, args, exp_command, exp_register
+    mock_register, mock_parse, mock_run_cmd, caplog, args, exp_command, exp_register
 ):
     logging.getLogger().setLevel(logging.INFO)
 
@@ -54,8 +55,8 @@ def test_declare(
     assert res == HASH
 
     # check internals
-    mock_command.assert_called_once_with(*exp_command, operation="declare")
-    mock_parse.assert_called_once()
+    mock_run_cmd.assert_called_once_with(*exp_command, operation="declare")
+    mock_parse.assert_called_once_with(RUN_OUTPUT)
     mock_register.assert_called_once_with(*exp_register)
 
     # check logs
