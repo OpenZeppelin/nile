@@ -125,7 +125,11 @@ def test_node(args, expected):
     else:
         host, port = args[1], int(args[3])
 
-    network = host
+    if network == "127.0.0.1":
+        network = "localhost"
+    else:
+        network = host
+
     gateway_url = f"http://{host}:{port}/"
 
     # Spawn process to start StarkNet local network with specified port
