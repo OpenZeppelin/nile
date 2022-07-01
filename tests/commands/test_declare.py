@@ -4,7 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.core.declare import declare
+from nile.common import DECLARATIONS_FILENAME
+from nile.core.declare import alias_exists, declare
 
 
 @pytest.fixture(autouse=True)
@@ -20,6 +21,16 @@ PATH = "path"
 RUN_OUTPUT = b"output"
 HASH = 111
 TX_HASH = 222
+
+
+def test_alias_exists():
+    # when alias does not exist
+    assert alias_exists(ALIAS, NETWORK) is False
+
+    # when alias exists
+    with patch("nile.core.declare.deployments.load_class") as mock_load:
+        mock_load.__iter__.side_effect = HASH
+        assert alias_exists(ALIAS, NETWORK) is True
 
 
 @pytest.mark.parametrize(
@@ -63,3 +74,15 @@ def test_declare(
     assert f"🚀 Declaring {CONTRACT}" in caplog.text
     assert f"⏳ Declaration of {CONTRACT} successfully sent at {HASH}" in caplog.text
     assert f"🧾 Transaction hash: {TX_HASH}" in caplog.text
+
+
+@patch("nile.core.declare.alias_exists", return_value=True)
+def test_declare_duplicate_hash(mock_alias_check):
+
+    with pytest.raises(Exception) as err:
+        declare(ALIAS, NETWORK)
+
+        assert (
+            f"Alias {ALIAS} already exists in {NETWORK}.{DECLARATIONS_FILENAME}"
+            in str(err.value)
+        )
