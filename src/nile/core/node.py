@@ -10,7 +10,10 @@ def node(host="127.0.0.1", port=5050):
     try:
         # Save host and port information to be used by other commands
         file = NODE_FILENAME
-        network = host
+        if host == "127.0.0.1":
+            network = "localhost"
+        else:
+            network = host
         gateway_url = f"http://{host}:{port}/"
         gateway = {network: gateway_url}
 
