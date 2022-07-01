@@ -4,7 +4,12 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.common import ACCOUNTS_FILENAME, BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
+from nile.common import (
+    ACCOUNTS_FILENAME,
+    BUILD_DIRECTORY,
+    DECLARATIONS_FILENAME,
+    DEPLOYMENTS_FILENAME,
+)
 from nile.core.clean import clean
 
 
@@ -25,8 +30,9 @@ def test_clean_already_clean(mock_os_remove, mock_shutil_rmtree):
 @pytest.mark.parametrize(
     "fname",
     [
-        f"localhost.{ACCOUNTS_FILENAME}",
-        f"localhost.{DEPLOYMENTS_FILENAME}",
+        f"127.0.0.1.{ACCOUNTS_FILENAME}",
+        f"127.0.0.1.{DEPLOYMENTS_FILENAME}",
+        f"127.0.0.1.{DECLARATIONS_FILENAME}",
     ],
 )
 @patch("nile.core.clean.shutil.rmtree")
