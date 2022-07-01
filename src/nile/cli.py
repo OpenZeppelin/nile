@@ -29,7 +29,7 @@ def network_option(f):
     return click.option(  # noqa: E731
         "--network",
         envvar="STARKNET_NETWORK",
-        default="127.0.0.1",
+        default="localhost",
         help=f"Select network, one of {NETWORKS}",
         callback=_validate_network,
     )(f)
@@ -42,7 +42,7 @@ def _validate_network(_ctx, _param, value):
         return "goerli"
     # normalize localhost
     if "localhost" in value or "127.0.0.1" in value:
-        return "127.0.0.1"
+        return "localhost"
     # check if value is accepted
     if value in NETWORKS:
         return value
