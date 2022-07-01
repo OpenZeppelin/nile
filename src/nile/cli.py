@@ -130,7 +130,9 @@ def send(signer, contract_name, method, params, network, max_fee=None):
 @network_option
 def invoke(contract_name, method, params, network, max_fee=None):
     """Invoke functions of StarkNet smart contracts."""
-    out = call_or_invoke_command(contract_name, "invoke", method, params, network, max_fee=max_fee)
+    out = call_or_invoke_command(
+        contract_name, "invoke", method, params, network, max_fee=max_fee
+    )
     print(out)
 
 
