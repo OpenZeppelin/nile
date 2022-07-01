@@ -14,9 +14,9 @@ from nile.common import (
 def clean():
     """Remove artifacts from workspace."""
     local_files = [
-        f"127.0.0.1.{DEPLOYMENTS_FILENAME}",
-        f"127.0.0.1.{DECLARATIONS_FILENAME}",
-        f"127.0.0.1.{ACCOUNTS_FILENAME}",
+        f"localhost.{DEPLOYMENTS_FILENAME}",
+        f"localhost.{DECLARATIONS_FILENAME}",
+        f"localhost.{ACCOUNTS_FILENAME}",
         BUILD_DIRECTORY,
     ]
 
