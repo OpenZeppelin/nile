@@ -125,7 +125,7 @@ def test_node(args, expected):
     else:
         host, port = args[1], int(args[3])
 
-    if network == "127.0.0.1":
+    if host == "127.0.0.1":
         network = "localhost"
     else:
         network = host
