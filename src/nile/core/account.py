@@ -60,6 +60,9 @@ class Account:
                 call_or_invoke(self.address, "call", "get_nonce", [], self.network)
             )
 
+        if max_fee is None:
+            max_fee = 0
+
         (call_array, calldata, sig_r, sig_s) = self.signer.sign_transaction(
             sender=self.address,
             calls=[[target_address, method, calldata]],
