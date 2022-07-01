@@ -118,7 +118,7 @@ def test_compile(args, expected):
 )
 def test_node(args, expected):
     # Node life
-    seconds = 8
+    seconds = 15
 
     if args == []:
         host, port = "127.0.0.1", 5050
