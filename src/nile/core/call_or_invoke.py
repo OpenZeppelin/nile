@@ -1,4 +1,5 @@
 """Command to call or invoke StarkNet smart contracts."""
+import logging
 import os
 import subprocess
 
@@ -43,5 +44,20 @@ def call_or_invoke(
         command.append("--max_fee")
         command.append(max_fee)
 
-    output = subprocess.check_output(command).strip().decode("utf-8")
-    return output
+    try:
+        output = subprocess.check_output(command).strip().decode("utf-8")
+        return output
+
+    except subprocess.CalledProcessError:
+        p = subprocess.Popen(command, stderr=subprocess.PIPE)
+        _, error = p.communicate()
+
+        if "max_fee must be bigger than 0" in error.decode():
+            logging.error(
+                """
+                \n😰 Whoops, looks like max fee is missing. Try with:\n
+                --max_fee=`MAX_FEE`
+                """
+            )
+        else:
+            raise
