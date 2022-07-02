@@ -29,10 +29,8 @@ def register_class_hash(hash, network, alias):
     """Register a new deployment."""
     file = f"{network}.{DECLARATIONS_FILENAME}"
 
-    if class_exists(hash, network, alias):
-        raise Exception(
-            f"Duplicate hash {hash[:6]}...{hash[-6:]} or alias {alias} in {file}"
-        )
+    if hash_exists(hash, network):
+        raise Exception(f"Hash {hash[:6]}...{hash[-6:]} already exists in {file}")
 
     with open(file, "a") as fp:
         if alias is not None:
@@ -52,14 +50,10 @@ def exists(identifier, network):
     return foo is not None
 
 
-def class_exists(hash, network, alias=None):
+def hash_exists(hash, network):
     """Return whether a class declaration exists or not."""
     if hash in load_class(hash, network):
         return True
-
-    if alias is not None:
-        foo = next(load_class(alias, network), None)
-        return foo is not None
 
 
 def load(identifier, network):
