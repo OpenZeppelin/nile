@@ -346,7 +346,7 @@ To run tests:
 * Install testing dependencies with `python -m pip install .[testing]`
 * Run all tests with `tox`
 * Run unit tests only with `tox -e unit`
-* To run a specific set of tests, point to a module and/or function, e.g. `toxtests/test_module.py::test_function`
+* To run a specific set of tests, point to a module and/or function, e.g. `tox tests/test_module.py::test_function`
 * Other `pytest` flags must be preceded by `--`, e.g. `tox -- --pdb` to runtests in debug mode
 
 ## License
