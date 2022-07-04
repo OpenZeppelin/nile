@@ -144,6 +144,9 @@ def test_node(args, expected):
         gateway = json.load(f)
     assert gateway.get(network) == expected
 
+    print(check_node(p, seconds, gateway_url))
+    assert false
+
 
 @pytest.mark.parametrize(
     "args",
