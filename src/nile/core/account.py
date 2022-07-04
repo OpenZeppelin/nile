@@ -20,7 +20,7 @@ class Account:
 
     def __init__(self, signer, network):
         """Get or deploy an Account contract for the given private key."""
-        self.signer = Signer(int(os.environ[signer]))
+        self.signer = Signer(int(os.environ[signer], 16))
         self.network = network
 
         if accounts.exists(str(self.signer.public_key), network):
