@@ -217,6 +217,17 @@ Please note:
 
 - `localhost` is the default network. Add `--network <network>` to change the network for the script
 
+### `get_declaration` (NRE only)
+
+Return the hash of a declared class. This can be useful in scenarios where a contract class is already declared with an alias prior to running a script.
+
+```python
+def run(nre):
+    predeclared_class = nre.get_declaration("alias")
+```
+
+> Note that this command is only available in the context of scripting in the Nile Runtime Environment.
+
 ### `clean`
 
 Deletes the `artifacts/` directory for a fresh start ❄️
