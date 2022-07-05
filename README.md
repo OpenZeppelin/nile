@@ -146,7 +146,7 @@ A few things to notice here:
 
 ### `send`
 
-Execute a transaction through the `Account` associated with the private key provided.  The syntax is:
+Execute a transaction through the `Account` associated with the private key provided. The syntax is:
 
 ```sh
 nile send <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
