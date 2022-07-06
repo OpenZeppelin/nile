@@ -30,14 +30,14 @@ def deploy(contract_name, arguments, network, alias, overriding_path=None):
         os.environ["STARKNET_NETWORK"] = "alpha-goerli"
     else:
         command.append(f"--gateway_url={GATEWAYS.get(network)}")
-
+    
     output = subprocess.check_output(command)
     address, tx_hash = parse_deployment(output)
     logging.info(f"⏳ ️Deployment of {contract_name} successfully sent at {address}")
     logging.info(f"🧾 Transaction hash: {tx_hash}")
 
     deployments.register(address, abi, network, alias)
-    return address, abi
+    return address, abi, tx_hash
 
 
 def parse_deployment(x):

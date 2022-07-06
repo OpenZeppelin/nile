@@ -14,7 +14,7 @@ from urllib.request import urlopen
 
 import pytest
 from click.testing import CliRunner
-
+from nile.core.account import Account
 from nile.cli import cli
 from nile.common import (
     ABIS_DIRECTORY,
@@ -23,6 +23,7 @@ from nile.common import (
     NODE_FILENAME,
 )
 
+KEY = "TEST_KEY"
 RESOURCES_DIR = Path(__file__).parent / "resources"
 MOCK_HASH = "0x123"
 
@@ -116,9 +117,10 @@ def test_compile(args, expected):
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-def test_node(args, expected):
+@patch("nile.utils.debug.subprocess")
+def test_node(mock_subprocess, args, expected):
     # Node life
-    seconds = 8
+    seconds = 50
 
     if args == []:
         host, port = "127.0.0.1", 5000
@@ -133,6 +135,11 @@ def test_node(args, expected):
     p = create_process(target=start_node, args=(seconds, args))
     p.start()
 
+    # Test node is runing on lite mode
+    account = Account(KEY, network)
+    account.deploy()
+    
+    assert account.creation_hash == "0x0"
     # Check node heartbeat and assert that it is running
     status = check_node(p, seconds, gateway_url)
     p.join()
@@ -143,9 +150,6 @@ def test_node(args, expected):
     with open(file, "r") as f:
         gateway = json.load(f)
     assert gateway.get(network) == expected
-
-    print(check_node(p, seconds, gateway_url))
-    assert false
 
 
 @pytest.mark.parametrize(
