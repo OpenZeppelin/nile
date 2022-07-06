@@ -29,22 +29,13 @@
     {
         "inputs": [
             {
-                "name": "hash",
+                "name": "public_key",
                 "type": "felt"
-            },
-            {
-                "name": "signature_len",
-                "type": "felt"
-            },
-            {
-                "name": "signature",
-                "type": "felt*"
             }
         ],
-        "name": "Account_is_valid_signature",
+        "name": "constructor",
         "outputs": [],
-        "stateMutability": "view",
-        "type": "function"
+        "type": "constructor"
     },
     {
         "inputs": [],
@@ -101,17 +92,6 @@
     {
         "inputs": [
             {
-                "name": "public_key",
-                "type": "felt"
-            }
-        ],
-        "name": "constructor",
-        "outputs": [],
-        "type": "constructor"
-    },
-    {
-        "inputs": [
-            {
                 "name": "hash",
                 "type": "felt"
             },
@@ -125,7 +105,12 @@
             }
         ],
         "name": "is_valid_signature",
-        "outputs": [],
+        "outputs": [
+            {
+                "name": "is_valid",
+                "type": "felt"
+            }
+        ],
         "stateMutability": "view",
         "type": "function"
     },
