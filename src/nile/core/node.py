@@ -5,15 +5,12 @@ import subprocess
 from nile.common import NODE_FILENAME
 
 
-def node(host="127.0.0.1", port=5050):
+def node(host="127.0.0.1", port=5000):
     """Start StarkNet local network."""
     try:
         # Save host and port information to be used by other commands
         file = NODE_FILENAME
-        if host == "127.0.0.1":
-            network = "localhost"
-        else:
-            network = host
+        network = host
         gateway_url = f"http://{host}:{port}/"
         gateway = {network: gateway_url}
 

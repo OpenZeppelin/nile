@@ -50,7 +50,7 @@ class Account:
 
         return address, index
 
-    def send(self, to, method, calldata, max_fee, nonce=None):
+    def send(self, to, method, calldata, nonce=None):
         """Execute a tx going through an Account contract."""
         target_address, _ = next(deployments.load(to, self.network)) or to
         calldata = [int(x) for x in calldata]
@@ -60,14 +60,8 @@ class Account:
                 call_or_invoke(self.address, "call", "get_nonce", [], self.network)
             )
 
-        if max_fee is None:
-            max_fee = 0
-
         (call_array, calldata, sig_r, sig_s) = self.signer.sign_transaction(
-            sender=self.address,
-            calls=[[target_address, method, calldata]],
-            nonce=nonce,
-            max_fee=max_fee,
+            sender=self.address, calls=[[target_address, method, calldata]], nonce=nonce
         )
 
         params = []
@@ -84,5 +78,4 @@ class Account:
             params=params,
             network=self.network,
             signature=[str(sig_r), str(sig_s)],
-            max_fee=str(max_fee),
         )
