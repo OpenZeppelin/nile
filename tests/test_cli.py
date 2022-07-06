@@ -120,7 +120,7 @@ def test_compile(args, expected):
 @patch("nile.utils.debug.subprocess")
 def test_node(mock_subprocess, args, expected):
     # Node life
-    seconds = 50
+    seconds = 60
 
     if args == []:
         host, port = "127.0.0.1", 5000
@@ -129,7 +129,7 @@ def test_node(mock_subprocess, args, expected):
 
     network = host
     gateway_url = f"http://{host}:{port}/"
-
+    
     # Spawn process to start StarkNet local network with specified port
     # i.e. $ nile node --host localhost --port 5001
     p = create_process(target=start_node, args=(seconds, args))
