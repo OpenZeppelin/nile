@@ -23,11 +23,11 @@ class Signer:
         """Sign a message hash."""
         return sign(msg_hash=message_hash, priv_key=self.private_key)
 
-    def sign_transaction(self, sender, calls, nonce, max_fee=0):
+    def sign_transaction(self, sender, calls, nonce, max_fee):
         """Sign a transaction for an Account."""
         (call_array, calldata) = from_call_to_call_array(calls)
         message_hash = get_transaction_hash(
-            int(sender, 16), call_array, calldata, nonce, max_fee
+            int(sender, 16), call_array, calldata, nonce, int(max_fee)
         )
         sig_r, sig_s = self.sign(message_hash)
         return (call_array, calldata, sig_r, sig_s)
