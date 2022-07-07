@@ -108,7 +108,7 @@ def test_compile(args, expected):
 @pytest.mark.parametrize(
     "args, expected",
     [
-        ([], "http://127.0.0.1:5000/"),
+        ([], "http://127.0.0.1:5050/"),
         (["--host", "localhost", "--port", "5001"], "http://localhost:5001/"),
     ],
 )
@@ -123,11 +123,15 @@ def test_node(mock_subprocess, args, expected):
     seconds = 60
 
     if args == []:
-        host, port = "127.0.0.1", 5000
+        host, port = "127.0.0.1", 5050
     else:
         host, port = args[1], int(args[3])
 
-    network = host
+    if host == "127.0.0.1":
+        network = "localhost"
+    else:
+        network = host
+
     gateway_url = f"http://{host}:{port}/"
     
     # Spawn process to start StarkNet local network with specified port
