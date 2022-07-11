@@ -120,7 +120,7 @@ def test_compile(args, expected):
 @patch("nile.utils.debug.subprocess")
 def test_node(mock_subprocess, args, expected):
     # Node life
-    seconds = 60
+    seconds = 8
 
     if args == []:
         host, port = "127.0.0.1", 5050

@@ -46,7 +46,7 @@ def test_deploy(mock_register, mock_parse, mock_run_cmd, caplog, args, exp_comma
 
     # check return values
     res = deploy(*args)
-    assert res == (ADDRESS, ABI)
+    assert res == (ADDRESS, ABI, TX_HASH)
 
     # check internals
     mock_run_cmd.assert_called_once_with(*exp_command, arguments=ARGS)
