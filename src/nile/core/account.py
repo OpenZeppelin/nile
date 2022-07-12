@@ -39,7 +39,7 @@ class Account:
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
 
-        address, _,tx_hash = deploy(
+        address, _, tx_hash = deploy(
             "Account",
             [str(self.signer.public_key)],
             self.network,

@@ -21,7 +21,9 @@ def node(host="127.0.0.1", port=5050):
             json.dump(gateway, f)
 
         # Start network
-        subprocess.check_call(["starknet-devnet", "--host", host, "--port", str(port), "--lite-mode"])
+        subprocess.check_call(
+            ["starknet-devnet", "--host", host, "--port", str(port), "--lite-mode"]
+        )
 
     except FileNotFoundError:
         print("")

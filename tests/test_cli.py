@@ -133,7 +133,7 @@ def test_node(mock_subprocess, args, expected):
         network = host
 
     gateway_url = f"http://{host}:{port}/"
-    
+
     # Spawn process to start StarkNet local network with specified port
     # i.e. $ nile node --host localhost --port 5001
     p = create_process(target=start_node, args=(seconds, args))
@@ -142,7 +142,7 @@ def test_node(mock_subprocess, args, expected):
     # Test node is runing on lite mode
     account = Account(KEY, network)
     account.deploy()
-    
+
     assert account.creation_hash == "0x0"
     # Check node heartbeat and assert that it is running
     status = check_node(p, seconds, gateway_url)
