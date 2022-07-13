@@ -120,7 +120,7 @@ def test_compile(args, expected):
 @patch("nile.utils.debug.subprocess")
 def test_node(mock_subprocess, args, expected):
     # Node life
-    seconds = 8
+    seconds = 15
 
     if args == []:
         host, port = "127.0.0.1", 5050
@@ -139,7 +139,7 @@ def test_node(mock_subprocess, args, expected):
     p = create_process(target=start_node, args=(seconds, args))
     p.start()
 
-    # Test node is runing on lite mode
+    # Test node is running on lite mode
     account = Account(KEY, network)
     account.deploy()
 
