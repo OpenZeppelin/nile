@@ -5,7 +5,7 @@ import subprocess
 from nile.common import NODE_FILENAME
 
 
-def node(host="127.0.0.1", port=5050):
+def node(host="127.0.0.1", port=5050, seed=None):
     """Start StarkNet local network."""
     try:
         # Save host and port information to be used by other commands
@@ -20,8 +20,14 @@ def node(host="127.0.0.1", port=5050):
         with open(file, "w+") as f:
             json.dump(gateway, f)
 
+        command = ["starknet-devnet", "--host", host, "--port", str(port)]
+
+        if seed is not None:
+            command.append("--seed")
+            command.append(str(seed))
+
         # Start network
-        subprocess.check_call(["starknet-devnet", "--host", host, "--port", str(port)])
+        subprocess.check_call(command)
 
     except FileNotFoundError:
         print("")
