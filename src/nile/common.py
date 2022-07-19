@@ -60,7 +60,8 @@ def run_command(
         command.append("--inputs")
         command.extend([argument for argument in arguments])
 
-    command += get_network_parameter(network)
+    network_gateway_prefix = ("gateway",) if operation in {"declare", "deploy"} else []
+    command += get_network_parameter(network, *network_gateway_prefix)
 
     return subprocess.check_output(command)
 
