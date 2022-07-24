@@ -28,10 +28,9 @@ class Account:
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
-            address, index, tx_hash = self.deploy()
+            address, index = self.deploy()
             self.address = address
             self.index = index
-            self.creation_hash = tx_hash
 
     def deploy(self):
         """Deploy an Account contract for the given private key."""
@@ -39,7 +38,7 @@ class Account:
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
 
-        address, _, tx_hash = deploy(
+        address, _ = deploy(
             "Account",
             [str(self.signer.public_key)],
             self.network,
@@ -49,7 +48,7 @@ class Account:
 
         accounts.register(self.signer.public_key, address, index, self.network)
 
-        return address, index, tx_hash
+        return address, index
 
     def send(self, to, method, calldata, max_fee, nonce=None):
         """Execute a tx going through an Account contract."""

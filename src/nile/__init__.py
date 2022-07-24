@@ -6,6 +6,6 @@ except ImportError:
     import importlib_metadata
 
 try:
-    __version__ = importlib_metadata.version("juli-nile")
+    __version__ = importlib_metadata.version("cairo-nile")
 except importlib_metadata.PackageNotFoundError:
     __version__ = None

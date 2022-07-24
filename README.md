@@ -46,15 +46,34 @@ This command creates the project directory structure and installs `cairo-lang`, 
 
 Run a local [`starknet-devnet`](https://github.com/Shard-Labs/starknet-devnet/) node:
 
-```sh
+```text
+nile node [--host HOST] [--port PORT] [--lite_mode]
+
+optional arguments:
+--host HOST         Specify the address to listen at; defaults to
+                    127.0.0.1 (use the address the program outputs on
+                    start)
+--port PORT         Specify the port to listen at; defaults to 5050
+--lite-mode         Applies all lite-mode optimizations by disabling
+                    features such as block hash calculation and deploy
+                    hash
+```
+
+```text
 nile node
 
- * Serving Flask app 'starknet_devnet.server' (lazy loading)
- * Environment: production
-   WARNING: This is a development server. Do not use it in a production deployment.
-   Use a production WSGI server instead.
- * Debug mode: off
- * Running on http://127.0.0.1:5050/ (Press CTRL+C to quit)
+Account #0
+Address: 0x877b050406a54adb5940227e51265a201e467e520ca85dc7f024abd03dcc61
+Public key: 0x256b8dc218586160ef80d3454a7cd51046271fbf091bd6779e3513304f22156
+Private key: 0xb204ff062d85674b467789f07826bb2
+
+...
+
+Initial balance of each account: 1000000000000000000000 WEI
+Seed to replicate this account sequence: 2128506880
+WARNING: Use these accounts and their keys ONLY for local testing. DO NOT use them on mainnet or other live networks because you will LOSE FUNDS.
+
+ * Listening on http://127.0.0.1:5050/ (Press CTRL+C to quit)
 ```
 
 ### `compile`

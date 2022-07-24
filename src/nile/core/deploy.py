@@ -20,4 +20,4 @@ def deploy(contract_name, arguments, network, alias, overriding_path=None):
     logging.info(f"🧾 Transaction hash: {tx_hash}")
 
     deployments.register(address, abi, network, alias)
-    return address, abi, tx_hash
+    return address, abi
