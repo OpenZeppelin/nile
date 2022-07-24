@@ -84,20 +84,18 @@ def test__compile_contract(mock_subprocess, is_acct, disable_hint):
     path = f"path/to/{contract_name}.cairo"
 
     _compile_contract(
-        path=path,
-        account_contract=is_acct,
-        disable_hint_validation=disable_hint
+        path=path, account_contract=is_acct, disable_hint_validation=disable_hint
     )
 
     expected = [
-            "starknet-compile",
-            path,
-            f"--cairo_path={CONTRACTS_DIRECTORY}",
-            "--output",
-            f"artifacts/{contract_name}.json",
-            "--abi",
-            f"artifacts/abis/{contract_name}.json",
-        ]
+        "starknet-compile",
+        path,
+        f"--cairo_path={CONTRACTS_DIRECTORY}",
+        "--output",
+        f"artifacts/{contract_name}.json",
+        "--abi",
+        f"artifacts/abis/{contract_name}.json",
+    ]
 
     if is_acct:
         expected.append("--account_contract")
