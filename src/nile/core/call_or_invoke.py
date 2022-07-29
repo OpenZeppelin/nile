@@ -1,14 +1,23 @@
 """Command to call or invoke StarkNet smart contracts."""
 import logging
-import os
+import re
 import subprocess
 
 from nile import deployments
-from nile.common import GATEWAYS
+from nile.common import get_network_parameter
+from nile.utils.status import status
 
 
 def call_or_invoke(
-    contract, type, method, params, network, signature=None, max_fee=None
+    contract,
+    type,
+    method,
+    params,
+    network,
+    signature=None,
+    max_fee=None,
+    track=False,
+    debug=False,
 ):
     """Call or invoke functions of StarkNet smart contracts."""
     address, abi = next(deployments.load(contract, network))
@@ -23,14 +32,9 @@ def call_or_invoke(
         "--function",
         method,
     ]
-
-    if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-    elif network == "goerli":
-        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
-    else:
-        gateway_prefix = "feeder_gateway" if type == "call" else "gateway"
-        command.append(f"--{gateway_prefix}_url={GATEWAYS.get(network)}")
+    command += get_network_parameter(
+        network, "feeder_gateway" if type == "call" else "gateway"
+    )
 
     if len(params) > 0:
         command.append("--inputs")
@@ -46,7 +50,6 @@ def call_or_invoke(
 
     try:
         output = subprocess.check_output(command).strip().decode("utf-8")
-        return output
 
     except subprocess.CalledProcessError:
         p = subprocess.Popen(command, stderr=subprocess.PIPE)
@@ -59,5 +62,18 @@ def call_or_invoke(
                 --max_fee=`MAX_FEE`
                 """
             )
+            output = None
         else:
             raise
+
+    if type != "call" and output:
+        logging.info(output)
+        transaction_hash = _get_transaction_hash(output)
+        return status(transaction_hash, network, track, debug)
+
+    return output
+
+
+def _get_transaction_hash(string):
+    match = re.search(r"Transaction hash: (0x[\da-f]{1,64})", string)
+    return match.groups()[0] if match else None

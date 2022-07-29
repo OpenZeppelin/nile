@@ -7,7 +7,8 @@ from unittest.mock import patch
 import pytest
 
 from nile.common import BUILD_DIRECTORY
-from nile.utils.debug import _abi_to_build_path, _locate_error_lines_with_abis, debug
+from nile.utils.debug import _abi_to_build_path, _locate_error_lines_with_abis
+from nile.utils.status import status
 
 MOCK_HASH = "0x1234"
 NETWORK = "goerli"
@@ -45,7 +46,9 @@ def test__abi_to_build_path():
 def test__locate_error_lines_with_abis_with_and_without_alias(
     mock_path, file, address_set
 ):
-    with patch("nile.utils.debug.open") as mock_open:
+    with patch("nile.utils.debug.open") as mock_open, patch(
+        "os.path.isfile", return_value=True
+    ):
         mock_open.return_value.__enter__.return_value = file
         return_array = _locate_error_lines_with_abis(MOCK_FILE, address_set, mock_path)
         # Values should be pushed into the array (and not return an error)
@@ -57,7 +60,9 @@ def test__locate_error_lines_with_abis_with_and_without_alias(
 def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     logging.getLogger().setLevel(logging.INFO)
 
-    with patch("nile.utils.debug.open") as mock_open:
+    with patch("nile.utils.debug.open") as mock_open, patch(
+        "os.path.isfile", return_value=True
+    ):
         # The DEBUG_ADDRESS alone without ":" is misformatted
         mock_open.return_value.__enter__.return_value = [DEBUG_ADDRESS]
         _locate_error_lines_with_abis(MOCK_FILE, int(DEBUG_ADDRESS, 16), mock_path)
@@ -67,7 +72,7 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
 @pytest.mark.parametrize(
     "args, expected",
     [
-        ("ACCEPTED", "No error in transaction"),
+        ("ACCEPTED ON L2", "No error in transaction"),
         ("REJECTED", "The transaction was rejected"),
         ("REJECTED", ERROR_MESSAGE),
     ],
@@ -77,11 +82,29 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-@patch("nile.utils.debug.json.loads")
+@patch("nile.utils.status.json.loads")
 def test_debug_feedback_with_message(mock_json, caplog, args, expected):
     logging.getLogger().setLevel(logging.INFO)
     mock_json.return_value = mocked_json_message(args)
+    status(MOCK_HASH, NETWORK, debug=True)
+    assert expected in caplog.text
 
-    debug(MOCK_HASH, NETWORK)
 
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        ("ACCEPTED ON L1", "No error in transaction"),
+        ("REJECTED", "Transaction status: REJECTED"),
+    ],
+)
+@pytest.mark.xfail(
+    sys.version_info >= (3, 10),
+    reason="Issue in cairo-lang. "
+    "See https://github.com/starkware-libs/cairo-lang/issues/27",
+)
+@patch("nile.utils.status.json.loads")
+def test_status_feedback_no_message(mock_json, caplog, args, expected):
+    logging.getLogger().setLevel(logging.INFO)
+    mock_json.return_value = mocked_json_message(args)
+    status(MOCK_HASH, NETWORK, debug=False)
     assert expected in caplog.text

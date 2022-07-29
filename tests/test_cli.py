@@ -156,12 +156,36 @@ def test_node(args, expected):
         ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"]),
     ],
 )
-@patch("nile.utils.debug.subprocess")
+@patch("nile.utils.status.subprocess")
 def test_debug(mock_subprocess, args):
     # debug will hang without patch
-    mock_subprocess.check_output.return_value = json.dumps({"tx_status": "ACCEPTED"})
+    mock_subprocess.check_output.return_value = json.dumps(
+        {"tx_status": "ACCEPTED ON L2"}
+    )
 
     result = CliRunner().invoke(cli, ["debug", *args])
+
+    # Check status
+    assert result.exit_code == 0
+
+    # Setup and assert expected output
+    expected = ["starknet", "tx_status", "--hash", MOCK_HASH]
+
+    mock_subprocess.check_output.assert_called_once_with(expected)
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ([MOCK_HASH, "--network", "goerli"]),
+    ],
+)
+@patch("nile.utils.status.subprocess")
+def test_status(mock_subprocess, args):
+    mock_subprocess.check_output.return_value = json.dumps(
+        {"tx_status": "ACCEPTED ON L2"}
+    )
+    result = CliRunner().invoke(cli, ["status", *args])
 
     # Check status
     assert result.exit_code == 0

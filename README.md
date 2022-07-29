@@ -89,7 +89,7 @@ Creating artifacts/abis/ to store compilation artifacts
 ### `deploy`
 
 ```sh
-nile deploy contract --alias my_contract
+nile deploy contract --alias my_contract [TRACK, DEBUG]
 
 🚀 Deploying contract
 🌕 artifacts/contract.json successfully deployed to 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
@@ -102,11 +102,12 @@ A few things to notice here:
 2. This created a `localhost.deployments.txt` file storing all data related to my deployment
 3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
+5. `--track` and `--debug` flags : Chain `deploy` call with `nile status` + the chosen flag. See `status` below for a complete description.
 
 ### `declare`
 
 ```sh
-nile declare contract --alias my_contract
+nile declare contract --alias my_contract [TRACK, DEBUG]
 
 🚀 Declaring contract
 ⏳ Declaration of contract successfully sent at 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
@@ -119,6 +120,7 @@ A few things to notice here:
 2. This created a `localhost.declarations.txt` file storing all data related to my declarations
 3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
+5. `--track` and `--debug` flags : Chain `declare` call with `nile status` + the chosen flag. See `status` below for a complete description.
 
 ### `setup`
 
@@ -149,7 +151,7 @@ A few things to notice here:
 Execute a transaction through the `Account` associated with the private key provided. The syntax is:
 
 ```sh
-nile send <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
+nile send [TRACK, DEBUG] <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
 ```
 
 For example:
@@ -167,6 +169,9 @@ Some things to note:
 - `max_fee` defaults to `0`. Add `--max_fee <max_fee>` to set the maximum fee for the transaction
 - `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction
 
+#### `--track` and `--debug` flags
+Chain `send` calls with `nile status` + the chosen flag. See `status` below for a complete description.
+
 ### `call` and `invoke`
 
 Using `call` and `invoke`, we can perform read and write operations against our local node (or public one using the `--network mainnet` parameter). The syntax is:
@@ -178,7 +183,7 @@ nile <command> <contract_identifier> <method> [PARAM_1, PARAM2...]
 Where `<command>` is either `call` or `invoke` and `<contract_identifier>` is either our contract address or alias, as defined on `deploy`.
 
 ```sh
-nile invoke my_contract increase_balance 1
+nile [TRACK, DEBUG] invoke my_contract increase_balance 1
 
 Invoke transaction was sent.
 Contract address: 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
@@ -190,10 +195,12 @@ nile call my_contract get_balance
 
 1
 ```
-
 Please note:
 
 - `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction
+
+#### `--track` and `--debug` flags
+Chain `invoke` calls with `nile status` + the chosen flag. See `status` below for a complete description.
 
 ### `run`
 
@@ -256,13 +263,34 @@ Print out the Nile version
 nile version
 ```
 
-### `debug`
+### `status`
 
-Use locally available contracts to make error messages from rejected transactions more explicit.
+Prints the current status of a transaction.
 
 ```sh
-nile debug <transaction_hash> [CONTRACTS_FILE, NETWORK]
+nile status <transaction_hash> [CONTRACTS_FILE, NETWORK, TRACK, DEBUG]
+
+⏳ Querying the network for transaction status...
+✅ Transaction status: ACCEPTED ON L1. No error in transaction.
 ```
+
+#### `--track`, `-t` flag
+In case of pending transaction states, continue probing the network. Here in the case of a successful transaction.
+
+```sh
+nile status -t <transaction_hash> [CONTRACTS_FILE, NETWORK, DEBUG]
+
+⏳ Querying the network for transaction status...
+🕒 Transaction status: NOT_RECEIVED. Trying again in a moment...
+🕒 Transaction status: RECEIVED. Trying again in a moment...
+🕒 Transaction status: PENDING. Trying again in a moment...
+✅ Transaction status: ACCEPTED_ON_L2. No error in transaction.
+```
+
+#### `--debug`, `-d` flag
+
+Use locally available contracts to make error messages from rejected transactions more explicit.  
+NB: Implies `--track`.
 
 For example, this transaction returns the very cryptic error message:  
 `An ASSERT_EQ instruction failed: 0 != 1.`
@@ -284,9 +312,10 @@ Unknown location (pc=0:1369)
 This can be made more explicit with:
 
 ```sh
-nile debug 0x57d2d844923f9fe5ef54ed7084df61f926b9a2a24eb5d7e46c8f6dbcd4baafe
+nile status -d 0x57d2d844923f9fe5ef54ed7084df61f926b9a2a24eb5d7e46c8f6dbcd4baafe
 
-⏳ Querying the network to check transaction status and identify contracts...
+⏳ Querying the network for transaction status...
+❌ Transaction status: REJECTED.
 🧾 Found contracts: ['0x05bf05eece944b360ff0098eb9288e49bd0007e5a9ed80aefcb740e680e67ea4:artifacts/Evaluator.json']
 ⏳ Querying the network with contracts...
 🧾 Error message:
@@ -306,25 +335,21 @@ func set_teacher{
     ^************^
 ```
 
-In case of pending transaction states, the command will offer to continue probing the network unless it
-is terminated prematurely.
-This example also shows how accepted transactions are handled.
-
-```sh
-⏳ Querying the network to check transaction status and identify contracts...
-🕒 Transaction status: NOT_RECEIVED. Trying again in a moment...
-🕒 Transaction status: RECEIVED. Trying again in a moment...
-🕒 Transaction status: PENDING. Trying again in a moment...
-✅ Transaction status: ACCEPTED_ON_L2. No error in transaction.
-```
-
 Finally, the command will use the local `network.deployments.txt` files to fetch the available contracts.  
 However, it is also possible to override this by passing a `CONTRACTS_FILE` argument, formatted as:
 
-```sh
-CONTRACT_ADDRESS1:PATH_TO_COMPILED_CONTRACT1.json
-CONTRACT_ADDRESS2:PATH_TO_COMPILED_CONTRACT2.json
+```txt
+CONTRACT_ADDRESS1:PATH_TO_COMPILED_CONTRACT1[:ALIAS1].json
+CONTRACT_ADDRESS2:PATH_TO_COMPILED_CONTRACT2[:ALIAS1].json
 ...
+```
+
+### `debug`
+
+Alias for `nile status --debug`
+
+```sh
+nile debug <transaction_hash> [CONTRACTS_FILE, NETWORK]
 ```
 
 ## Extending Nile with plugins
