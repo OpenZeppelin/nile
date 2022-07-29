@@ -67,50 +67,44 @@ def test_compile_failure_feedback(mock__compile_contract, caplog):
     assert "Failed" in caplog.text
 
 
-def test__compile_contract(mock_subprocess):
-    contract_name_root = "contract"
-    path = f"path/to/{contract_name_root}.cairo"
-
+@pytest.mark.parametrize(
+    "is_acct, disable_hint",
+    [
+        (False, False),
+        (True, False),
+        (False, True),
+        (True, True),
+    ],
+)
+def test__compile_contract(mock_subprocess, is_acct, disable_hint):
     mock_process = Mock()
     mock_subprocess.Popen.return_value = mock_process
 
-    _compile_contract(path)
+    contract_name = "contract"
+    path = f"path/to/{contract_name}.cairo"
 
-    mock_subprocess.Popen.assert_called_once_with(
-        [
-            "starknet-compile",
-            path,
-            f"--cairo_path={CONTRACTS_DIRECTORY}",
-            "--output",
-            f"artifacts/{contract_name_root}.json",
-            "--abi",
-            f"artifacts/abis/{contract_name_root}.json",
-        ],
-        stdout=mock_subprocess.PIPE,
+    _compile_contract(
+        path=path, account_contract=is_acct, disable_hint_validation=disable_hint
     )
-    mock_process.communicate.assert_called_once()
 
+    expected = [
+        "starknet-compile",
+        path,
+        f"--cairo_path={CONTRACTS_DIRECTORY}",
+        "--output",
+        f"artifacts/{contract_name}.json",
+        "--abi",
+        f"artifacts/abis/{contract_name}.json",
+    ]
 
-def test__compile_account_contract(mock_subprocess):
-    contract_name_root = "mock_account"
-    path = f"path/to/{contract_name_root}.cairo"
+    if is_acct:
+        expected.append("--account_contract")
 
-    mock_process = Mock()
-    mock_subprocess.Popen.return_value = mock_process
-
-    _compile_contract(path, account_contract="--account_contract")
+    if disable_hint:
+        expected.append("--disable_hint_validation")
 
     mock_subprocess.Popen.assert_called_once_with(
-        [
-            "starknet-compile",
-            path,
-            f"--cairo_path={CONTRACTS_DIRECTORY}",
-            "--output",
-            f"artifacts/{contract_name_root}.json",
-            "--abi",
-            f"artifacts/abis/{contract_name_root}.json",
-            "--account_contract",
-        ],
+        expected,
         stdout=mock_subprocess.PIPE,
     )
     mock_process.communicate.assert_called_once()
@@ -147,31 +141,6 @@ def test__compile_auto_account_flag(mock_subprocess, contract_name, flag):
 
     mock_subprocess.Popen.assert_called_once_with(
         returned_subprocess,
-        stdout=mock_subprocess.PIPE,
-    )
-    mock_process.communicate.assert_called_once()
-
-
-def test__compile_contract_without_hint_validation(mock_subprocess):
-    contract_name_root = "contract_with_unwhitelisted_hints"
-    path = f"path/to/{contract_name_root}.cairo"
-
-    mock_process = Mock()
-    mock_subprocess.Popen.return_value = mock_process
-
-    _compile_contract(path, disable_hint_validation=True)
-
-    mock_subprocess.Popen.assert_called_once_with(
-        [
-            "starknet-compile",
-            path,
-            f"--cairo_path={CONTRACTS_DIRECTORY}",
-            "--output",
-            f"artifacts/{contract_name_root}.json",
-            "--abi",
-            f"artifacts/abis/{contract_name_root}.json",
-            "--disable_hint_validation",
-        ],
         stdout=mock_subprocess.PIPE,
     )
     mock_process.communicate.assert_called_once()

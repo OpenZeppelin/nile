@@ -370,6 +370,10 @@ How to decide if I want to use a plugin or not? Just install / uninstall the plu
 
 Finally, after the desired plugin is installed, it will also be automatically available through the `nre`. The plugin developer should be aware of this and design the interface accordingly.
 
+## Contribute
+
+OpenZeppelin Nile exists thanks to its contributors. There are many ways you can participate and help build high quality software. Check out the [contribution](CONTRIBUTING.md) guide!
+
 ## Hacking on Nile
 
 Nile uses tox to manage development tasks, you can get a list of

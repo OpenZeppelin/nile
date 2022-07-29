@@ -67,10 +67,10 @@ def _compile_contract(
     """
 
     if account_contract or filename.endswith("Account"):
-        cmd = cmd + "--account_contract"
+        cmd = cmd + "\n--account_contract"
 
     if disable_hint_validation:
-        cmd = cmd + "--disable_hint_validation"
+        cmd = cmd + "\n--disable_hint_validation"
 
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     process.communicate()
