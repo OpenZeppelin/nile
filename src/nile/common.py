@@ -67,6 +67,8 @@ def run_command(
     else:
         command.append(f"--gateway_url={GATEWAYS.get(network)}")
 
+    command.append("--no_wallet")
+
     return subprocess.check_output(command)
 
 
