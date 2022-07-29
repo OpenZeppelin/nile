@@ -55,8 +55,8 @@ optional arguments:
                     start)
 --port PORT         Specify the port to listen at; defaults to 5050
 --lite-mode         Applies all lite-mode optimizations by disabling
-                    features such as block hash calculation and deploy
-                    hash
+                    features such as block hash and deploy hash
+                    calculation
 ```
 
 ```text
