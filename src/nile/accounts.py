@@ -5,7 +5,7 @@ import os
 from nile.common import ACCOUNTS_FILENAME
 
 
-def register(pubkey, address, index, network):
+def register(pubkey, address, index, alias, network):
     """Register a new account."""
     file = f"{network}.{ACCOUNTS_FILENAME}"
 
@@ -14,7 +14,7 @@ def register(pubkey, address, index, network):
 
     with open(file, "r") as fp:
         accounts = json.load(fp)
-        accounts[pubkey] = {"address": address, "index": index}
+        accounts[pubkey] = {"address": address, "index": index, "alias": alias}
     with open(file, "w") as file:
         json.dump(accounts, file)
 
