@@ -55,8 +55,8 @@ optional arguments:
                     start)
 --port PORT         Specify the port to listen at; defaults to 5050
 --lite-mode         Applies all lite-mode optimizations by disabling
-                    features such as block hash calculation and deploy
-                    hash
+                    features such as block hash and deploy hash
+                    calculation
 ```
 
 ```text
@@ -388,6 +388,10 @@ In order for this implementation to be functional, it is needed by the plugin de
 How to decide if I want to use a plugin or not? Just install / uninstall the plugin dependency from your project :smile:
 
 Finally, after the desired plugin is installed, it will also be automatically available through the `nre`. The plugin developer should be aware of this and design the interface accordingly.
+
+## Contribute
+
+OpenZeppelin Nile exists thanks to its contributors. There are many ways you can participate and help build high quality software. Check out the [contribution](CONTRIBUTING.md) guide!
 
 ## Hacking on Nile
 
