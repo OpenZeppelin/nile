@@ -6,8 +6,8 @@ import pytest
 
 from nile.core.node import node
 
-HOSTS = ["127.0.0.1", "goerli"]
-PORTS = ["5050", "5001"]
+HOST = "127.0.0.1"
+PORT = "5050"
 LITE = "--lite-mode"
 
 
@@ -18,20 +18,20 @@ def tmp_working_dir(monkeypatch, tmp_path):
 
 
 @pytest.mark.parametrize(
-    "args, host, port, mode",
+    "args",
     [
-        ([], HOSTS[0], PORTS[0], None),
-        ([HOSTS[1], PORTS[1]], HOSTS[1], PORTS[1], None),
-        ([HOSTS[1], PORTS[1], LITE], HOSTS[1], PORTS[1], LITE),
+        ([]),
+        ([HOST, PORT]),
+        ([HOST, PORT, LITE]),
     ],
 )
 @patch("nile.core.node.subprocess.check_call")
-def test_node_call(mock_subprocess, args, host, port, mode):
+def test_node_call(mock_subprocess, args):
     node(*args)
 
-    command = ["starknet-devnet", "--host", host, "--port", port]
-    if mode:
-        command.append(mode)
+    command = ["starknet-devnet", "--host", HOST, "--port", PORT]
+    if LITE in args:
+        command.append(LITE)
     mock_subprocess.assert_called_once_with(command)
 
 
