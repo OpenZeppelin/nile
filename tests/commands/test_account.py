@@ -1,4 +1,5 @@
 """Tests for account commands."""
+import logging
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -25,6 +26,17 @@ def test_account_init(mock_deploy):
     assert account.address == MOCK_ADDRESS
     assert account.index == MOCK_INDEX
     mock_deploy.assert_called_once()
+
+
+def test_account_init_bad_key(caplog):
+    logging.getLogger().setLevel(logging.INFO)
+
+    Account("BAD_KEY", NETWORK)
+    assert (
+        "\n❌ Cannot find BAD_KEY in env."
+        "\nCheck spelling and that it exists."
+        "\nTry moving the .env to the directory outside of your project."
+    ) in caplog.text
 
 
 def test_account_multiple_inits_with_same_key():

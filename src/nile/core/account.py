@@ -1,4 +1,5 @@
 """Command to call or invoke StarkNet smart contracts."""
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -20,8 +21,16 @@ class Account:
 
     def __init__(self, signer, network):
         """Get or deploy an Account contract for the given private key."""
-        self.signer = Signer(int(os.environ[signer]))
-        self.network = network
+        try:
+            self.signer = Signer(int(os.environ[signer]))
+            self.network = network
+        except KeyError:
+            logging.error(
+                f"\n❌ Cannot find {signer} in env."
+                "\nCheck spelling and that it exists."
+                "\nTry moving the .env to the directory outside of your project."
+            )
+            return
 
         if accounts.exists(str(self.signer.public_key), network):
             signer_data = next(accounts.load(str(self.signer.public_key), network))
