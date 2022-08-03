@@ -35,7 +35,7 @@ def test_account_init_bad_key(caplog):
     assert (
         "\n❌ Cannot find BAD_KEY in env."
         "\nCheck spelling and that it exists."
-        "\nTry moving the .env to the directory outside of your project."
+        "\nTry moving the .env to the root of your project."
     ) in caplog.text
 
 
