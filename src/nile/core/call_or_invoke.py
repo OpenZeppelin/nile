@@ -44,6 +44,8 @@ def call_or_invoke(
         command.append("--max_fee")
         command.append(max_fee)
 
+    command.append("--no_wallet")
+
     try:
         output = subprocess.check_output(command).strip().decode("utf-8")
         return output
