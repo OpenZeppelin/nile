@@ -28,7 +28,7 @@ class Account:
             logging.error(
                 f"\n❌ Cannot find {signer} in env."
                 "\nCheck spelling and that it exists."
-                "\nTry moving the .env to the directory outside of your project."
+                "\nTry moving the .env to the root of your project."
             )
             return
 
