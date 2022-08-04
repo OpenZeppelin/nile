@@ -1,5 +1,4 @@
 """Command to call or invoke StarkNet smart contracts."""
-import contextlib
 import logging
 import os
 import subprocess
@@ -48,9 +47,7 @@ def call_or_invoke(
     command.append("--no_wallet")
 
     try:
-        with contextlib.suppress(subprocess.CalledProcessError):
-            return subprocess.check_output(command).strip().decode("utf-8")
-        return ""
+        return subprocess.check_output(command).strip().decode("utf-8")
     except subprocess.CalledProcessError:
         p = subprocess.Popen(command, stderr=subprocess.PIPE)
         _, error = p.communicate()
@@ -62,5 +59,6 @@ def call_or_invoke(
                 --max_fee=`MAX_FEE`
                 """
             )
+            return ""
         else:
             raise
