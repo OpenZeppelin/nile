@@ -45,6 +45,8 @@ def call_or_invoke(
         command.append("--max_fee")
         command.append(max_fee)
 
+    command.append("--no_wallet")
+
     try:
         with contextlib.suppress(subprocess.CalledProcessError):
             return subprocess.check_output(command).strip().decode("utf-8")
