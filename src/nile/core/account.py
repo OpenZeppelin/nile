@@ -1,4 +1,5 @@
 """Command to call or invoke StarkNet smart contracts."""
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -20,8 +21,16 @@ class Account:
 
     def __init__(self, signer, network):
         """Get or deploy an Account contract for the given private key."""
-        self.signer = Signer(int(os.environ[signer]))
-        self.network = network
+        try:
+            self.signer = Signer(int(os.environ[signer]))
+            self.network = network
+        except KeyError:
+            logging.error(
+                f"\n❌ Cannot find {signer} in env."
+                "\nCheck spelling and that it exists."
+                "\nTry moving the .env to the root of your project."
+            )
+            return
 
         if accounts.exists(str(self.signer.public_key), network):
             signer_data = next(accounts.load(str(self.signer.public_key), network))
@@ -50,7 +59,7 @@ class Account:
 
         return address, index
 
-    def send(self, to, method, calldata, nonce=None):
+    def send(self, to, method, calldata, max_fee, nonce=None):
         """Execute a tx going through an Account contract."""
         target_address, _ = next(deployments.load(to, self.network), ("", "")) or to
         calldata = [int(x) for x in calldata]
@@ -60,8 +69,14 @@ class Account:
                 call_or_invoke(self.address, "call", "get_nonce", [], self.network)
             )
 
+        if max_fee is None:
+            max_fee = 0
+
         (call_array, calldata, sig_r, sig_s) = self.signer.sign_transaction(
-            sender=self.address, calls=[[target_address, method, calldata]], nonce=nonce
+            sender=self.address,
+            calls=[[target_address, method, calldata]],
+            nonce=nonce,
+            max_fee=max_fee,
         )
 
         params = []
@@ -78,4 +93,5 @@ class Account:
             params=params,
             network=self.network,
             signature=[str(sig_r), str(sig_s)],
+            max_fee=str(max_fee),
         )
