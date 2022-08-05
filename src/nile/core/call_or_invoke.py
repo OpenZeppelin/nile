@@ -47,19 +47,23 @@ def call_or_invoke(
     command.append("--no_wallet")
 
     try:
-        output = subprocess.check_output(command).strip().decode("utf-8")
-        return output
-
+        return subprocess.check_output(command).strip().decode("utf-8")
     except subprocess.CalledProcessError:
         p = subprocess.Popen(command, stderr=subprocess.PIPE)
         _, error = p.communicate()
+        err_msg = error.decode()
 
-        if "max_fee must be bigger than 0" in error.decode():
+        if "max_fee must be bigger than 0" in err_msg:
             logging.error(
                 """
                 \n😰 Whoops, looks like max fee is missing. Try with:\n
                 --max_fee=`MAX_FEE`
                 """
             )
-        else:
-            raise
+        elif "transactions should go through the __execute__ entrypoint." in err_msg:
+            logging.error(
+                "\n\n😰 Whoops, looks like you're not using an account. Try with:\n"
+                "\nnile send [OPTIONS] SIGNER CONTRACT_NAME METHOD [PARAMS]"
+            )
+
+        return ""
