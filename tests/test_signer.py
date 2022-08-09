@@ -7,7 +7,7 @@ A high-level synchronization check between the Account artifacts and Signer modu
 import asyncio
 
 import pytest
-from starkware.starknet.services.api.contract_definition import ContractDefinition
+from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.testing.starknet import Starknet
 
 from nile.signer import Signer
@@ -17,7 +17,7 @@ SIGNER = Signer(12345678987654321)
 
 def get_account_definition():
     with open("src/nile/artifacts/Account.json", "r") as fp:
-        return ContractDefinition.loads(fp.read())
+        return ContractClass.loads(fp.read())
 
 
 async def send_transaction(
@@ -56,7 +56,8 @@ def event_loop():
 async def test_execute():
     starknet = await Starknet.empty()
     account = await starknet.deploy(
-        contract_def=get_account_definition(), constructor_calldata=[SIGNER.public_key]
+        contract_class=get_account_definition(),
+        constructor_calldata=[SIGNER.public_key],
     )
     contract = await starknet.deploy(
         "tests/resources/contracts/contract.cairo",
