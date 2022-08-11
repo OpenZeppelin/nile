@@ -38,13 +38,14 @@ def str_to_felt(text):
 
 def felt_to_str(felt):
     """Return a string from a given field element."""
+    felt = int(felt, 16) if "0x" in felt else felt
     b_felt = felt.to_bytes(31, "big")
     return b_felt.decode()
 
 
 def to_uint(a):
     """Return uint256-ish tuple from value."""
-    return (a & ((1 << 128) - 1), a >> 128)
+    return (a, 0)
 
 
 def from_uint(uint):
@@ -114,82 +115,3 @@ def assert_event_emitted(tx_exec_info, from_address, name, data):
         )
         in tx_exec_info.raw_events
     )
-
-
-def _get_path_from_name(name):
-    """Return the contract path by contract name."""
-    dirs = ["src", "tests/mocks"]
-    for dir in dirs:
-        for (dirpath, _, filenames) in os.walk(dir):
-            for file in filenames:
-                if file == f"{name}.cairo":
-                    return os.path.join(dirpath, file)
-
-    raise FileNotFoundError(f"Cannot find '{name}'.")
-
-
-def get_contract_class(contract, is_path=False):
-    """Return the contract class from the contract name or path."""
-    if is_path:
-        path = contract_path(contract)
-    else:
-        path = _get_path_from_name(contract)
-
-    contract_class = compile_starknet_files(files=[path], debug_info=True)
-    return contract_class
-
-
-def cached_contract(state, _class, deployed):
-    """Return the cached contract."""
-    contract = StarknetContract(
-        state=state,
-        abi=_class.abi,
-        contract_address=deployed.contract_address,
-        deploy_execution_info=deployed.deploy_execution_info,
-    )
-    return contract
-
-
-class State:
-    """
-    Utility helper for Account class to initialize and return StarkNet state.
-
-    Example
-    ---------
-    Initalize StarkNet state
-
-    >>> starknet = await State.init()
-
-    """
-
-    async def init():
-        """Initialize the StarkNet state."""
-        global starknet
-        starknet = await Starknet.empty()
-        return starknet
-
-
-class Account:
-    """
-    Utility for deploying Account contract.
-
-    Parameters
-    ----------
-    public_key : int
-
-    Examples
-    ----------
-    >>> starknet = await State.init()
-    >>> account = await Account.deploy(public_key)
-
-    """
-
-    get_class = get_contract_class("Account")
-
-    @staticmethod
-    async def deploy(public_key):
-        """Deploy account with public key."""
-        account = await starknet.deploy(
-            contract_class=Account.get_class, constructor_calldata=[public_key]
-        )
-        return account
