@@ -8,7 +8,7 @@ from nile.common import BUILD_DIRECTORY, run_command
 CONTRACT = "contract"
 OPERATION = "invoke"
 NETWORK = "goerli"
-ARGS = [1, 2, 3]
+ARGS = ['1', '2', '3']
 
 
 @pytest.mark.parametrize("operation", ["invoke", "call"])
