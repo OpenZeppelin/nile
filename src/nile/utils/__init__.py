@@ -41,8 +41,9 @@ def felt_to_str(felt):
 
 
 def to_uint(a):
-    """Return uint256-ish tuple from value."""
-    return (a, 0)
+    """Takes in value, returns uint256-ish tuple."""
+    a = int(a)
+    return (a & ((1 << 128) - 1), a >> 128)
 
 
 def from_uint(uint):
