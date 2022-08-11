@@ -1,14 +1,17 @@
-"""Tests for deploy command."""
+"""Tests for common library."""
 from unittest.mock import patch
 
 import pytest
 
-from nile.common import BUILD_DIRECTORY, run_command
+from nile.common import BUILD_DIRECTORY, prepare_params, run_command, stringify
 
 CONTRACT = "contract"
 OPERATION = "invoke"
 NETWORK = "goerli"
 ARGS = ["1", "2", "3"]
+LIST1 = [1, 2, 3]
+LIST2 = [1, 2, 3, [4, 5, 6]]
+LIST3 = [1, 2, 3, [4, 5, 6, [7, 8, 9]]]
 
 
 @pytest.mark.parametrize("operation", ["invoke", "call"])
@@ -30,3 +33,27 @@ def test_run_command(mock_subprocess, operation):
             "--no_wallet",
         ]
     )
+
+
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        ([], []),
+        ([LIST1], [["1", "2", "3"]]),
+        ([LIST2], [["1", "2", "3", ["4", "5", "6"]]]),
+        ([LIST3], [["1", "2", "3", ["4", "5", "6", ["7", "8", "9"]]]]),
+    ],
+)
+def test_stringify(args, expected):
+    assert stringify(args) == expected
+
+
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        ([], []),
+        ([LIST1], [["1", "2", "3"]]),
+    ],
+)
+def test_prepare_params(args, expected):
+    assert prepare_params(args) == expected
