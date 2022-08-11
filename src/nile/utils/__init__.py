@@ -1,12 +1,10 @@
 """Utilities for Nile scripting."""
 
 import math
-import os
 from pathlib import Path
 
 from starkware.starknet.business_logic.execution.objects import Event
 from starkware.starknet.public.abi import get_selector_from_name
-from starkware.starknet.testing.starknet import Starknet, StarknetContract
 from starkware.starkware_utils.error_handling import StarkException
 
 MAX_UINT256 = (2**128 - 1, 2**128 - 1)
