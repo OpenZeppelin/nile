@@ -58,7 +58,7 @@ def run_command(
 
     if arguments:
         command.append("--inputs")
-        command.extend([argument for argument in arguments])
+        command.extend(prepare_params(arguments))
 
     if network == "mainnet":
         os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
@@ -77,3 +77,16 @@ def parse_information(x):
     # address is 64, tx_hash is 64 chars long
     address, tx_hash = re.findall("0x[\\da-f]{1,64}", str(x))
     return address, tx_hash
+
+
+def stringify(x):
+    if isinstance(x, list):
+        return [stringify(y) for y in x]
+    else:
+        return str(x)
+
+
+def prepare_params(params):
+    if params is None:
+        params = []
+    return stringify(params)
