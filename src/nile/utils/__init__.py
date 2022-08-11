@@ -35,7 +35,7 @@ def str_to_felt(text):
 
 def felt_to_str(felt):
     """Return a string from a given field element."""
-    felt = int(felt, 16) if "0x" in felt else felt
+    felt = int(felt, 16) if "0x" in felt else int(felt)
     b_felt = felt.to_bytes(31, "big")
     return b_felt.decode()
 
