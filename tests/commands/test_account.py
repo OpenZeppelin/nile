@@ -99,7 +99,7 @@ def test_send_nonce_call(mock_call):
     "callarray, calldata",
     # The following callarray and calldata args tests the Account's list comprehensions
     # ensuring they're set to strings and passed correctly
-    [([['111']], []), ([['111', '222']], ['333', '444', '555'])],
+    [([["111"]], []), ([["111", "222"]], ["333", "444", "555"])],
 )
 def test_send_sign_transaction_and_execute(callarray, calldata):
     account = Account(KEY, NETWORK)

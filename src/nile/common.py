@@ -80,6 +80,7 @@ def parse_information(x):
 
 
 def stringify(x):
+    """Recursively convert list elements to strings."""
     if isinstance(x, list):
         return [stringify(y) for y in x]
     else:
@@ -87,6 +88,7 @@ def stringify(x):
 
 
 def prepare_params(params):
+    """Sanitize call, invoke, and deploy parameters."""
     if params is None:
         params = []
     return stringify(params)
