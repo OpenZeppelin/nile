@@ -27,20 +27,14 @@ class NileRuntimeEnvironment:
 
     def deploy(self, contract, arguments=None, alias=None, overriding_path=None):
         """Deploy a smart contract."""
-        if arguments is None:
-            arguments = []
         return deploy(contract, arguments, self.network, alias, overriding_path)
 
     def call(self, contract, method, params=None):
         """Call a view function in a smart contract."""
-        if params is None:
-            params = []
         return call_or_invoke(contract, "call", method, params, self.network)
 
     def invoke(self, contract, method, params=None):
         """Invoke a mutable function in a smart contract."""
-        if params is None:
-            params = []
         return call_or_invoke(contract, "invoke", method, params, self.network)
 
     def get_deployment(self, identifier):
