@@ -1,8 +1,8 @@
 """Tests for cli.py."""
+import itertools
 import json
 import shutil
 import sys
-import itertools
 from multiprocessing import Process
 from os import getpid, kill
 from pathlib import Path
@@ -175,6 +175,7 @@ def test_node_runs_gateway(opts, expected):
     with open(file, "r") as f:
         gateway = json.load(f)
     assert gateway.get(network) == expected
+
 
 @pytest.mark.parametrize(
     "args",

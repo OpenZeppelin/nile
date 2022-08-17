@@ -1,4 +1,5 @@
 """Command to call or invoke StarkNet smart contracts."""
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -20,8 +21,16 @@ class Account:
 
     def __init__(self, signer, network):
         """Get or deploy an Account contract for the given private key."""
-        self.signer = Signer(int(os.environ[signer]))
-        self.network = network
+        try:
+            self.signer = Signer(int(os.environ[signer]))
+            self.network = network
+        except KeyError:
+            logging.error(
+                f"\n❌ Cannot find {signer} in env."
+                "\nCheck spelling and that it exists."
+                "\nTry moving the .env to the root of your project."
+            )
+            return
 
         if accounts.exists(str(self.signer.public_key), network):
             signer_data = next(accounts.load(str(self.signer.public_key), network))
@@ -57,7 +66,7 @@ class Account:
 
         if nonce is None:
             nonce = int(
-                call_or_invoke(self.address, "call", "get_nonce", [], self.network)
+                call_or_invoke(self.address, "call", "get_nonce", [], self.network)[0]
             )
 
         if max_fee is None:
@@ -71,11 +80,11 @@ class Account:
         )
 
         params = []
-        params.append(str(len(call_array)))
-        params.extend([str(elem) for sublist in call_array for elem in sublist])
-        params.append(str(len(calldata)))
-        params.extend([str(param) for param in calldata])
-        params.append(str(nonce))
+        params.append(len(call_array))
+        params.extend(*call_array)
+        params.append(len(calldata))
+        params.extend(calldata)
+        params.append(nonce)
 
         return call_or_invoke(
             contract=self.address,

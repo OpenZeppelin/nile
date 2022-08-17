@@ -1,4 +1,5 @@
 """Tests for account commands."""
+import logging
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -25,6 +26,17 @@ def test_account_init(mock_deploy):
     assert account.address == MOCK_ADDRESS
     assert account.index == MOCK_INDEX
     mock_deploy.assert_called_once()
+
+
+def test_account_init_bad_key(caplog):
+    logging.getLogger().setLevel(logging.INFO)
+
+    Account("BAD_KEY", NETWORK)
+    assert (
+        "\n❌ Cannot find BAD_KEY in env."
+        "\nCheck spelling and that it exists."
+        "\nTry moving the .env to the root of your project."
+    ) in caplog.text
 
 
 def test_account_multiple_inits_with_same_key():
@@ -87,7 +99,7 @@ def test_send_nonce_call(mock_call):
     "callarray, calldata",
     # The following callarray and calldata args tests the Account's list comprehensions
     # ensuring they're set to strings and passed correctly
-    [([[111]], []), ([[111, 222]], [333, 444, 555])],
+    [([["111"]], []), ([["111", "222"]], ["333", "444", "555"])],
 )
 def test_send_sign_transaction_and_execute(callarray, calldata):
     account = Account(KEY, NETWORK)
@@ -116,11 +128,11 @@ def test_send_sign_transaction_and_execute(callarray, calldata):
             method="__execute__",
             network=NETWORK,
             params=[
-                str(len(callarray)),
+                len(callarray),
                 *(str(elem) for sublist in callarray for elem in sublist),
-                str(len(calldata)),
+                len(calldata),
                 *(str(param) for param in calldata),
-                str(nonce),
+                nonce,
             ],
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
