@@ -47,13 +47,15 @@ This command creates the project directory structure and installs `cairo-lang`, 
 Run a local [`starknet-devnet`](https://github.com/Shard-Labs/starknet-devnet/) node:
 
 ```text
-nile node [--host HOST] [--port PORT] [--lite_mode]
+nile node [--host HOST] [--port PORT] [--seed SEED] [--lite_mode]
 
 optional arguments:
 --host HOST         Specify the address to listen at; defaults to
                     127.0.0.1 (use the address the program outputs on
                     start)
 --port PORT         Specify the port to listen at; defaults to 5050
+--seed SEED         Specify the seed for randomness of accounts to be
+                    deployed
 --lite-mode         Applies all lite-mode optimizations by disabling
                     features such as block hash and deploy hash
                     calculation
