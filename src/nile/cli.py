@@ -2,9 +2,10 @@
 """Nile CLI entry point."""
 import logging
 
-import click
+#import click
+import asyncclick as click
 
-from nile.core.account import Account
+from nile.core.account import Account, get_or_create_account
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
@@ -81,26 +82,27 @@ def run(path, network):
 @click.argument("arguments", nargs=-1)
 @network_option
 @click.option("--alias")
-def deploy(artifact, arguments, network, alias):
+async def deploy(artifact, arguments, network, alias):
     """Deploy StarkNet smart contract."""
-    deploy_command(artifact, arguments, network, alias)
+    await deploy_command(artifact, arguments, network, alias)
 
 
 @cli.command()
 @click.argument("artifact", nargs=1)
 @network_option
 @click.option("--alias")
-def declare(artifact, network, alias):
+async def declare(artifact, network, alias):
     """Declare StarkNet smart contract."""
-    declare_command(artifact, network, alias)
+    await declare_command(artifact, network, alias)
 
 
 @cli.command()
 @click.argument("signer", nargs=1)
 @network_option
-def setup(signer, network):
+async def setup(signer, network):
     """Set up an Account contract."""
-    Account(signer, network)
+    #await Account.create(signer, network)
+    await get_or_create_account(signer, network)
 
 
 @cli.command()
@@ -110,9 +112,9 @@ def setup(signer, network):
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
 @network_option
-def send(signer, contract_name, method, params, network, max_fee=None):
+async def send(signer, contract_name, method, params, network, max_fee=None):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
-    account = Account(signer, network)
+    account = await get_or_create_account(signer, network)
     print(
         "Calling {} on {} with params: {}".format(
             method, contract_name, [x for x in params]
@@ -128,9 +130,9 @@ def send(signer, contract_name, method, params, network, max_fee=None):
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
 @network_option
-def invoke(contract_name, method, params, network, max_fee=None):
+async def invoke(contract_name, method, params, network, max_fee=None):
     """Invoke functions of StarkNet smart contracts."""
-    out = call_or_invoke_command(
+    out = await call_or_invoke_command(
         contract_name, "invoke", method, params, network, max_fee=max_fee
     )
     print(out)
@@ -141,9 +143,9 @@ def invoke(contract_name, method, params, network, max_fee=None):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @network_option
-def call(contract_name, method, params, network):
+async def call(contract_name, method, params, network):
     """Call functions of StarkNet smart contracts."""
-    out = call_or_invoke_command(contract_name, "call", method, params, network)
+    out = await call_or_invoke_command(contract_name, "call", method, params, network)
     print(out)
 
 
@@ -195,8 +197,9 @@ def clean():
 @cli.command()
 @click.option("--host", default="127.0.0.1")
 @click.option("--port", default=5050)
+@click.option("--seed", type=int)
 @click.option("--lite_mode", is_flag=True)
-def node(host, port, lite_mode):
+def node(host, port, seed, lite_mode):
     """Start StarkNet local network.
 
     $ nile node
@@ -205,10 +208,13 @@ def node(host, port, lite_mode):
     $ nile node --host HOST --port 5001
       Start StarkNet network on address HOST listening at port 5001
 
+    $ nile node --seed SEED
+      Start StarkNet local network with seed SEED
+
     $ nile node --lite_mode
       Start StarkNet network on lite-mode
     """
-    node_command(host, port, lite_mode)
+    node_command(host, port, seed, lite_mode)
 
 
 @cli.command()
@@ -231,4 +237,4 @@ cli = load_plugins(cli)
 
 
 if __name__ == "__main__":
-    cli()
+    cli(_anyio_backend="asyncio")

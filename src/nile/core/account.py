@@ -16,9 +16,15 @@ except ImportError:
 load_dotenv()
 
 
+async def get_or_create_account(signer, network):
+    account = Account(signer, network)
+    if not accounts.exists(str(account.signer.public_key), account.network):
+        await account.deploy()
+    return account
+
+
 class Account:
     """Account contract abstraction."""
-
     def __init__(self, signer, network):
         """Get or deploy an Account contract for the given private key."""
         try:
@@ -32,32 +38,29 @@ class Account:
             )
             return
 
-        if accounts.exists(str(self.signer.public_key), network):
-            signer_data = next(accounts.load(str(self.signer.public_key), network))
+        if accounts.exists(str(self.signer.public_key), self.network):
+            signer_data = next(accounts.load(str(self.signer.public_key), self.network))
             self.address = signer_data["address"]
             self.index = signer_data["index"]
-        else:
-            address, index = self.deploy()
-            self.address = address
-            self.index = index
 
-    def deploy(self):
+
+    async def deploy(self):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
 
-        address, _ = deploy(
-            "Account",
-            [str(self.signer.public_key)],
-            self.network,
-            f"account-{index}",
-            overriding_path,
+        address, _ = await deploy(
+            contract_name="Account",
+            arguments=[str(self.signer.public_key)],
+            network=self.network,
+            alias=f"account-{index}",
+            overriding_path=overriding_path,
         )
 
         accounts.register(self.signer.public_key, address, index, self.network)
-
         return address, index
+
 
     def send(self, to, method, calldata, max_fee, nonce=None):
         """Execute a tx going through an Account contract."""
