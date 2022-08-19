@@ -49,7 +49,7 @@ def call_or_invoke(
     command.append("--no_wallet")
 
     try:
-        return subprocess.check_output(command).strip().decode("utf-8").split()
+        return subprocess.check_output(command).strip().decode("utf-8")
     except subprocess.CalledProcessError:
         p = subprocess.Popen(command, stderr=subprocess.PIPE)
         _, error = p.communicate()

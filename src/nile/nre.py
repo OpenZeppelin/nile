@@ -31,7 +31,9 @@ class NileRuntimeEnvironment:
 
     def call(self, contract, method, params=None):
         """Call a view function in a smart contract."""
-        return call_or_invoke(contract, "call", method, params, self.network)
+        return str(
+            call_or_invoke(contract, "call", method, params, self.network)
+        ).split()
 
     def invoke(self, contract, method, params=None):
         """Invoke a mutable function in a smart contract."""
