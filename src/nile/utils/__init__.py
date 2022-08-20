@@ -3,9 +3,12 @@
 import math
 from pathlib import Path
 
-from starkware.starknet.business_logic.execution.objects import Event
-from starkware.starknet.public.abi import get_selector_from_name
-from starkware.starkware_utils.error_handling import StarkException
+try:
+    from starkware.starknet.business_logic.execution.objects import Event
+    from starkware.starknet.public.abi import get_selector_from_name
+    from starkware.starkware_utils.error_handling import StarkException
+except BaseException:
+    pass
 
 MAX_UINT256 = (2**128 - 1, 2**128 - 1)
 INVALID_UINT256 = (MAX_UINT256[0] + 1, MAX_UINT256[1])
