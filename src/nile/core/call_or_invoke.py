@@ -4,14 +4,14 @@ import os
 import subprocess
 
 from nile import deployments
-from nile.common import GATEWAYS, prepare_params
+from nile.common import GATEWAYS, prepare_params, get_gateway_response
 from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.definitions import constants
 from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
 from starkware.starkware_utils.error_handling import StarkErrorCode
 from starkware.starknet.public.abi import get_selector_from_name
-
+from starkware.starknet.utils.api_utils import cast_to_felts
 
 
 async def call_or_invoke(
@@ -26,9 +26,9 @@ async def call_or_invoke(
     tx = InvokeFunction(
         contract_address=int(address, 16),
         entry_point_selector=get_selector_from_name(method),
-        calldata=prep(params),
+        calldata=cast_to_felts(params),
         max_fee=max_fee,
-        signature=prep(signature),
+        signature=cast_to_felts(signature or []),
         version=constants.TRANSACTION_VERSION,
     )
 
@@ -42,22 +42,6 @@ def prep(x):
         return []
 
 def prepare_return(x):
-    return [int(y, 16) for y in x] if len(x) is not 0 else ""
-
-
-async def get_gateway_response(network, tx, token, type):
-    gateway_client = GatewayClient(url=GATEWAYS.get(network))
-    gateway_response = await gateway_client.add_transaction(tx=tx, token=token)
-
-    if gateway_response["code"] != StarkErrorCode.TRANSACTION_RECEIVED.name:
-        raise BaseException(
-            f"Transaction failed because:\n{gateway_response}."
-        )
-    if type == "deploy" or type == "invoke":
-        return gateway_response["address"], gateway_response["transaction_hash"]
-    elif type == "declare":
-        return gateway_response["class_hash"], gateway_response["transaction_hash"]
-    elif type == "call":
-        return prepare_return(gateway_response["result"])
-    else:
-        raise TypeError(f"Unknown type '{type}', must be 'deploy' or 'declare'")
+    #return [int(y, 16) for y in x] if len(x) is not 0 else ""
+    for y in x:
+        return int(y, 16)

@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from nile import accounts, deployments
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.deploy import deploy
+from starkware.starknet.utils.api_utils import cast_to_felts
 
 try:
     from nile.signer import Signer
@@ -62,15 +63,15 @@ class Account:
         return address, index
 
 
-    def send(self, to, method, calldata, max_fee, nonce=None):
+    async def send(self, to, method, calldata, max_fee, nonce=0):
         """Execute a tx going through an Account contract."""
         target_address, _ = next(deployments.load(to, self.network)) or to
         calldata = [int(x) for x in calldata]
+        #calldata = cast_to_felts(calldata)
 
         if nonce is None:
-            nonce = int(
-                call_or_invoke(self.address, "call", "get_nonce", [], self.network)[0]
-            )
+            nonce = await call_or_invoke(contract=self.address, type="call", method="get_nonce", params=[], network=self.network)
+            nonce = nonce
 
         if max_fee is None:
             max_fee = 0
@@ -89,12 +90,12 @@ class Account:
         params.extend(calldata)
         params.append(nonce)
 
-        return call_or_invoke(
+        return await call_or_invoke(
             contract=self.address,
             type="invoke",
             method="__execute__",
             params=params,
             network=self.network,
             signature=[str(sig_r), str(sig_s)],
-            max_fee=str(max_fee),
+            max_fee=max_fee,
         )

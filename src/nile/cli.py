@@ -72,9 +72,9 @@ def install():
 @cli.command()
 @click.argument("path", nargs=1)
 @network_option
-def run(path, network):
+async def run(path, network):
     """Run Nile scripts with NileRuntimeEnvironment."""
-    run_command(path, network)
+    await run_command(path, network)
 
 
 @cli.command()
@@ -91,9 +91,10 @@ async def deploy(artifact, arguments, network, alias):
 @click.argument("artifact", nargs=1)
 @network_option
 @click.option("--alias")
-async def declare(artifact, network, alias):
+@click.option("--signature", nargs=2)
+async def declare(artifact, network, alias, signature):
     """Declare StarkNet smart contract."""
-    await declare_command(artifact, network, alias)
+    await declare_command(artifact, network, alias, signature)
 
 
 @cli.command()
@@ -112,7 +113,7 @@ async def setup(signer, network):
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
 @network_option
-async def send(signer, contract_name, method, params, network, max_fee=None):
+async def send(signer, contract_name, method, params, network, max_fee=0):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = await get_or_create_account(signer, network)
     print(
@@ -120,7 +121,7 @@ async def send(signer, contract_name, method, params, network, max_fee=None):
             method, contract_name, [x for x in params]
         )
     )
-    out = account.send(contract_name, method, params, max_fee=max_fee)
+    out = await account.send(contract_name, method, params, max_fee=max_fee)
     print(out)
 
 
@@ -197,9 +198,9 @@ def clean():
 @cli.command()
 @click.option("--host", default="127.0.0.1")
 @click.option("--port", default=5050)
-@click.option("--seed", type=int)
+#@click.option("--seed", type=int)
 @click.option("--lite_mode", is_flag=True)
-def node(host, port, seed, lite_mode):
+def node(host, port, lite_mode):
     """Start StarkNet local network.
 
     $ nile node
@@ -214,7 +215,7 @@ def node(host, port, seed, lite_mode):
     $ nile node --lite_mode
       Start StarkNet network on lite-mode
     """
-    node_command(host, port, seed, lite_mode)
+    node_command(host, port, lite_mode)
 
 
 @cli.command()

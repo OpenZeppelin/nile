@@ -3,6 +3,11 @@ import json
 import os
 import re
 import subprocess
+from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
+from starkware.starkware_utils.error_handling import StarkErrorCode
+from starkware.starknet.cli.starknet_cli import parse_hex_arg
+
+
 
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
@@ -46,30 +51,23 @@ def get_all_contracts(ext=None, directory=None):
     return files
 
 
-def run_command(
-    contract_name, network, overriding_path=None, operation="deploy", arguments=None
-):
-    """Execute CLI command with given parameters."""
-    base_path = (
-        overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
-    )
-    contract = f"{base_path[0]}/{contract_name}.json"
-    command = ["starknet", operation, "--contract", contract]
+async def get_gateway_response(network, tx, token, type):
+    gateway_client = GatewayClient(url=GATEWAYS.get(network))
+    gateway_response = await gateway_client.add_transaction(tx=tx, token=token)
 
-    if arguments:
-        command.append("--inputs")
-        command.extend(prepare_params(arguments))
-
-    if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-    elif network == "goerli":
-        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
+    if gateway_response["code"] != StarkErrorCode.TRANSACTION_RECEIVED.name:
+        raise BaseException(
+            f"Transaction failed because:\n{gateway_response}."
+        )
+    if type == "deploy" or type == "invoke":
+        return gateway_response["address"], gateway_response["transaction_hash"]
+    elif type == "declare":
+        return gateway_response["class_hash"], gateway_response["transaction_hash"]
+    elif type == "call":
+        return prepare_return(gateway_response["result"])
     else:
-        command.append(f"--gateway_url={GATEWAYS.get(network)}")
+        raise TypeError(f"Unknown type '{type}', must be 'deploy' or 'declare'")
 
-    command.append("--no_wallet")
-
-    return subprocess.check_output(command)
 
 
 def parse_information(x):
@@ -92,3 +90,8 @@ def prepare_params(params):
     if params is None:
         params = []
     return stringify(params)
+
+def prepare_return(x):
+    #return [int(y, 16) for y in x] if len(x) is not 0 else ""
+    for y in x:
+        return int(y, 16)

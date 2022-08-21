@@ -1,6 +1,6 @@
 """nile runtime environment."""
 from nile import deployments
-from nile.core.account import Account
+from nile.core.account import Account, get_or_create_account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
 from nile.core.declare import declare
@@ -21,21 +21,21 @@ class NileRuntimeEnvironment:
         """Compile a list of contracts."""
         return compile(contracts)
 
-    def declare(self, contract, alias=None, overriding_path=None):
+    async def declare(self, contract, alias=None, overriding_path=None):
         """Declare a smart contract class."""
-        return declare(contract, self.network, alias)
+        return await declare(contract, self.network, alias)
 
-    def deploy(self, contract, arguments=None, alias=None, overriding_path=None):
+    async def deploy(self, contract, arguments=None, alias=None, overriding_path=None):
         """Deploy a smart contract."""
-        return deploy(contract, arguments, self.network, alias, overriding_path)
+        return await deploy(contract, arguments, self.network, alias, overriding_path)
 
-    def call(self, contract, method, params=None):
+    async def call(self, contract, method, params=None):
         """Call a view function in a smart contract."""
-        return call_or_invoke(contract, "call", method, params, self.network)
+        return await call_or_invoke(contract, "call", method, params, self.network)
 
-    def invoke(self, contract, method, params=None):
+    async def invoke(self, contract, method, params=None):
         """Invoke a mutable function in a smart contract."""
-        return call_or_invoke(contract, "invoke", method, params, self.network)
+        return await call_or_invoke(contract, "invoke", method, params, self.network)
 
     def get_deployment(self, identifier):
         """Get a deployment by its identifier (address or alias)."""
@@ -45,6 +45,6 @@ class NileRuntimeEnvironment:
         """Get a declared class by its identifier (class hash or alias)."""
         return next(deployments.load_class(identifier, self.network))
 
-    def get_or_deploy_account(self, signer):
+    async def get_or_deploy_account(self, signer):
         """Get or deploy an Account contract."""
-        return Account(signer, self.network)
+        return await get_or_create_account(signer, self.network)
