@@ -63,15 +63,13 @@ class Account:
         return address, index
 
 
-    async def send(self, to, method, calldata, max_fee, nonce=0):
+    async def send(self, to, method, calldata, max_fee, nonce):
         """Execute a tx going through an Account contract."""
         target_address, _ = next(deployments.load(to, self.network)) or to
         calldata = [int(x) for x in calldata]
-        #calldata = cast_to_felts(calldata)
 
         if nonce is None:
             nonce = await call_or_invoke(contract=self.address, type="call", method="get_nonce", params=[], network=self.network)
-            nonce = nonce
 
         if max_fee is None:
             max_fee = 0
@@ -96,6 +94,6 @@ class Account:
             method="__execute__",
             params=params,
             network=self.network,
-            signature=[str(sig_r), str(sig_s)],
+            signature=[sig_r, sig_s],
             max_fee=max_fee,
         )

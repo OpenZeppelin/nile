@@ -2,11 +2,8 @@
 import json
 import os
 import re
-import subprocess
 from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
 from starkware.starkware_utils.error_handling import StarkErrorCode
-from starkware.starknet.cli.starknet_cli import parse_hex_arg
-
 
 
 CONTRACTS_DIRECTORY = "contracts"
@@ -64,7 +61,7 @@ async def get_gateway_response(network, tx, token, type):
     elif type == "declare":
         return gateway_response["class_hash"], gateway_response["transaction_hash"]
     elif type == "call":
-        return prepare_return(gateway_response["result"])
+        return gateway_response["result"]
     else:
         raise TypeError(f"Unknown type '{type}', must be 'deploy' or 'declare'")
 
@@ -92,6 +89,5 @@ def prepare_params(params):
     return stringify(params)
 
 def prepare_return(x):
-    #return [int(y, 16) for y in x] if len(x) is not 0 else ""
     for y in x:
         return int(y, 16)

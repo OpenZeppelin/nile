@@ -82,38 +82,44 @@ async def run(path, network):
 @click.argument("arguments", nargs=-1)
 @network_option
 @click.option("--alias")
-async def deploy(artifact, arguments, network, alias):
+@click.option("--salt")
+@click.option("--token")
+async def deploy(artifact, arguments, network, alias, salt, token):
     """Deploy StarkNet smart contract."""
-    await deploy_command(artifact, arguments, network, alias)
-
+    address, tx_hash, abi = await deploy_command(artifact, arguments, network, alias, salt, token)
+    logging.info(f"⏳ ️Deployment of {artifact} successfully sent at {address}")
+    logging.info(f"🧾 Transaction hash: {tx_hash}")
+    return address, abi
 
 @cli.command()
 @click.argument("artifact", nargs=1)
 @network_option
 @click.option("--alias")
 @click.option("--signature", nargs=2)
-async def declare(artifact, network, alias, signature):
+@click.option("--token")
+async def declare(artifact, network, alias, signature, token):
     """Declare StarkNet smart contract."""
-    await declare_command(artifact, network, alias, signature)
-
+    class_hash, tx_hash = await declare_command(artifact, network, alias, signature, token)
+    logging.info(f"⏳ Declaration of {artifact} successfully sent at {class_hash}")
+    logging.info(f"🧾 Transaction hash: {tx_hash}")
+    return class_hash
 
 @cli.command()
 @click.argument("signer", nargs=1)
 @network_option
 async def setup(signer, network):
     """Set up an Account contract."""
-    #await Account.create(signer, network)
     await get_or_create_account(signer, network)
-
 
 @cli.command()
 @click.argument("signer", nargs=1)
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
+@click.option("--nonce", nargs=1)
 @click.option("--max_fee", nargs=1)
 @network_option
-async def send(signer, contract_name, method, params, network, max_fee=0):
+async def send(signer, contract_name, method, params, network, nonce=None, max_fee=0):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = await get_or_create_account(signer, network)
     print(
@@ -121,9 +127,10 @@ async def send(signer, contract_name, method, params, network, max_fee=0):
             method, contract_name, [x for x in params]
         )
     )
-    out = await account.send(contract_name, method, params, max_fee=max_fee)
-    print(out)
-
+    address, tx_hash = await account.send(contract_name, method, params, nonce=nonce, max_fee=max_fee)
+    logging.info("Invoke transaction was sent.")
+    logging.info(f"Contract address: {address}")
+    logging.info(f"Transaction hash: {tx_hash}")
 
 @cli.command()
 @click.argument("contract_name", nargs=1)
@@ -133,11 +140,12 @@ async def send(signer, contract_name, method, params, network, max_fee=0):
 @network_option
 async def invoke(contract_name, method, params, network, max_fee=None):
     """Invoke functions of StarkNet smart contracts."""
-    out = await call_or_invoke_command(
+    address, tx_hash = await call_or_invoke_command(
         contract_name, "invoke", method, params, network, max_fee=max_fee
     )
-    print(out)
-
+    logging.info("Invoke transaction was sent.")
+    logging.info(f"Contract address: {address}")
+    logging.info(f"Transaction hash: {tx_hash}")
 
 @cli.command()
 @click.argument("contract_name", nargs=1)
@@ -146,9 +154,8 @@ async def invoke(contract_name, method, params, network, max_fee=None):
 @network_option
 async def call(contract_name, method, params, network):
     """Call functions of StarkNet smart contracts."""
-    out = await call_or_invoke_command(contract_name, "call", method, params, network)
-    print(out)
-
+    result = await call_or_invoke_command(contract_name, "call", method, params, network)
+    logging.info(result)
 
 @cli.command()
 @click.argument("contracts", nargs=-1)

@@ -8,7 +8,14 @@ from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.definitions import constants
 
 
-async def declare(contract_name, network, alias=None, signature=None, overriding_path=None, token=None):
+async def declare(
+    contract_name,
+    network,
+    alias=None,
+    signature=None,
+    overriding_path=None,
+    token=None
+):
     """Declare StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")
 
@@ -37,11 +44,8 @@ async def declare(contract_name, network, alias=None, signature=None, overriding
 
     class_hash, tx_hash = await get_gateway_response(network, tx, token, "declare")
 
-    logging.info(f"⏳ Declaration of {contract_name} successfully sent at {class_hash}")
-    logging.info(f"🧾 Transaction hash: {tx_hash}")
-
     deployments.register_class_hash(str(class_hash), network, alias)
-    return class_hash
+    return class_hash, tx_hash
 
 
 def alias_exists(alias, network):

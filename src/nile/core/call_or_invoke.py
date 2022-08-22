@@ -1,15 +1,9 @@
 """Command to call or invoke StarkNet smart contracts."""
-import logging
-import os
-import subprocess
 
 from nile import deployments
-from nile.common import GATEWAYS, prepare_params, get_gateway_response
+from nile.common import GATEWAYS, get_gateway_response, prepare_return, prepare_params
 from starkware.starknet.services.api.gateway.transaction import InvokeFunction
-from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.definitions import constants
-from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
-from starkware.starkware_utils.error_handling import StarkErrorCode
 from starkware.starknet.public.abi import get_selector_from_name
 from starkware.starknet.utils.api_utils import cast_to_felts
 
@@ -27,21 +21,18 @@ async def call_or_invoke(
         contract_address=int(address, 16),
         entry_point_selector=get_selector_from_name(method),
         calldata=cast_to_felts(params),
-        max_fee=max_fee,
+        max_fee=int(max_fee),
         signature=cast_to_felts(signature or []),
         version=constants.TRANSACTION_VERSION,
     )
 
-    return await get_gateway_response(network, tx, token, type)
+    response = await get_gateway_response(network, tx, token, type)
 
-
-def prep(x):
-    if isinstance(x, list) or isinstance(x, tuple):
-        return [int(y) for y in x]
+    if type == "invoke":
+        addr, tx_hash = response
+        return addr, tx_hash
+    elif type == "call":
+        result = prepare_return(response)
+        return result
     else:
-        return []
-
-def prepare_return(x):
-    #return [int(y, 16) for y in x] if len(x) is not 0 else ""
-    for y in x:
-        return int(y, 16)
+        raise TypeError(f"Unknown type '{type}', must be 'call' or 'invoke'")
