@@ -86,10 +86,8 @@ async def run(path, network):
 @click.option("--token")
 async def deploy(artifact, arguments, network, alias, salt, token):
     """Deploy StarkNet smart contract."""
-    address, tx_hash, abi = await deploy_command(artifact, arguments, network, alias, salt, token)
-    logging.info(f"⏳ ️Deployment of {artifact} successfully sent at {address}")
-    logging.info(f"🧾 Transaction hash: {tx_hash}")
-    return address, abi
+    return await deploy_command(artifact, arguments, network, alias, salt, token)
+
 
 @cli.command()
 @click.argument("artifact", nargs=1)
@@ -99,10 +97,8 @@ async def deploy(artifact, arguments, network, alias, salt, token):
 @click.option("--token")
 async def declare(artifact, network, alias, signature, token):
     """Declare StarkNet smart contract."""
-    class_hash, tx_hash = await declare_command(artifact, network, alias, signature, token)
-    logging.info(f"⏳ Declaration of {artifact} successfully sent at {class_hash}")
-    logging.info(f"🧾 Transaction hash: {tx_hash}")
-    return class_hash
+    return await declare_command(artifact, network, alias, signature, token)
+
 
 @cli.command()
 @click.argument("signer", nargs=1)
@@ -110,6 +106,7 @@ async def declare(artifact, network, alias, signature, token):
 async def setup(signer, network):
     """Set up an Account contract."""
     await get_or_create_account(signer, network)
+
 
 @cli.command()
 @click.argument("signer", nargs=1)

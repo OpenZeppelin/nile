@@ -43,4 +43,7 @@ async def deploy(
     address, tx_hash = await get_gateway_response(network, tx, token, "deploy")
 
     deployments.register(address, abi, network, alias)
-    return address, tx_hash, abi
+    logging.info(f"⏳ ️Deployment of {contract_name} successfully sent at {address}")
+    logging.info(f"🧾 Transaction hash: {tx_hash}")
+
+    return address, abi

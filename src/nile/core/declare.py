@@ -44,8 +44,11 @@ async def declare(
 
     class_hash, tx_hash = await get_gateway_response(network, tx, token, "declare")
 
-    deployments.register_class_hash(str(class_hash), network, alias)
-    return class_hash, tx_hash
+    deployments.register_class_hash(class_hash, network, alias)
+    logging.info(f"⏳ Declaration of {artifact} successfully sent at {class_hash}")
+    logging.info(f"🧾 Transaction hash: {tx_hash}")
+
+    return class_hash
 
 
 def alias_exists(alias, network):
