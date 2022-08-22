@@ -2,10 +2,9 @@
 """Nile CLI entry point."""
 import logging
 
-#import click
 import asyncclick as click
 
-from nile.core.account import Account, get_or_create_account
+from nile.core.account import get_or_create_account
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
@@ -116,7 +115,7 @@ async def setup(signer, network):
 @click.option("--nonce", nargs=1)
 @click.option("--max_fee", nargs=1)
 @network_option
-async def send(signer, contract_name, method, params, network, nonce=None, max_fee=0):
+async def send(signer, contract_name, method, params, network, nonce, max_fee):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = await get_or_create_account(signer, network)
     print(
@@ -124,10 +123,13 @@ async def send(signer, contract_name, method, params, network, nonce=None, max_f
             method, contract_name, [x for x in params]
         )
     )
-    address, tx_hash = await account.send(contract_name, method, params, nonce=nonce, max_fee=max_fee)
+    address, tx_hash = await account.send(
+        contract_name, method, params, nonce=nonce, max_fee=max_fee
+    )
     logging.info("Invoke transaction was sent.")
     logging.info(f"Contract address: {address}")
     logging.info(f"Transaction hash: {tx_hash}")
+
 
 @cli.command()
 @click.argument("contract_name", nargs=1)
@@ -144,6 +146,7 @@ async def invoke(contract_name, method, params, network, max_fee=None):
     logging.info(f"Contract address: {address}")
     logging.info(f"Transaction hash: {tx_hash}")
 
+
 @cli.command()
 @click.argument("contract_name", nargs=1)
 @click.argument("method", nargs=1)
@@ -151,8 +154,11 @@ async def invoke(contract_name, method, params, network, max_fee=None):
 @network_option
 async def call(contract_name, method, params, network):
     """Call functions of StarkNet smart contracts."""
-    result = await call_or_invoke_command(contract_name, "call", method, params, network)
+    result = await call_or_invoke_command(
+        contract_name, "call", method, params, network
+    )
     logging.info(result)
+
 
 @cli.command()
 @click.argument("contracts", nargs=-1)
@@ -202,7 +208,7 @@ def clean():
 @cli.command()
 @click.option("--host", default="127.0.0.1")
 @click.option("--port", default=5050)
-#@click.option("--seed", type=int)
+# @click.option("--seed", type=int)
 @click.option("--lite_mode", is_flag=True)
 def node(host, port, lite_mode):
     """Start StarkNet local network.

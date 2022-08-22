@@ -1,11 +1,11 @@
 """Command to deploy StarkNet smart contracts."""
 import logging
 
+from starkware.starknet.cli.starknet_cli import get_salt
 from starkware.starknet.definitions import constants
 from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.services.api.gateway.transaction import Deploy
 from starkware.starknet.utils.api_utils import cast_to_felts
-from starkware.starknet.cli.starknet_cli import get_salt
 
 from nile import deployments
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, get_gateway_response

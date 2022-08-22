@@ -2,9 +2,9 @@
 import json
 import os
 import re
+
 from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
 from starkware.starkware_utils.error_handling import StarkErrorCode
-
 
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
@@ -49,13 +49,12 @@ def get_all_contracts(ext=None, directory=None):
 
 
 async def get_gateway_response(network, tx, token, type):
+    """Execute transaction and return response."""
     gateway_client = GatewayClient(url=GATEWAYS.get(network))
     gateway_response = await gateway_client.add_transaction(tx=tx, token=token)
 
     if gateway_response["code"] != StarkErrorCode.TRANSACTION_RECEIVED.name:
-        raise BaseException(
-            f"Transaction failed because:\n{gateway_response}."
-        )
+        raise BaseException(f"Transaction failed because:\n{gateway_response}.")
     if type == "deploy" or type == "invoke":
         return gateway_response["address"], gateway_response["transaction_hash"]
     elif type == "declare":
@@ -64,7 +63,6 @@ async def get_gateway_response(network, tx, token, type):
         return gateway_response["result"]
     else:
         raise TypeError(f"Unknown type '{type}', must be 'deploy' or 'declare'")
-
 
 
 def parse_information(x):
@@ -88,6 +86,8 @@ def prepare_params(params):
         params = []
     return stringify(params)
 
+
 def prepare_return(x):
+    """Unpack list and convert hex to integer."""
     for y in x:
         return int(y, 16)

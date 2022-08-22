@@ -1,20 +1,24 @@
 """Command to declare StarkNet smart contracts."""
 import logging
 
-from nile import deployments
-from nile.common import DECLARATIONS_FILENAME, ABIS_DIRECTORY, BUILD_DIRECTORY, get_gateway_response
-from starkware.starknet.services.api.gateway.transaction import Declare, DECLARE_SENDER_ADDRESS
-from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.definitions import constants
+from starkware.starknet.services.api.contract_class import ContractClass
+from starkware.starknet.services.api.gateway.transaction import (
+    DECLARE_SENDER_ADDRESS,
+    Declare,
+)
+
+from nile import deployments
+from nile.common import (
+    ABIS_DIRECTORY,
+    BUILD_DIRECTORY,
+    DECLARATIONS_FILENAME,
+    get_gateway_response,
+)
 
 
 async def declare(
-    contract_name,
-    network,
-    alias=None,
-    signature=None,
-    overriding_path=None,
-    token=None
+    contract_name, network, alias=None, signature=None, overriding_path=None, token=None
 ):
     """Declare StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")

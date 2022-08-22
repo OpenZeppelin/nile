@@ -1,6 +1,6 @@
 """nile runtime environment."""
 from nile import deployments
-from nile.core.account import Account, get_or_create_account
+from nile.core.account import get_or_create_account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
 from nile.core.declare import declare

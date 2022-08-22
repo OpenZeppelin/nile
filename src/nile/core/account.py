@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from nile import accounts, deployments
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.deploy import deploy
-from starkware.starknet.utils.api_utils import cast_to_felts
 
 try:
     from nile.signer import Signer
@@ -18,6 +17,7 @@ load_dotenv()
 
 
 async def get_or_create_account(signer, network):
+    """Deploy account and/or fetch initialized account."""
     account = Account(signer, network)
     if not accounts.exists(str(account.signer.public_key), account.network):
         await account.deploy()
@@ -26,6 +26,7 @@ async def get_or_create_account(signer, network):
 
 class Account:
     """Account contract abstraction."""
+
     def __init__(self, signer, network):
         """Get or deploy an Account contract for the given private key."""
         try:
@@ -44,7 +45,6 @@ class Account:
             self.address = signer_data["address"]
             self.index = signer_data["index"]
 
-
     async def deploy(self):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
@@ -62,14 +62,19 @@ class Account:
         accounts.register(self.signer.public_key, address, index, self.network)
         return address, index
 
-
-    async def send(self, to, method, calldata, max_fee, nonce):
+    async def send(self, to, method, calldata, max_fee=None, nonce=None):
         """Execute a tx going through an Account contract."""
         target_address, _ = next(deployments.load(to, self.network)) or to
         calldata = [int(x) for x in calldata]
 
         if nonce is None:
-            nonce = await call_or_invoke(contract=self.address, type="call", method="get_nonce", params=[], network=self.network)
+            nonce = await call_or_invoke(
+                contract=self.address,
+                type="call",
+                method="get_nonce",
+                params=[],
+                network=self.network,
+            )
 
         if max_fee is None:
             max_fee = 0

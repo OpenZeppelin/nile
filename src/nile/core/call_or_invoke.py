@@ -1,11 +1,12 @@
 """Command to call or invoke StarkNet smart contracts."""
 
-from nile import deployments
-from nile.common import GATEWAYS, get_gateway_response, prepare_return, prepare_params
-from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.definitions import constants
 from starkware.starknet.public.abi import get_selector_from_name
+from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.utils.api_utils import cast_to_felts
+
+from nile import deployments
+from nile.common import get_gateway_response, prepare_return
 
 
 async def call_or_invoke(
@@ -20,7 +21,7 @@ async def call_or_invoke(
     tx = InvokeFunction(
         contract_address=int(address, 16),
         entry_point_selector=get_selector_from_name(method),
-        calldata=cast_to_felts(params),
+        calldata=cast_to_felts(params or []),
         max_fee=int(max_fee),
         signature=cast_to_felts(signature or []),
         version=constants.TRANSACTION_VERSION,
