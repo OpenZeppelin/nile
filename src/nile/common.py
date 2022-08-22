@@ -62,7 +62,7 @@ async def get_gateway_response(network, tx, token, type):
     elif type == "call":
         return gateway_response["result"]
     else:
-        raise TypeError(f"Unknown type '{type}', must be 'deploy' or 'declare'")
+        raise TypeError(f"Unknown type '{type}'.")
 
 
 def parse_information(x):
