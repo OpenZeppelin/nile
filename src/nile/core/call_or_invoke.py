@@ -6,7 +6,7 @@ from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.utils.api_utils import cast_to_felts
 
 from nile import deployments
-from nile.common import get_gateway_response, prepare_return
+from nile.common import get_feeder_response, get_gateway_response, prepare_return
 
 
 async def call_or_invoke(
@@ -27,13 +27,12 @@ async def call_or_invoke(
         version=constants.TRANSACTION_VERSION,
     )
 
-    response = await get_gateway_response(network, tx, token, type)
-
-    if type == "invoke":
-        addr, tx_hash = response
+    if type == "call":
+        response = await get_feeder_response(network, tx)
+        return prepare_return(response)
+    elif type == "invoke":
+        response = await get_gateway_response(network, tx, token)
+        addr, tx_hash = response["address"], response["transaction_hash"]
         return addr, tx_hash
-    elif type == "call":
-        result = prepare_return(response)
-        return result
     else:
         raise TypeError(f"Unknown type '{type}', must be 'call' or 'invoke'")
