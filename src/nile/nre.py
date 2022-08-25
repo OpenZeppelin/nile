@@ -1,6 +1,6 @@
 """nile runtime environment."""
 from nile import deployments
-from nile.core.account import get_or_create_account
+from nile.core.account import get_or_create_account as _get_or_create_account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
 from nile.core.declare import declare
@@ -47,4 +47,4 @@ class NileRuntimeEnvironment:
 
     async def get_or_deploy_account(self, signer):
         """Get or deploy an Account contract."""
-        return await get_or_create_account(signer, self.network)
+        return await _get_or_create_account(signer, self.network)
