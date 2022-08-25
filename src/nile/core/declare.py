@@ -46,10 +46,11 @@ async def declare(
         version=constants.TRANSACTION_VERSION,
     )
 
-    class_hash, tx_hash = await get_gateway_response(network, tx, token, "declare")
+    response = await get_gateway_response(network=network, tx=tx, token=token)
+    class_hash, tx_hash = response["class_hash"], response["transaction_hash"]
 
     deployments.register_class_hash(class_hash, network, alias)
-    logging.info(f"⏳ Declaration of {artifact} successfully sent at {class_hash}")
+    logging.info(f"⏳ Declaration of {contract_name} successfully sent at {class_hash}")
     logging.info(f"🧾 Transaction hash: {tx_hash}")
 
     return class_hash
