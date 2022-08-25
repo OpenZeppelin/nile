@@ -3,6 +3,10 @@ import json
 import os
 import re
 
+from starkware.starknet.cli.starknet_cli import NETWORKS
+from starkware.starknet.services.api.feeder_gateway.feeder_gateway_client import (
+    FeederGatewayClient,
+)
 from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
 from starkware.starkware_utils.error_handling import StarkErrorCode
 
@@ -48,21 +52,43 @@ def get_all_contracts(ext=None, directory=None):
     return files
 
 
-async def get_gateway_response(network, tx, token, type):
+async def get_gateway_response(network, tx, token):
     """Execute transaction and return response."""
-    gateway_client = GatewayClient(url=GATEWAYS.get(network))
+    gateway_url = get_gateway_url(network)
+    gateway_client = GatewayClient(url=gateway_url)
     gateway_response = await gateway_client.add_transaction(tx=tx, token=token)
 
     if gateway_response["code"] != StarkErrorCode.TRANSACTION_RECEIVED.name:
         raise BaseException(f"Transaction failed because:\n{gateway_response}.")
-    if type == "deploy" or type == "invoke":
-        return gateway_response["address"], gateway_response["transaction_hash"]
-    elif type == "declare":
-        return gateway_response["class_hash"], gateway_response["transaction_hash"]
-    elif type == "call":
-        return gateway_response["result"]
+
+    return gateway_response
+
+
+async def get_feeder_response(network, tx):
+    """Execute transaction and return response."""
+    gateway_url = get_feeder_url(network)
+    gateway_client = FeederGatewayClient(url=gateway_url)
+    gateway_response = await gateway_client.call_contract(invoke_tx=tx)
+
+    return gateway_response["result"]
+
+
+def get_gateway_url(network):
+    """Return gateway URL for specified network"""
+    if network == "localhost":
+        return GATEWAYS.get(network)
     else:
-        raise TypeError(f"Unknown type '{type}'.")
+        network = "alpha-" + network
+        return f"https://{NETWORKS[network]}/gateway"
+
+
+def get_feeder_url(network):
+    """Return feeder gateway URL for specified network"""
+    if network == "localhost":
+        return GATEWAYS.get(network)
+    else:
+        network = "alpha-" + network
+        return f"https://{NETWORKS[network]}/feeder_gateway"
 
 
 def parse_information(x):
