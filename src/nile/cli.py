@@ -195,8 +195,9 @@ def clean():
 @cli.command()
 @click.option("--host", default="127.0.0.1")
 @click.option("--port", default=5050)
+@click.option("--seed", type=int)
 @click.option("--lite_mode", is_flag=True)
-def node(host, port, lite_mode):
+def node(host, port, seed, lite_mode):
     """Start StarkNet local network.
 
     $ nile node
@@ -205,10 +206,13 @@ def node(host, port, lite_mode):
     $ nile node --host HOST --port 5001
       Start StarkNet network on address HOST listening at port 5001
 
+    $ nile node --seed SEED
+      Start StarkNet local network with seed SEED
+
     $ nile node --lite_mode
       Start StarkNet network on lite-mode
     """
-    node_command(host, port, lite_mode)
+    node_command(host, port, seed, lite_mode)
 
 
 @cli.command()
