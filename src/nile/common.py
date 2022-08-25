@@ -80,8 +80,8 @@ def parse_information(x):
 
 
 def stringify(x):
-    """Recursively convert list elements to strings."""
-    if isinstance(x, list):
+    """Recursively convert list or tuple elements to strings."""
+    if isinstance(x, list) or isinstance(x, tuple):
         return [stringify(y) for y in x]
     else:
         return str(x)
