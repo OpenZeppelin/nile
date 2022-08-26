@@ -9,7 +9,7 @@ from starkware.starknet.services.api.gateway.transaction import (
     Declare,
 )
 
-from nile.common import BUILD_DIRECTORY, DECLARATIONS_FILENAME
+from nile.common import BUILD_DIRECTORY, DECLARATIONS_FILENAME, ABIS_DIRECTORY
 from nile.core.declare import alias_exists, declare
 
 
@@ -22,9 +22,11 @@ def tmp_working_dir(monkeypatch, tmp_path):
 CONTRACT = "contract"
 NETWORK = "goerli"
 ALIAS = "alias"
-PATH = "p"
+PATH2 = "artifacts2"
+PATH_OVERRIDE = (PATH2, ABIS_DIRECTORY)
 HASH = 111
 TX_HASH = 222
+RESPONSE = dict({"class_hash": HASH, "transaction_hash": TX_HASH})
 
 
 class AsyncMock(Mock):
@@ -54,9 +56,7 @@ async def test_declare(caplog):
     with patch(
         "nile.core.declare.get_gateway_response", new=AsyncMock()
     ) as mock_response:
-        mock_response.return_value = dict(
-            {"class_hash": HASH, "transaction_hash": TX_HASH}
-        )
+        mock_response.return_value = RESPONSE
 
         with patch("nile.core.declare.open", new_callable=mock_open):
             with patch("nile.core.declare.ContractClass") as mock_contract_class:
@@ -106,7 +106,7 @@ async def test_declare(caplog):
                 "contract_name": CONTRACT,
                 "network": NETWORK,
                 "alias": ALIAS,
-                "overriding_path": PATH,
+                "overriding_path": PATH_OVERRIDE,
             },  # args
             [HASH, NETWORK, ALIAS],  # expected register
         ),
@@ -116,9 +116,7 @@ async def test_declare_register(args, exp_register):
     with patch(
         "nile.core.declare.get_gateway_response", new=AsyncMock()
     ) as mock_response:
-        mock_response.return_value = dict(
-            {"class_hash": HASH, "transaction_hash": TX_HASH}
-        )
+        mock_response.return_value = RESPONSE
 
         with patch("nile.core.declare.open", new_callable=mock_open) as m_open:
             with patch("nile.core.declare.ContractClass"):
@@ -130,7 +128,7 @@ async def test_declare_register(args, exp_register):
 
                     # check overriding path
                     base_path = (
-                        PATH if "overriding_path" in args.keys() else BUILD_DIRECTORY
+                        PATH2 if "overriding_path" in args.keys() else BUILD_DIRECTORY
                     )
                     m_open.assert_called_once_with(f"{base_path}/{CONTRACT}.json", "r")
 
