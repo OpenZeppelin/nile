@@ -351,6 +351,13 @@ CONTRACT_ADDRESS2:PATH_TO_COMPILED_CONTRACT2.json
 Retrieves a list of ready-to-use accounts which allows for easy scripting integration. Before using `get-accounts`:
 
 1. store private keys in a `.env`
+
+    ```
+    PRIVATE_KEY_ALIAS_1=286426666527820764590699050992975838532
+    PRIVATE_KEY_ALIAS_2=263637040172279991633704324379452721903
+    PRIVATE_KEY_ALIAS_3=325047780196174231475632140485641889884
+    ```
+
 2. deploy accounts with the keys therefrom like this:
 
     ```bash
