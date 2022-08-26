@@ -40,7 +40,7 @@ async def deploy(
         version=constants.TRANSACTION_VERSION,
     )
 
-    response = await get_gateway_response(network, tx, token)
+    response = await get_gateway_response(network=network, tx=tx, token=token)
     address, tx_hash = response["address"], response["transaction_hash"]
 
     deployments.register(address, abi, network, alias)
