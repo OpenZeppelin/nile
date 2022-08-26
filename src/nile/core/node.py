@@ -6,7 +6,7 @@ import subprocess
 from nile.common import NODE_FILENAME
 
 
-def node(host="127.0.0.1", port=5050, lite_mode=False):
+def node(host="127.0.0.1", port=5050, seed=None, lite_mode=False):
     """Start StarkNet local network."""
     try:
         # Save host and port information to be used by other commands
@@ -22,6 +22,10 @@ def node(host="127.0.0.1", port=5050, lite_mode=False):
             json.dump(gateway, f)
 
         command = ["starknet-devnet", "--host", host, "--port", str(port)]
+
+        if seed is not None:
+            command.append("--seed")
+            command.append(str(seed))
 
         if lite_mode:
             command.append("--lite-mode")

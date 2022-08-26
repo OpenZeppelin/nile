@@ -8,6 +8,7 @@ from nile.core.node import node
 
 HOST = "127.0.0.1"
 PORT = "5050"
+SEED = "123"
 LITE = "--lite-mode"
 
 
@@ -20,17 +21,22 @@ def tmp_working_dir(monkeypatch, tmp_path):
 @pytest.mark.parametrize(
     "args",
     [
-        ([]),
-        ([HOST, PORT]),
-        ([HOST, PORT, LITE]),
+        ({}),
+        ({"seed": SEED}),
+        ({"lite_mode": LITE}),
+        ({"host": HOST, "port": PORT}),
+        ({"host": HOST, "port": PORT, "seed": SEED, "lite_mode": LITE}),
     ],
 )
 @patch("nile.core.node.subprocess.check_call")
 def test_node_call(mock_subprocess, args):
-    node(*args)
+    node(**args)
 
     command = ["starknet-devnet", "--host", HOST, "--port", PORT]
-    if LITE in args:
+    if "seed" in args:
+        command.append("--seed")
+        command.append(SEED)
+    if "lite_mode" in args:
         command.append(LITE)
     mock_subprocess.assert_called_once_with(command)
 
