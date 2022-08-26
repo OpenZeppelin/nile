@@ -4,7 +4,7 @@ import os
 import subprocess
 
 from nile import deployments
-from nile.common import GATEWAYS
+from nile.common import GATEWAYS, prepare_params
 
 
 def call_or_invoke(
@@ -32,6 +32,8 @@ def call_or_invoke(
         gateway_prefix = "feeder_gateway" if type == "call" else "gateway"
         command.append(f"--{gateway_prefix}_url={GATEWAYS.get(network)}")
 
+    params = prepare_params(params)
+
     if len(params) > 0:
         command.append("--inputs")
         command.extend(params)
@@ -47,7 +49,7 @@ def call_or_invoke(
     command.append("--no_wallet")
 
     try:
-        return subprocess.check_output(command).strip().decode("utf-8")
+        return subprocess.check_output(command).strip().decode("utf-8").split()
     except subprocess.CalledProcessError:
         p = subprocess.Popen(command, stderr=subprocess.PIPE)
         _, error = p.communicate()
