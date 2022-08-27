@@ -12,10 +12,8 @@ def get_accounts(network):
         total_accounts = current_index(network)
         logging.info(f"\nTotal registered accounts: {total_accounts}\n")
     except FileNotFoundError:
-        logging.info(f"\n❌ No registered accounts detected in {network}")
-        logging.info(
-            "For more info, see https://github.com/OpenZeppelin/nile#get-accounts\n"
-        )
+        print(f"\n❌ No registered accounts detected in {network}.accounts.json")
+        print("For more info, see https://github.com/OpenZeppelin/nile#get-accounts\n")
         return
 
     with open(f"{network}.accounts.json", "r") as f:

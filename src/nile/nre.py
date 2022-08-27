@@ -54,14 +54,4 @@ class NileRuntimeEnvironment:
 
     def get_accounts(self):
         """Retrieve and manage deployed accounts."""
-        accounts = get_accounts(self.network)
-        if accounts is not None:
-            return accounts
-        else:
-            print(
-                f"\n❌ No registered accounts detected in {self.network}.accounts.json"
-            )
-            print(
-                "For more info, see https://github.com/OpenZeppelin/nile#get-accounts\n"
-            )
-            return
+        return get_accounts(self.network)
