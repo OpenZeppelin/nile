@@ -75,7 +75,7 @@ def test_deploy_accounts_register(mock_register, mock_deploy):
     account = Account(KEY, NETWORK)
 
     mock_register.assert_called_once_with(
-        account.signer.public_key, MOCK_ADDRESS, MOCK_INDEX, NETWORK
+        account.signer.public_key, MOCK_ADDRESS, MOCK_INDEX, KEY, NETWORK
     )
 
 

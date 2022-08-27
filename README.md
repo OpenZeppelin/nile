@@ -348,6 +348,48 @@ CONTRACT_ADDRESS2:PATH_TO_COMPILED_CONTRACT2.json
 ...
 ```
 
+### `get-accounts`
+
+Retrieves a list of ready-to-use accounts which allows for easy scripting integration. Before using `get-accounts`:
+
+1. store private keys in a `.env`
+
+    ```
+    PRIVATE_KEY_ALIAS_1=286426666527820764590699050992975838532
+    PRIVATE_KEY_ALIAS_2=263637040172279991633704324379452721903
+    PRIVATE_KEY_ALIAS_3=325047780196174231475632140485641889884
+    ```
+
+2. deploy accounts with the keys therefrom like this:
+
+    ```bash
+    nile setup PRIVATE_KEY_ALIAS_1
+    ...
+    nile setup PRIVATE_KEY_ALIAS_2
+    ...
+    nile setup PRIVATE_KEY_ALIAS_3
+    ...
+    ```
+
+Next, write a script and call `get-accounts` to retrieve and use the deployed accounts.
+
+```python
+def run(nre):
+
+    # fetch the list of deployed accounts
+    accounts = nre.get_accounts()
+
+    # then
+    accounts[0].send(...)
+
+    # or
+    alice, bob, *_ = accounts
+    alice.send(...)
+    bob.send(...)
+```
+
+> Please note that the list of accounts include only those that exist in the local `<network>.accounts.json` file.
+
 ## Extending Nile with plugins
 
 Nile has the possibility of extending its CLI and `NileRuntimeEnvironment` functionalities through plugins. For developing plugins for Nile fork [this plugin example](https://github.com/franalgaba/nile-plugin-example) boilerplate and implement your desired functionality with the provided instructions.
