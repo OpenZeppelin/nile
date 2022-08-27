@@ -6,21 +6,16 @@ from nile.accounts import current_index
 from nile.core.account import Account
 
 
-def _check_and_return_account(signer, pubkey, network):
-    account = Account(signer, network)
-    assert str(pubkey) == str(
-        account.signer.public_key
-    ), "Signer pubkey does not match deployed pubkey"
-    return account
-
-
 def get_accounts(network):
     """Retrieve deployed accounts."""
     try:
         total_accounts = current_index(network)
         logging.info(f"\nTotal registered accounts: {total_accounts}\n")
     except FileNotFoundError:
-        logging.info(f"\nNo registered accounts detected in {network}\n")
+        logging.info(f"\n❌ No registered accounts detected in {network}")
+        logging.info(
+            "For more info, see https://github.com/OpenZeppelin/nile#get-accounts\n"
+        )
         return
 
     with open(f"{network}.accounts.json", "r") as f:
@@ -39,3 +34,11 @@ def get_accounts(network):
 
     logging.info("\n🚀 Successfully retrieved deployed accounts")
     return accounts
+
+
+def _check_and_return_account(signer, pubkey, network):
+    account = Account(signer, network)
+    assert str(pubkey) == str(
+        account.signer.public_key
+    ), "Signer pubkey does not match deployed pubkey"
+    return account
