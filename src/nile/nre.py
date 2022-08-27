@@ -61,6 +61,7 @@ class NileRuntimeEnvironment:
             print(
                 f"\n❌ No registered accounts detected in {self.network}.accounts.json"
             )
-            print("Try 'nile setup <private key alias>'")
-            print("For more info, see Nile's 'get-accounts' in README\n")
+            print(
+                "For more info, see https://github.com/OpenZeppelin/nile#get-accounts\n"
+            )
             return
