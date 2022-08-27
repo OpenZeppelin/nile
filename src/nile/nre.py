@@ -54,4 +54,13 @@ class NileRuntimeEnvironment:
 
     def get_accounts(self):
         """Retrieve and manage deployed accounts."""
-        return get_accounts(self.network)
+        accounts = get_accounts(self.network)
+        if accounts is not None:
+            return accounts
+        else:
+            print(
+                f"\n❌ No registered accounts detected in {self.network}.accounts.json"
+            )
+            print("Try 'nile setup <private key alias>'")
+            print("For more info, see Nile's 'get-accounts' in README\n")
+            return
