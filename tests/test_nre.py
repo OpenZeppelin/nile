@@ -54,5 +54,7 @@ def test_nre_get_accounts_without_registered_accounts(capsys):
     assert "❌ No registered accounts detected in localhost.accounts.json" in str(
         captured.out
     )
-    assert "Try 'nile setup <private key alias>'" in str(captured.out)
-    assert "For more info, see Nile's 'get-accounts' in README" in str(captured.out)
+    assert (
+        "For more info, see https://github.com/OpenZeppelin/nile#get-accounts"
+        in str(captured.out)
+    )
