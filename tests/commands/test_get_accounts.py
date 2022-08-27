@@ -76,7 +76,7 @@ def test_get_accounts_no_activated_accounts_feedback(caplog):
 
     get_accounts(NETWORK)
 
-    assert f"\nNo deployed accounts detected in {NETWORK}\n" in caplog.text
+    assert f"\nNo registered accounts detected in {NETWORK}\n" in caplog.text
 
 
 @patch("nile.utils.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
@@ -89,7 +89,7 @@ def test_get_accounts_activated_accounts_feedback(caplog):
     get_accounts(NETWORK)
 
     # Check total accounts log
-    assert f"\nTotal accounts: {len(PUBKEYS)}\n" in caplog.text
+    assert f"\nTotal registered accounts: {len(PUBKEYS)}\n" in caplog.text
 
     # Check index/address log
     for i in range(len(PUBKEYS)):
