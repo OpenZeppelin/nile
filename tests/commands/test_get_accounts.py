@@ -77,8 +77,10 @@ def test_get_accounts_no_activated_accounts_feedback(caplog):
     get_accounts(NETWORK)
 
     assert f"❌ No registered accounts detected in {NETWORK}\n" in caplog.text
-    assert "For more info, see https://github.com/OpenZeppelin/nile#get-accounts" in caplog.text
-
+    assert (
+        "For more info, see https://github.com/OpenZeppelin/nile#get-accounts"
+        in caplog.text
+    )
 
 
 @patch("nile.utils.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
