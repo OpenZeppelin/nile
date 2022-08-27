@@ -18,9 +18,9 @@ def get_accounts(network):
     """Retrieve deployed accounts."""
     try:
         total_accounts = current_index(network)
-        logging.info(f"\nTotal accounts: {total_accounts}\n")
+        logging.info(f"\nTotal registered accounts: {total_accounts}\n")
     except FileNotFoundError:
-        logging.info(f"\nNo deployed accounts detected in {network}\n")
+        logging.info(f"\nNo registered accounts detected in {network}\n")
         return
 
     with open(f"{network}.accounts.json", "r") as f:
