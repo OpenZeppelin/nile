@@ -71,15 +71,17 @@ def test__check_and_return_account_with_mismatching_keys(private_keys, public_ke
     assert "Signer pubkey does not match deployed pubkey" in str(err.value)
 
 
-def test_get_accounts_no_activated_accounts_feedback(caplog):
-    logging.getLogger().setLevel(logging.INFO)
-
+def test_get_accounts_no_activated_accounts_feedback(capsys):
     get_accounts(NETWORK)
+    # This test uses capsys in order to test the print statements (instead of logging)
+    captured = capsys.readouterr()
 
-    assert f"❌ No registered accounts detected in {NETWORK}\n" in caplog.text
+    assert (
+        f"❌ No registered accounts detected in {NETWORK}.accounts.json" in captured.out
+    )
     assert (
         "For more info, see https://github.com/OpenZeppelin/nile#get-accounts"
-        in caplog.text
+        in captured.out
     )
 
 
