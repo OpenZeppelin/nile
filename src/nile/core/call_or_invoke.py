@@ -32,7 +32,6 @@ async def call_or_invoke(
         return prepare_return(response)
     elif type == "invoke":
         response = await get_gateway_response(network, tx, token)
-        addr, tx_hash = response["address"], response["transaction_hash"]
-        return addr, tx_hash
+        return response["transaction_hash"]
     else:
         raise TypeError(f"Unknown type '{type}', must be 'call' or 'invoke'")
