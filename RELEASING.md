@@ -17,3 +17,5 @@ git tag v0.8.0
 ```sh
 git push origin v0.8.0
 ```
+
+(5) Finally, go to the repo's [releases page](https://github.com/OpenZeppelin/nile/releases/) and [create a new one](https://github.com/OpenZeppelin/nile/releases/new) with the new tag and the `main` branch as target.
