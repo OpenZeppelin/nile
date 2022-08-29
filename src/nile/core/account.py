@@ -16,21 +16,28 @@ except ImportError:
 load_dotenv()
 
 
-async def get_or_create_account(signer, network):
-    """Deploy account and/or fetch initialized account."""
-    account = Account(signer, network)
-    if not accounts.exists(str(account.signer.public_key), account.network):
-        await account.deploy()
-    return account
+class AsyncObject(object):
+    """Base class for Account to allow async initialization."""
+
+    async def __new__(cls, *a, **kw):
+        """Return coroutine (not class so sync __init__ is not invoked)."""
+        instance = super().__new__(cls)
+        await instance.__init__(*a, **kw)
+        return instance
+
+    async def __init__(self):
+        """Support Account async __init__."""
+        pass
 
 
-class Account:
+class Account(AsyncObject):
     """Account contract abstraction."""
 
-    def __init__(self, signer, network):
+    async def __init__(self, signer, network):
         """Get or deploy an Account contract for the given private key."""
         try:
             self.signer = Signer(int(os.environ[signer]))
+            self.alias = signer
             self.network = network
         except KeyError:
             logging.error(
@@ -44,6 +51,10 @@ class Account:
             signer_data = next(accounts.load(str(self.signer.public_key), self.network))
             self.address = signer_data["address"]
             self.index = signer_data["index"]
+        else:
+            address, index = await self.deploy()
+            self.address = address
+            self.index = index
 
     async def deploy(self):
         """Deploy an Account contract for the given private key."""
@@ -68,13 +79,7 @@ class Account:
         calldata = [int(x) for x in calldata]
 
         if nonce is None:
-            nonce = await call_or_invoke(
-                contract=self.address,
-                type="call",
-                method="get_nonce",
-                params=[],
-                network=self.network,
-            )
+            nonce = await self.get_nonce()
 
         if max_fee is None:
             max_fee = 0
@@ -101,4 +106,14 @@ class Account:
             network=self.network,
             signature=[sig_r, sig_s],
             max_fee=max_fee,
+        )
+
+    async def get_nonce(self):
+        """Return nonce from account contract."""
+        return await call_or_invoke(
+            contract=self.address,
+            type="call",
+            method="get_nonce",
+            params=[],
+            network=self.network,
         )
