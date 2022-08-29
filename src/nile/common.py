@@ -3,12 +3,11 @@ import json
 import os
 import re
 
-from starkware.starknet.cli.starknet_cli import NETWORKS
+from starkware.starknet.cli.starknet_cli import NETWORKS, assert_tx_received
 from starkware.starknet.services.api.feeder_gateway.feeder_gateway_client import (
     FeederGatewayClient,
 )
 from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
-from starkware.starkware_utils.error_handling import StarkErrorCode
 
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
@@ -57,9 +56,7 @@ async def get_gateway_response(network, tx, token):
     gateway_url = get_gateway_url(network)
     gateway_client = GatewayClient(url=gateway_url)
     gateway_response = await gateway_client.add_transaction(tx=tx, token=token)
-
-    if gateway_response["code"] != StarkErrorCode.TRANSACTION_RECEIVED.name:
-        raise BaseException(f"Transaction failed because:\n{gateway_response}.")
+    assert_tx_received(gateway_response)
 
     return gateway_response
 
@@ -74,7 +71,7 @@ async def get_feeder_response(network, tx):
 
 
 def get_gateway_url(network):
-    """Return gateway URL for specified network"""
+    """Return gateway URL for specified network."""
     if network == "localhost":
         return GATEWAYS.get(network)
     else:
@@ -83,7 +80,7 @@ def get_gateway_url(network):
 
 
 def get_feeder_url(network):
-    """Return feeder gateway URL for specified network"""
+    """Return feeder gateway URL for specified network."""
     if network == "localhost":
         return GATEWAYS.get(network)
     else:
