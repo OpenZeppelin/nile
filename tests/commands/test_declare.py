@@ -9,7 +9,7 @@ from starkware.starknet.services.api.gateway.transaction import (
     Declare,
 )
 
-from nile.common import BUILD_DIRECTORY, DECLARATIONS_FILENAME, ABIS_DIRECTORY
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, DECLARATIONS_FILENAME
 from nile.core.declare import alias_exists, declare
 
 
@@ -30,13 +30,11 @@ RESPONSE = dict({"class_hash": HASH, "transaction_hash": TX_HASH})
 
 
 class AsyncMock(Mock):
-    def __call__(self, *args, **kwargs):
-        sup = super()
+    """Return asynchronous mock."""
 
-        async def coro():
-            return sup.__call__(*args, **kwargs)
-
-        return coro()
+    async def __call__(self, *args, **kwargs):
+        """Return mocked coroutine."""
+        return super(AsyncMock, self).__call__(*args, **kwargs)
 
 
 def test_alias_exists():

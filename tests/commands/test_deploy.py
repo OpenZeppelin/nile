@@ -1,10 +1,11 @@
 """Tests for deploy command."""
 import logging
-from unittest.mock import patch, Mock, mock_open
+from unittest.mock import Mock, mock_open, patch
 
 import pytest
 from starkware.starknet.definitions import constants
 from starkware.starknet.services.api.gateway.transaction import Deploy
+
 from nile.core.deploy import ABIS_DIRECTORY, BUILD_DIRECTORY, deploy
 
 
@@ -15,13 +16,11 @@ def tmp_working_dir(monkeypatch, tmp_path):
 
 
 class AsyncMock(Mock):
-    def __call__(self, *args, **kwargs):
-        sup = super()
+    """Return asynchronous mock."""
 
-        async def coro():
-            return sup.__call__(*args, **kwargs)
-
-        return coro()
+    async def __call__(self, *args, **kwargs):
+        """Return mocked coroutine."""
+        return super(AsyncMock, self).__call__(*args, **kwargs)
 
 
 CONTRACT = "contract"
@@ -52,7 +51,7 @@ async def test_deploy(caplog):
                     arguments=ARGS,
                     network=NETWORK,
                     alias=ALIAS,
-                    salt=SALT
+                    salt=SALT,
                 )
 
                 # check return values
@@ -65,12 +64,12 @@ async def test_deploy(caplog):
                         version=constants.TRANSACTION_VERSION,
                         contract_address_salt=int(SALT, 16),
                         contract_definition=mock_contract_class.loads(),
-                        constructor_calldata=ARGS
+                        constructor_calldata=ARGS,
                     ),
                     token=None,
                 )
 
-    ## check logs
+    # check logs
     assert f"🚀 Deploying {CONTRACT}" in caplog.text
     assert f"⏳ ️Deployment of {CONTRACT} successfully sent at {ADDRESS}" in caplog.text
     assert f"🧾 Transaction hash: {TX_HASH}" in caplog.text
@@ -85,7 +84,7 @@ async def test_deploy(caplog):
                 "contract_name": CONTRACT,
                 "arguments": ARGS,
                 "network": NETWORK,
-                "alias": None
+                "alias": None,
             },
             [ADDRESS, ABI, NETWORK, None],  # expected register
         ),
@@ -95,7 +94,7 @@ async def test_deploy(caplog):
                 "arguments": ARGS,
                 "network": NETWORK,
                 "alias": ALIAS,
-                "overriding_path": PATH_OVERRIDE
+                "overriding_path": PATH_OVERRIDE,
             },
             [ADDRESS, ABI, NETWORK, ALIAS],  # expected register
         ),
@@ -108,9 +107,7 @@ async def test_deploy_registration(args, exp_register):
         mock_response.return_value = RESPONSE
         with patch("nile.core.deploy.open", new_callable=mock_open) as m_open:
             with patch("nile.core.deploy.ContractClass"):
-                with patch(
-                    "nile.core.deploy.deployments.register"
-                ) as mock_register:
+                with patch("nile.core.deploy.deployments.register") as mock_register:
 
                     await deploy(**args)
 
@@ -119,6 +116,4 @@ async def test_deploy_registration(args, exp_register):
                         PATH2 if "overriding_path" in args.keys() else BUILD_DIRECTORY
                     )
                     m_open.assert_called_once_with(f"{base_path}/{CONTRACT}.json", "r")
-                    mock_register.assert_called_once_with(
-                        *exp_register
-                    )
+                    mock_register.assert_called_once_with(*exp_register)
