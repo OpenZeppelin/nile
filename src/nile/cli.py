@@ -4,7 +4,7 @@ import logging
 
 import asyncclick as click
 
-from nile.core.account import get_or_create_account
+from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
@@ -104,7 +104,7 @@ async def declare(artifact, network, alias, signature, token):
 @network_option
 async def setup(signer, network):
     """Set up an Account contract."""
-    await get_or_create_account(signer, network)
+    await Account(signer, network)
 
 
 @cli.command()
@@ -117,17 +117,16 @@ async def setup(signer, network):
 @network_option
 async def send(signer, contract_name, method, params, network, nonce, max_fee):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
-    account = await get_or_create_account(signer, network)
+    account = await Account(signer, network)
     print(
         "Calling {} on {} with params: {}".format(
             method, contract_name, [x for x in params]
         )
     )
-    address, tx_hash = await account.send(
+    tx_hash = await account.send(
         contract_name, method, params, nonce=nonce, max_fee=max_fee
     )
     logging.info("Invoke transaction was sent.")
-    logging.info(f"Contract address: {address}")
     logging.info(f"Transaction hash: {tx_hash}")
 
 
@@ -139,11 +138,10 @@ async def send(signer, contract_name, method, params, network, nonce, max_fee):
 @network_option
 async def invoke(contract_name, method, params, network, max_fee=None):
     """Invoke functions of StarkNet smart contracts."""
-    address, tx_hash = await call_or_invoke_command(
+    tx_hash = await call_or_invoke_command(
         contract_name, "invoke", method, params, network, max_fee=max_fee
     )
     logging.info("Invoke transaction was sent.")
-    logging.info(f"Contract address: {address}")
     logging.info(f"Transaction hash: {tx_hash}")
 
 
