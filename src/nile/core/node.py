@@ -13,13 +13,14 @@ def node(host="127.0.0.1", port=5050, seed=None, lite_mode=False):
         file = NODE_FILENAME
         if host == "127.0.0.1":
             network = "localhost"
-        elif host == "0.0.0.0":
-            network = "localhost"
-            host = "127.0.0.1"
         else:
             network = host
-        gateway_url = f"http://{host}:{port}/"
-        gateway = {network: gateway_url}
+
+        if host == "0.0.0.0":
+            gateway = {"localhost": "http://127.0.0.1:5050/"}
+        else:
+            gateway_url = f"http://{host}:{port}/"
+            gateway = {network: gateway_url}
 
         with open(file, "w+") as f:
             json.dump(gateway, f)
