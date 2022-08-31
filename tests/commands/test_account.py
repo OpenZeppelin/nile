@@ -93,7 +93,7 @@ async def test_deploy_accounts_register():
             account = await Account(KEY, NETWORK)
 
             mock_register.assert_called_once_with(
-                account.signer.public_key, MOCK_ADDRESS, MOCK_INDEX, NETWORK
+                account.signer.public_key, MOCK_ADDRESS, MOCK_INDEX, KEY, NETWORK
             )
 
 

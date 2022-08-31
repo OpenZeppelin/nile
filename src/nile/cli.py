@@ -18,6 +18,7 @@ from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.version import version as version_command
 from nile.utils.debug import debug as debug_command
+from nile.utils.get_accounts import get_accounts as get_accounts_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
@@ -206,8 +207,9 @@ def clean():
 @cli.command()
 @click.option("--host", default="127.0.0.1")
 @click.option("--port", default=5050)
+@click.option("--seed", type=int)
 @click.option("--lite_mode", is_flag=True)
-def node(host, port, lite_mode):
+def node(host, port, seed, lite_mode):
     """Start StarkNet local network.
 
     $ nile node
@@ -216,10 +218,13 @@ def node(host, port, lite_mode):
     $ nile node --host HOST --port 5001
       Start StarkNet network on address HOST listening at port 5001
 
+    $ nile node --seed SEED
+      Start StarkNet local network with seed SEED
+
     $ nile node --lite_mode
       Start StarkNet network on lite-mode
     """
-    node_command(host, port, lite_mode)
+    node_command(host, port, seed, lite_mode)
 
 
 @cli.command()
@@ -236,6 +241,13 @@ def version():
 def debug(tx_hash, network, contracts_file):
     """Locate an error in a transaction using contracts."""
     debug_command(tx_hash, network, contracts_file)
+
+
+@cli.command()
+@network_option
+def get_accounts(network):
+    """Retrieve and manage deployed accounts."""
+    return get_accounts_command(network)
 
 
 cli = load_plugins(cli)

@@ -70,7 +70,10 @@ class Account(AsyncObject):
             overriding_path=overriding_path,
         )
 
-        accounts.register(self.signer.public_key, address, index, self.network)
+        accounts.register(
+            self.signer.public_key, address, index, self.alias, self.network
+        )
+
         return address, index
 
     async def send(self, to, method, calldata, max_fee=None, nonce=None):

@@ -47,13 +47,15 @@ This command creates the project directory structure and installs `cairo-lang`, 
 Run a local [`starknet-devnet`](https://github.com/Shard-Labs/starknet-devnet/) node:
 
 ```text
-nile node [--host HOST] [--port PORT] [--lite_mode]
+nile node [--host HOST] [--port PORT] [--seed SEED] [--lite_mode]
 
 optional arguments:
 --host HOST         Specify the address to listen at; defaults to
                     127.0.0.1 (use the address the program outputs on
                     start)
 --port PORT         Specify the port to listen at; defaults to 5050
+--seed SEED         Specify the seed for randomness of accounts to be
+                    deployed
 --lite-mode         Applies all lite-mode optimizations by disabling
                     features such as block hash and deploy hash
                     calculation
@@ -345,6 +347,48 @@ CONTRACT_ADDRESS1:PATH_TO_COMPILED_CONTRACT1.json
 CONTRACT_ADDRESS2:PATH_TO_COMPILED_CONTRACT2.json
 ...
 ```
+
+### `get-accounts`
+
+Retrieves a list of ready-to-use accounts which allows for easy scripting integration. Before using `get-accounts`:
+
+1. store private keys in a `.env`
+
+    ```
+    PRIVATE_KEY_ALIAS_1=286426666527820764590699050992975838532
+    PRIVATE_KEY_ALIAS_2=263637040172279991633704324379452721903
+    PRIVATE_KEY_ALIAS_3=325047780196174231475632140485641889884
+    ```
+
+2. deploy accounts with the keys therefrom like this:
+
+    ```bash
+    nile setup PRIVATE_KEY_ALIAS_1
+    ...
+    nile setup PRIVATE_KEY_ALIAS_2
+    ...
+    nile setup PRIVATE_KEY_ALIAS_3
+    ...
+    ```
+
+Next, write a script and call `get-accounts` to retrieve and use the deployed accounts.
+
+```python
+def run(nre):
+
+    # fetch the list of deployed accounts
+    accounts = nre.get_accounts()
+
+    # then
+    accounts[0].send(...)
+
+    # or
+    alice, bob, *_ = accounts
+    alice.send(...)
+    bob.send(...)
+```
+
+> Please note that the list of accounts include only those that exist in the local `<network>.accounts.json` file.
 
 ## Extending Nile with plugins
 

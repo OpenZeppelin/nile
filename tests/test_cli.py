@@ -1,4 +1,5 @@
 """Tests for cli.py."""
+import itertools
 import json
 import shutil
 import sys
@@ -116,11 +117,35 @@ async def test_compile(args, expected):
 
 
 @pytest.mark.asyncio
+@pytest.mark.xfail(
+    sys.version_info >= (3, 10),
+    reason="Issue in cairo-lang. "
+    "See https://github.com/starkware-libs/cairo-lang/issues/27",
+)
+async def test_node_forwards_args():
+    with patch("nile.core.node.subprocess") as mock_subprocess:
+        args = [
+            "--host",
+            "localhost",
+            "--port",
+            "5001",
+            "--seed",
+            "1234",
+        ]
+
+        result = await CliRunner().invoke(cli, ["node", *args])
+        assert result.exit_code == 0
+
+        expected = ["starknet-devnet", *args]
+        mock_subprocess.check_call.assert_called_once_with(expected)
+
+
 @pytest.mark.parametrize(
-    "args, expected",
+    "opts, expected",
     [
-        ([], "http://127.0.0.1:5050/"),
-        (["--host", "localhost", "--port", "5001"], "http://localhost:5001/"),
+        ({}, "http://127.0.0.1:5050/"),
+        ({"--host": "localhost", "--port": "5001"}, "http://localhost:5001/"),
+        ({"--seed": "1234"}, "http://127.0.0.1:5050/"),
     ],
 )
 @pytest.mark.xfail(
@@ -128,14 +153,12 @@ async def test_compile(args, expected):
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-async def test_node(args, expected):
+async def test_node_runs_gateway(opts, expected):
     # Node life
     seconds = 15
 
-    if args == []:
-        host, port = "127.0.0.1", 5050
-    else:
-        host, port = args[1], int(args[3])
+    host = opts.get("--host", "127.0.0.1")
+    port = opts.get("--port", "5050")
 
     if host == "127.0.0.1":
         network = "localhost"
@@ -143,6 +166,11 @@ async def test_node(args, expected):
         network = host
 
     gateway_url = f"http://{host}:{port}/"
+
+    # Convert opts to arg list -
+    #   { "--host": "localhost", "--port":  "5001" } =>
+    #   [ "--host", "localhost", "--port", "5001" ]
+    args = itertools.chain.from_iterable(opts.items())
 
     # Spawn process to start StarkNet local network with specified port
     # i.e. $ nile node --host localhost --port 5001
