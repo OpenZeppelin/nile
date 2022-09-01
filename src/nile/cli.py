@@ -124,10 +124,11 @@ async def send(signer, contract_name, method, params, network, nonce, max_fee):
             method, contract_name, [x for x in params]
         )
     )
-    tx_hash = await account.send(
+    address, tx_hash = await account.send(
         contract_name, method, params, nonce=nonce, max_fee=max_fee
     )
     logging.info("Invoke transaction was sent.")
+    logging.info(f"Contract address: {address}")
     logging.info(f"Transaction hash: {tx_hash}")
 
 
@@ -139,10 +140,11 @@ async def send(signer, contract_name, method, params, network, nonce, max_fee):
 @network_option
 async def invoke(contract_name, method, params, network, max_fee=None):
     """Invoke functions of StarkNet smart contracts."""
-    tx_hash = await call_or_invoke_command(
+    address, tx_hash = await call_or_invoke_command(
         contract_name, "invoke", method, params, network, max_fee=max_fee
     )
     logging.info("Invoke transaction was sent.")
+    logging.info(f"Contract address: {address}")
     logging.info(f"Transaction hash: {tx_hash}")
 
 
