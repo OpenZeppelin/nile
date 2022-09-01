@@ -22,21 +22,21 @@ class NileRuntimeEnvironment:
         """Compile a list of contracts."""
         return compile(contracts)
 
-    async def declare(self, contract, alias=None, overriding_path=None):
+    def declare(self, contract, alias=None, overriding_path=None):
         """Declare a smart contract class."""
-        return await declare(contract, self.network, alias)
+        return declare(contract, self.network, alias)
 
-    async def deploy(self, contract, arguments=None, alias=None, overriding_path=None):
+    def deploy(self, contract, arguments=None, alias=None, overriding_path=None):
         """Deploy a smart contract."""
-        return await deploy(contract, arguments, self.network, alias, overriding_path)
+        return deploy(contract, arguments, self.network, alias, overriding_path)
 
-    async def call(self, contract, method, params=None):
+    def call(self, contract, method, params=None):
         """Call a view function in a smart contract."""
-        return await call_or_invoke(contract, "call", method, params, self.network)
+        return call_or_invoke(contract, "call", method, params, self.network)
 
-    async def invoke(self, contract, method, params=None):
+    def invoke(self, contract, method, params=None):
         """Invoke a mutable function in a smart contract."""
-        return await call_or_invoke(contract, "invoke", method, params, self.network)
+        return call_or_invoke(contract, "invoke", method, params, self.network)
 
     def get_deployment(self, identifier):
         """Get a deployment by its identifier (address or alias)."""
@@ -46,9 +46,9 @@ class NileRuntimeEnvironment:
         """Get a declared class by its identifier (class hash or alias)."""
         return next(deployments.load_class(identifier, self.network))
 
-    async def get_or_deploy_account(self, signer):
+    def get_or_deploy_account(self, signer):
         """Get or deploy an Account contract."""
-        return await Account(signer, self.network)
+        return Account(signer, self.network)
 
     def get_accounts(self):
         """Retrieve and manage deployed accounts."""
