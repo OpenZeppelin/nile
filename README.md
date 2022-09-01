@@ -178,6 +178,7 @@ For example:
 ```sh
 nile send <private_key_alias> ownable0 transfer_ownership 0x07db6...60e794
 
+Calling transfer_ownership on ownable0 with params: ['0x07db6...60e794']
 Invoke transaction was sent.
 Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
 Transaction hash: 0x1c
@@ -218,7 +219,7 @@ Please note:
 
 ### `run`
 
-Execute a script in the context of Nile. The script must implement a `run(nre)` function to receive a `NileRuntimeEnvironment` object exposing Nile's scripting API.
+Execute a script in the context of Nile. The script must implement an asynchronous `run(nre)` function to receive a `NileRuntimeEnvironment` object exposing Nile's scripting API.
 
 ```python
 # path/to/script.py
@@ -374,18 +375,18 @@ Retrieves a list of ready-to-use accounts which allows for easy scripting integr
 Next, write a script and call `get-accounts` to retrieve and use the deployed accounts.
 
 ```python
-def run(nre):
+async def run(nre):
 
     # fetch the list of deployed accounts
-    accounts = nre.get_accounts()
+    accounts = await nre.get_accounts()
 
     # then
-    accounts[0].send(...)
+    await accounts[0].send(...)
 
     # or
     alice, bob, *_ = accounts
-    alice.send(...)
-    bob.send(...)
+    await alice.send(...)
+    await bob.send(...)
 ```
 
 > Please note that the list of accounts include only those that exist in the local `<network>.accounts.json` file.
