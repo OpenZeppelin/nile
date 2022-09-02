@@ -29,7 +29,7 @@
     {
         "inputs": [
             {
-                "name": "public_key",
+                "name": "publicKey",
                 "type": "felt"
             }
         ],
@@ -39,10 +39,10 @@
     },
     {
         "inputs": [],
-        "name": "get_public_key",
+        "name": "getPublicKey",
         "outputs": [
             {
-                "name": "res",
+                "name": "publicKey",
                 "type": "felt"
             }
         ],
@@ -51,10 +51,10 @@
     },
     {
         "inputs": [],
-        "name": "get_nonce",
+        "name": "getNonce",
         "outputs": [
             {
-                "name": "res",
+                "name": "nonce",
                 "type": "felt"
             }
         ],
@@ -81,11 +81,11 @@
     {
         "inputs": [
             {
-                "name": "new_public_key",
+                "name": "newPublicKey",
                 "type": "felt"
             }
         ],
-        "name": "set_public_key",
+        "name": "setPublicKey",
         "outputs": [],
         "type": "function"
     },
@@ -104,10 +104,10 @@
                 "type": "felt*"
             }
         ],
-        "name": "is_valid_signature",
+        "name": "isValidSignature",
         "outputs": [
             {
-                "name": "is_valid",
+                "name": "isValid",
                 "type": "felt"
             }
         ],

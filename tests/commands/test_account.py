@@ -88,11 +88,11 @@ def test_send_nonce_call(mock_call):
     # deployed account address (contract_address) as the target
     account.send(contract_address, "method", [1, 2, 3], max_fee=1)
 
-    # 'call_or_invoke' is called twice ('get_nonce' and '__execute__')
+    # 'call_or_invoke' is called twice ('getNonce' and '__execute__')
     assert mock_call.call_count == 2
 
-    # Check 'get_nonce' call
-    mock_call.assert_any_call(account.address, "call", "get_nonce", [], NETWORK)
+    # Check 'getNonce' call
+    mock_call.assert_any_call(account.address, "call", "getNonce", [], NETWORK)
 
 
 @pytest.mark.parametrize(

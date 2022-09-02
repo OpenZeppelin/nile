@@ -69,7 +69,7 @@ class Account:
 
         if nonce is None:
             nonce = int(
-                call_or_invoke(self.address, "call", "get_nonce", [], self.network)[0]
+                call_or_invoke(self.address, "call", "getNonce", [], self.network)[0]
             )
 
         if max_fee is None:
