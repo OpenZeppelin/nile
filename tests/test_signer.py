@@ -29,10 +29,6 @@ async def send_transaction(
 
 
 async def send_transactions(signer, account, calls, nonce=None, max_fee=0):
-    if nonce is None:
-        execution_info = await account.get_nonce().call()
-        (nonce,) = execution_info.result
-
     build_calls = []
     for call in calls:
         build_call = list(call)
@@ -42,8 +38,8 @@ async def send_transactions(signer, account, calls, nonce=None, max_fee=0):
     (call_array, calldata, sig_r, sig_s) = signer.sign_transaction(
         hex(account.contract_address), build_calls, nonce, max_fee
     )
-    return await account.__execute__(call_array, calldata, nonce).invoke(
-        signature=[sig_r, sig_s]
+    return await account.__execute__(call_array, calldata).execute(
+        # signature=[sig_r, sig_s]
     )
 
 
@@ -68,13 +64,16 @@ async def test_execute():
     assert execution_info.result == (0,)
 
     # Single tx
+    nonce = await starknet.state.state.get_nonce_at(account.contract_address)
     await send_transaction(
-        SIGNER, account, contract.contract_address, "increase_balance", [1]
+        SIGNER, account, contract.contract_address, "increase_balance", [1], nonce
     )
+
     execution_info = await contract.get_balance().call()
     assert execution_info.result == (1,)
 
     # Multicall tx
+    nonce = await starknet.state.state.get_nonce_at(account.contract_address)
     await send_transactions(
         SIGNER,
         account,
@@ -82,6 +81,7 @@ async def test_execute():
             (contract.contract_address, "increase_balance", [1]),
             (contract.contract_address, "increase_balance", [1]),
         ],
+        nonce
     )
     execution_info = await contract.get_balance().call()
     assert execution_info.result == (3,)

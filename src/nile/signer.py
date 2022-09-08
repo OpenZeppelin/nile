@@ -1,14 +1,10 @@
-"""Utility for signing transactions for an Account on Starknet."""
-
-from starkware.crypto.signature.signature import private_to_stark_key, sign
-from starkware.starknet.core.os.transaction_hash.transaction_hash import (
-    TransactionHashPrefix,
-    calculate_transaction_hash_common,
-)
 from starkware.starknet.definitions.general_config import StarknetChainId
+from starkware.starknet.core.os.transaction_hash.transaction_hash import calculate_transaction_hash_common, TransactionHashPrefix
+from starkware.crypto.signature.signature import private_to_stark_key, sign
 from starkware.starknet.public.abi import get_selector_from_name
 
-TRANSACTION_VERSION = 0
+
+TRANSACTION_VERSION = 1
 
 
 class Signer:
@@ -24,12 +20,24 @@ class Signer:
         return sign(msg_hash=message_hash, priv_key=self.private_key)
 
     def sign_transaction(self, sender, calls, nonce, max_fee):
-        """Sign a transaction for an Account."""
-        (call_array, calldata) = from_call_to_call_array(calls)
-        message_hash = get_transaction_hash(
-            int(sender, 16), call_array, calldata, nonce, int(max_fee)
+        call_array, calldata = from_call_to_call_array(calls)
+        execute_calldata = [
+            len(call_array),
+            *[x for t in call_array for x in t],
+            len(calldata),
+            *calldata,
+            nonce
+        ]
+
+        transaction_hash = get_transaction_hash(
+            prefix=TransactionHashPrefix.INVOKE,
+            account=int(sender, 16),
+            calldata=execute_calldata,
+            nonce=nonce,
+            max_fee=max_fee
         )
-        sig_r, sig_s = self.sign(message_hash)
+
+        sig_r, sig_s = self.sign(message_hash=transaction_hash)
         return (call_array, calldata, sig_r, sig_s)
 
 
@@ -53,23 +61,14 @@ def from_call_to_call_array(calls):
     return (call_array, calldata)
 
 
-def get_transaction_hash(account, call_array, calldata, nonce, max_fee):
-    """Calculate the transaction hash."""
-    execute_calldata = [
-        len(call_array),
-        *[x for t in call_array for x in t],
-        len(calldata),
-        *calldata,
-        nonce,
-    ]
-
+def get_transaction_hash(prefix, account, calldata, nonce, max_fee):
     return calculate_transaction_hash_common(
-        TransactionHashPrefix.INVOKE,
-        TRANSACTION_VERSION,
-        account,
-        get_selector_from_name("__execute__"),
-        execute_calldata,
-        max_fee,
-        StarknetChainId.TESTNET.value,
-        [],
+        tx_hash_prefix=prefix,
+        version=TRANSACTION_VERSION,
+        contract_address=account,
+        entry_point_selector=0,
+        calldata=calldata,
+        max_fee=max_fee,
+        chain_id=StarknetChainId.TESTNET.value,
+        additional_data=[nonce],
     )

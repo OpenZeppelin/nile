@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 
 from nile import accounts, deployments
+from nile.common import get_nonce
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.deploy import deploy
 
@@ -68,9 +69,9 @@ class Account:
         calldata = [int(x) for x in calldata]
 
         if nonce is None:
-            nonce = int(
-                call_or_invoke(self.address, "call", "get_nonce", [], self.network)[0]
-            )
+            nonce = get_nonce(self.address, self.network)
+            print("asdadasd")
+            print(nonce, self.address)
 
         if max_fee is None:
             max_fee = 0

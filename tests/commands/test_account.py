@@ -79,8 +79,9 @@ def test_deploy_accounts_register(mock_register, mock_deploy):
     )
 
 
+@patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
-def test_send_nonce_call(mock_call):
+def test_send_nonce_call(mock_call, mock_nonce):
     account = Account(KEY, NETWORK)
     contract_address, _ = account.deploy()
 
@@ -88,11 +89,11 @@ def test_send_nonce_call(mock_call):
     # deployed account address (contract_address) as the target
     account.send(contract_address, "method", [1, 2, 3], max_fee=1)
 
-    # 'call_or_invoke' is called twice ('get_nonce' and '__execute__')
-    assert mock_call.call_count == 2
+    # 'call_or_invoke' is called once for '__execute__'
+    assert mock_call.call_count == 1
 
     # Check 'get_nonce' call
-    mock_call.assert_any_call(account.address, "call", "get_nonce", [], NETWORK)
+    mock_nonce.assert_called_once_with(account.address, NETWORK)
 
 
 @pytest.mark.parametrize(
