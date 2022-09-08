@@ -4,16 +4,23 @@ Tests for signer.py.
 A high-level synchronization check between the Account artifacts and Signer module.
 """
 
-import pytest
 import asyncio
 
-from starkware.starknet.testing.starknet import Starknet
+import pytest
+from starkware.starknet.business_logic.transaction.objects import InternalTransaction
+from starkware.starknet.core.os.transaction_hash.transaction_hash import (
+    TransactionHashPrefix,
+)
 from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.services.api.gateway.transaction import InvokeFunction
-from starkware.starknet.business_logic.transaction.objects import InternalTransaction
-from starkware.starknet.core.os.transaction_hash.transaction_hash import TransactionHashPrefix
+from starkware.starknet.testing.starknet import Starknet
 
-from nile.signer import Signer, get_raw_invoke, get_transaction_hash, TRANSACTION_VERSION
+from nile.signer import (
+    TRANSACTION_VERSION,
+    Signer,
+    get_raw_invoke,
+    get_transaction_hash,
+)
 
 SIGNER = Signer(12345678987654321)
 
@@ -50,7 +57,7 @@ async def send_transactions(signer, account, calls, nonce=None, max_fee=0):
         account=account.contract_address,
         calldata=raw_invocation.calldata,
         nonce=nonce,
-        max_fee=max_fee
+        max_fee=max_fee,
     )
 
     # get signature
