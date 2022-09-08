@@ -70,8 +70,6 @@ class Account:
 
         if nonce is None:
             nonce = get_nonce(self.address, self.network)
-            print("asdadasd")
-            print(nonce, self.address)
 
         if max_fee is None:
             max_fee = 0
