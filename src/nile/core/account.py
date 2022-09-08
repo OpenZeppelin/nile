@@ -73,6 +73,8 @@ class Account:
 
         if max_fee is None:
             max_fee = 0
+        else:
+            max_fee = int(max_fee)
 
         (call_array, calldata, sig_r, sig_s) = self.signer.sign_transaction(
             sender=self.address,
@@ -86,7 +88,6 @@ class Account:
         params.extend(*call_array)
         params.append(len(calldata))
         params.extend(calldata)
-        params.append(nonce)
 
         return call_or_invoke(
             contract=self.address,
