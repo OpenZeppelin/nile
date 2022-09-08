@@ -30,7 +30,7 @@ class Signer:
             len(call_array),
             *[x for t in call_array for x in t],
             len(calldata),
-            *calldata
+            *calldata,
         ]
 
         transaction_hash = get_transaction_hash(
