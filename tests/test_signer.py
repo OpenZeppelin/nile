@@ -81,7 +81,7 @@ async def test_execute():
             (contract.contract_address, "increase_balance", [1]),
             (contract.contract_address, "increase_balance", [1]),
         ],
-        nonce
+        nonce,
     )
     execution_info = await contract.get_balance().call()
     assert execution_info.result == (3,)

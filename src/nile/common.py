@@ -73,7 +73,8 @@ def run_command(
 
 
 def get_nonce(contract_address, network):
-    command = ['starknet', 'get_nonce', '--contract_address', contract_address]
+    """Get the current nonce for contract address in a given network."""
+    command = ["starknet", "get_nonce", "--contract_address", contract_address]
 
     if network == "mainnet":
         os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
