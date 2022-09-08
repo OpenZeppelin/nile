@@ -133,7 +133,6 @@ def test_send_sign_transaction_and_execute(callarray, calldata):
                 *(str(elem) for sublist in callarray for elem in sublist),
                 len(calldata),
                 *(str(param) for param in calldata),
-                nonce,
             ],
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
