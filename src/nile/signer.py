@@ -77,3 +77,9 @@ def get_transaction_hash(prefix, account, calldata, nonce, max_fee):
         chain_id=StarknetChainId.TESTNET.value,
         additional_data=[nonce],
     )
+
+
+def get_raw_invoke(sender, calls):
+    call_array, calldata = from_call_to_call_array(calls)
+    raw_invocation = sender.__execute__(call_array, calldata)
+    return raw_invocation

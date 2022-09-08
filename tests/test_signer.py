@@ -4,13 +4,16 @@ Tests for signer.py.
 A high-level synchronization check between the Account artifacts and Signer module.
 """
 
+import pytest
 import asyncio
 
-import pytest
-from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.testing.starknet import Starknet
+from starkware.starknet.services.api.contract_class import ContractClass
+from starkware.starknet.services.api.gateway.transaction import InvokeFunction
+from starkware.starknet.business_logic.transaction.objects import InternalTransaction
+from starkware.starknet.core.os.transaction_hash.transaction_hash import TransactionHashPrefix
 
-from nile.signer import Signer
+from nile.signer import Signer, get_raw_invoke, get_transaction_hash, TRANSACTION_VERSION
 
 SIGNER = Signer(12345678987654321)
 
@@ -29,18 +32,46 @@ async def send_transaction(
 
 
 async def send_transactions(signer, account, calls, nonce=None, max_fee=0):
+    # hexify address before passing to from_call_to_call_array
     build_calls = []
     for call in calls:
         build_call = list(call)
         build_call[0] = hex(build_call[0])
         build_calls.append(build_call)
 
-    (call_array, calldata, sig_r, sig_s) = signer.sign_transaction(
-        hex(account.contract_address), build_calls, nonce, max_fee
+    raw_invocation = get_raw_invoke(account, build_calls)
+    state = raw_invocation.state
+
+    if nonce is None:
+        nonce = await state.state.get_nonce_at(account.contract_address)
+
+    transaction_hash = get_transaction_hash(
+        prefix=TransactionHashPrefix.INVOKE,
+        account=account.contract_address,
+        calldata=raw_invocation.calldata,
+        nonce=nonce,
+        max_fee=max_fee
     )
-    return await account.__execute__(call_array, calldata).execute(
-        # signature=[sig_r, sig_s]
+
+    # get signature
+    sig_r, sig_s = signer.sign(message_hash=transaction_hash)
+
+    # craft invoke and execute tx
+    external_tx = InvokeFunction(
+        contract_address=account.contract_address,
+        calldata=raw_invocation.calldata,
+        entry_point_selector=None,
+        signature=[sig_r, sig_s],
+        max_fee=max_fee,
+        version=TRANSACTION_VERSION,
+        nonce=nonce,
     )
+
+    tx = InternalTransaction.from_external(
+        external_tx=external_tx, general_config=state.general_config
+    )
+    execution_info = await state.execute_tx(tx=tx)
+    return execution_info
 
 
 @pytest.fixture(scope="module")
