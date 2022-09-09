@@ -81,7 +81,7 @@ def get_nonce(contract_address, network):
     elif network == "goerli":
         os.environ["STARKNET_NETWORK"] = "alpha-goerli"
     else:
-        command.append(f"--gateway_url={GATEWAYS.get(network)}")
+        command.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
 
     return int(subprocess.check_output(command).strip())
 
