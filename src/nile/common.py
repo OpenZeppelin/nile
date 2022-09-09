@@ -72,6 +72,20 @@ def run_command(
     return subprocess.check_output(command)
 
 
+def get_nonce(contract_address, network):
+    """Get the current nonce for contract address in a given network."""
+    command = ["starknet", "get_nonce", "--contract_address", contract_address]
+
+    if network == "mainnet":
+        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
+    elif network == "goerli":
+        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
+    else:
+        command.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
+
+    return int(subprocess.check_output(command).strip())
+
+
 def parse_information(x):
     """Extract information from deploy/declare command."""
     # address is 64, tx_hash is 64 chars long

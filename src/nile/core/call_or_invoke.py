@@ -29,8 +29,8 @@ def call_or_invoke(
     elif network == "goerli":
         os.environ["STARKNET_NETWORK"] = "alpha-goerli"
     else:
-        gateway_prefix = "feeder_gateway" if type == "call" else "gateway"
-        command.append(f"--{gateway_prefix}_url={GATEWAYS.get(network)}")
+        command.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
+        command.append(f"--gateway_url={GATEWAYS.get(network)}")
 
     params = prepare_params(params)
 

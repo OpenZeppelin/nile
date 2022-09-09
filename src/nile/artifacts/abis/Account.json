@@ -39,22 +39,10 @@
     },
     {
         "inputs": [],
-        "name": "get_public_key",
+        "name": "getPublicKey",
         "outputs": [
             {
-                "name": "res",
-                "type": "felt"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "get_nonce",
-        "outputs": [
-            {
-                "name": "res",
+                "name": "publicKey",
                 "type": "felt"
             }
         ],
@@ -81,11 +69,11 @@
     {
         "inputs": [
             {
-                "name": "new_public_key",
+                "name": "newPublicKey",
                 "type": "felt"
             }
         ],
-        "name": "set_public_key",
+        "name": "setPublicKey",
         "outputs": [],
         "type": "function"
     },
@@ -104,10 +92,10 @@
                 "type": "felt*"
             }
         ],
-        "name": "is_valid_signature",
+        "name": "isValidSignature",
         "outputs": [
             {
-                "name": "is_valid",
+                "name": "isValid",
                 "type": "felt"
             }
         ],
@@ -131,10 +119,40 @@
             {
                 "name": "calldata",
                 "type": "felt*"
+            }
+        ],
+        "name": "__validate__",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "class_hash",
+                "type": "felt"
+            }
+        ],
+        "name": "__validate_declare__",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "call_array_len",
+                "type": "felt"
             },
             {
-                "name": "nonce",
+                "name": "call_array",
+                "type": "AccountCallArray*"
+            },
+            {
+                "name": "calldata_len",
                 "type": "felt"
+            },
+            {
+                "name": "calldata",
+                "type": "felt*"
             }
         ],
         "name": "__execute__",

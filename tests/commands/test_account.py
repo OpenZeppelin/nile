@@ -79,8 +79,9 @@ def test_deploy_accounts_register(mock_register, mock_deploy):
     )
 
 
+@patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
-def test_send_nonce_call(mock_call):
+def test_send_nonce_call(mock_call, mock_nonce):
     account = Account(KEY, NETWORK)
     contract_address, _ = account.deploy()
 
@@ -88,25 +89,20 @@ def test_send_nonce_call(mock_call):
     # deployed account address (contract_address) as the target
     account.send(contract_address, "method", [1, 2, 3], max_fee=1)
 
-    # 'call_or_invoke' is called twice ('get_nonce' and '__execute__')
-    assert mock_call.call_count == 2
+    # 'call_or_invoke' is called once for '__execute__'
+    assert mock_call.call_count == 1
 
     # Check 'get_nonce' call
-    mock_call.assert_any_call(account.address, "call", "get_nonce", [], NETWORK)
+    mock_nonce.assert_called_once_with(account.address, NETWORK)
 
 
-@pytest.mark.parametrize(
-    "callarray, calldata",
-    # The following callarray and calldata args tests the Account's list comprehensions
-    # ensuring they're set to strings and passed correctly
-    [([["111"]], []), ([["111", "222"]], ["333", "444", "555"])],
-)
-def test_send_sign_transaction_and_execute(callarray, calldata):
+def test_send_sign_transaction_and_execute():
     account = Account(KEY, NETWORK)
     contract_address, _ = account.deploy()
 
+    calldata = ["111", "222", "333"]
     sig_r, sig_s = [999, 888]
-    return_signature = [callarray, calldata, sig_r, sig_s]
+    return_signature = [calldata, sig_r, sig_s]
 
     account.signer.sign_transaction = MagicMock(return_value=return_signature)
 
@@ -127,13 +123,7 @@ def test_send_sign_transaction_and_execute(callarray, calldata):
             max_fee=str(max_fee),
             method="__execute__",
             network=NETWORK,
-            params=[
-                len(callarray),
-                *(str(elem) for sublist in callarray for elem in sublist),
-                len(calldata),
-                *(str(param) for param in calldata),
-                nonce,
-            ],
+            params=calldata,
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
         )

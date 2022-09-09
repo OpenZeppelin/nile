@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 
 from nile import accounts, deployments
+from nile.common import get_nonce
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.deploy import deploy
 
@@ -68,32 +69,25 @@ class Account:
         calldata = [int(x) for x in calldata]
 
         if nonce is None:
-            nonce = int(
-                call_or_invoke(self.address, "call", "get_nonce", [], self.network)[0]
-            )
+            nonce = get_nonce(self.address, self.network)
 
         if max_fee is None:
             max_fee = 0
+        else:
+            max_fee = int(max_fee)
 
-        (call_array, calldata, sig_r, sig_s) = self.signer.sign_transaction(
+        calldata, sig_r, sig_s = self.signer.sign_transaction(
             sender=self.address,
             calls=[[target_address, method, calldata]],
             nonce=nonce,
             max_fee=max_fee,
         )
 
-        params = []
-        params.append(len(call_array))
-        params.extend(*call_array)
-        params.append(len(calldata))
-        params.extend(calldata)
-        params.append(nonce)
-
         return call_or_invoke(
             contract=self.address,
             type="invoke",
             method="__execute__",
-            params=params,
+            params=calldata,
             network=self.network,
             signature=[str(sig_r), str(sig_s)],
             max_fee=str(max_fee),
