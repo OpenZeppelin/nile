@@ -112,7 +112,6 @@ async def test_execute():
 
 def get_raw_invoke(sender, calls):
     """Construct and return StarkNet's internal raw_invocation."""
-
     call_array, calldata = from_call_to_call_array(calls)
     raw_invocation = sender.__execute__(call_array, calldata)
     return raw_invocation
