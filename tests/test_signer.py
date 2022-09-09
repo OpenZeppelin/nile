@@ -8,19 +8,11 @@ import asyncio
 
 import pytest
 from starkware.starknet.business_logic.transaction.objects import InternalTransaction
-from starkware.starknet.core.os.transaction_hash.transaction_hash import (
-    TransactionHashPrefix,
-)
 from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.testing.starknet import Starknet
 
-from nile.signer import (
-    TRANSACTION_VERSION,
-    Signer,
-    get_raw_invoke,
-    get_transaction_hash,
-)
+from nile.signer import TRANSACTION_VERSION, Signer, from_call_to_call_array
 
 SIGNER = Signer(12345678987654321)
 
@@ -45,28 +37,21 @@ async def send_transactions(signer, account, calls, nonce=None, max_fee=0):
         build_call = list(call)
         build_call[0] = hex(build_call[0])
         build_calls.append(build_call)
-
     raw_invocation = get_raw_invoke(account, build_calls)
     state = raw_invocation.state
 
     if nonce is None:
         nonce = await state.state.get_nonce_at(account.contract_address)
 
-    transaction_hash = get_transaction_hash(
-        prefix=TransactionHashPrefix.INVOKE,
-        account=account.contract_address,
-        calldata=raw_invocation.calldata,
-        nonce=nonce,
-        max_fee=max_fee,
-    )
-
     # get signature
-    sig_r, sig_s = signer.sign(message_hash=transaction_hash)
+    calldata, sig_r, sig_s = signer.sign_transaction(
+        account.contract_address, build_calls, nonce, max_fee
+    )
 
     # craft invoke and execute tx
     external_tx = InvokeFunction(
         contract_address=account.contract_address,
-        calldata=raw_invocation.calldata,
+        calldata=calldata,
         entry_point_selector=None,
         signature=[sig_r, sig_s],
         max_fee=max_fee,
@@ -123,3 +108,11 @@ async def test_execute():
     )
     execution_info = await contract.get_balance().call()
     assert execution_info.result == (3,)
+
+
+def get_raw_invoke(sender, calls):
+    """Construct and return StarkNet's internal raw_invocation."""
+
+    call_array, calldata = from_call_to_call_array(calls)
+    raw_invocation = sender.__execute__(call_array, calldata)
+    return raw_invocation

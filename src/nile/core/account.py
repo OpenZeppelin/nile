@@ -76,24 +76,18 @@ class Account:
         else:
             max_fee = int(max_fee)
 
-        (call_array, calldata, sig_r, sig_s) = self.signer.sign_transaction(
-            sender=self.address,
+        calldata, sig_r, sig_s = self.signer.sign_transaction(
+            sender=int(self.address, 16),
             calls=[[target_address, method, calldata]],
             nonce=nonce,
             max_fee=max_fee,
         )
 
-        params = []
-        params.append(len(call_array))
-        params.extend(*call_array)
-        params.append(len(calldata))
-        params.extend(calldata)
-
         return call_or_invoke(
             contract=self.address,
             type="invoke",
             method="__execute__",
-            params=params,
+            params=calldata,
             network=self.network,
             signature=[str(sig_r), str(sig_s)],
             max_fee=str(max_fee),

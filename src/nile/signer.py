@@ -35,14 +35,14 @@ class Signer:
 
         transaction_hash = get_transaction_hash(
             prefix=TransactionHashPrefix.INVOKE,
-            account=int(sender, 16),
+            account=sender,
             calldata=execute_calldata,
             nonce=nonce,
             max_fee=max_fee,
         )
 
         sig_r, sig_s = self.sign(message_hash=transaction_hash)
-        return (call_array, calldata, sig_r, sig_s)
+        return execute_calldata, sig_r, sig_s
 
 
 # Auxiliary functions
@@ -77,10 +77,3 @@ def get_transaction_hash(prefix, account, calldata, nonce, max_fee):
         chain_id=StarknetChainId.TESTNET.value,
         additional_data=[nonce],
     )
-
-
-def get_raw_invoke(sender, calls):
-    """Construct and return StarkNet's internal raw_invocation."""
-    call_array, calldata = from_call_to_call_array(calls)
-    raw_invocation = sender.__execute__(call_array, calldata)
-    return raw_invocation
