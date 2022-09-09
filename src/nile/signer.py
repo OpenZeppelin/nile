@@ -33,6 +33,9 @@ class Signer:
             *calldata,
         ]
 
+        if isinstance(sender, str):
+            sender = int(sender, 16)
+
         transaction_hash = get_transaction_hash(
             prefix=TransactionHashPrefix.INVOKE,
             account=sender,

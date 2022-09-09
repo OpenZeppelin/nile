@@ -77,7 +77,7 @@ class Account:
             max_fee = int(max_fee)
 
         calldata, sig_r, sig_s = self.signer.sign_transaction(
-            sender=int(self.address, 16),
+            sender=self.address,
             calls=[[target_address, method, calldata]],
             nonce=nonce,
             max_fee=max_fee,

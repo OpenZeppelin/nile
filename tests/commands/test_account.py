@@ -114,7 +114,7 @@ def test_send_sign_transaction_and_execute():
 
         # Check values are correctly passed to 'sign_transaction'
         account.signer.sign_transaction.assert_called_once_with(
-            calls=[send_args], nonce=nonce, sender=int(account.address, 16), max_fee=1
+            calls=[send_args], nonce=nonce, sender=account.address, max_fee=1
         )
 
         # Check values are correctly passed to '__execute__'
