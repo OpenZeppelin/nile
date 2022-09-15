@@ -6,8 +6,8 @@ from nile.core.compile import compile
 from nile.core.declare import declare
 from nile.core.deploy import deploy
 from nile.core.plugins import get_installed_plugins, skip_click_exit
-from nile.utils.get_accounts import get_accounts
 from nile.devnet import get_predeployed_accounts
+from nile.utils.get_accounts import get_accounts
 
 
 class NileRuntimeEnvironment:
