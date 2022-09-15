@@ -15,7 +15,7 @@ NODE_FILENAME = "node.json"
 RETRY_AFTER_SECONDS = 30
 
 
-def _get_gateway():
+def get_gateway():
     """Get the StarkNet node details."""
     try:
         with open(NODE_FILENAME, "r") as f:
@@ -27,7 +27,7 @@ def _get_gateway():
             f.write('{"localhost": "http://127.0.0.1:5050/"}')
 
 
-GATEWAYS = _get_gateway()
+GATEWAYS = get_gateway()
 
 
 def get_all_contracts(ext=None, directory=None):

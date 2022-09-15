@@ -20,11 +20,16 @@ load_dotenv()
 class Account:
     """Account contract abstraction."""
 
-    def __init__(self, signer, network):
+    def __init__(self, signer, network, predeployed_info=None):
         """Get or deploy an Account contract for the given private key."""
         try:
-            self.signer = Signer(int(os.environ[signer]))
-            self.alias = signer
+            if predeployed_info is None:
+                self.signer = Signer(int(os.environ[signer]))
+                self.alias = signer
+            else:
+                self.signer = Signer(int(signer, 16))
+                self.alias = predeployed_info['alias']
+
             self.network = network
         except KeyError:
             logging.error(
@@ -34,7 +39,10 @@ class Account:
             )
             return
 
-        if accounts.exists(str(self.signer.public_key), network):
+        if predeployed_info is not None:
+            self.address = predeployed_info['address']
+            self.index = predeployed_info['index']
+        elif accounts.exists(str(self.signer.public_key), network):
             signer_data = next(accounts.load(str(self.signer.public_key), network))
             self.address = signer_data["address"]
             self.index = signer_data["index"]
