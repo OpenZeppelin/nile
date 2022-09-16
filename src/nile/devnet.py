@@ -14,8 +14,8 @@ def get_predeployed_accounts(network):
     endpoint = f"{GATEWAYS.get(network)}/predeployed_accounts"
 
     try:
-        response = requests.get(endpoint)
         # get the account objects from the rest api
+        response = requests.get(endpoint)
         _accounts = response.json()
     except requests.exceptions.MissingSchema:
         print("\n❌ Failed to retrieve gateway from provided network")
@@ -24,9 +24,6 @@ def get_predeployed_accounts(network):
         print("\n❌ Error querying the account from the gateway.")
         print("Check you are connected to a starknet-devnet implementation.")
         return
-
-    # get the account objects from the rest api
-    _accounts = response.json()
 
     # the account instances from core/account
     accounts = []
