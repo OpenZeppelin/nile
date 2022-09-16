@@ -19,6 +19,7 @@ from nile.core.test import test as test_command
 from nile.core.version import version as version_command
 from nile.utils.debug import debug as debug_command
 from nile.utils.get_accounts import get_accounts as get_accounts_command
+from nile.utils.get_nonce import get_nonce as get_nonce_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
@@ -237,6 +238,14 @@ def debug(tx_hash, network, contracts_file):
 def get_accounts(network):
     """Retrieve and manage deployed accounts."""
     return get_accounts_command(network)
+
+
+@cli.command()
+@click.argument("contract_address")
+@network_option
+def get_nonce(contract_address, network):
+    """Retrieve the nonce for a contract."""
+    return get_nonce_command(contract_address, network)
 
 
 cli = load_plugins(cli)
