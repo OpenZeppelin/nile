@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 
-from nile.common import (
+from nile.core.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,

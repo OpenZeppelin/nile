@@ -7,7 +7,7 @@ import re
 import subprocess
 import time
 
-from nile.common import (
+from nile.core.common import (
     BUILD_DIRECTORY,
     DEPLOYMENTS_FILENAME,
     GATEWAYS,

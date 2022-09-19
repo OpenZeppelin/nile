@@ -1,7 +1,7 @@
 """Command to run Cairo tests written in Cairo."""
 import asyncio
 
-from nile.common import CONTRACTS_DIRECTORY, get_all_contracts
+from nile.core.common import CONTRACTS_DIRECTORY, get_all_contracts
 
 
 def test(contracts):

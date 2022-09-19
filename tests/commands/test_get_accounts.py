@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from nile.core.account import Account
-from nile.utils.get_accounts import _check_and_return_account, get_accounts
+from nile.core.commands.get_accounts import _check_and_return_account, get_accounts
 
 NETWORK = "goerli"
 PUBKEYS = [
@@ -38,7 +38,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
 
 @pytest.fixture(autouse=True)
 def mock_subprocess():
-    with patch("nile.core.compile.subprocess") as mock_subprocess:
+    with patch("nile.core.commands.compile.subprocess") as mock_subprocess:
         yield mock_subprocess
 
 
@@ -85,9 +85,9 @@ def test_get_accounts_no_activated_accounts_feedback(capsys):
     )
 
 
-@patch("nile.utils.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
-@patch("nile.utils.get_accounts.open", MagicMock())
-@patch("nile.utils.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
+@patch("nile.core.commands.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
+@patch("nile.core.commands.get_accounts.open", MagicMock())
+@patch("nile.core.commands.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
 def test_get_accounts_activated_accounts_feedback(caplog):
     logging.getLogger().setLevel(logging.INFO)
 
@@ -105,13 +105,13 @@ def test_get_accounts_activated_accounts_feedback(caplog):
     assert "\n🚀 Successfully retrieved deployed accounts" in caplog.text
 
 
-@patch("nile.utils.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
-@patch("nile.utils.get_accounts.open", MagicMock())
-@patch("nile.utils.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
+@patch("nile.core.commands.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
+@patch("nile.core.commands.get_accounts.open", MagicMock())
+@patch("nile.core.commands.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
 def test_get_accounts_with_keys():
 
     with patch(
-        "nile.utils.get_accounts._check_and_return_account"
+        "nile.core.commands.get_accounts._check_and_return_account"
     ) as mock_return_account:
         result = get_accounts(NETWORK)
 

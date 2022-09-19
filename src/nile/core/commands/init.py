@@ -5,7 +5,7 @@ import sys
 from distutils.dir_util import copy_tree
 from pathlib import Path
 
-from nile.core.install import install
+from nile.core.commands.install import install
 
 
 def init():

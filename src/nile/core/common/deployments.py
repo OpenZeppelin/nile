@@ -2,7 +2,7 @@
 import logging
 import os
 
-from nile.common import DECLARATIONS_FILENAME, DEPLOYMENTS_FILENAME
+from nile.core.common import DECLARATIONS_FILENAME, DEPLOYMENTS_FILENAME
 
 
 def register(address, abi, network, alias):

@@ -1,8 +1,12 @@
 """Command to declare StarkNet smart contracts."""
 import logging
 
-from nile import deployments
-from nile.common import DECLARATIONS_FILENAME, parse_information, run_command
+from nile.core.common import (
+    DECLARATIONS_FILENAME,
+    deployments,
+    parse_information,
+    run_command,
+)
 
 
 def declare(contract_name, network, alias=None, overriding_path=None):

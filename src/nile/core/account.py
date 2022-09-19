@@ -1,16 +1,16 @@
-"""Command to call or invoke StarkNet smart contracts."""
+"""Account class abstraction."""
 import logging
 import os
 
 from dotenv import load_dotenv
 
-from nile import accounts, deployments
-from nile.core.call_or_invoke import call_or_invoke
-from nile.core.deploy import deploy
-from nile.utils.get_nonce import get_nonce
+from nile.core.commands.call_or_invoke import call_or_invoke
+from nile.core.commands.deploy import deploy
+from nile.core.commands.get_nonce import get_nonce
+from nile.core.common import accounts, deployments
 
 try:
-    from nile.signer import Signer
+    from nile.core.signer import Signer
 except ImportError:
     pass
 

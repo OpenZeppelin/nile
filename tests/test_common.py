@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.common import BUILD_DIRECTORY, prepare_params, run_command, stringify
+from nile.core.common import BUILD_DIRECTORY, prepare_params, run_command, stringify
 
 CONTRACT = "contract"
 OPERATION = "invoke"
@@ -15,7 +15,7 @@ LIST3 = [1, 2, 3, [4, 5, 6, [7, 8, 9]]]
 
 
 @pytest.mark.parametrize("operation", ["invoke", "call"])
-@patch("nile.common.subprocess.check_output")
+@patch("nile.core.common.subprocess.check_output")
 def test_run_command(mock_subprocess, operation):
 
     run_command(

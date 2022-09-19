@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.core.node import node
+from nile.core.commands.node import node
 
 HOST = "127.0.0.1"
 PORT = "5050"
@@ -28,7 +28,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
         ({"host": HOST, "port": PORT, "seed": SEED, "lite_mode": LITE}),
     ],
 )
-@patch("nile.core.node.subprocess.check_call")
+@patch("nile.core.commands.node.subprocess.check_call")
 def test_node_call(mock_subprocess, args):
     node(**args)
 
@@ -41,7 +41,7 @@ def test_node_call(mock_subprocess, args):
     mock_subprocess.assert_called_once_with(command)
 
 
-@patch("nile.core.node.subprocess.check_call")
+@patch("nile.core.commands.node.subprocess.check_call")
 def test_node_error(mock_subprocess, caplog):
     logging.getLogger().setLevel(logging.INFO)
 

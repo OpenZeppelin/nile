@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 
-from nile.common import get_gateway
+from nile.core.common import get_gateway
 
 GATEWAYS = get_gateway()
 

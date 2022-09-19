@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.core.deploy import ABIS_DIRECTORY, BUILD_DIRECTORY, deploy
+from nile.core.commands.deploy import ABIS_DIRECTORY, BUILD_DIRECTORY, deploy
 
 
 @pytest.fixture(autouse=True)
@@ -38,9 +38,9 @@ TX_HASH = 222
         ),
     ],
 )
-@patch("nile.core.deploy.run_command", return_value=RUN_OUTPUT)
-@patch("nile.core.deploy.parse_information", return_value=[ADDRESS, TX_HASH])
-@patch("nile.core.deploy.deployments.register")
+@patch("nile.core.commands.deploy.run_command", return_value=RUN_OUTPUT)
+@patch("nile.core.commands.deploy.parse_information", return_value=[ADDRESS, TX_HASH])
+@patch("nile.core.commands.deploy.deployments.register")
 def test_deploy(mock_register, mock_parse, mock_run_cmd, caplog, args, exp_command):
     logging.getLogger().setLevel(logging.INFO)
 

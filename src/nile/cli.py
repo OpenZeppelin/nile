@@ -5,21 +5,21 @@ import logging
 import click
 
 from nile.core.account import Account
-from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
-from nile.core.clean import clean as clean_command
-from nile.core.compile import compile as compile_command
-from nile.core.declare import declare as declare_command
-from nile.core.deploy import deploy as deploy_command
-from nile.core.init import init as init_command
-from nile.core.install import install as install_command
-from nile.core.node import node as node_command
+from nile.core.commands.call_or_invoke import call_or_invoke as call_or_invoke_command
+from nile.core.commands.clean import clean as clean_command
+from nile.core.commands.compile import compile as compile_command
+from nile.core.commands.debug import debug as debug_command
+from nile.core.commands.declare import declare as declare_command
+from nile.core.commands.deploy import deploy as deploy_command
+from nile.core.commands.get_accounts import get_accounts as get_accounts_command
+from nile.core.commands.get_nonce import get_nonce as get_nonce_command
+from nile.core.commands.init import init as init_command
+from nile.core.commands.install import install as install_command
+from nile.core.commands.node import node as node_command
+from nile.core.commands.run import run as run_command
+from nile.core.commands.test import test as test_command
+from nile.core.commands.version import version as version_command
 from nile.core.plugins import load_plugins
-from nile.core.run import run as run_command
-from nile.core.test import test as test_command
-from nile.core.version import version as version_command
-from nile.utils.debug import debug as debug_command
-from nile.utils.get_accounts import get_accounts as get_accounts_command
-from nile.utils.get_nonce import get_nonce as get_nonce_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 

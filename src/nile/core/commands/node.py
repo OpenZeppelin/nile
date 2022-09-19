@@ -3,7 +3,7 @@ import json
 import logging
 import subprocess
 
-from nile.common import NODE_FILENAME
+from nile.core.common import NODE_FILENAME
 
 
 def node(host="127.0.0.1", port=5050, seed=None, lite_mode=False):

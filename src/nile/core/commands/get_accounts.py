@@ -2,8 +2,8 @@
 import json
 import logging
 
-from nile.accounts import current_index
 from nile.core.account import Account
+from nile.core.common.accounts import current_index
 
 
 def get_accounts(network):
