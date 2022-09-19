@@ -9,8 +9,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from nile.core.common import ABIS_DIRECTORY, CONTRACTS_DIRECTORY
 from nile.core.commands.compile import _compile_contract, compile
+from nile.core.common import ABIS_DIRECTORY, CONTRACTS_DIRECTORY
 
 CONTRACT = "foo.cairo"
 

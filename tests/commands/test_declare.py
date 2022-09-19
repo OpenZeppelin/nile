@@ -4,8 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.core.common import DECLARATIONS_FILENAME
 from nile.core.commands.declare import alias_exists, declare
+from nile.core.common import DECLARATIONS_FILENAME
 
 
 @pytest.fixture(autouse=True)

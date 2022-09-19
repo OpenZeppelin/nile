@@ -6,8 +6,8 @@ from nile.core.commands.declare import declare
 from nile.core.commands.deploy import deploy
 from nile.core.commands.get_accounts import get_accounts
 from nile.core.commands.get_nonce import get_nonce as get_nonce_command
-from nile.core.plugins import get_installed_plugins, skip_click_exit
 from nile.core.common import deployments
+from nile.core.plugins import get_installed_plugins, skip_click_exit
 
 
 class NileRuntimeEnvironment:

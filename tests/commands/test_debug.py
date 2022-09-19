@@ -6,8 +6,12 @@ from unittest.mock import patch
 
 import pytest
 
+from nile.core.commands.debug import (
+    _abi_to_build_path,
+    _locate_error_lines_with_abis,
+    debug,
+)
 from nile.core.common import BUILD_DIRECTORY
-from nile.core.commands.debug import _abi_to_build_path, _locate_error_lines_with_abis, debug
 
 MOCK_HASH = "0x1234"
 NETWORK = "goerli"

@@ -85,9 +85,14 @@ def test_get_accounts_no_activated_accounts_feedback(capsys):
     )
 
 
-@patch("nile.core.commands.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
+@patch(
+    "nile.core.commands.get_accounts.current_index",
+    MagicMock(return_value=len(PUBKEYS)),
+)
 @patch("nile.core.commands.get_accounts.open", MagicMock())
-@patch("nile.core.commands.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
+@patch(
+    "nile.core.commands.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS)
+)
 def test_get_accounts_activated_accounts_feedback(caplog):
     logging.getLogger().setLevel(logging.INFO)
 
@@ -105,9 +110,14 @@ def test_get_accounts_activated_accounts_feedback(caplog):
     assert "\n🚀 Successfully retrieved deployed accounts" in caplog.text
 
 
-@patch("nile.core.commands.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
+@patch(
+    "nile.core.commands.get_accounts.current_index",
+    MagicMock(return_value=len(PUBKEYS)),
+)
 @patch("nile.core.commands.get_accounts.open", MagicMock())
-@patch("nile.core.commands.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
+@patch(
+    "nile.core.commands.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS)
+)
 def test_get_accounts_with_keys():
 
     with patch(
