@@ -83,7 +83,7 @@ def get_predeployed_accounts(network):
 
 def _check_and_return_account(signer, pubkey, network, predeployed_info=None):
     account = Account(signer, network, predeployed_info)
-    assert (
-        pubkey
-    ) == account.signer.public_key, "Signer pubkey does not match deployed pubkey"
+    assert (str(pubkey)) == str(
+        account.signer.public_key
+    ), "Signer pubkey does not match deployed pubkey"
     return account
