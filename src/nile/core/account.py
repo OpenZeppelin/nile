@@ -8,6 +8,7 @@ from nile import accounts, deployments
 from nile.common import get_nonce
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.deploy import deploy
+from nile.utils import normalize_number
 
 try:
     from nile.signer import Signer
@@ -24,10 +25,10 @@ class Account:
         """Get or deploy an Account contract for the given private key."""
         try:
             if predeployed_info is None:
-                self.signer = Signer(int(os.environ[signer]))
+                self.signer = Signer(normalize_number(os.environ[signer]))
                 self.alias = signer
             else:
-                self.signer = Signer(int(signer, 16))
+                self.signer = Signer(signer)
                 self.alias = predeployed_info["alias"]
 
             self.network = network

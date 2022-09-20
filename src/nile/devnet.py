@@ -32,7 +32,7 @@ def get_predeployed_accounts(network):
         logging.info(f"{i}: {_accounts[i]['address']}")
 
         predeployed_info = {
-            "address": int(_accounts[i]["address"], 16),
+            "address": normalize_number(_accounts[i]["address"]),
             "alias": f"account-{i}",
             "index": i,
         }
@@ -53,6 +53,6 @@ def get_predeployed_accounts(network):
 def _check_and_return_account(signer, pubkey, predeployed_info, network):
     account = Account(signer, network, predeployed_info)
     assert (
-        int(pubkey, 16) == account.signer.public_key
+        normalize_number(pubkey) == account.signer.public_key
     ), "Signer pubkey does not match deployed pubkey"
     return account
