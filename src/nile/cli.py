@@ -17,9 +17,11 @@ from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.version import version as version_command
-from nile.devnet import get_predeployed_accounts as get_predeployed_accounts_command
 from nile.utils.debug import debug as debug_command
 from nile.utils.get_accounts import get_accounts as get_accounts_command
+from nile.utils.get_accounts import (
+    get_predeployed_accounts as get_predeployed_accounts_command,
+)
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
