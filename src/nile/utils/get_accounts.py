@@ -2,8 +2,14 @@
 import json
 import logging
 
+import requests
+
 from nile.accounts import current_index
+from nile.common import get_gateway
 from nile.core.account import Account
+from nile.utils import normalize_number
+
+GATEWAYS = get_gateway()
 
 
 def get_accounts(network):
@@ -34,9 +40,50 @@ def get_accounts(network):
     return accounts
 
 
-def _check_and_return_account(signer, pubkey, network):
-    account = Account(signer, network)
-    assert str(pubkey) == str(
-        account.signer.public_key
-    ), "Signer pubkey does not match deployed pubkey"
+def get_predeployed_accounts(network):
+    """Retrieve pre-deployed accounts."""
+    endpoint = f"{GATEWAYS.get(network)}/predeployed_accounts"
+
+    try:
+        # get the account objects from the rest api
+        response = requests.get(endpoint)
+        _accounts = response.json()
+    except requests.exceptions.MissingSchema:
+        logging.error("\n❌ Failed to retrieve gateway from provided network")
+        return
+    except Exception:
+        logging.error("\n❌ Error querying the account from the gateway")
+        logging.error("Check you are connected to a starknet-devnet implementation")
+        return
+
+    # the account instances from core/account
+    accounts = []
+
+    for i in range(len(_accounts)):
+        logging.info(f"{i}: {_accounts[i]['address']}")
+
+        predeployed_info = {
+            "address": normalize_number(_accounts[i]["address"]),
+            "alias": f"account-{i}",
+            "index": i,
+        }
+
+        _account = _check_and_return_account(
+            normalize_number(_accounts[i]["private_key"]),
+            normalize_number(_accounts[i]["public_key"]),
+            network,
+            predeployed_info,
+        )
+
+        accounts.append(_account)
+
+    logging.info("\n🚀 Successfully retrieved pre-deployed accounts")
+    return accounts
+
+
+def _check_and_return_account(signer, pubkey, network, predeployed_info=None):
+    account = Account(signer, network, predeployed_info)
+    assert (
+        pubkey
+    ) == account.signer.public_key, "Signer pubkey does not match deployed pubkey"
     return account
