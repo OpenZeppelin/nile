@@ -390,6 +390,14 @@ def run(nre):
 
 > Please note that the list of accounts include only those that exist in the local `<network>.accounts.json` file.
 
+### `get-nonce`
+
+Retrieves the nonce given a contract address (usually an account).
+
+```sh
+nile get-nonce <contract_address>
+```
+
 ## Extending Nile with plugins
 
 Nile has the possibility of extending its CLI and `NileRuntimeEnvironment` functionalities through plugins. For developing plugins for Nile fork [this plugin example](https://github.com/franalgaba/nile-plugin-example) boilerplate and implement your desired functionality with the provided instructions.
