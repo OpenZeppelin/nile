@@ -1,11 +1,12 @@
 """Tests for get-accounts command."""
 import logging
-from requests.exceptions import MissingSchema
 from unittest.mock import MagicMock, patch
 
 import pytest
+from requests.exceptions import MissingSchema
 
 from nile.core.account import Account
+from nile.utils import normalize_number as normalize
 from nile.utils.get_accounts import (
     _check_and_return_account,
     get_accounts,
@@ -35,13 +36,17 @@ MOCK_ACCOUNTS = {
         "alias": ALIASES[1],
     },
 }
-
-# hex to int
-_i = lambda x: int(x, 16)
-
 JSON_DATA = [
-    {"address": _i("0xaaa1"), "private_key": _i("0xbbb1"), "public_key": _i("0xbbb2")},
-    {"address": _i("0xaaa2"), "private_key": _i("0xbbb3"), "public_key": _i("0xbbb4")},
+    {
+        "address": normalize("0xaaa1"),
+        "private_key": normalize("0xbbb1"),
+        "public_key": normalize("0xbbb2"),
+    },
+    {
+        "address": normalize("0xaaa2"),
+        "private_key": normalize("0xbbb3"),
+        "public_key": normalize("0xbbb4"),
+    },
 ]
 
 
@@ -176,8 +181,10 @@ def test_get_predeployed_accounts(mock_response, mock_return_account, mock_gatew
 @patch("nile.common.get_gateway", return_value=GATEWAYS)
 @patch("nile.utils.get_accounts._check_and_return_account")
 @patch("requests.get", return_value=MockResponse(JSON_DATA, 200))
-def test_get_predeployed_accounts_logging(mock_response, mock_return_account, mock_gateways, caplog):
-     # make logs visible to test
+def test_get_predeployed_accounts_logging(
+    mock_response, mock_return_account, mock_gateways, caplog
+):
+    # make logs visible to test
     logger = logging.getLogger()
 
     logger.setLevel(logging.INFO)

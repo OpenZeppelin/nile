@@ -119,7 +119,7 @@ def assert_event_emitted(tx_exec_info, from_address, name, data):
 
 
 def normalize_number(number):
-    """Normalize hex or int to int"""
+    """Normalize hex or int to int."""
     if type(number) == str and number.startswith("0x"):
         return int(number, 16)
     else:
