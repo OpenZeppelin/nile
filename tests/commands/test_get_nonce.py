@@ -43,7 +43,7 @@ def test_get_nonce(mock_gateway, mock_subprocess, caplog):
 
 @pytest.mark.parametrize(
     "contract_address",
-    ['0x4d2', '1234', 1234],
+    ["0x4d2", "1234", 1234],
 )
 @patch("nile.core.node.subprocess.check_output")
 @patch("nile.common.get_gateway", return_value=GATEWAYS)
