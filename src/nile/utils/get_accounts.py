@@ -11,6 +11,9 @@ from nile.utils import normalize_number
 
 GATEWAYS = get_gateway()
 
+# remove requests info logs coming from urllib3
+logging.getLogger("urllib3").setLevel(logging.WARNING)
+
 
 def get_accounts(network):
     """Retrieve deployed accounts."""
