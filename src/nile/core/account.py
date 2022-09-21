@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from nile import accounts, deployments
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.deploy import deploy
-from nile.utils.get_nonce import get_nonce
+from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
     from nile.signer import Signer

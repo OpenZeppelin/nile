@@ -30,7 +30,7 @@ def test_call_format(mock_gateway, mock_subprocess, contract_address, network):
 
 @patch("nile.core.node.subprocess.check_output", return_value="5")
 @patch("nile.common.get_gateway", return_value=GATEWAYS)
-def test_deploy(mock_gateway, mock_subprocess, caplog):
+def test_get_nonce(mock_gateway, mock_subprocess, caplog):
     logging.getLogger().setLevel(logging.INFO)
 
     # check return values
@@ -38,4 +38,4 @@ def test_deploy(mock_gateway, mock_subprocess, caplog):
     assert nonce == 5
 
     # check logs
-    assert "Current nonce for 0xffff is 5" in caplog.text
+    assert "Current Nonce: 5" in caplog.text
