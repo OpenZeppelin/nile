@@ -9,8 +9,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from nile.common import ABIS_DIRECTORY, CONTRACTS_DIRECTORY
-from nile.core.compile import _compile_contract, compile
+from nile.core.commands.compile import _compile_contract, compile
+from nile.core.common import ABIS_DIRECTORY, CONTRACTS_DIRECTORY
 
 CONTRACT = "foo.cairo"
 
@@ -25,7 +25,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
 # shell commands.
 @pytest.fixture(autouse=True)
 def mock_subprocess():
-    with patch("nile.core.compile.subprocess") as mock_subprocess:
+    with patch("nile.core.commands.compile.subprocess") as mock_subprocess:
         yield mock_subprocess
 
 
@@ -35,7 +35,7 @@ def test_compile_create_abis_directory(tmp_working_dir):
     assert (tmp_working_dir / ABIS_DIRECTORY).exists()
 
 
-@patch("nile.core.compile.get_all_contracts")
+@patch("nile.core.commands.compile.get_all_contracts")
 def test_compile_get_all_contracts_called(mock_get_all_contracts):
     compile([])
     mock_get_all_contracts.assert_called_once()
@@ -45,7 +45,7 @@ def test_compile_get_all_contracts_called(mock_get_all_contracts):
     mock_get_all_contracts.assert_not_called()
 
 
-@patch("nile.core.compile._compile_contract")
+@patch("nile.core.commands.compile._compile_contract")
 def test_compile__compile_contract_called(mock__compile_contract):
     compile([CONTRACT])
     mock__compile_contract.assert_called_once_with(
@@ -53,7 +53,7 @@ def test_compile__compile_contract_called(mock__compile_contract):
     )
 
 
-@patch("nile.core.compile._compile_contract")
+@patch("nile.core.commands.compile._compile_contract")
 def test_compile_failure_feedback(mock__compile_contract, caplog):
     # make logs visible to test
     logging.getLogger().setLevel(logging.INFO)

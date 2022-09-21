@@ -1,12 +1,13 @@
 """nile runtime environment."""
-from nile import deployments
 from nile.core.account import Account
-from nile.core.call_or_invoke import call_or_invoke
-from nile.core.compile import compile
-from nile.core.declare import declare
-from nile.core.deploy import deploy
+from nile.core.commands.call_or_invoke import call_or_invoke
+from nile.core.commands.compile import compile
+from nile.core.commands.declare import declare
+from nile.core.commands.deploy import deploy
+from nile.core.commands.get_accounts import get_accounts
+from nile.core.commands.get_nonce import get_nonce as get_nonce_command
+from nile.core.common import deployments
 from nile.core.plugins import get_installed_plugins, skip_click_exit
-from nile.utils.get_accounts import get_accounts
 
 
 class NileRuntimeEnvironment:
@@ -55,3 +56,7 @@ class NileRuntimeEnvironment:
     def get_accounts(self):
         """Retrieve and manage deployed accounts."""
         return get_accounts(self.network)
+
+    def get_nonce(self, contract_address):
+        """Retrieve the nonce for a contract."""
+        return get_nonce_command(contract_address, self.network)

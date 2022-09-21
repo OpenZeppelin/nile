@@ -17,7 +17,7 @@ import pytest
 from click.testing import CliRunner
 
 from nile.cli import cli
-from nile.common import (
+from nile.core.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
@@ -110,7 +110,7 @@ def test_compile(args, expected):
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-@patch("nile.core.node.subprocess")
+@patch("nile.core.commands.node.subprocess")
 def test_node_forwards_args(mock_subprocess):
     args = [
         "--host",
@@ -184,7 +184,7 @@ def test_node_runs_gateway(opts, expected):
         ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"]),
     ],
 )
-@patch("nile.utils.debug.subprocess")
+@patch("nile.core.commands.debug.subprocess")
 def test_debug(mock_subprocess, args):
     # debug will hang without patch
     mock_subprocess.check_output.return_value = json.dumps({"tx_status": "ACCEPTED"})

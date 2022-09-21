@@ -3,7 +3,7 @@ import logging
 import os
 import shutil
 
-from nile.common import (
+from nile.core.common import (
     ACCOUNTS_FILENAME,
     BUILD_DIRECTORY,
     DECLARATIONS_FILENAME,

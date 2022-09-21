@@ -1,8 +1,13 @@
 """Command to deploy StarkNet smart contracts."""
 import logging
 
-from nile import deployments
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, parse_information, run_command
+from nile.core.common import (
+    ABIS_DIRECTORY,
+    BUILD_DIRECTORY,
+    deployments,
+    parse_information,
+    run_command,
+)
 
 
 def deploy(contract_name, arguments, network, alias, overriding_path=None):

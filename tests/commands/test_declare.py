@@ -4,8 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.common import DECLARATIONS_FILENAME
-from nile.core.declare import alias_exists, declare
+from nile.core.commands.declare import alias_exists, declare
+from nile.core.common import DECLARATIONS_FILENAME
 
 
 @pytest.fixture(autouse=True)
@@ -28,7 +28,7 @@ def test_alias_exists():
     assert alias_exists(ALIAS, NETWORK) is False
 
     # when alias exists
-    with patch("nile.core.declare.deployments.load_class") as mock_load:
+    with patch("nile.core.commands.declare.deployments.load_class") as mock_load:
         mock_load.__iter__.side_effect = HASH
         assert alias_exists(ALIAS, NETWORK) is True
 
@@ -53,9 +53,9 @@ def test_alias_exists():
         ),
     ],
 )
-@patch("nile.core.declare.run_command", return_value=RUN_OUTPUT)
-@patch("nile.core.declare.parse_information", return_value=[HASH, TX_HASH])
-@patch("nile.core.declare.deployments.register_class_hash")
+@patch("nile.core.commands.declare.run_command", return_value=RUN_OUTPUT)
+@patch("nile.core.commands.declare.parse_information", return_value=[HASH, TX_HASH])
+@patch("nile.core.commands.declare.deployments.register_class_hash")
 def test_declare(
     mock_register, mock_parse, mock_run_cmd, caplog, args, exp_command, exp_register
 ):
@@ -76,7 +76,7 @@ def test_declare(
     assert f"🧾 Transaction hash: {TX_HASH}" in caplog.text
 
 
-@patch("nile.core.declare.alias_exists", return_value=True)
+@patch("nile.core.commands.declare.alias_exists", return_value=True)
 def test_declare_duplicate_hash(mock_alias_check):
 
     with pytest.raises(Exception) as err:

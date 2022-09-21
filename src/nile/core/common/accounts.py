@@ -2,7 +2,7 @@
 import json
 import os
 
-from nile.common import ACCOUNTS_FILENAME
+from nile.core.common import ACCOUNTS_FILENAME
 
 
 def register(pubkey, address, index, alias, network):

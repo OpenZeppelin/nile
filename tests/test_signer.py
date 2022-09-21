@@ -12,7 +12,7 @@ from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.testing.starknet import Starknet
 
-from nile.signer import TRANSACTION_VERSION, Signer, from_call_to_call_array
+from nile.core.signer import TRANSACTION_VERSION, Signer, from_call_to_call_array
 
 SIGNER = Signer(12345678987654321)
 

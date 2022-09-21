@@ -3,8 +3,7 @@ import logging
 import os
 import subprocess
 
-from nile import deployments
-from nile.common import GATEWAYS, prepare_params
+from nile.core.common import GATEWAYS, deployments, prepare_params
 
 
 def call_or_invoke(

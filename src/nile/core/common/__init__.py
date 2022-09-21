@@ -15,7 +15,7 @@ NODE_FILENAME = "node.json"
 RETRY_AFTER_SECONDS = 30
 
 
-def _get_gateway():
+def get_gateway():
     """Get the StarkNet node details."""
     try:
         with open(NODE_FILENAME, "r") as f:
@@ -27,7 +27,7 @@ def _get_gateway():
             f.write('{"localhost": "http://127.0.0.1:5050/"}')
 
 
-GATEWAYS = _get_gateway()
+GATEWAYS = get_gateway()
 
 
 def get_all_contracts(ext=None, directory=None):
@@ -70,20 +70,6 @@ def run_command(
     command.append("--no_wallet")
 
     return subprocess.check_output(command)
-
-
-def get_nonce(contract_address, network):
-    """Get the current nonce for contract address in a given network."""
-    command = ["starknet", "get_nonce", "--contract_address", contract_address]
-
-    if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-    elif network == "goerli":
-        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
-    else:
-        command.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
-
-    return int(subprocess.check_output(command).strip())
 
 
 def parse_information(x):
