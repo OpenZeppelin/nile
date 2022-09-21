@@ -21,7 +21,7 @@ def get_nonce_without_log(contract_address, network):
     """Get the current nonce without logging."""
     # Starknet CLI requires an hex string for get nonce command
     if not str(contract_address).startswith("0x"):
-        contract_address = hex(contract_address)
+        contract_address = hex(int(contract_address))
 
     command = ["starknet", "get_nonce", "--contract_address", contract_address]
 

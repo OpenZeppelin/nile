@@ -39,3 +39,17 @@ def test_get_nonce(mock_gateway, mock_subprocess, caplog):
 
     # check logs
     assert "Current Nonce: 5" in caplog.text
+
+
+@pytest.mark.parametrize(
+    "contract_address",
+    ['0x4d2', '1234', 1234],
+)
+@patch("nile.core.node.subprocess.check_output")
+@patch("nile.common.get_gateway", return_value=GATEWAYS)
+def test_contract_address_formats(mock_gateway, mock_subprocess, contract_address):
+    get_nonce(contract_address, "goerli")
+
+    command = ["starknet", "get_nonce", "--contract_address", "0x4d2"]
+
+    mock_subprocess.assert_called_once_with(command)
