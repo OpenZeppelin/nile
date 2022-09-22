@@ -8,7 +8,6 @@ from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
-from nile.core.declare import declare as declare_command
 from nile.core.deploy import deploy as deploy_command
 from nile.core.init import init as init_command
 from nile.core.install import install as install_command
@@ -88,12 +87,15 @@ def deploy(artifact, arguments, network, alias):
 
 
 @cli.command()
-@click.argument("artifact", nargs=1)
+@click.argument("signer", nargs=1)
+@click.argument("contract_name", nargs=1)
+@click.option("--max_fee", nargs=1)
 @network_option
 @click.option("--alias")
-def declare(artifact, network, alias):
+def declare(signer, contract_name, network, max_fee, alias=None):
     """Declare StarkNet smart contract."""
-    declare_command(artifact, network, alias)
+    account = Account(signer, network)
+    account.declare(contract_name, alias=alias, max_fee=max_fee)
 
 
 @cli.command()

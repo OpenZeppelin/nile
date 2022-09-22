@@ -38,7 +38,7 @@ def declare(
     )
 
     class_hash, tx_hash = parse_information(output)
-    logging.info(f"⏳ Declaration of {contract_name} successfully sent at {class_hash}")
+    logging.info(f"⏳ Successfully sent declaration of {contract_name} as {class_hash}")
     logging.info(f"🧾 Transaction hash: {tx_hash}")
 
     deployments.register_class_hash(class_hash, network, alias)

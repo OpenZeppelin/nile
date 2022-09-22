@@ -108,7 +108,7 @@ def test_declare(
 
     # check logs
     assert f"🚀 Declaring {CONTRACT}" in caplog.text
-    assert f"⏳ Declaration of {CONTRACT} successfully sent at {HASH}" in caplog.text
+    assert f"⏳ Successfully sent declaration of {CONTRACT} as {HASH}" in caplog.text
     assert f"🧾 Transaction hash: {TX_HASH}" in caplog.text
 
 

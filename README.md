@@ -109,6 +109,8 @@ Creating artifacts/abis/ to store compilation artifacts
 
 ### `deploy`
 
+> NOTICE: this method doesn't use an account, which will be deprecated very soon as StarkNet makes deployments from accounts mandatory.
+
 ```sh
 nile deploy contract --alias my_contract
 
@@ -121,23 +123,6 @@ A few things to notice here:
 
 1. `nile deploy <contract_name>` looks for an artifact with the same name
 2. This created a `localhost.deployments.txt` file storing all data related to my deployment
-3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
-4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
-
-### `declare`
-
-```sh
-nile declare contract --alias my_contract
-
-🚀 Declaring contract
-⏳ Declaration of contract successfully sent at 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
-📦 Registering declaration as my_contract in localhost.declarations.txt
-```
-
-A few things to notice here:
-
-1. `nile declare <contract_name>` looks for an artifact with the same name
-2. This created a `localhost.declarations.txt` file storing all data related to my declarations
 3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 
@@ -187,6 +172,26 @@ Some things to note:
 
 - `max_fee` defaults to `0`. Add `--max_fee <max_fee>` to set the maximum fee for the transaction
 - `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction
+
+### `declare`
+
+Very similar to `send`, but for declaring a contract based on its name through an account.
+
+```sh
+nile declare <private_key_alias> contract --alias my_contract
+
+🚀 Declaring contract
+⏳ Successfully sent declaration of contract as 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
+🧾 Transaction hash: 0x7222604b048632326f6a016ccb16fbdea7e926cd9e2354544800667a970aee4
+📦 Registering declaration as my_contract in localhost.declarations.txt
+```
+
+A few things to notice here:
+
+1. `nile declare <private_key_alias> <contract_name>` looks for an artifact with name `<contract_name>`
+2. This creates or updates a `localhost.declarations.txt` file storing all data related to my declarations
+3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
+4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 
 ### `call` and `invoke`
 

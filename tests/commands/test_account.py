@@ -79,37 +79,31 @@ def test_deploy_accounts_register(mock_register, mock_deploy):
     )
 
 
-@patch("nile.core.account.compile_starknet_files", return_value='ContractClass')
+@patch("nile.core.account.compile_starknet_files", return_value="ContractClass")
 @patch("nile.core.account.declare")
 def test_declare(mock_declare, mock_compile):
     account = Account(KEY, NETWORK)
     signature = [999, 888]
     nonce = 4
     max_fee = 1
-    contract_name = 'my_contract'
-    contracts_directory = 'a/given/path'
+    contract_name = "my_contract"
+    contracts_directory = "a/given/path"
 
     account.signer.sign_declare = MagicMock(return_value=signature)
 
-    account.declare(
-        contract_name,
-        max_fee,
-        nonce,
-        contracts_directory
-    )
+    account.declare(contract_name, max_fee, nonce, contracts_directory)
 
     # Check 'compile_starknet_files' call
     mock_compile.assert_called_once_with(
-        files=[f"{contracts_directory}/{contract_name}.cairo"],
-        debug_info=True
+        files=[f"{contracts_directory}/{contract_name}.cairo"], debug_info=True
     )
 
     # Check values are correctly passed to 'sign_transaction'
     account.signer.sign_declare.assert_called_once_with(
         sender=account.address,
-        contract_class='ContractClass',
+        contract_class="ContractClass",
         nonce=nonce,
-        max_fee=max_fee
+        max_fee=max_fee,
     )
 
     # Check values are correctly passed to 'core.declare'

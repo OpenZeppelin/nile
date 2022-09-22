@@ -78,7 +78,7 @@ def run_command(
 
     if signature is not None:
         command.append("--signature")
-        command.extend(signature)
+        command.extend(prepare_params(signature))
 
     if max_fee is not None:
         command.append("--max_fee")

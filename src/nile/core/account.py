@@ -65,13 +65,20 @@ class Account:
 
         return address, index
 
-    def declare(self, contract_name, max_fee, nonce=None, contracts_directory=None):
+    def declare(
+        self, contract_name, max_fee, nonce=None, alias=None, contracts_directory=None
+    ):
         """Declare a contract through an Account contract."""
         if contracts_directory is None:
             contracts_directory = CONTRACTS_DIRECTORY
 
         if nonce is None:
             nonce = get_nonce(self.address, self.network)
+
+        if max_fee is None:
+            max_fee = 0
+        else:
+            max_fee = int(max_fee)
 
         contract_class = compile_starknet_files(
             files=[f"{contracts_directory}/{contract_name}.cairo"], debug_info=True
@@ -88,6 +95,7 @@ class Account:
             sender=self.address,
             contract_name=contract_name,
             signature=[sig_r, sig_s],
+            alias=alias,
             network=self.network,
             max_fee=max_fee,
         )
