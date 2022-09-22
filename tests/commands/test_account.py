@@ -86,12 +86,19 @@ def test_declare(mock_declare, mock_compile):
     signature = [999, 888]
     nonce = 4
     max_fee = 1
-    contract_name = "my_contract"
+    contract_name = "contract"
+    alias = "my_contract"
     contracts_directory = "a/given/path"
 
     account.signer.sign_declare = MagicMock(return_value=signature)
 
-    account.declare(contract_name, max_fee, nonce, contracts_directory)
+    account.declare(
+        contract_name,
+        max_fee,
+        nonce,
+        alias=alias,
+        contracts_directory=contracts_directory,
+    )
 
     # Check 'compile_starknet_files' call
     mock_compile.assert_called_once_with(
@@ -112,6 +119,7 @@ def test_declare(mock_declare, mock_compile):
         contract_name=contract_name,
         signature=signature,
         network=NETWORK,
+        alias=alias,
         max_fee=max_fee,
     )
 
