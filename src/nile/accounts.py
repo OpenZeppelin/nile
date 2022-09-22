@@ -3,6 +3,7 @@ import json
 import os
 
 from nile.common import ACCOUNTS_FILENAME
+from nile.utils import normalize_number
 
 
 def register(pubkey, address, index, alias, network):
@@ -36,7 +37,7 @@ def load(pubkey, network):
     with open(file) as fp:
         accounts = json.load(fp)
         if pubkey in accounts:
-            yield accounts[pubkey]
+            yield normalize_number(accounts[pubkey])
 
 
 def current_index(network):

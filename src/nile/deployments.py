@@ -3,6 +3,7 @@ import logging
 import os
 
 from nile.common import DECLARATIONS_FILENAME, DEPLOYMENTS_FILENAME
+from nile.utils import normalize_number
 
 
 def register(address, abi, network, alias):
@@ -68,7 +69,7 @@ def load(identifier, network):
             [address, abi, *alias] = line.strip().split(":")
             identifiers = [x for x in [address] + alias]
             if identifier in identifiers:
-                yield address, abi
+                yield normalize_number(address), abi
 
 
 def load_class(identifier, network):
