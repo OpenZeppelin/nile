@@ -78,6 +78,7 @@ def test_deploy_accounts_register(mock_register, mock_deploy):
         account.signer.public_key, MOCK_ADDRESS, MOCK_INDEX, KEY, NETWORK
     )
 
+
 @patch("nile.core.account.compile_starknet_files", return_value='ContractClass')
 @patch("nile.core.account.declare")
 def test_declare(mock_declare, mock_compile):
@@ -85,7 +86,7 @@ def test_declare(mock_declare, mock_compile):
     signature = [999, 888]
     nonce = 4
     max_fee = 1
-    contract_name = 'asd'
+    contract_name = 'my_contract'
     contracts_directory = 'a/given/path'
 
     account.signer.sign_declare = MagicMock(return_value=signature)
