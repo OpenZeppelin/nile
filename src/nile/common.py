@@ -74,6 +74,10 @@ def run_command(
 
 def get_nonce(contract_address, network):
     """Get the current nonce for contract address in a given network."""
+    # Starknet CLI requires an hex string for get nonce command
+    if not str(contract_address).startswith("0x"):
+        contract_address = hex(int(contract_address))
+
     command = ["starknet", "get_nonce", "--contract_address", contract_address]
 
     if network == "mainnet":
