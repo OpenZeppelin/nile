@@ -58,7 +58,7 @@ def from_call_to_call_array(calls):
     for _, call in enumerate(calls):
         assert len(call) == 3, "Invalid call parameters"
         entry = (
-            int(call[0], 16),
+            call[0],
             get_selector_from_name(call[1]),
             len(calldata),
             len(call[2]),

@@ -29,8 +29,8 @@ def get_accounts(network):
         account_data = json.load(f)
 
     accounts = []
-    pubkeys = list(account_data.keys())
-    addresses = [i["address"] for i in account_data.values()]
+    pubkeys = [normalize_number(i) for i in account_data.keys()]
+    addresses = [normalize_number(i["address"]) for i in account_data.values()]
     signers = [i["alias"] for i in account_data.values()]
 
     for i in range(total_accounts):

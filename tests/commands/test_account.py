@@ -119,7 +119,7 @@ def test_send_sign_transaction_and_execute():
 
         # Check values are correctly passed to '__execute__'
         mock_call.assert_called_with(
-            contract=account.address,
+            contract=account,
             max_fee=str(max_fee),
             method="__execute__",
             network=NETWORK,

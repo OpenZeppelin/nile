@@ -35,7 +35,6 @@ async def send_transactions(signer, account, calls, nonce=None, max_fee=0):
     build_calls = []
     for call in calls:
         build_call = list(call)
-        build_call[0] = hex(build_call[0])
         build_calls.append(build_call)
     raw_invocation = get_raw_invoke(account, build_calls)
     state = raw_invocation.state

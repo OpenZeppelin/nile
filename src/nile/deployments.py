@@ -3,7 +3,7 @@ import logging
 import os
 
 from nile.common import DECLARATIONS_FILENAME, DEPLOYMENTS_FILENAME
-from nile.utils import normalize_number
+from nile.utils import normalize_number, hex_address
 
 
 def register(address, abi, network, alias):
@@ -15,6 +15,8 @@ def register(address, abi, network, alias):
             raise Exception(f"Alias {alias} already exists in {file}")
 
     with open(file, "a") as fp:
+        # Save address as hex
+        address = hex_address(address)
         if alias is not None:
             logging.info(f"📦 Registering deployment as {alias} in {file}")
         else:
@@ -34,6 +36,8 @@ def register_class_hash(hash, network, alias):
         raise Exception(f"Hash {hash[:6]}...{hash[-6:]} already exists in {file}")
 
     with open(file, "a") as fp:
+        # Save class_hash as hex
+        hash = hex(hash)
         if alias is not None:
             logging.info(f"📦 Registering {alias} in {file}")
         else:
@@ -82,6 +86,7 @@ def load_class(identifier, network):
     with open(file) as fp:
         for line in fp:
             [hash, *alias] = line.strip().split(":")
+            hash = normalize_number(hash)
             identifiers = [x for x in [hash] + alias]
             if identifier in identifiers:
                 yield hash

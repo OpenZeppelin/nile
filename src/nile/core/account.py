@@ -8,7 +8,7 @@ from nile import accounts, deployments
 from nile.common import get_nonce
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.deploy import deploy
-from nile.utils import normalize_number
+from nile.utils import normalize_number, hex_address
 
 try:
     from nile.signer import Signer
@@ -47,8 +47,8 @@ class Account:
         if predeployed_info is not None:
             self.address = predeployed_info["address"]
             self.index = predeployed_info["index"]
-        elif accounts.exists(str(self.signer.public_key), network):
-            signer_data = next(accounts.load(str(self.signer.public_key), network))
+        elif accounts.exists(self.signer.public_key, network):
+            signer_data = next(accounts.load(self.signer.public_key, network))
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
@@ -64,7 +64,7 @@ class Account:
 
         address, _ = deploy(
             "Account",
-            [str(self.signer.public_key)],
+            [self.signer.public_key],
             self.network,
             f"account-{index}",
             overriding_path,
@@ -78,7 +78,10 @@ class Account:
 
     def send(self, to, method, calldata, max_fee, nonce=None):
         """Execute a tx going through an Account contract."""
-        target_address, _ = next(deployments.load(to, self.network)) or to
+        target_address, _ = next(deployments.load(hex_address(to), self.network)) or to
+        # Work with integers internally
+        target_address = normalize_number(target_address)
+
         calldata = [int(x) for x in calldata]
 
         if nonce is None:

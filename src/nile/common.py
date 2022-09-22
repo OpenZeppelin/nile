@@ -4,6 +4,8 @@ import os
 import re
 import subprocess
 
+from nile.utils import normalize_number
+
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
 TEMP_DIRECTORY = ".temp"
@@ -94,7 +96,7 @@ def parse_information(x):
     """Extract information from deploy/declare command."""
     # address is 64, tx_hash is 64 chars long
     address, tx_hash = re.findall("0x[\\da-f]{1,64}", str(x))
-    return address, tx_hash
+    return normalize_number(address), normalize_number(tx_hash)
 
 
 def stringify(x):
