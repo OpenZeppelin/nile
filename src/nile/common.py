@@ -15,6 +15,7 @@ ACCOUNTS_FILENAME = "accounts.json"
 NODE_FILENAME = "node.json"
 RETRY_AFTER_SECONDS = 30
 UNIVERSAL_DEPLOYER_ADDRESS = (
+    # subject to change
     "0x414aa016992e868fa22e21bd104757e280c83ecb260fe9bccd1caee2f7f590e"
 )
 
