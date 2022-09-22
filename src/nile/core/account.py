@@ -40,7 +40,9 @@ class Account:
             )
             return
 
-        self.abi_path = os.path.dirname(os.path.realpath(__file__)).replace("/core", "/artifacts/abis/Account.json")
+        self.abi_path = os.path.dirname(os.path.realpath(__file__)).replace(
+            "/core", "/artifacts/abis/Account.json"
+        )
 
         if predeployed_info is not None:
             self.address = predeployed_info["address"]
@@ -101,5 +103,5 @@ class Account:
             params=calldata,
             network=self.network,
             signature=[str(sig_r), str(sig_s)],
-            max_fee=str(max_fee)
+            max_fee=str(max_fee),
         )
