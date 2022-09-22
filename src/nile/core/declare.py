@@ -1,11 +1,22 @@
 """Command to declare StarkNet smart contracts."""
 import logging
 
+from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
+from starkware.starknet.core.os.class_hash import compute_class_hash
+
 from nile import deployments
 from nile.common import DECLARATIONS_FILENAME, parse_information, run_command
 
 
-def declare(contract_name, network, alias=None, overriding_path=None):
+def declare(
+    sender,
+    contract_name,
+    signature,
+    network,
+    alias=None,
+    overriding_path=None,
+    max_fee=None,
+):
     """Declare StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")
 
@@ -13,7 +24,19 @@ def declare(contract_name, network, alias=None, overriding_path=None):
         file = f"{network}.{DECLARATIONS_FILENAME}"
         raise Exception(f"Alias {alias} already exists in {file}")
 
-    output = run_command(contract_name, network, overriding_path, operation="declare")
+    arguments = ["--sender", sender]
+    max_fee = "0" if max_fee is None else str(max_fee)
+
+    output = run_command(
+        operation="declare",
+        network=network,
+        contract_name=contract_name,
+        arguments=arguments,
+        signature=signature,
+        max_fee=max_fee,
+        overriding_path=overriding_path,
+    )
+
     class_hash, tx_hash = parse_information(output)
     logging.info(f"⏳ Declaration of {contract_name} successfully sent at {class_hash}")
     logging.info(f"🧾 Transaction hash: {tx_hash}")
@@ -26,3 +49,8 @@ def alias_exists(alias, network):
     """Return whether an alias exists or not."""
     existing_alias = next(deployments.load_class(alias, network), None)
     return existing_alias is not None
+
+
+def get_hash(contract_class):
+    """Return the class_hash of a given contract class."""
+    return compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)

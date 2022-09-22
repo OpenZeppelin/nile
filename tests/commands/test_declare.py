@@ -14,10 +14,13 @@ def tmp_working_dir(monkeypatch, tmp_path):
     return tmp_path
 
 
+SENDER = "0x1234"
 CONTRACT = "contract"
+SIGNATURE = [123, 321]
 NETWORK = "goerli"
 ALIAS = "alias"
 PATH = "path"
+MAX_FEE = 432
 RUN_OUTPUT = b"output"
 HASH = 111
 TX_HASH = 222
@@ -37,18 +40,51 @@ def test_alias_exists():
     "args, exp_command, exp_register",
     [
         (
-            [CONTRACT, NETWORK],  # args
-            [CONTRACT, NETWORK, None],  # expected command
+            [SENDER, CONTRACT, SIGNATURE, NETWORK],  # args
+            {  # expected command
+                "contract_name": CONTRACT,
+                "signature": SIGNATURE,
+                "network": NETWORK,
+                "arguments": ["--sender", SENDER],
+                "overriding_path": None,
+                "max_fee": "0",
+            },
             [HASH, NETWORK, None],  # expected register
         ),
         (
-            [CONTRACT, NETWORK, ALIAS],  # args
-            [CONTRACT, NETWORK, None],  # expected command
+            [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS],  # args
+            {  # expected command
+                "contract_name": CONTRACT,
+                "signature": SIGNATURE,
+                "network": NETWORK,
+                "arguments": ["--sender", SENDER],
+                "overriding_path": None,
+                "max_fee": "0",
+            },
             [HASH, NETWORK, ALIAS],  # expected register
         ),
         (
-            [CONTRACT, NETWORK, ALIAS, PATH],  # args
-            [CONTRACT, NETWORK, PATH],  # expected command
+            [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS, PATH],  # args
+            {  # expected command
+                "contract_name": CONTRACT,
+                "signature": SIGNATURE,
+                "network": NETWORK,
+                "arguments": ["--sender", SENDER],
+                "overriding_path": PATH,
+                "max_fee": "0",
+            },
+            [HASH, NETWORK, ALIAS],  # expected register
+        ),
+        (
+            [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS, PATH, MAX_FEE],  # args
+            {  # expected command
+                "contract_name": CONTRACT,
+                "signature": SIGNATURE,
+                "network": NETWORK,
+                "arguments": ["--sender", SENDER],
+                "overriding_path": PATH,
+                "max_fee": str(MAX_FEE),
+            },
             [HASH, NETWORK, ALIAS],  # expected register
         ),
     ],
@@ -66,7 +102,7 @@ def test_declare(
     assert res == HASH
 
     # check internals
-    mock_run_cmd.assert_called_once_with(*exp_command, operation="declare")
+    mock_run_cmd.assert_called_once_with(operation="declare", **exp_command)
     mock_parse.assert_called_once_with(RUN_OUTPUT)
     mock_register.assert_called_once_with(*exp_register)
 

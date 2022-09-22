@@ -19,7 +19,7 @@ LIST3 = [1, 2, 3, [4, 5, 6, [7, 8, 9]]]
 def test_run_command(mock_subprocess, operation):
 
     run_command(
-        contract_name=CONTRACT, network=NETWORK, operation=operation, arguments=ARGS
+        contract_name=CONTRACT, network=NETWORK, operation=operation, inputs=ARGS
     )
 
     mock_subprocess.assert_called_once_with(

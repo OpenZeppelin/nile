@@ -3,10 +3,12 @@ import logging
 import os
 
 from dotenv import load_dotenv
+from starkware.starknet.compiler.compile import compile_starknet_files
 
 from nile import accounts, deployments
-from nile.common import get_nonce
+from nile.common import CONTRACTS_DIRECTORY, UNIVERSAL_DEPLOYER_ADDRESS, get_nonce
 from nile.core.call_or_invoke import call_or_invoke
+from nile.core.declare import declare
 from nile.core.deploy import deploy
 
 try:
@@ -63,9 +65,51 @@ class Account:
 
         return address, index
 
+    def declare(self, contract_name, max_fee, nonce=None, contracts_directory=None):
+        """Declare a contract through an Account contract."""
+        if contracts_directory is None:
+            contracts_directory = CONTRACTS_DIRECTORY
+
+        if nonce is None:
+            nonce = get_nonce(self.address, self.network)
+
+        contract_class = compile_starknet_files(
+            files=[f"{contracts_directory}/{contract_name}.cairo"], debug_info=True
+        )
+
+        sig_r, sig_s = self.signer.sign_declare(
+            sender=self.address,
+            contract_class=contract_class,
+            nonce=nonce,
+            max_fee=max_fee,
+        )
+
+        return declare(
+            sender=self.address,
+            contract_name=contract_name,
+            signature=[sig_r, sig_s],
+            network=self.network,
+            max_fee=max_fee,
+        )
+
+    def deploy_contract(
+        self, class_hash, salt, unique, calldata, max_fee, deployer_address=None
+    ):
+        """Deploy a contract through an Account contract."""
+        return self.send(
+            to=deployer_address or UNIVERSAL_DEPLOYER_ADDRESS,
+            method="deployContract",
+            calldata=[class_hash, salt, unique, len(calldata), *calldata],
+            max_fee=max_fee,
+        )
+
     def send(self, to, method, calldata, max_fee, nonce=None):
         """Execute a tx going through an Account contract."""
-        target_address, _ = next(deployments.load(to, self.network)) or to
+        try:
+            target_address, _ = next(deployments.load(to, self.network))
+        except StopIteration:
+            target_address = to
+
         calldata = [int(x) for x in calldata]
 
         if nonce is None:

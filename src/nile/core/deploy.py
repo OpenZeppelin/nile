@@ -13,7 +13,13 @@ def deploy(contract_name, arguments, network, alias, overriding_path=None):
     )
     abi = f"{base_path[1]}/{contract_name}.json"
 
-    output = run_command(contract_name, network, overriding_path, arguments=arguments)
+    output = run_command(
+        operation="deploy",
+        network=network,
+        contract_name=contract_name,
+        overriding_path=overriding_path,
+        inputs=arguments,
+    )
 
     address, tx_hash = parse_information(output)
     logging.info(f"⏳ ️Deployment of {contract_name} successfully sent at {address}")

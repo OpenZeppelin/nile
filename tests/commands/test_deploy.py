@@ -30,11 +30,19 @@ TX_HASH = 222
     [
         (
             [CONTRACT, ARGS, NETWORK, ALIAS],  # args
-            [CONTRACT, NETWORK, None],  # expected command
+            {  # expected command
+                "contract_name": CONTRACT,
+                "network": NETWORK,
+                "overriding_path": None,
+            },
         ),
         (
             [CONTRACT, ARGS, NETWORK, ALIAS, PATH_OVERRIDE],  # args
-            [CONTRACT, NETWORK, PATH_OVERRIDE],  # expected command
+            {  # expected command
+                "contract_name": CONTRACT,
+                "network": NETWORK,
+                "overriding_path": PATH_OVERRIDE,
+            },
         ),
     ],
 )
@@ -49,7 +57,7 @@ def test_deploy(mock_register, mock_parse, mock_run_cmd, caplog, args, exp_comma
     assert res == (ADDRESS, ABI)
 
     # check internals
-    mock_run_cmd.assert_called_once_with(*exp_command, arguments=ARGS)
+    mock_run_cmd.assert_called_once_with(operation="deploy", inputs=ARGS, **exp_command)
     mock_parse.assert_called_once_with(RUN_OUTPUT)
     mock_register.assert_called_once_with(ADDRESS, ABI, NETWORK, ALIAS)
 
