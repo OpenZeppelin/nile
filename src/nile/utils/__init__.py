@@ -137,4 +137,4 @@ def hex_address(number):
 def _pad_hex_to_64(hexadecimal):
     if len(hexadecimal) < 66:
         missing_zeros = 66 - len(hexadecimal)
-        return hexadecimal[:2] + missing_zeros * '0' + hexadecimal[2:]
+        return hexadecimal[:2] + missing_zeros * "0" + hexadecimal[2:]

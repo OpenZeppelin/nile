@@ -1,6 +1,6 @@
 """Tests for account commands."""
 import logging
-from unittest.mock import MagicMock, patch
+from unittest.mock import ANY, MagicMock, patch
 
 import pytest
 
@@ -39,18 +39,6 @@ def test_account_init_bad_key(caplog):
     ) in caplog.text
 
 
-def test_account_multiple_inits_with_same_key():
-    account = Account(KEY, NETWORK)
-    account.deploy()
-    account2 = Account(KEY, NETWORK)
-
-    # Check addresses don't match
-    assert account.address != account2.address
-    # Check indexing
-    assert account.index == 0
-    assert account2.index == 1
-
-
 @patch("nile.core.account.deploy", return_value=(1, 2))
 def test_deploy(mock_deploy):
     account = Account(KEY, NETWORK)
@@ -58,14 +46,12 @@ def test_deploy(mock_deploy):
         test_path = "/overriding_path"
         mock_path.return_value.replace.return_value = test_path
 
-        account.deploy()
-
         mock_deploy.assert_called_with(
             "Account",
-            [str(account.signer.public_key)],
+            [account.signer.public_key],
             NETWORK,
-            f"account-{account.index + 1}",
-            (f"{test_path}/artifacts", f"{test_path}/artifacts/abis"),
+            f"account-{account.index}",
+            ANY,
         )
 
 
@@ -83,11 +69,10 @@ def test_deploy_accounts_register(mock_register, mock_deploy):
 @patch("nile.core.account.call_or_invoke")
 def test_send_nonce_call(mock_call, mock_nonce):
     account = Account(KEY, NETWORK)
-    contract_address, _ = account.deploy()
 
     # Instead of creating and populating a tmp .txt file, this uses the
     # deployed account address (contract_address) as the target
-    account.send(contract_address, "method", [1, 2, 3], max_fee=1)
+    account.send(account.address, "method", [1, 2, 3], max_fee=1)
 
     # 'call_or_invoke' is called once for '__execute__'
     assert mock_call.call_count == 1
@@ -98,7 +83,6 @@ def test_send_nonce_call(mock_call, mock_nonce):
 
 def test_send_sign_transaction_and_execute():
     account = Account(KEY, NETWORK)
-    contract_address, _ = account.deploy()
 
     calldata = ["111", "222", "333"]
     sig_r, sig_s = [999, 888]
@@ -107,7 +91,7 @@ def test_send_sign_transaction_and_execute():
     account.signer.sign_transaction = MagicMock(return_value=return_signature)
 
     with patch("nile.core.account.call_or_invoke") as mock_call:
-        send_args = [contract_address, "method", [1, 2, 3]]
+        send_args = [account.address, "method", [1, 2, 3]]
         nonce = 4
         max_fee = 1
         account.send(*send_args, max_fee, nonce)

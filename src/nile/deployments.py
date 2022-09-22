@@ -3,7 +3,7 @@ import logging
 import os
 
 from nile.common import DECLARATIONS_FILENAME, DEPLOYMENTS_FILENAME
-from nile.utils import normalize_number, hex_address
+from nile.utils import hex_address, normalize_number
 
 
 def register(address, abi, network, alias):

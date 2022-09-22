@@ -3,7 +3,7 @@ import json
 import os
 
 from nile.common import ACCOUNTS_FILENAME
-from nile.utils import normalize_number, hex_address
+from nile.utils import hex_address, normalize_number
 
 
 def register(pubkey, address, index, alias, network):
@@ -17,7 +17,11 @@ def register(pubkey, address, index, alias, network):
         accounts = json.load(fp)
         # Save public key as hex
         pubkey = hex(pubkey)
-        accounts[pubkey] = {"address": hex_address(address), "index": index, "alias": alias}
+        accounts[pubkey] = {
+            "address": hex_address(address),
+            "index": index,
+            "alias": alias,
+        }
     with open(file, "w") as file:
         json.dump(accounts, file)
 
