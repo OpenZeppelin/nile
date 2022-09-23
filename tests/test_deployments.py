@@ -1,10 +1,8 @@
 """Tests for deployments file."""
-from unittest.mock import patch
-
 import pytest
 
-from nile.deployments import register, update, load
 from nile.common import DEPLOYMENTS_FILENAME
+from nile.deployments import load, register, update
 
 LOCALHOST = "localhost"
 
@@ -32,9 +30,9 @@ def tmp_working_dir(monkeypatch, tmp_path):
     ],
 )
 def test_update_deployment(update_item, expected_items):
-    register(CONTRACT_A[0], CONTRACT_A[1], LOCALHOST, CONTRACT_A[2]);
-    register(CONTRACT_B[0], CONTRACT_B[1], LOCALHOST, CONTRACT_B[2]);
-    register(CONTRACT_C[0], CONTRACT_C[1], LOCALHOST, CONTRACT_C[2]);
+    register(CONTRACT_A[0], CONTRACT_A[1], LOCALHOST, CONTRACT_A[2])
+    register(CONTRACT_B[0], CONTRACT_B[1], LOCALHOST, CONTRACT_B[2])
+    register(CONTRACT_C[0], CONTRACT_C[1], LOCALHOST, CONTRACT_C[2])
 
     update(update_item[0], update_item[1], LOCALHOST, update_item[2])
 
@@ -57,4 +55,3 @@ def assert_load(expected_item):
         address, abi = next(load(alias, LOCALHOST), None)
         assert address == expected_item[0]
         assert abi == expected_item[1]
-

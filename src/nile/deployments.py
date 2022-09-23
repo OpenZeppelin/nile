@@ -54,7 +54,7 @@ def update(address, abi, network, alias):
     if not found:
         raise Exception(f"Address {address} does not exist in {file}")
     else:
-        with open(file,'w+') as fp:
+        with open(file, "w+") as fp:
             fp.writelines(lines)
 
 
