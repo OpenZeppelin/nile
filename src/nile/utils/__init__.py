@@ -127,7 +127,7 @@ def normalize_number(number):
 
 
 def hex_address(number):
-    """Normalize hex or int to int."""
+    """Return the 64 hexadecimal characters length address."""
     if type(number) == str and number.startswith("0x"):
         return _pad_hex_to_64(number)
     else:

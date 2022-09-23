@@ -71,7 +71,7 @@ def load(identifier, network):
     with open(file) as fp:
         for line in fp:
             [address, abi, *alias] = line.strip().split(":")
-            identifiers = [x for x in [address] + alias]
+            identifiers = [x for x in [normalize_number(address)] + alias]
             if identifier in identifiers:
                 yield normalize_number(address), abi
 

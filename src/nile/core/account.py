@@ -78,7 +78,7 @@ class Account:
 
     def send(self, to, method, calldata, max_fee, nonce=None):
         """Execute a tx going through an Account contract."""
-        target_address, _ = next(deployments.load(hex_address(to), self.network)) or to
+        target_address, _ = next(deployments.load(to, self.network)) or to
         # Work with integers internally
         target_address = normalize_number(target_address)
 

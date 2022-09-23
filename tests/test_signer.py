@@ -32,11 +32,7 @@ async def send_transaction(
 
 async def send_transactions(signer, account, calls, nonce=None, max_fee=0):
     # hexify address before passing to from_call_to_call_array
-    build_calls = []
-    for call in calls:
-        build_call = list(call)
-        build_calls.append(build_call)
-    raw_invocation = get_raw_invoke(account, build_calls)
+    raw_invocation = get_raw_invoke(account, calls)
     state = raw_invocation.state
 
     if nonce is None:
@@ -44,7 +40,7 @@ async def send_transactions(signer, account, calls, nonce=None, max_fee=0):
 
     # get signature
     calldata, sig_r, sig_s = signer.sign_transaction(
-        account.contract_address, build_calls, nonce, max_fee
+        account.contract_address, calls, nonce, max_fee
     )
 
     # craft invoke and execute tx

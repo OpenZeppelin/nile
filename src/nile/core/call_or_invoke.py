@@ -6,6 +6,7 @@ import subprocess
 from nile import deployments
 from nile.common import GATEWAYS, prepare_params
 from nile.core import account
+from nile.utils import hex_address
 
 
 def call_or_invoke(
@@ -13,11 +14,12 @@ def call_or_invoke(
 ):
     """Call or invoke functions of StarkNet smart contracts."""
     if isinstance(contract, account.Account):
-        address = hex(contract.address)
+        address = contract.address
         abi = contract.abi_path
     else:
         address, abi = next(deployments.load(contract, network))
 
+    address = hex_address(address)
     command = [
         "starknet",
         type,
