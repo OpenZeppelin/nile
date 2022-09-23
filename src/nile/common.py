@@ -4,6 +4,8 @@ import os
 import re
 import subprocess
 
+from nile.utils import str_to_felt
+
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
 TEMP_DIRECTORY = ".temp"
@@ -93,11 +95,13 @@ def parse_information(x):
     return address, tx_hash
 
 
-def stringify(x):
+def stringify(x, process_short_strings=False):
     """Recursively convert list or tuple elements to strings."""
     if isinstance(x, list) or isinstance(x, tuple):
-        return [stringify(y) for y in x]
+        return [stringify(y, process_short_strings) for y in x]
     else:
+        if process_short_strings and is_string(x):
+            return str(str_to_felt(x))
         return str(x)
 
 
@@ -105,4 +109,24 @@ def prepare_params(params):
     """Sanitize call, invoke, and deploy parameters."""
     if params is None:
         params = []
-    return stringify(params)
+    return stringify(params, True)
+
+
+def is_string(param):
+    """Identify a param as string if is not int or hex."""
+    is_int = True
+    is_hex = True
+
+    # converting to integer
+    try:
+        int(param)
+    except Exception:
+        is_int = False
+
+    # converting to hex
+    try:
+        int(param, 16)
+    except Exception:
+        is_hex = False
+
+    return not is_int and not is_hex
