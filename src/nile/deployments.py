@@ -25,6 +25,39 @@ def register(address, abi, network, alias):
         fp.write("\n")
 
 
+def update(address, abi, network, alias):
+    """Update a deployment at an existing address."""
+    file = f"{network}.{DEPLOYMENTS_FILENAME}"
+
+    if not os.path.exists(file):
+        raise Exception(f"{file} does not exist")
+
+    with open(file, "r") as fp:
+        lines = fp.readlines()
+
+    found = False
+    for i in range(len(lines)):
+        line_address = lines[i].strip().split(":")[0]
+        if line_address == address:
+            found = True
+
+            replacement = f"{address}:{abi}"
+            if alias is not None:
+                logging.info(f"📦 Updating deployment as {alias} in {file}")
+                replacement += f":{alias}"
+            else:
+                logging.info(f"📦 Updating {address} in {file}")
+            replacement += "\n"
+
+            lines[i] = replacement
+
+    if not found:
+        raise Exception(f"Address {address} does not exist in {file}")
+    else:
+        with open(file,'w+') as fp:
+            fp.writelines(lines)
+
+
 def register_class_hash(hash, network, alias):
     """Register a new deployment."""
     file = f"{network}.{DECLARATIONS_FILENAME}"
