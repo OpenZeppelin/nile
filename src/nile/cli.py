@@ -93,9 +93,7 @@ def deploy(artifact, arguments, network, alias):
 @network_option
 @click.option("--alias")
 @click.option("--directory")
-def declare(
-    signer, contract_name, network, max_fee, alias=None, directory=None
-):
+def declare(signer, contract_name, network, max_fee, alias=None, directory=None):
     """Declare StarkNet smart contract."""
     account = Account(signer, network)
     account.declare(
