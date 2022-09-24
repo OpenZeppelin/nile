@@ -1,9 +1,6 @@
 """Command to declare StarkNet smart contracts."""
 import logging
 
-from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
-from starkware.starknet.core.os.class_hash import compute_class_hash
-
 from nile import deployments
 from nile.common import DECLARATIONS_FILENAME, parse_information, run_command
 
@@ -49,8 +46,3 @@ def alias_exists(alias, network):
     """Return whether an alias exists or not."""
     existing_alias = next(deployments.load_class(alias, network), None)
     return existing_alias is not None
-
-
-def get_hash(contract_class):
-    """Return the class_hash of a given contract class."""
-    return compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
