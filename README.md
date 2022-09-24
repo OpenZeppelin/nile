@@ -123,7 +123,24 @@ A few things to notice here:
 
 1. `nile deploy <contract_name>` looks for an artifact with the same name
 2. This created a `localhost.deployments.txt` file storing all data related to my deployment
-3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
+3. The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
+4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
+
+### `declare`
+
+```sh
+nile declare contract --alias my_contract
+
+🚀 Declaring contract
+⏳ Declaration of contract successfully sent at 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
+📦 Registering declaration as my_contract in localhost.declarations.txt
+```
+
+A few things to notice here:
+
+1. `nile declare <contract_name>` looks for an artifact with the same name
+2. This created a `localhost.declarations.txt` file storing all data related to my declarations
+3. The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 
 ### `setup`
@@ -393,7 +410,7 @@ def run(nre):
     bob.send(...)
 ```
 
-> Please note that the list of accounts include only those that exist in the local `<network>.accounts.json` file.
+> Please note that the list of accounts includes only those that exist in the local `<network>.accounts.json` file.
 
 ## Extending Nile with plugins
 
@@ -405,7 +422,7 @@ This implementation takes advantage of the native extensibility features of [cli
 
 In order for this implementation to be functional, it is needed by the plugin developer to follow some development guidelines defined in this simple plugin example extending Nile for a dummy greet extension. In a brief explanation the guidelines are as follows:
 
-1. Define a Python module that implement a click command or group:
+1. Define a Python module that implements a click command or group:
 
    ```python
    # First, import click dependency
@@ -420,7 +437,7 @@ In order for this implementation to be functional, it is needed by the plugin de
        Subcommand plugin that does something.
        """
        # Done! Now implement your custom functionality in the command
-       click.echo("I'm a plugin overiding a command!")
+       click.echo("I'm a plugin overriding a command!")
    ```
 
 2. Define the plugin entrypoint. In this case using Poetry features in the pyproject.toml file:
