@@ -19,6 +19,9 @@ from nile.core.test import test as test_command
 from nile.core.version import version as version_command
 from nile.utils.debug import debug as debug_command
 from nile.utils.get_accounts import get_accounts as get_accounts_command
+from nile.utils.get_accounts import (
+    get_predeployed_accounts as get_predeployed_accounts_command,
+)
 from nile.utils.get_nonce import get_nonce as get_nonce_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
@@ -235,9 +238,13 @@ def debug(tx_hash, network, contracts_file):
 
 @cli.command()
 @network_option
-def get_accounts(network):
+@click.option("--predeployed/--registered", default=False)
+def get_accounts(network, predeployed):
     """Retrieve and manage deployed accounts."""
-    return get_accounts_command(network)
+    if not predeployed:
+        return get_accounts_command(network)
+    else:
+        return get_predeployed_accounts_command(network)
 
 
 @cli.command()

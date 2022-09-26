@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from nile import accounts, deployments
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.deploy import deploy
+from nile.utils import normalize_number
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
@@ -20,11 +21,16 @@ load_dotenv()
 class Account:
     """Account contract abstraction."""
 
-    def __init__(self, signer, network):
+    def __init__(self, signer, network, predeployed_info=None):
         """Get or deploy an Account contract for the given private key."""
         try:
-            self.signer = Signer(int(os.environ[signer]))
-            self.alias = signer
+            if predeployed_info is None:
+                self.signer = Signer(normalize_number(os.environ[signer]))
+                self.alias = signer
+            else:
+                self.signer = Signer(signer)
+                self.alias = predeployed_info["alias"]
+
             self.network = network
         except KeyError:
             logging.error(
@@ -34,8 +40,15 @@ class Account:
             )
             return
 
-        if accounts.exists(str(self.signer.public_key), network):
-            signer_data = next(accounts.load(str(self.signer.public_key), network))
+        self.abi_path = os.path.dirname(os.path.realpath(__file__)).replace(
+            "/core", "/artifacts/abis/Account.json"
+        )
+
+        if predeployed_info is not None:
+            self.address = predeployed_info["address"]
+            self.index = predeployed_info["index"]
+        elif accounts.exists(self.signer.public_key, network):
+            signer_data = next(accounts.load(self.signer.public_key, network))
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
@@ -51,7 +64,7 @@ class Account:
 
         address, _ = deploy(
             "Account",
-            [str(self.signer.public_key)],
+            [self.signer.public_key],
             self.network,
             f"account-{index}",
             overriding_path,
@@ -66,6 +79,9 @@ class Account:
     def send(self, to, method, calldata, max_fee, nonce=None):
         """Execute a tx going through an Account contract."""
         target_address, _ = next(deployments.load(to, self.network)) or to
+        # Work with integers internally
+        target_address = normalize_number(target_address)
+
         calldata = [int(x) for x in calldata]
 
         if nonce is None:
@@ -84,7 +100,7 @@ class Account:
         )
 
         return call_or_invoke(
-            contract=self.address,
+            contract=self,
             type="invoke",
             method="__execute__",
             params=calldata,

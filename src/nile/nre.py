@@ -6,8 +6,8 @@ from nile.core.compile import compile
 from nile.core.declare import declare
 from nile.core.deploy import deploy
 from nile.core.plugins import get_installed_plugins, skip_click_exit
-from nile.utils.get_accounts import get_accounts
-from nile.utils.get_nonce import get_nonce as get_nonce_command
+from nile.utils.get_accounts import get_accounts, get_predeployed_accounts
+from nile.utils.get_nonce import get_nonce
 
 
 class NileRuntimeEnvironment:
@@ -53,10 +53,13 @@ class NileRuntimeEnvironment:
         """Get or deploy an Account contract."""
         return Account(signer, self.network)
 
-    def get_accounts(self):
+    def get_accounts(self, predeployed=False):
         """Retrieve and manage deployed accounts."""
-        return get_accounts(self.network)
+        if not predeployed:
+            return get_accounts(self.network)
+        else:
+            return get_predeployed_accounts(self.network)
 
     def get_nonce(self, contract_address):
         """Retrieve the nonce for a contract."""
-        return get_nonce_command(contract_address, self.network)
+        return get_nonce(contract_address, self.network)
