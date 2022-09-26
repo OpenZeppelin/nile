@@ -84,7 +84,9 @@ class Account:
 
         If address_or_alias is a str, alias is assumed.
         """
-        target_address, _ = next(deployments.load(address_or_alias, self.network)) or address_or_alias
+        target_address, _ = (
+            next(deployments.load(address_or_alias, self.network)) or address_or_alias
+        )
 
         calldata = [int(x) for x in calldata]
 

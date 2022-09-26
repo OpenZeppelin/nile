@@ -57,7 +57,7 @@ def exists(address_or_alias, network):
 
     If address_or_alias is a str, alias is assumed.
     """
-    foo = next(load(identifier, network), None)
+    foo = next(load(address_or_alias, network), None)
     return foo is not None
 
 
