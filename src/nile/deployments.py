@@ -49,8 +49,14 @@ def register_class_hash(hash, network, alias):
         fp.write("\n")
 
 
-def exists(identifier, network):
-    """Return whether a deployment exists or not."""
+def exists(address_or_alias, network):
+    """
+    Return whether a deployment exists or not.
+
+    If address_or_alias is an int, address is assumed.
+
+    If address_or_alias is a str, alias is assumed.
+    """
     foo = next(load(identifier, network), None)
     return foo is not None
 
@@ -61,8 +67,14 @@ def class_hash_exists(hash, network):
         return True
 
 
-def load(identifier, network):
-    """Load deployments that matches an identifier (address or alias)."""
+def load(address_or_alias, network):
+    """
+    Load deployments that matches an identifier (address or alias).
+
+    If address_or_alias is an int, address is assumed.
+
+    If address_or_alias is a str, alias is assumed.
+    """
     file = f"{network}.{DEPLOYMENTS_FILENAME}"
 
     if not os.path.exists(file):
@@ -71,13 +83,22 @@ def load(identifier, network):
     with open(file) as fp:
         for line in fp:
             [address, abi, *alias] = line.strip().split(":")
-            identifiers = [x for x in [normalize_number(address)] + alias]
-            if identifier in identifiers:
-                yield normalize_number(address), abi
+            address = normalize_number(address)
+            identifiers = [address]
+            if type(address_or_alias) is not int:
+                identifiers = alias
+            if address_or_alias in identifiers:
+                yield address, abi
 
 
-def load_class(identifier, network):
-    """Load declaration class that matches an identifier (hash or alias)."""
+def load_class(hash_or_alias, network):
+    """
+    Load declaration class that matches an identifier (hash or alias).
+
+    If hash_or_alias is an int, class_hash is assumed.
+
+    If hash_or_alias is a str, alias is assumed.
+    """
     file = f"{network}.{DECLARATIONS_FILENAME}"
 
     if not os.path.exists(file):
@@ -87,6 +108,8 @@ def load_class(identifier, network):
         for line in fp:
             [hash, *alias] = line.strip().split(":")
             hash = normalize_number(hash)
-            identifiers = [x for x in [hash] + alias]
-            if identifier in identifiers:
+            identifiers = [hash]
+            if type(hash_or_alias) is not int:
+                identifiers = alias
+            if hash_or_alias in identifiers:
                 yield hash
