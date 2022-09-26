@@ -19,12 +19,10 @@ def call_or_invoke(
         method,
     ]
 
-    inputs = prepare_params(params) if len(params) > 0 else None
-
     return run_command(
         operation=type,
         network=network,
-        inputs=inputs,
+        inputs=params,
         arguments=arguments,
         signature=signature,
         max_fee=max_fee,
