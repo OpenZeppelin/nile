@@ -17,6 +17,7 @@ from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.version import version as version_command
+from nile.utils import normalize_number
 from nile.utils.debug import debug as debug_command
 from nile.utils.get_accounts import get_accounts as get_accounts_command
 from nile.utils.get_accounts import (
@@ -233,7 +234,7 @@ def version():
 @click.option("--contracts_file", nargs=1)
 def debug(tx_hash, network, contracts_file):
     """Locate an error in a transaction using contracts."""
-    debug_command(tx_hash, network, contracts_file)
+    debug_command(normalize_number(tx_hash), network, contracts_file)
 
 
 @cli.command()
@@ -252,7 +253,7 @@ def get_accounts(network, predeployed):
 @network_option
 def get_nonce(contract_address, network):
     """Retrieve the nonce for a contract."""
-    return get_nonce_command(contract_address, network)
+    return get_nonce_command(normalize_number(contract_address), network)
 
 
 cli = load_plugins(cli)
