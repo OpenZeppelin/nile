@@ -388,7 +388,34 @@ def run(nre):
     bob.send(...)
 ```
 
-> Please note that the list of accounts includes only those that exist in the local `<network>.accounts.json` file.
+> Please note that the list of accounts includes only those that exist in the local `<network>.accounts.json` file. In a recent release we added a flag to the command, to get predeployed accounts if the network you are connected to is a [starknet-devnet](https://github.com/Shard-Labs/starknet-devnet) instance.
+
+### `get-accounts --predeployed`
+
+This flag retrieves the predeployed accounts if the network you are connecting to is a [starknet-devnet](https://github.com/Shard-Labs/starknet-devnet) instance.
+
+You can use it either from the cli:
+
+```sh
+nile get-accounts --predeployed
+```
+
+Or from the nile runtime environment for scripting:
+
+```python
+def run(nre):
+
+    # fetch the list of pre-deployed accounts from devnet
+    accounts = nre.get_accounts(predeployed=True)
+
+    # then
+    accounts[0].send(...)
+
+    # or
+    alice, bob, *_ = accounts
+    alice.send(...)
+    bob.send(...)
+```
 
 ## Extending Nile with plugins
 

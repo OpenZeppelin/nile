@@ -3,14 +3,22 @@ import logging
 from unittest.mock import MagicMock, patch
 
 import pytest
+from requests.exceptions import MissingSchema
 
 from nile.core.account import Account
-from nile.utils.get_accounts import _check_and_return_account, get_accounts
+from nile.utils import normalize_number as normalize
+from nile.utils.get_accounts import (
+    _check_and_return_account,
+    get_accounts,
+    get_predeployed_accounts,
+)
+from tests.mocks.mock_response import MockResponse
 
 NETWORK = "goerli"
+GATEWAYS = {"localhost": "http://127.0.0.1:5050/"}
 PUBKEYS = [
-    "883045738439352841478194533192765345509759306772397516907181243450667673002",
-    "661519931401775515888740911132355225260405929679788917190706536765421826262",
+    883045738439352841478194533192765345509759306772397516907181243450667673002,
+    661519931401775515888740911132355225260405929679788917190706536765421826262,
 ]
 ADDRESSES = ["333", "444"]
 INDEXES = [0, 1]
@@ -28,6 +36,18 @@ MOCK_ACCOUNTS = {
         "alias": ALIASES[1],
     },
 }
+JSON_DATA = [
+    {
+        "address": normalize("0xaaa1"),
+        "private_key": normalize("0xbbb1"),
+        "public_key": normalize("0xbbb2"),
+    },
+    {
+        "address": normalize("0xaaa2"),
+        "private_key": normalize("0xbbb3"),
+        "public_key": normalize("0xbbb4"),
+    },
+]
 
 
 @pytest.fixture(autouse=True)
@@ -122,5 +142,68 @@ def test_get_accounts_with_keys():
         # Assert call count equals correct number of accounts
         assert mock_return_account.call_count == len(PUBKEYS)
 
-        # assert returned accounts array equals correct number of accounts
+        # Assert returned accounts array equals correct number of accounts
         assert len(result) == len(PUBKEYS)
+
+
+@patch("nile.common.get_gateway", return_value=GATEWAYS)
+@patch("nile.utils.get_accounts._check_and_return_account")
+@patch("requests.get", return_value=MockResponse(JSON_DATA, 200))
+def test_get_predeployed_accounts(mock_response, mock_return_account, mock_gateways):
+    result = get_predeployed_accounts("localhost")
+
+    # Assert the correct endpoint is used
+    mock_response.assert_called_once_with(
+        f"{GATEWAYS.get('localhost')}/predeployed_accounts"
+    )
+
+    # Check correct args are passed to `_check_and_receive_account`
+    for i in range(len(JSON_DATA)):
+        predeployed_info = {
+            "address": JSON_DATA[i]["address"],
+            "alias": f"account-{i}",
+            "index": i,
+        }
+        mock_return_account.assert_any_call(
+            JSON_DATA[i]["private_key"],
+            JSON_DATA[i]["public_key"],
+            "localhost",
+            predeployed_info,
+        )
+
+    # Assert call count equals correct number of accounts
+    assert mock_return_account.call_count == len(JSON_DATA)
+
+    # Assert returned accounts array equals correct number of accounts
+    assert len(result) == len(JSON_DATA)
+
+
+@patch("nile.common.get_gateway", return_value=GATEWAYS)
+@patch("nile.utils.get_accounts._check_and_return_account")
+@patch("requests.get", return_value=MockResponse(JSON_DATA, 200))
+def test_get_predeployed_accounts_logging(
+    mock_response, mock_return_account, mock_gateways, caplog
+):
+    # make logs visible to test
+    logger = logging.getLogger()
+
+    logger.setLevel(logging.INFO)
+    get_predeployed_accounts("localhost")
+
+    assert "🚀 Successfully retrieved pre-deployed accounts" in caplog.text
+
+    # test exceptions
+    logger.setLevel(logging.ERROR)
+
+    # test missing schema first
+    mock_response.side_effect = MissingSchema
+    get_predeployed_accounts("localhost")
+
+    assert "❌ Failed to retrieve gateway from provided network" in caplog.text
+
+    # test generic exceptions
+    mock_response.side_effect = Exception
+    get_predeployed_accounts("localhost")
+
+    assert "❌ Error querying the account from the gateway" in caplog.text
+    assert "Check you are connected to a starknet-devnet implementation" in caplog.text

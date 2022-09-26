@@ -4,6 +4,8 @@ import os
 import re
 import subprocess
 
+from nile.utils import normalize_number
+
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
 TEMP_DIRECTORY = ".temp"
@@ -15,7 +17,7 @@ NODE_FILENAME = "node.json"
 RETRY_AFTER_SECONDS = 30
 
 
-def _get_gateway():
+def get_gateway():
     """Get the StarkNet node details."""
     try:
         with open(NODE_FILENAME, "r") as f:
@@ -27,7 +29,7 @@ def _get_gateway():
             f.write('{"localhost": "http://127.0.0.1:5050/"}')
 
 
-GATEWAYS = _get_gateway()
+GATEWAYS = get_gateway()
 
 
 def get_all_contracts(ext=None, directory=None):
@@ -74,6 +76,10 @@ def run_command(
 
 def get_nonce(contract_address, network):
     """Get the current nonce for contract address in a given network."""
+    # Starknet CLI requires an hex string for get nonce command
+    if not str(contract_address).startswith("0x"):
+        contract_address = hex(int(contract_address))
+
     command = ["starknet", "get_nonce", "--contract_address", contract_address]
 
     if network == "mainnet":
@@ -90,7 +96,7 @@ def parse_information(x):
     """Extract information from deploy/declare command."""
     # address is 64, tx_hash is 64 chars long
     address, tx_hash = re.findall("0x[\\da-f]{1,64}", str(x))
-    return address, tx_hash
+    return normalize_number(address), normalize_number(tx_hash)
 
 
 def stringify(x):
