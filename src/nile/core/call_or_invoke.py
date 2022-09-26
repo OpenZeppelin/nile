@@ -1,7 +1,7 @@
 """Command to call or invoke StarkNet smart contracts."""
 
 from nile import deployments
-from nile.common import prepare_params, run_command
+from nile.common import run_command
 
 
 def call_or_invoke(
