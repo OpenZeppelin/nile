@@ -83,7 +83,7 @@ def run(path, network):
 @network_option
 @click.option("--alias")
 @click.option("--abi")
-def deploy(artifact, arguments, network, alias, abi):
+def deploy(artifact, arguments, network, alias, abi=None):
     """Deploy StarkNet smart contract."""
     deploy_command(artifact, arguments, network, alias, abi=abi)
 
