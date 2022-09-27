@@ -7,7 +7,7 @@ import requests
 from nile.accounts import current_index
 from nile.common import get_gateway
 from nile.core.account import Account
-from nile.utils import normalize_number, hex_address
+from nile.utils import hex_address, normalize_number
 
 GATEWAYS = get_gateway()
 
