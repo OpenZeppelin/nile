@@ -433,7 +433,14 @@ And this is equivalent to passing the felt representation directly like this:
 nile deploy MyToken 0x4d79546f6b656e206e616d65 0x4d79546f6b656e2073796d626f6c (...)
 ```
 
-Note that if you want to pass the token name as a hex or an int, you need to provide the felt representation directly because these values are not interpreted as short strings.
+Note that if you want to pass the token name as a hex or an int, you need to provide the felt representation directly because these values are not interpreted as short strings. You can open a python terminal, and import and use the `str_to_felt` util like this:
+
+```python
+>>> from nile.utils import str_to_felt
+>>>
+>>> str_to_felt('any string')
+460107418789485453340263
+```
 
 ## Extending Nile with plugins
 
