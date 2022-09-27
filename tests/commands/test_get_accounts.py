@@ -6,7 +6,8 @@ import pytest
 from requests.exceptions import MissingSchema
 
 from nile.core.account import Account
-from nile.utils import normalize_number as normalize, hex_address
+from nile.utils import hex_address
+from nile.utils import normalize_number as normalize
 from nile.utils.get_accounts import (
     _check_and_return_account,
     get_accounts,

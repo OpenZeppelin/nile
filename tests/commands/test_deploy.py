@@ -56,5 +56,8 @@ def test_deploy(mock_register, mock_parse, mock_run_cmd, caplog, args, exp_comma
 
     # check logs
     assert f"🚀 Deploying {CONTRACT}" in caplog.text
-    assert f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(ADDRESS)}" in caplog.text
+    assert (
+        f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(ADDRESS)}"
+        in caplog.text
+    )
     assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
