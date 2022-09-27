@@ -72,8 +72,8 @@ def test_declare(
 
     # check logs
     assert f"🚀 Declaring {CONTRACT}" in caplog.text
-    assert f"⏳ Declaration of {CONTRACT} successfully sent at {HASH}" in caplog.text
-    assert f"🧾 Transaction hash: {TX_HASH}" in caplog.text
+    assert f"⏳ Declaration of {CONTRACT} successfully sent at {hex(HASH)}" in caplog.text
+    assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
 
 
 @patch("nile.core.declare.alias_exists", return_value=True)
