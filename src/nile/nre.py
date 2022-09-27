@@ -6,7 +6,7 @@ from nile.core.compile import compile
 from nile.core.declare import declare
 from nile.core.deploy import deploy
 from nile.core.plugins import get_installed_plugins, skip_click_exit
-from nile.utils.get_accounts import get_accounts
+from nile.utils.get_accounts import get_accounts, get_predeployed_accounts
 
 
 class NileRuntimeEnvironment:
@@ -52,6 +52,9 @@ class NileRuntimeEnvironment:
         """Get or deploy an Account contract."""
         return Account(signer, self.network)
 
-    def get_accounts(self):
+    def get_accounts(self, predeployed=False):
         """Retrieve and manage deployed accounts."""
-        return get_accounts(self.network)
+        if not predeployed:
+            return get_accounts(self.network)
+        else:
+            return get_predeployed_accounts(self.network)

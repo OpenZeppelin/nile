@@ -116,3 +116,25 @@ def assert_event_emitted(tx_exec_info, from_address, name, data):
         )
         in tx_exec_info.raw_events
     )
+
+
+def normalize_number(number):
+    """Normalize hex or int to int."""
+    if type(number) == str and number.startswith("0x"):
+        return int(number, 16)
+    else:
+        return int(number)
+
+
+def hex_address(number):
+    """Return the 64 hexadecimal characters length address."""
+    if type(number) == str and number.startswith("0x"):
+        return _pad_hex_to_64(number)
+    else:
+        return _pad_hex_to_64(hex(int(number)))
+
+
+def _pad_hex_to_64(hexadecimal):
+    if len(hexadecimal) < 66:
+        missing_zeros = 66 - len(hexadecimal)
+        return hexadecimal[:2] + missing_zeros * "0" + hexadecimal[2:]
