@@ -117,14 +117,15 @@ def is_string(param):
     is_int = True
     is_hex = True
 
-    # converting to integer
+    # convert to integer
     try:
         int(param)
     except Exception:
         is_int = False
 
-    # converting to hex
+    # convert to hex (starting with 0x)
     try:
+        assert param.startswith("0x")
         int(param, 16)
     except Exception:
         is_hex = False
