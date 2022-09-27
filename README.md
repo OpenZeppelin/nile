@@ -419,7 +419,7 @@ def run(nre):
 
 ### `get-nonce`
 
-Retrieves the nonce given a contract address (usually an account).
+Retrieves the nonce for the given contract address (usually an account).
 
 ```sh
 nile get-nonce <contract_address>
