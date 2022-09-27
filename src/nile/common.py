@@ -4,9 +4,7 @@ import os
 import re
 import subprocess
 
-from nile.utils import normalize_number
-
-from nile.utils import str_to_felt
+from nile.utils import normalize_number, str_to_felt
 
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
