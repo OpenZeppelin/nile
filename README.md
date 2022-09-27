@@ -417,6 +417,31 @@ def run(nre):
     bob.send(...)
 ```
 
+## Short string literals
+
+From [cairo-lang docs](https://www.cairo-lang.org/docs/how_cairo_works/consts.html#short-string-literals): A short string is a string whose length is at most 31 characters, and therefore can fit into a single field element.
+
+In Nile, arguments to contract calls (calldata) that are neither int nor hex, are treated as short strings and converted automatically to the corresponding felt representation. Because of this, you can run the following from the CLI:
+
+```sh
+nile deploy MyToken 'MyToken name' 'MyToken symbol' (...)
+```
+
+And this is equivalent to passing the felt representation directly like this:
+
+```sh
+nile deploy MyToken 0x4d79546f6b656e206e616d65 0x4d79546f6b656e2073796d626f6c (...)
+```
+
+Note that if you want to pass the token name as a hex or an int, you need to provide the felt representation directly because these values are not interpreted as short strings. You can open a python terminal, and import and use the `str_to_felt` util like this:
+
+```python
+>>> from nile.utils import str_to_felt
+>>>
+>>> str_to_felt('any string')
+460107418789485453340263
+```
+
 ## Extending Nile with plugins
 
 Nile has the possibility of extending its CLI and `NileRuntimeEnvironment` functionalities through plugins. For developing plugins for Nile fork [this plugin example](https://github.com/franalgaba/nile-plugin-example) boilerplate and implement your desired functionality with the provided instructions.
