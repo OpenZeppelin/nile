@@ -123,6 +123,7 @@ A few things to notice here:
 2. This created a `localhost.deployments.txt` file storing all data related to my deployment
 3. The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
+5. By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
 
 ### `declare`
 

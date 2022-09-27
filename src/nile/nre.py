@@ -26,9 +26,13 @@ class NileRuntimeEnvironment:
         """Declare a smart contract class."""
         return declare(contract, self.network, alias)
 
-    def deploy(self, contract, arguments=None, alias=None, overriding_path=None):
+    def deploy(
+        self, contract, arguments=None, alias=None, overriding_path=None, abi=None
+    ):
         """Deploy a smart contract."""
-        return deploy(contract, arguments, self.network, alias, overriding_path)
+        return deploy(
+            contract, arguments, self.network, alias, overriding_path, abi=abi
+        )
 
     def call(self, contract, method, params=None):
         """Call a view function in a smart contract."""
