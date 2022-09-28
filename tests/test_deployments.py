@@ -6,18 +6,48 @@ from nile.deployments import register, update
 
 LOCALHOST = "localhost"
 
-CONTRACT_A = ("0x01", "artifacts/abis/a.json", "contractA")
-CONTRACT_B = ("0x02", "artifacts/abis/b.json", "contractB")
-CONTRACT_C = ("0x03", "artifacts/abis/c.json", None)
+CONTRACT_A = (
+    "0x0000000000000000000000000000000000000000000000000000000000000001",
+    "artifacts/abis/a.json",
+    "contractA",
+)
+CONTRACT_B = (
+    "0x0000000000000000000000000000000000000000000000000000000000000002",
+    "artifacts/abis/b.json",
+    "contractB",
+)
+CONTRACT_C = (
+    "0x0000000000000000000000000000000000000000000000000000000000000003",
+    "artifacts/abis/c.json",
+    None,
+)
 
-CONTRACT_A_UPDATE = ("0x01", "artifacts/abis/a2.json")
-CONTRACT_A_EXPECTED = ("0x01", "artifacts/abis/a2.json", "contractA")
+CONTRACT_A_UPDATE = (
+    "0x0000000000000000000000000000000000000000000000000000000000000001",
+    "artifacts/abis/a2.json",
+)
+CONTRACT_A_EXPECTED = (
+    "0x0000000000000000000000000000000000000000000000000000000000000001",
+    "artifacts/abis/a2.json",
+    "contractA",
+)
 
 CONTRACT_B_UPDATE = ("contractB", "artifacts/abis/b2.json")
-CONTRACT_B_EXPECTED = ("0x02", "artifacts/abis/b2.json", "contractB")
+CONTRACT_B_EXPECTED = (
+    "0x0000000000000000000000000000000000000000000000000000000000000002",
+    "artifacts/abis/b2.json",
+    "contractB",
+)
 
-CONTRACT_C_UPDATE = ("0x03", "artifacts/abis/c2.json")
-CONTRACT_C_EXPECTED = ("0x03", "artifacts/abis/c2.json", None)
+CONTRACT_C_UPDATE = (
+    "0x0000000000000000000000000000000000000000000000000000000000000003",
+    "artifacts/abis/c2.json",
+)
+CONTRACT_C_EXPECTED = (
+    "0x0000000000000000000000000000000000000000000000000000000000000003",
+    "artifacts/abis/c2.json",
+    None,
+)
 
 
 @pytest.fixture(autouse=True)
