@@ -2,7 +2,7 @@
 import pytest
 
 from nile.common import DEPLOYMENTS_FILENAME
-from nile.deployments import load, register, update
+from nile.deployments import register, update
 
 LOCALHOST = "localhost"
 
@@ -49,24 +49,18 @@ def test_update_deployment(update_item, expected_items):
         lines = fp.readlines()
     assert len(lines) == 3
 
-    assert_load(expected_items[0])
-    assert_load(expected_items[1])
-    assert_load(expected_items[2])
+    assert (
+        lines[0].strip()
+        == f"{expected_items[0][0]}:{expected_items[0][1]}:{expected_items[0][2]}"
+    )
+    assert (
+        lines[1].strip()
+        == f"{expected_items[1][0]}:{expected_items[1][1]}:{expected_items[1][2]}"
+    )
+    assert lines[2].strip() == f"{expected_items[2][0]}:{expected_items[2][1]}"
 
     try:
         update("invalid", CONTRACT_A[1], LOCALHOST)
         raise AssertionError("update expected to fail due to missing deployment")
     except Exception as e:
         assert "does not exist" in str(e)
-
-
-def assert_load(expected_item):
-    address, abi = next(load(expected_item[0], LOCALHOST), None)
-    assert address == expected_item[0]
-    assert abi == expected_item[1]
-
-    alias = expected_item[2]
-    if alias is not None:
-        address, abi = next(load(alias, LOCALHOST), None)
-        assert address == expected_item[0]
-        assert abi == expected_item[1]
