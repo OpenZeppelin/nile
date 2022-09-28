@@ -57,8 +57,8 @@ def exists(address_or_alias, network):
 
     If address_or_alias is a str, alias is assumed.
     """
-    foo = next(load(address_or_alias, network), None)
-    return foo is not None
+    deployment = next(load(address_or_alias, network), None)
+    return deployment is not None
 
 
 def class_hash_exists(hash, network):
