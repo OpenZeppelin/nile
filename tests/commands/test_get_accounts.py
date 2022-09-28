@@ -6,6 +6,7 @@ import pytest
 from requests.exceptions import MissingSchema
 
 from nile.core.account import Account
+from nile.utils import hex_address
 from nile.utils import normalize_number as normalize
 from nile.utils.get_accounts import (
     _check_and_return_account,
@@ -119,7 +120,7 @@ def test_get_accounts_activated_accounts_feedback(caplog):
 
     # Check index/address log
     for i in range(len(PUBKEYS)):
-        assert f"{INDEXES[i]}: {ADDRESSES[i]}" in caplog.text
+        assert f"{INDEXES[i]}: {hex_address(ADDRESSES[i])}" in caplog.text
 
     # Check final success log
     assert "\n🚀 Successfully retrieved deployed accounts" in caplog.text

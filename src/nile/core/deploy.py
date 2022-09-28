@@ -3,6 +3,7 @@ import logging
 
 from nile import deployments
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, parse_information, run_command
+from nile.utils import hex_address
 
 
 def deploy(contract_name, arguments, network, alias, overriding_path=None, abi=None):
@@ -16,8 +17,10 @@ def deploy(contract_name, arguments, network, alias, overriding_path=None, abi=N
     output = run_command(contract_name, network, overriding_path, arguments=arguments)
 
     address, tx_hash = parse_information(output)
-    logging.info(f"⏳ ️Deployment of {contract_name} successfully sent at {address}")
-    logging.info(f"🧾 Transaction hash: {tx_hash}")
+    logging.info(
+        f"⏳ ️Deployment of {contract_name} successfully sent at {hex_address(address)}"
+    )
+    logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
     deployments.register(address, register_abi, network, alias)
     return address, register_abi

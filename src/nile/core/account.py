@@ -5,10 +5,10 @@ import os
 from dotenv import load_dotenv
 
 from nile import accounts, deployments
-from nile.common import get_nonce
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.deploy import deploy
 from nile.utils import normalize_number
+from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
     from nile.signer import Signer
@@ -76,11 +76,18 @@ class Account:
 
         return address, index
 
-    def send(self, to, method, calldata, max_fee, nonce=None):
-        """Execute a tx going through an Account contract."""
-        target_address, _ = next(deployments.load(to, self.network)) or to
-        # Work with integers internally
-        target_address = normalize_number(target_address)
+    def send(self, address_or_alias, method, calldata, max_fee, nonce=None):
+        """
+        Execute a tx going through an Account contract.
+
+        If address_or_alias is an int, address is assumed.
+
+        If address_or_alias is a str, alias is assumed.
+        """
+        target_address, _ = (
+            next(deployments.load(address_or_alias, self.network), None)
+            or address_or_alias
+        )
 
         calldata = [int(x) for x in calldata]
 

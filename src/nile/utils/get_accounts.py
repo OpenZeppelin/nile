@@ -7,7 +7,7 @@ import requests
 from nile.accounts import current_index
 from nile.common import get_gateway
 from nile.core.account import Account
-from nile.utils import normalize_number
+from nile.utils import hex_address, normalize_number
 
 GATEWAYS = get_gateway()
 
@@ -34,7 +34,7 @@ def get_accounts(network):
     signers = [i["alias"] for i in account_data.values()]
 
     for i in range(total_accounts):
-        logging.info(f"{i}: {addresses[i]}")
+        logging.info(f"{i}: {hex_address(addresses[i])}")
 
         _account = _check_and_return_account(signers[i], pubkeys[i], network)
         accounts.append(_account)

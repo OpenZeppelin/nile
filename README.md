@@ -418,6 +418,14 @@ def run(nre):
     bob.send(...)
 ```
 
+### `get-nonce`
+
+Retrieves the nonce for the given contract address (usually an account).
+
+```sh
+nile get-nonce <contract_address>
+```
+
 ## Short string literals
 
 From [cairo-lang docs](https://www.cairo-lang.org/docs/how_cairo_works/consts.html#short-string-literals): A short string is a string whose length is at most 31 characters, and therefore can fit into a single field element.

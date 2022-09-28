@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from nile.core.deploy import ABIS_DIRECTORY, BUILD_DIRECTORY, deploy
+from nile.utils import hex_address
 
 
 @pytest.fixture(autouse=True)
@@ -70,5 +71,8 @@ def test_deploy(
 
     # check logs
     assert f"🚀 Deploying {CONTRACT}" in caplog.text
-    assert f"⏳ ️Deployment of {CONTRACT} successfully sent at {ADDRESS}" in caplog.text
-    assert f"🧾 Transaction hash: {TX_HASH}" in caplog.text
+    assert (
+        f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(ADDRESS)}"
+        in caplog.text
+    )
+    assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text

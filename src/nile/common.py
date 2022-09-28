@@ -74,24 +74,6 @@ def run_command(
     return subprocess.check_output(command)
 
 
-def get_nonce(contract_address, network):
-    """Get the current nonce for contract address in a given network."""
-    # Starknet CLI requires an hex string for get nonce command
-    if not str(contract_address).startswith("0x"):
-        contract_address = hex(int(contract_address))
-
-    command = ["starknet", "get_nonce", "--contract_address", contract_address]
-
-    if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-    elif network == "goerli":
-        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
-    else:
-        command.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
-
-    return int(subprocess.check_output(command).strip())
-
-
 def parse_information(x):
     """Extract information from deploy/declare command."""
     # address is 64, tx_hash is 64 chars long
@@ -135,3 +117,8 @@ def is_string(param):
         is_hex = False
 
     return not is_int and not is_hex
+
+
+def is_alias(param):
+    """Identiy param as alias (instead of address)."""
+    return is_string(param)
