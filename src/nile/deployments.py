@@ -32,19 +32,29 @@ def update(address, abi, network, alias):
     if not os.path.exists(file):
         raise Exception(f"{file} does not exist")
 
+    if alias is not None:
+        if exists(alias, network):
+            raise Exception(f"Alias {alias} already exists in {file}")
+
     with open(file, "r") as fp:
         lines = fp.readlines()
 
     found = False
     for i in range(len(lines)):
-        line_address = lines[i].strip().split(":")[0]
-        if line_address == address:
+        line = lines[i].strip().split(":")
+        current_address = line[0]
+
+        new_alias = alias
+        if new_alias is None and len(line) > 2:
+            new_alias = line[2]
+
+        if current_address == address:
             found = True
 
             replacement = f"{address}:{abi}"
-            if alias is not None:
-                logging.info(f"📦 Updating deployment as {alias} in {file}")
-                replacement += f":{alias}"
+            if new_alias is not None:
+                logging.info(f"📦 Updating deployment as {new_alias} in {file}")
+                replacement += f":{new_alias}"
             else:
                 logging.info(f"📦 Updating {address} in {file}")
             replacement += "\n"
