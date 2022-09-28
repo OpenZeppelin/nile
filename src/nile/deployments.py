@@ -25,16 +25,12 @@ def register(address, abi, network, alias):
         fp.write("\n")
 
 
-def update(address, abi, network, alias):
-    """Update a deployment at an existing address."""
+def update(identifier, abi, network):
+    """Update the ABI for an existing deployment."""
     file = f"{network}.{DEPLOYMENTS_FILENAME}"
 
     if not os.path.exists(file):
         raise Exception(f"{file} does not exist")
-
-    if alias is not None:
-        if exists(alias, network):
-            raise Exception(f"Alias {alias} already exists in {file}")
 
     with open(file, "r") as fp:
         lines = fp.readlines()
@@ -42,27 +38,30 @@ def update(address, abi, network, alias):
     found = False
     for i in range(len(lines)):
         line = lines[i].strip().split(":")
+
         current_address = line[0]
 
-        new_alias = alias
-        if new_alias is None and len(line) > 2:
-            new_alias = line[2]
+        current_alias = None
+        if len(line) > 2:
+            current_alias = line[2]
 
-        if current_address == address:
-            found = True
+        if identifier == current_address or identifier == current_alias:
+            logging.info(f"📦 Updating deployment {identifier} in {file}")
 
-            replacement = f"{address}:{abi}"
-            if new_alias is not None:
-                logging.info(f"📦 Updating deployment as {new_alias} in {file}")
-                replacement += f":{new_alias}"
-            else:
-                logging.info(f"📦 Updating {address} in {file}")
+            replacement = f"{current_address}:{abi}"
+            if current_alias is not None:
+                replacement += f":{current_alias}"
             replacement += "\n"
 
             lines[i] = replacement
 
+            found = True
+            break
+
     if not found:
-        raise Exception(f"Address {address} does not exist in {file}")
+        raise Exception(
+            f"Deployment with address or alias {identifier} does not exist in {file}"
+        )
     else:
         with open(file, "w+") as fp:
             fp.writelines(lines)
