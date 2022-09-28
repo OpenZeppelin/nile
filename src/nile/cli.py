@@ -113,7 +113,7 @@ def setup(signer, network):
 
 @cli.command()
 @click.argument("signer", nargs=1)
-@click.argument("contract_name", nargs=1)
+@click.argument("address_or_alias", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
@@ -133,7 +133,7 @@ def send(signer, address_or_alias, method, params, network, max_fee=None):
 
 
 @cli.command()
-@click.argument("contract_name", nargs=1)
+@click.argument("address_or_alias", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
@@ -150,7 +150,7 @@ def invoke(address_or_alias, method, params, network, max_fee=None):
 
 
 @cli.command()
-@click.argument("contract_name", nargs=1)
+@click.argument("address_or_alias", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @network_option
