@@ -39,6 +39,10 @@ def test_update_deployment(update_item, expected_items):
     register(CONTRACT_B[0], CONTRACT_B[1], LOCALHOST, CONTRACT_B[2])
     register(CONTRACT_C[0], CONTRACT_C[1], LOCALHOST, CONTRACT_C[2])
 
+    with open(f"{LOCALHOST}.{DEPLOYMENTS_FILENAME}", "r") as fp:
+        lines = fp.readlines()
+    assert len(lines) == 3
+
     update(update_item[0], update_item[1], LOCALHOST)
 
     with open(f"{LOCALHOST}.{DEPLOYMENTS_FILENAME}", "r") as fp:
@@ -48,6 +52,12 @@ def test_update_deployment(update_item, expected_items):
     assert_load(expected_items[0])
     assert_load(expected_items[1])
     assert_load(expected_items[2])
+
+    try:
+        update("invalid", CONTRACT_A[1], LOCALHOST)
+        raise AssertionError("update expected to fail due to missing deployment")
+    except Exception as e:
+        assert "does not exist" in str(e)
 
 
 def assert_load(expected_item):
@@ -60,11 +70,3 @@ def assert_load(expected_item):
         address, abi = next(load(alias, LOCALHOST), None)
         assert address == expected_item[0]
         assert abi == expected_item[1]
-
-
-def test_update_deployment_not_exist():
-    try:
-        update("invalid", CONTRACT_A[1], LOCALHOST)
-        raise AssertionError("update expected to fail due to missing deployment")
-    except Exception as e:
-        assert "does not exist" in str(e)
