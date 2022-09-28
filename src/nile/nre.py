@@ -1,5 +1,6 @@
 """nile runtime environment."""
 from nile import deployments
+from nile.common import is_alias
 from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
@@ -36,29 +37,31 @@ class NileRuntimeEnvironment:
             contract, arguments, self.network, alias, overriding_path, abi=abi
         )
 
-    def call(self, contract, method, params=None):
+    def call(self, address_or_alias, method, params=None):
         """Call a view function in a smart contract."""
+        if not is_alias(address_or_alias):
+            address_or_alias = normalize_number(address_or_alias)
         return str(
-            call_or_invoke(contract, "call", method, params, self.network)
+            call_or_invoke(address_or_alias, "call", method, params, self.network)
         ).split()
 
-    def invoke(self, contract, method, params=None):
+    def invoke(self, address_or_alias, method, params=None):
         """Invoke a mutable function in a smart contract."""
-        return call_or_invoke(contract, "invoke", method, params, self.network)
+        if not is_alias(address_or_alias):
+            address_or_alias = normalize_number(address_or_alias)
+        return call_or_invoke(address_or_alias, "invoke", method, params, self.network)
 
-    def get_deployment(self, identifier, is_alias=False):
+    def get_deployment(self, address_or_alias):
         """Get a deployment by its identifier (address or alias)."""
-        if not is_alias:
-            # deployments.load expects address as integer
-            identifier = normalize_number(identifier)
-        return next(deployments.load(identifier, self.network))
+        if not is_alias(address_or_alias):
+            address_or_alias = normalize_number(address_or_alias)
+        return next(deployments.load(address_or_alias, self.network))
 
-    def get_declaration(self, identifier, is_alias=False):
+    def get_declaration(self, address_or_alias):
         """Get a declared class by its identifier (class hash or alias)."""
-        if not is_alias:
-            # deployments.load_class expects class_hash as integer
-            identifier = normalize_number(identifier)
-        return next(deployments.load_class(identifier, self.network))
+        if not is_alias(address_or_alias):
+            address_or_alias = normalize_number(address_or_alias)
+        return next(deployments.load_class(address_or_alias, self.network))
 
     def get_or_deploy_account(self, signer):
         """Get or deploy an Account contract."""

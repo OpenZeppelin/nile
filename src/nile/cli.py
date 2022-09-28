@@ -4,6 +4,7 @@ import logging
 
 import click
 
+from nile.common import is_alias
 from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
@@ -117,15 +118,17 @@ def setup(signer, network):
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
 @network_option
-def send(signer, contract_name, method, params, network, max_fee=None):
+def send(signer, address_or_alias, method, params, network, max_fee=None):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = Account(signer, network)
     print(
         "Calling {} on {} with params: {}".format(
-            method, contract_name, [x for x in params]
+            method, address_or_alias, [x for x in params]
         )
     )
-    out = account.send(contract_name, method, params, max_fee=max_fee)
+    if not is_alias(address_or_alias):
+        address_or_alias = normalize_number(address_or_alias)
+    out = account.send(address_or_alias, method, params, max_fee=max_fee)
     print(out)
 
 
@@ -135,10 +138,13 @@ def send(signer, contract_name, method, params, network, max_fee=None):
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
 @network_option
-def invoke(contract_name, method, params, network, max_fee=None):
+def invoke(address_or_alias, method, params, network, max_fee=None):
     """Invoke functions of StarkNet smart contracts."""
+    if not is_alias(address_or_alias):
+        address_or_alias = normalize_number(address_or_alias)
+
     out = call_or_invoke_command(
-        contract_name, "invoke", method, params, network, max_fee=max_fee
+        address_or_alias, "invoke", method, params, network, max_fee=max_fee
     )
     print(out)
 
@@ -148,9 +154,11 @@ def invoke(contract_name, method, params, network, max_fee=None):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @network_option
-def call(contract_name, method, params, network):
+def call(address_or_alias, method, params, network):
     """Call functions of StarkNet smart contracts."""
-    out = call_or_invoke_command(contract_name, "call", method, params, network)
+    if not is_alias(address_or_alias):
+        address_or_alias = normalize_number(address_or_alias)
+    out = call_or_invoke_command(address_or_alias, "call", method, params, network)
     print(out)
 
 

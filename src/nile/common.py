@@ -117,3 +117,8 @@ def is_string(param):
         is_hex = False
 
     return not is_int and not is_hex
+
+
+def is_alias(param):
+    """Identiy param as alias (instead of address)."""
+    return is_string(param)
