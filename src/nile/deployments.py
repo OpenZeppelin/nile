@@ -29,7 +29,13 @@ def register(address, abi, network, alias):
 
 
 def update(address_or_alias, abi, network):
-    """Update the ABI for an existing deployment."""
+    """
+    Update the ABI for an existing deployment that matches an identifier.
+
+    If address_or_alias is an int, address is assumed.
+
+    If address_or_alias is a str, alias is assumed.
+    """
     file = f"{network}.{DEPLOYMENTS_FILENAME}"
 
     if not os.path.exists(file):
@@ -38,28 +44,25 @@ def update(address_or_alias, abi, network):
     with open(file, "r") as fp:
         lines = fp.readlines()
 
-    as_address = None
-    try:
-        as_address = normalize_number(address_or_alias)
-    except ValueError:
-        pass
-
     found = False
     for i in range(len(lines)):
         line = lines[i].strip().split(":")
 
-        current_address = line[0]
+        current_address_hex = line[0]
 
         current_alias = None
         if len(line) > 2:
             current_alias = line[2]
 
-        if address_or_alias == current_alias or (
-            as_address is not None and as_address == normalize_number(current_address)
+        if (
+            type(address_or_alias) is not int and address_or_alias == current_alias
+        ) or (
+            type(address_or_alias) is int
+            and address_or_alias == normalize_number(current_address_hex)
         ):
             logging.info(f"📦 Updating deployment {address_or_alias} in {file}")
 
-            replacement = f"{current_address}:{abi}"
+            replacement = f"{current_address_hex}:{abi}"
             if current_alias is not None:
                 replacement += f":{current_alias}"
             replacement += "\n"
@@ -70,9 +73,7 @@ def update(address_or_alias, abi, network):
             break
 
     if not found:
-        raise Exception(
-            f"Deployment with address or alias {address_or_alias} does not exist in {file}"
-        )
+        raise Exception(f"Deployment {address_or_alias} does not exist in {file}")
     else:
         with open(file, "w+") as fp:
             fp.writelines(lines)
