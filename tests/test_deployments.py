@@ -2,7 +2,7 @@
 import pytest
 
 from nile.common import DEPLOYMENTS_FILENAME
-from nile.deployments import register, update
+from nile.deployments import register, update_abi
 from nile.utils import normalize_number
 
 LOCALHOST = "localhost"
@@ -69,7 +69,7 @@ def test_update_deployment(address_or_alias, abi, expected_lines):
         lines = fp.readlines()
     assert len(lines) == 3
 
-    update(address_or_alias, abi, LOCALHOST)
+    update_abi(address_or_alias, abi, LOCALHOST)
 
     with open(f"{LOCALHOST}.{DEPLOYMENTS_FILENAME}", "r") as fp:
         lines = fp.readlines()
@@ -82,7 +82,7 @@ def test_update_deployment(address_or_alias, abi, expected_lines):
 
 def test_update_non_existent_identifier():
     try:
-        update("invalid", A_ABI, LOCALHOST)
+        update_abi("invalid", A_ABI, LOCALHOST)
         raise AssertionError("update expected to fail due to missing deployment")
     except Exception as e:
         assert "does not exist" in str(e)

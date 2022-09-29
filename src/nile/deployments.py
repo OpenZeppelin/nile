@@ -28,7 +28,7 @@ def register(address, abi, network, alias):
         fp.write("\n")
 
 
-def update(address_or_alias, abi, network):
+def update_abi(address_or_alias, abi, network):
     """
     Update the ABI for an existing deployment that matches an identifier.
 
