@@ -79,6 +79,8 @@ def test_update_deployment(address_or_alias, abi, expected_lines):
     assert lines[1].strip() == expected_lines[1]
     assert lines[2].strip() == expected_lines[2]
 
+
+def test_update_non_existent_identifier():
     try:
         update("invalid", A_ABI, LOCALHOST)
         raise AssertionError("update expected to fail due to missing deployment")
