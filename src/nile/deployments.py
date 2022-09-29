@@ -28,7 +28,7 @@ def register(address, abi, network, alias):
         fp.write("\n")
 
 
-def update(identifier, abi, network):
+def update(address_or_alias, abi, network):
     """Update the ABI for an existing deployment."""
     file = f"{network}.{DEPLOYMENTS_FILENAME}"
 
@@ -37,6 +37,12 @@ def update(identifier, abi, network):
 
     with open(file, "r") as fp:
         lines = fp.readlines()
+
+    as_address = None
+    try:
+        as_address = normalize_number(address_or_alias)
+    except ValueError:
+        pass
 
     found = False
     for i in range(len(lines)):
@@ -48,8 +54,10 @@ def update(identifier, abi, network):
         if len(line) > 2:
             current_alias = line[2]
 
-        if identifier == current_address or identifier == current_alias:
-            logging.info(f"📦 Updating deployment {identifier} in {file}")
+        if address_or_alias == current_alias or (
+            as_address is not None and as_address == normalize_number(current_address)
+        ):
+            logging.info(f"📦 Updating deployment {address_or_alias} in {file}")
 
             replacement = f"{current_address}:{abi}"
             if current_alias is not None:
@@ -63,7 +71,7 @@ def update(identifier, abi, network):
 
     if not found:
         raise Exception(
-            f"Deployment with address or alias {identifier} does not exist in {file}"
+            f"Deployment with address or alias {address_or_alias} does not exist in {file}"
         )
     else:
         with open(file, "w+") as fp:

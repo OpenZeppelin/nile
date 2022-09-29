@@ -3,6 +3,7 @@ import pytest
 
 from nile.common import DEPLOYMENTS_FILENAME
 from nile.deployments import register, update
+from nile.utils import normalize_number
 
 LOCALHOST = "localhost"
 
@@ -43,11 +44,7 @@ CONTRACT_C_UPDATE = (
     "0x0000000000000000000000000000000000000000000000000000000000000003",
     "artifacts/abis/c2.json",
 )
-CONTRACT_C_EXPECTED = (
-    "0x0000000000000000000000000000000000000000000000000000000000000003",
-    "artifacts/abis/c2.json",
-    None,
-)
+CONTRACT_C_EXPECTED = CONTRACT_C_UPDATE
 
 
 @pytest.fixture(autouse=True)
@@ -65,9 +62,9 @@ def tmp_working_dir(monkeypatch, tmp_path):
     ],
 )
 def test_update_deployment(update_item, expected_items):
-    register(CONTRACT_A[0], CONTRACT_A[1], LOCALHOST, CONTRACT_A[2])
-    register(CONTRACT_B[0], CONTRACT_B[1], LOCALHOST, CONTRACT_B[2])
-    register(CONTRACT_C[0], CONTRACT_C[1], LOCALHOST, CONTRACT_C[2])
+    register(normalize_number(CONTRACT_A[0]), CONTRACT_A[1], LOCALHOST, CONTRACT_A[2])
+    register(normalize_number(CONTRACT_B[0]), CONTRACT_B[1], LOCALHOST, CONTRACT_B[2])
+    register(normalize_number(CONTRACT_C[0]), CONTRACT_C[1], LOCALHOST, CONTRACT_C[2])
 
     with open(f"{LOCALHOST}.{DEPLOYMENTS_FILENAME}", "r") as fp:
         lines = fp.readlines()
