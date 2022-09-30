@@ -50,12 +50,13 @@ def update_abi(address_or_alias, abi, network):
 
         current_address_hex = line[0]
 
-        current_alias = None
-        if len(line) > 2:
-            current_alias = line[2]
+        current_aliases = None
+        length = len(line)
+        if length > 2:
+            current_aliases = line[-(length - 2) :]
 
         if (
-            type(address_or_alias) is not int and address_or_alias == current_alias
+            type(address_or_alias) is not int and address_or_alias in current_aliases
         ) or (
             type(address_or_alias) is int
             and address_or_alias == normalize_number(current_address_hex)
@@ -63,8 +64,8 @@ def update_abi(address_or_alias, abi, network):
             logging.info(f"📦 Updating deployment {address_or_alias} in {file}")
 
             replacement = f"{current_address_hex}:{abi}"
-            if current_alias is not None:
-                replacement += f":{current_alias}"
+            if current_aliases is not None:
+                replacement += ":" + ":".join(str(x) for x in current_aliases)
             replacement += "\n"
 
             lines[i] = replacement

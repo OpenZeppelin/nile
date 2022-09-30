@@ -11,6 +11,7 @@ A_ADDR = "0x0000000000000000000000000000000000000000000000000000000000000001"
 A_ABI = "artifacts/abis/a.json"
 A_ABI_2 = "artifacts/abis/a2.json"
 A_ALIAS = "contractA"
+A_ALIAS_ALT = "altA"
 
 B_ADDR = "0x0000000000000000000000000000000000000000000000000000000000000002"
 B_ABI = "artifacts/abis/b.json"
@@ -35,7 +36,25 @@ def tmp_working_dir(monkeypatch, tmp_path):
             normalize_number(A_ADDR),
             A_ABI_2,
             [
-                f"{A_ADDR}:{A_ABI_2}:{A_ALIAS}",
+                f"{A_ADDR}:{A_ABI_2}:{A_ALIAS}:{A_ALIAS_ALT}",
+                f"{B_ADDR}:{B_ABI}:{B_ALIAS}",
+                f"{C_ADDR}:{C_ABI}",
+            ],
+        ),
+        (
+            A_ALIAS,
+            A_ABI_2,
+            [
+                f"{A_ADDR}:{A_ABI_2}:{A_ALIAS}:{A_ALIAS_ALT}",
+                f"{B_ADDR}:{B_ABI}:{B_ALIAS}",
+                f"{C_ADDR}:{C_ABI}",
+            ],
+        ),
+        (
+            A_ALIAS_ALT,
+            A_ABI_2,
+            [
+                f"{A_ADDR}:{A_ABI_2}:{A_ALIAS}:{A_ALIAS_ALT}",
                 f"{B_ADDR}:{B_ABI}:{B_ALIAS}",
                 f"{C_ADDR}:{C_ABI}",
             ],
@@ -44,7 +63,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
             B_ALIAS,
             B_ABI_2,
             [
-                f"{A_ADDR}:{A_ABI}:{A_ALIAS}",
+                f"{A_ADDR}:{A_ABI}:{A_ALIAS}:{A_ALIAS_ALT}",
                 f"{B_ADDR}:{B_ABI_2}:{B_ALIAS}",
                 f"{C_ADDR}:{C_ABI}",
             ],
@@ -53,7 +72,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
             normalize_number(C_ADDR),
             C_ABI_2,
             [
-                f"{A_ADDR}:{A_ABI}:{A_ALIAS}",
+                f"{A_ADDR}:{A_ABI}:{A_ALIAS}:{A_ALIAS_ALT}",
                 f"{B_ADDR}:{B_ABI}:{B_ALIAS}",
                 f"{C_ADDR}:{C_ABI_2}",
             ],
@@ -61,7 +80,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
     ],
 )
 def test_update_deployment(address_or_alias, abi, expected_lines):
-    register(normalize_number(A_ADDR), A_ABI, LOCALHOST, A_ALIAS)
+    register(normalize_number(A_ADDR), A_ABI, LOCALHOST, f"{A_ALIAS}:{A_ALIAS_ALT}")
     register(normalize_number(B_ADDR), B_ABI, LOCALHOST, B_ALIAS)
     register(normalize_number(C_ADDR), C_ABI, LOCALHOST, None)
 
