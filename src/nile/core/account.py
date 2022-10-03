@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 
 from nile import accounts, deployments
+from nile.common import is_alias
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.deploy import deploy
 from nile.utils import normalize_number
@@ -77,13 +78,10 @@ class Account:
         return address, index
 
     def send(self, address_or_alias, method, calldata, max_fee, nonce=None):
-        """
-        Execute a tx going through an Account contract.
+        """Execute a tx going through an Account contract."""
+        if not is_alias(address_or_alias):
+            address_or_alias = normalize_number(address_or_alias)
 
-        If address_or_alias is an int, address is assumed.
-
-        If address_or_alias is a str, alias is assumed.
-        """
         target_address, _ = (
             next(deployments.load(address_or_alias, self.network), None)
             or address_or_alias
