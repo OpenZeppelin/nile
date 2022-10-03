@@ -46,30 +46,23 @@ def update_abi(address_or_alias, abi, network):
 
     found = False
     for i in range(len(lines)):
-        line = lines[i].strip().split(":")
+        [address, current_abi, *aliases] = lines[i].strip().split(":")
+        address = normalize_number(address)
+        identifiers = [address]
 
-        current_address_hex = line[0]
+        if type(address_or_alias) is not int:
+            identifiers = aliases
 
-        current_aliases = None
-        length = len(line)
-        if length > 2:
-            current_aliases = line[-(length - 2) :]
-
-        if (
-            type(address_or_alias) is not int and address_or_alias in current_aliases
-        ) or (
-            type(address_or_alias) is int
-            and address_or_alias == normalize_number(current_address_hex)
-        ):
+        if address_or_alias in identifiers:
             logging.info(f"📦 Updating deployment {address_or_alias} in {file}")
 
-            replacement = f"{current_address_hex}:{abi}"
-            if current_aliases is not None:
-                replacement += ":" + ":".join(str(x) for x in current_aliases)
+            # Save address as hex
+            address = hex_address(address)
+            replacement = f"{address}:{abi}"
+            if len(aliases) > 0:
+                replacement += ":" + ":".join(str(x) for x in aliases)
             replacement += "\n"
-
             lines[i] = replacement
-
             found = True
             break
 
