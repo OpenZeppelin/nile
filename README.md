@@ -46,15 +46,36 @@ This command creates the project directory structure and installs `cairo-lang`, 
 
 Run a local [`starknet-devnet`](https://github.com/Shard-Labs/starknet-devnet/) node:
 
-```sh
+```text
+nile node [--host HOST] [--port PORT] [--seed SEED] [--lite_mode]
+
+optional arguments:
+--host HOST         Specify the address to listen at; defaults to
+                    127.0.0.1 (use the address the program outputs on
+                    start)
+--port PORT         Specify the port to listen at; defaults to 5050
+--seed SEED         Specify the seed for randomness of accounts to be
+                    deployed
+--lite-mode         Applies all lite-mode optimizations by disabling
+                    features such as block hash and deploy hash
+                    calculation
+```
+
+```text
 nile node
 
- * Serving Flask app 'starknet_devnet.server' (lazy loading)
- * Environment: production
-   WARNING: This is a development server. Do not use it in a production deployment.
-   Use a production WSGI server instead.
- * Debug mode: off
- * Running on http://127.0.0.1:5050/ (Press CTRL+C to quit)
+Account #0
+Address: 0x877b050406a54adb5940227e51265a201e467e520ca85dc7f024abd03dcc61
+Public key: 0x256b8dc218586160ef80d3454a7cd51046271fbf091bd6779e3513304f22156
+Private key: 0xb204ff062d85674b467789f07826bb2
+
+...
+
+Initial balance of each account: 1000000000000000000000 WEI
+Seed to replicate this account sequence: 2128506880
+WARNING: Use these accounts and their keys ONLY for local testing. DO NOT use them on mainnet or other live networks because you will LOSE FUNDS.
+
+ * Listening on http://127.0.0.1:5050/ (Press CTRL+C to quit)
 ```
 
 ### `compile`
@@ -100,9 +121,10 @@ A few things to notice here:
 
 1. `nile deploy <contract_name>` looks for an artifact with the same name
 2. This created a `localhost.deployments.txt` file storing all data related to my deployment
-3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
+3. The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
-5. `--track` and `--debug` flags : Chain `deploy` call with `nile status` + the chosen flag. See `status` below for a complete description.
+5. By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
+6. `--track` and `--debug` flags : Chain `deploy` call with `nile status` + the chosen flag. See `status` below for a complete description.
 
 ### `declare`
 
@@ -118,7 +140,7 @@ A few things to notice here:
 
 1. `nile declare <contract_name>` looks for an artifact with the same name
 2. This created a `localhost.declarations.txt` file storing all data related to my declarations
-3. The `--alias` parameter lets me create an unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
+3. The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 5. `--track` and `--debug` flags : Chain `declare` call with `nile status` + the chosen flag. See `status` below for a complete description.
 
@@ -131,7 +153,7 @@ To avoid accidentally leaking private keys, this command takes an alias instead 
 You can find an example `.env` file in `example.env`. These are private keys only to be used for testing and never in production.
 
 ```sh
-nile setup <private_key_alias>
+nile setup <private_key_alias> [TRACK, DEBUG]
 
 🚀 Deploying Account
 🌕 artifacts/Account.json successfully deployed to 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
@@ -145,6 +167,7 @@ A few things to notice here:
 
 1. `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias
 2. This creates a `localhost.accounts.json` file storing all data related to accounts management
+3. `--track` and `--debug` flags : Chain `declare` call with `nile status` + the chosen flag. See `status` below for a complete description.
 
 ### `send`
 
@@ -166,10 +189,11 @@ Transaction hash: 0x1c
 
 Some things to note:
 
-- `max_fee` defaults to `0`. Add `--max_fee <max_fee>` to set the maximum fee for the transaction
-- `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction
+- `max_fee` defaults to `0`. Add `--max_fee <max_fee>` to set the maximum fee for the transaction.
+- `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction.
 
 #### `--track` and `--debug` flags
+
 Chain `send` calls with `nile status` + the chosen flag. See `status` below for a complete description.
 
 ### `call` and `invoke`
@@ -177,13 +201,13 @@ Chain `send` calls with `nile status` + the chosen flag. See `status` below for 
 Using `call` and `invoke`, we can perform read and write operations against our local node (or public one using the `--network mainnet` parameter). The syntax is:
 
 ```sh
-nile <command> <contract_identifier> <method> [PARAM_1, PARAM2...]
+nile [TRACK, DEBUG] <command> <contract_identifier> <method> [PARAM_1, PARAM2...]
 ```
 
 Where `<command>` is either `call` or `invoke` and `<contract_identifier>` is either our contract address or alias, as defined on `deploy`.
 
 ```sh
-nile [TRACK, DEBUG] invoke my_contract increase_balance 1
+nile invoke my_contract increase_balance 1
 
 Invoke transaction was sent.
 Contract address: 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
@@ -195,11 +219,13 @@ nile call my_contract get_balance
 
 1
 ```
+
 Please note:
 
-- `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction
+- `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction.
 
 #### `--track` and `--debug` flags
+
 Chain `invoke` calls with `nile status` + the chosen flag. See `status` below for a complete description.
 
 ### `run`
@@ -269,17 +295,16 @@ Prints the current status of a transaction.
 
 ```sh
 nile status <transaction_hash> [CONTRACTS_FILE, NETWORK, TRACK, DEBUG]
-
 ⏳ Querying the network for transaction status...
 ✅ Transaction status: ACCEPTED ON L1. No error in transaction.
 ```
 
 #### `--track`, `-t` flag
+
 In case of pending transaction states, continue probing the network. Here in the case of a successful transaction.
 
 ```sh
 nile status -t <transaction_hash> [CONTRACTS_FILE, NETWORK, DEBUG]
-
 ⏳ Querying the network for transaction status...
 🕒 Transaction status: NOT_RECEIVED. Trying again in a moment...
 🕒 Transaction status: RECEIVED. Trying again in a moment...
@@ -292,7 +317,7 @@ nile status -t <transaction_hash> [CONTRACTS_FILE, NETWORK, DEBUG]
 Use locally available contracts to make error messages from rejected transactions more explicit.  
 NB: Implies `--track`.
 
-For example, this transaction returns the very cryptic error message:  
+For example, this transaction returns the very cryptic error message:
 `An ASSERT_EQ instruction failed: 0 != 1.`
 
 ```sh
@@ -352,6 +377,108 @@ Alias for `nile status --debug`
 nile debug <transaction_hash> [CONTRACTS_FILE, NETWORK]
 ```
 
+### `get-accounts`
+
+Retrieves a list of ready-to-use accounts which allows for easy scripting integration. Before using `get-accounts`:
+
+1. store private keys in a `.env`
+
+    ```
+    PRIVATE_KEY_ALIAS_1=286426666527820764590699050992975838532
+    PRIVATE_KEY_ALIAS_2=263637040172279991633704324379452721903
+    PRIVATE_KEY_ALIAS_3=325047780196174231475632140485641889884
+    ```
+
+2. deploy accounts with the keys therefrom like this:
+
+    ```bash
+    nile setup PRIVATE_KEY_ALIAS_1
+    ...
+    nile setup PRIVATE_KEY_ALIAS_2
+    ...
+    nile setup PRIVATE_KEY_ALIAS_3
+    ...
+    ```
+
+Next, write a script and call `get-accounts` to retrieve and use the deployed accounts.
+
+```python
+def run(nre):
+
+    # fetch the list of deployed accounts
+    accounts = nre.get_accounts()
+
+    # then
+    accounts[0].send(...)
+
+    # or
+    alice, bob, *_ = accounts
+    alice.send(...)
+    bob.send(...)
+```
+
+> Please note that the list of accounts includes only those that exist in the local `<network>.accounts.json` file. In a recent release we added a flag to the command, to get predeployed accounts if the network you are connected to is a [starknet-devnet](https://github.com/Shard-Labs/starknet-devnet) instance.
+
+### `get-accounts --predeployed`
+
+This flag retrieves the predeployed accounts if the network you are connecting to is a [starknet-devnet](https://github.com/Shard-Labs/starknet-devnet) instance.
+
+You can use it either from the cli:
+
+```sh
+nile get-accounts --predeployed
+```
+
+Or from the nile runtime environment for scripting:
+
+```python
+def run(nre):
+
+    # fetch the list of pre-deployed accounts from devnet
+    accounts = nre.get_accounts(predeployed=True)
+
+    # then
+    accounts[0].send(...)
+
+    # or
+    alice, bob, *_ = accounts
+    alice.send(...)
+    bob.send(...)
+```
+
+### `get-nonce`
+
+Retrieves the nonce for the given contract address (usually an account).
+
+```sh
+nile get-nonce <contract_address>
+```
+
+## Short string literals
+
+From [cairo-lang docs](https://www.cairo-lang.org/docs/how_cairo_works/consts.html#short-string-literals): A short string is a string whose length is at most 31 characters, and therefore can fit into a single field element.
+
+In Nile, arguments to contract calls (calldata) that are neither int nor hex, are treated as short strings and converted automatically to the corresponding felt representation. Because of this, you can run the following from the CLI:
+
+```sh
+nile deploy MyToken 'MyToken name' 'MyToken symbol' (...)
+```
+
+And this is equivalent to passing the felt representation directly like this:
+
+```sh
+nile deploy MyToken 0x4d79546f6b656e206e616d65 0x4d79546f6b656e2073796d626f6c (...)
+```
+
+Note that if you want to pass the token name as a hex or an int, you need to provide the felt representation directly because these values are not interpreted as short strings. You can open a python terminal, and import and use the `str_to_felt` util like this:
+
+```python
+>>> from nile.utils import str_to_felt
+>>>
+>>> str_to_felt('any string')
+460107418789485453340263
+```
+
 ## Extending Nile with plugins
 
 Nile has the possibility of extending its CLI and `NileRuntimeEnvironment` functionalities through plugins. For developing plugins for Nile fork [this plugin example](https://github.com/franalgaba/nile-plugin-example) boilerplate and implement your desired functionality with the provided instructions.
@@ -362,7 +489,7 @@ This implementation takes advantage of the native extensibility features of [cli
 
 In order for this implementation to be functional, it is needed by the plugin developer to follow some development guidelines defined in this simple plugin example extending Nile for a dummy greet extension. In a brief explanation the guidelines are as follows:
 
-1. Define a Python module that implement a click command or group:
+1. Define a Python module that implements a click command or group:
 
    ```python
    # First, import click dependency
@@ -377,7 +504,7 @@ In order for this implementation to be functional, it is needed by the plugin de
        Subcommand plugin that does something.
        """
        # Done! Now implement your custom functionality in the command
-       click.echo("I'm a plugin overiding a command!")
+       click.echo("I'm a plugin overriding a command!")
    ```
 
 2. Define the plugin entrypoint. In this case using Poetry features in the pyproject.toml file:
@@ -394,6 +521,10 @@ In order for this implementation to be functional, it is needed by the plugin de
 How to decide if I want to use a plugin or not? Just install / uninstall the plugin dependency from your project :smile:
 
 Finally, after the desired plugin is installed, it will also be automatically available through the `nre`. The plugin developer should be aware of this and design the interface accordingly.
+
+## Contribute
+
+OpenZeppelin Nile exists thanks to its contributors. There are many ways you can participate and help build high quality software. Check out the [contribution](CONTRIBUTING.md) guide!
 
 ## Hacking on Nile
 
