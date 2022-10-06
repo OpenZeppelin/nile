@@ -23,7 +23,7 @@ from nile.common import (
     CONTRACTS_DIRECTORY,
     NODE_FILENAME,
 )
-from nile.utils import hex_address
+from nile.utils import hex_address, normalize_number
 
 RESOURCES_DIR = Path(__file__).parent / "resources"
 MOCK_HASH = "0x123"
@@ -198,7 +198,7 @@ def test_debug(mock_subprocess, args):
     assert result.exit_code == 0
 
     # Setup and assert expected output
-    expected = ["starknet", "tx_status", "--hash", hex_address(MOCK_HASH)]
+    expected = ["starknet", "tx_status", "--hash", hex(MOCK_HASH)]
 
     mock_subprocess.check_output.assert_called_once_with(expected)
 
@@ -220,6 +220,6 @@ def test_status(mock_subprocess, args):
     assert result.exit_code == 0
 
     # Setup and assert expected output
-    expected = ["starknet", "tx_status", "--hash", hex_address(MOCK_HASH)]
+    expected = ["starknet", "tx_status", "--hash", hex(MOCK_HASH)]
 
     mock_subprocess.check_output.assert_called_once_with(expected)

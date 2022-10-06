@@ -191,7 +191,7 @@ def invoke(address_or_alias, method, params, network, track, debug, max_fee=None
         address_or_alias = normalize_number(address_or_alias)
 
     out = call_or_invoke_command(
-        address_or_alias=address_or_alias,
+        contract=address_or_alias,
         type="invoke",
         method=method,
         params=params,
@@ -213,7 +213,7 @@ def call(address_or_alias, method, params, network):
     if not is_alias(address_or_alias):
         address_or_alias = normalize_number(address_or_alias)
     out = call_or_invoke_command(
-        address_or_alias=address_or_alias,
+        contract=address_or_alias,
         type="call",
         method=method,
         params=params,
@@ -307,7 +307,7 @@ def debug(tx_hash, network, contracts_file):
 
     Alias for `nile status --debug`.
     """
-    status_command(tx_hash, network, True, True, contracts_file)
+    status_command(normalize_number(tx_hash), network, True, True, contracts_file)
 
 
 @cli.command()
@@ -330,7 +330,7 @@ def status(tx_hash, network, track, debug, contracts_file):
       Same as `status --track` then locate errors if rejected using local contracts
     """
     status_command(
-        tx_hash, network, track=track, debug=debug, contracts_file=contracts_file
+        normalize_number(tx_hash), network, track=track, debug=debug, contracts_file=contracts_file
     )
 
 

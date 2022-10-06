@@ -73,7 +73,7 @@ class NileRuntimeEnvironment:
         if not is_alias(address_or_alias):
             address_or_alias = normalize_number(address_or_alias)
         return call_or_invoke(
-            address_or_alias=address_or_alias,
+            contract=address_or_alias,
             type="invoke",
             method=method,
             params=params,

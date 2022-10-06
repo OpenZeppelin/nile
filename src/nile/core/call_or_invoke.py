@@ -4,7 +4,7 @@ import re
 import subprocess
 
 from nile import deployments
-from nile.common import get_network_parameter, prepare_params
+from nile.common import get_network_parameter, prepare_params, normalize_number
 from nile.core import account
 from nile.utils import hex_address
 from nile.utils.status import status
@@ -40,7 +40,7 @@ def call_or_invoke(
         method,
     ]
 
-    command += get_network_parameter(network, with_feeder=True)
+    command += get_network_parameter(network)
 
     params = prepare_params(params)
 
@@ -83,7 +83,7 @@ def call_or_invoke(
     if type != "call" and output:
         logging.info(output)
         transaction_hash = _get_transaction_hash(output)
-        return status(transaction_hash, network, track, debug)
+        return status(normalize_number(transaction_hash), network, track, debug)
 
     return output
 
