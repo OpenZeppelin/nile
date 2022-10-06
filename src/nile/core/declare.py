@@ -6,7 +6,9 @@ from nile.common import DECLARATIONS_FILENAME, parse_information, run_command
 from nile.utils.status import status
 
 
-def declare(contract_name, network, alias=None, overriding_path=None, track=False, debug=False):
+def declare(
+    contract_name, network, alias=None, overriding_path=None, track=False, debug=False
+):
     """Declare StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")
 

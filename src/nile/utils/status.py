@@ -7,10 +7,9 @@ import time
 from collections import namedtuple
 from enum import Enum
 
-from nile.common import RETRY_AFTER_SECONDS
-from nile.utils.debug import debug_message
+from nile.common import RETRY_AFTER_SECONDS, get_network_parameter
 from nile.utils import hex_address
-from nile.common import get_network_parameter
+from nile.utils.debug import debug_message
 
 TransactionStatus = namedtuple(
     "TransactionStatus", ["tx_hash", "status", "error_message"]

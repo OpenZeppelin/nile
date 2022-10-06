@@ -25,7 +25,9 @@ class NileRuntimeEnvironment:
         """Compile a list of contracts."""
         return compile(contracts)
 
-    def declare(self, contract, alias=None, overriding_path=None, track=False, debug=False):
+    def declare(
+        self, contract, alias=None, overriding_path=None, track=False, debug=False
+    ):
         """Declare a smart contract class."""
         return declare(
             contract_name=contract,
@@ -33,11 +35,18 @@ class NileRuntimeEnvironment:
             alias=alias,
             overriding_path=overriding_path,
             track=track,
-            debug=debug
+            debug=debug,
         )
 
     def deploy(
-        self, contract, arguments=None, alias=None, overriding_path=None, abi=None, track=False, debug=False
+        self,
+        contract,
+        arguments=None,
+        alias=None,
+        overriding_path=None,
+        abi=None,
+        track=False,
+        debug=False,
     ):
         """Deploy a smart contract."""
         return deploy(
@@ -48,7 +57,7 @@ class NileRuntimeEnvironment:
             overriding_path=overriding_path,
             abi=abi,
             track=track,
-            debug=debug
+            debug=debug,
         )
 
     def call(self, address_or_alias, method, params=None):
@@ -70,7 +79,7 @@ class NileRuntimeEnvironment:
             params=params,
             network=self.network,
             track=track,
-            debug=debug
+            debug=debug,
         )
 
     def get_deployment(self, address_or_alias):

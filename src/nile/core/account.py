@@ -22,7 +22,9 @@ load_dotenv()
 class Account:
     """Account contract abstraction."""
 
-    def __init__(self, signer, network, predeployed_info=None, track=False, debug=False):
+    def __init__(
+        self, signer, network, predeployed_info=None, track=False, debug=False
+    ):
         """Get or deploy an Account contract for the given private key."""
         try:
             if predeployed_info is None:
@@ -70,7 +72,7 @@ class Account:
             f"account-{index}",
             overriding_path,
             track=track,
-            debug=debug
+            debug=debug,
         )
 
         accounts.register(
@@ -79,7 +81,16 @@ class Account:
 
         return address, index
 
-    def send(self, address_or_alias, method, calldata, max_fee, nonce=None, track=False, debug=False):
+    def send(
+        self,
+        address_or_alias,
+        method,
+        calldata,
+        max_fee,
+        nonce=None,
+        track=False,
+        debug=False,
+    ):
         """Execute a tx going through an Account contract."""
         if not is_alias(address_or_alias):
             address_or_alias = normalize_number(address_or_alias)

@@ -202,6 +202,7 @@ def test_debug(mock_subprocess, args):
 
     mock_subprocess.check_output.assert_called_once_with(expected)
 
+
 @pytest.mark.parametrize(
     "args",
     [

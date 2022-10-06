@@ -19,12 +19,12 @@ from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.version import version as version_command
 from nile.utils import normalize_number
-from nile.utils.status import status as status_command
 from nile.utils.get_accounts import get_accounts as get_accounts_command
 from nile.utils.get_accounts import (
     get_predeployed_accounts as get_predeployed_accounts_command,
 )
 from nile.utils.get_nonce import get_nonce as get_nonce_command
+from nile.utils.status import status as status_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
@@ -122,7 +122,7 @@ def deploy(artifact, arguments, network, alias, track, debug, abi=None):
         alias=alias,
         abi=abi,
         track=track,
-        debug=debug
+        debug=debug,
     )
 
 
@@ -135,11 +135,7 @@ def deploy(artifact, arguments, network, alias, track, debug, abi=None):
 def declare(artifact, network, alias, track, debug):
     """Declare StarkNet smart contract."""
     declare_command(
-        contract_name=artifact,
-        network=network,
-        alias=alias,
-        track=track,
-        debug=debug
+        contract_name=artifact, network=network, alias=alias, track=track, debug=debug
     )
 
 
@@ -177,7 +173,7 @@ def send(signer, address_or_alias, method, params, network, track, debug, max_fe
         calldata=params,
         max_fee=max_fee,
         track=track,
-        debug=debug
+        debug=debug,
     )
 
 
@@ -202,7 +198,7 @@ def invoke(address_or_alias, method, params, network, track, debug, max_fee=None
         network=network,
         max_fee=max_fee,
         track=track,
-        debug=debug
+        debug=debug,
     )
     print(out)
 
@@ -221,7 +217,7 @@ def call(address_or_alias, method, params, network):
         type="call",
         method=method,
         params=params,
-        network=network
+        network=network,
     )
     print(out)
 
@@ -306,7 +302,9 @@ def version():
 @network_option
 @click.option("--contracts_file", nargs=1)
 def debug(tx_hash, network, contracts_file):
-    """Locate an error in a transaction using available contracts.
+    """
+    Locate an error in a transaction using available contracts.
+
     Alias for `nile status --debug`.
     """
     status_command(tx_hash, network, True, True, contracts_file)

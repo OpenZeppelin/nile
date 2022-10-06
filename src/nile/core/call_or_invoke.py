@@ -4,14 +4,22 @@ import re
 import subprocess
 
 from nile import deployments
-from nile.common import GATEWAYS, prepare_params, get_network_parameter
+from nile.common import get_network_parameter, prepare_params
 from nile.core import account
 from nile.utils import hex_address
 from nile.utils.status import status
 
 
 def call_or_invoke(
-    contract, type, method, params, network, signature=None, max_fee=None, track=False, debug=False
+    contract,
+    type,
+    method,
+    params,
+    network,
+    signature=None,
+    max_fee=None,
+    track=False,
+    debug=False,
 ):
     """Call or invoke functions of StarkNet smart contracts."""
     if isinstance(contract, account.Account):

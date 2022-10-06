@@ -53,7 +53,7 @@ def test_deploy(mock_deploy):
             f"account-{account.index}",
             ANY,
             track=False,
-            debug=False
+            debug=False,
         )
 
 
@@ -113,5 +113,5 @@ def test_send_sign_transaction_and_execute():
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
             track=False,
-            debug=False
+            debug=False,
         )
