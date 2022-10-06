@@ -119,7 +119,7 @@ def is_alias(param):
     return is_string(param)
 
 
-def get_network_parameter(network, with_feeder=False):
+def get_network_parameter(network):
     """Update environment variables or return network parameter for StarkNet-cli."""
     extra_param = []
     if network == "mainnet":
@@ -127,7 +127,8 @@ def get_network_parameter(network, with_feeder=False):
     elif network == "goerli":
         os.environ["STARKNET_NETWORK"] = "alpha-goerli"
     else:
-        extra_param = [f"--gateway_url={GATEWAYS.get(network)}"]
-        if with_feeder:
-            extra_param += [f"--feeder_gateway_url={GATEWAYS.get(network)}"]
+        extra_param = [
+            f"--gateway_url={GATEWAYS.get(network)}",
+            f"--feeder_gateway_url={GATEWAYS.get(network)}",
+        ]
     return extra_param
