@@ -1,11 +1,15 @@
 """Command to call or invoke StarkNet smart contracts."""
+import logging
 import os
 
 from dotenv import load_dotenv
 
 from nile import accounts, deployments
+from nile.common import is_alias
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.deploy import deploy
+from nile.utils import normalize_number
+from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
     from nile.signer import Signer
@@ -18,17 +22,38 @@ load_dotenv()
 class Account:
     """Account contract abstraction."""
 
-    def __init__(self, signer, network, track=False, debug=False):
+    def __init__(self, signer, network, predeployed_info=None, track=False, debug=False):
         """Get or deploy an Account contract for the given private key."""
-        self.signer = Signer(int(os.environ[signer]))
-        self.network = network
+        try:
+            if predeployed_info is None:
+                self.signer = Signer(normalize_number(os.environ[signer]))
+                self.alias = signer
+            else:
+                self.signer = Signer(signer)
+                self.alias = predeployed_info["alias"]
 
-        if accounts.exists(str(self.signer.public_key), network):
-            signer_data = next(accounts.load(str(self.signer.public_key), network))
+            self.network = network
+        except KeyError:
+            logging.error(
+                f"\n❌ Cannot find {signer} in env."
+                "\nCheck spelling and that it exists."
+                "\nTry moving the .env to the root of your project."
+            )
+            return
+
+        self.abi_path = os.path.dirname(os.path.realpath(__file__)).replace(
+            "/core", "/artifacts/abis/Account.json"
+        )
+
+        if predeployed_info is not None:
+            self.address = predeployed_info["address"]
+            self.index = predeployed_info["index"]
+        elif accounts.exists(self.signer.public_key, network):
+            signer_data = next(accounts.load(self.signer.public_key, network))
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
-            address, index = self.deploy(track, debug)
+            address, index = self.deploy(track=track, debug=debug)
             self.address = address
             self.index = index
 
@@ -40,50 +65,52 @@ class Account:
 
         address, _ = deploy(
             "Account",
-            [str(self.signer.public_key)],
+            [self.signer.public_key],
             self.network,
             f"account-{index}",
             overriding_path,
             track=track,
-            debug=debug,
+            debug=debug
         )
 
-        accounts.register(self.signer.public_key, address, index, self.network)
+        accounts.register(
+            self.signer.public_key, address, index, self.alias, self.network
+        )
 
         return address, index
 
-    def send(self, to, method, calldata, max_fee, nonce=None, track=False, debug=False):
+    def send(self, address_or_alias, method, calldata, max_fee, nonce=None, track=False, debug=False):
         """Execute a tx going through an Account contract."""
-        target_address, _ = next(deployments.load(to, self.network)) or to
+        if not is_alias(address_or_alias):
+            address_or_alias = normalize_number(address_or_alias)
+
+        target_address, _ = (
+            next(deployments.load(address_or_alias, self.network), None)
+            or address_or_alias
+        )
+
         calldata = [int(x) for x in calldata]
 
         if nonce is None:
-            nonce = int(
-                call_or_invoke(self.address, "call", "get_nonce", [], self.network)
-            )
+            nonce = get_nonce(self.address, self.network)
 
         if max_fee is None:
             max_fee = 0
+        else:
+            max_fee = int(max_fee)
 
-        (call_array, calldata, sig_r, sig_s) = self.signer.sign_transaction(
+        calldata, sig_r, sig_s = self.signer.sign_transaction(
             sender=self.address,
             calls=[[target_address, method, calldata]],
             nonce=nonce,
             max_fee=max_fee,
         )
 
-        params = []
-        params.append(str(len(call_array)))
-        params.extend([str(elem) for sublist in call_array for elem in sublist])
-        params.append(str(len(calldata)))
-        params.extend([str(param) for param in calldata])
-        params.append(str(nonce))
-
         return call_or_invoke(
-            contract=self.address,
+            contract=self,
             type="invoke",
             method="__execute__",
-            params=params,
+            params=calldata,
             network=self.network,
             signature=[str(sig_r), str(sig_s)],
             max_fee=str(max_fee),
