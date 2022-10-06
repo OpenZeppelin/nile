@@ -330,7 +330,11 @@ def status(tx_hash, network, track, debug, contracts_file):
       Same as `status --track` then locate errors if rejected using local contracts
     """
     status_command(
-        normalize_number(tx_hash), network, track=track, debug=debug, contracts_file=contracts_file
+        normalize_number(tx_hash),
+        network,
+        track=track,
+        debug=debug,
+        contracts_file=contracts_file,
     )
 
 
