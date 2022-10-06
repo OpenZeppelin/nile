@@ -117,8 +117,8 @@ def setup(signer, network):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
-@click.option('--simulate', 'query', flag_value='simulate')
-@click.option('--estimate_fee', 'query', flag_value='estimate_fee')
+@click.option("--simulate", "query", flag_value="simulate")
+@click.option("--estimate_fee", "query", flag_value="estimate_fee")
 @network_option
 def send(signer, address_or_alias, method, params, network, max_fee=None, query=None):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
@@ -128,8 +128,10 @@ def send(signer, address_or_alias, method, params, network, max_fee=None, query=
             method, address_or_alias, [x for x in params]
         )
     )
-    if(query is not None):
-        out = account.execute_query(query, address_or_alias, method, params, max_fee=max_fee)
+    if query is not None:
+        out = account.execute_query(
+            query, address_or_alias, method, params, max_fee=max_fee
+        )
     else:
         out = account.send(address_or_alias, method, params, max_fee=max_fee)
     print(out)
