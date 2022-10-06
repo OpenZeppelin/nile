@@ -4,7 +4,7 @@ import re
 import subprocess
 
 from nile import deployments
-from nile.common import get_network_parameter, prepare_params, normalize_number
+from nile.common import get_network_parameter, normalize_number, prepare_params
 from nile.core import account
 from nile.utils import hex_address
 from nile.utils.status import status
