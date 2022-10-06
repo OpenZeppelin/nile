@@ -4,6 +4,8 @@ import os
 import re
 import subprocess
 
+from nile.utils import normalize_number, str_to_felt
+
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
 TEMP_DIRECTORY = ".temp"
@@ -15,7 +17,7 @@ NODE_FILENAME = "node.json"
 RETRY_AFTER_SECONDS = 30
 
 
-def _get_gateway():
+def get_gateway():
     """Get the StarkNet node details."""
     try:
         with open(NODE_FILENAME, "r") as f:
@@ -27,7 +29,7 @@ def _get_gateway():
             f.write('{"localhost": "http://127.0.0.1:5050/"}')
 
 
-GATEWAYS = _get_gateway()
+GATEWAYS = get_gateway()
 
 
 def get_all_contracts(ext=None, directory=None):
@@ -58,10 +60,11 @@ def run_command(
 
     if arguments:
         command.append("--inputs")
-        command.extend([argument for argument in arguments])
+        command.extend(prepare_params(arguments))
 
-    network_gateway_prefix = ("gateway",) if operation in {"declare", "deploy"} else []
-    command += get_network_parameter(network, *network_gateway_prefix)
+    command += get_network_parameter(network)
+
+    command.append("--no_wallet")
 
     return subprocess.check_output(command)
 
@@ -70,10 +73,53 @@ def parse_information(x):
     """Extract information from deploy/declare command."""
     # address is 64, tx_hash is 64 chars long
     address, tx_hash = re.findall("0x[\\da-f]{1,64}", str(x))
-    return address, tx_hash
+    return normalize_number(address), normalize_number(tx_hash)
 
 
-def get_network_parameter(network, gateway_prefix="feeder_gateway"):
+def stringify(x, process_short_strings=False):
+    """Recursively convert list or tuple elements to strings."""
+    if isinstance(x, list) or isinstance(x, tuple):
+        return [stringify(y, process_short_strings) for y in x]
+    else:
+        if process_short_strings and is_string(x):
+            return str(str_to_felt(x))
+        return str(x)
+
+
+def prepare_params(params):
+    """Sanitize call, invoke, and deploy parameters."""
+    if params is None:
+        params = []
+    return stringify(params, True)
+
+
+def is_string(param):
+    """Identify a param as string if is not int or hex."""
+    is_int = True
+    is_hex = True
+
+    # convert to integer
+    try:
+        int(param)
+    except Exception:
+        is_int = False
+
+    # convert to hex (starting with 0x)
+    try:
+        assert param.startswith("0x")
+        int(param, 16)
+    except Exception:
+        is_hex = False
+
+    return not is_int and not is_hex
+
+
+def is_alias(param):
+    """Identiy param as alias (instead of address)."""
+    return is_string(param)
+
+
+def get_network_parameter(network, with_feeder=False):
     """Update environment variables or return network parameter for StarkNet-cli."""
     extra_param = []
     if network == "mainnet":
@@ -81,5 +127,7 @@ def get_network_parameter(network, gateway_prefix="feeder_gateway"):
     elif network == "goerli":
         os.environ["STARKNET_NETWORK"] = "alpha-goerli"
     else:
-        extra_param = [f"--{gateway_prefix}_url={GATEWAYS.get(network)}"]
+        extra_param = [f"--gateway_url={GATEWAYS.get(network)}"]
+        if with_feeder:
+            extra_param += [f"--feeder_gateway_url={GATEWAYS.get(network)}"]
     return extra_param
