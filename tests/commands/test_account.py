@@ -4,6 +4,7 @@ from unittest.mock import ANY, MagicMock, patch
 
 import pytest
 
+from nile.common import TRANSACTION_VERSION
 from nile.core.account import Account
 
 KEY = "TEST_KEY"
@@ -98,7 +99,11 @@ def test_send_sign_transaction_and_execute():
 
         # Check values are correctly passed to 'sign_transaction'
         account.signer.sign_transaction.assert_called_once_with(
-            calls=[send_args], nonce=nonce, sender=account.address, max_fee=1
+            calls=[send_args],
+            nonce=nonce,
+            sender=account.address,
+            max_fee=1,
+            version=TRANSACTION_VERSION,
         )
 
         # Check values are correctly passed to '__execute__'
