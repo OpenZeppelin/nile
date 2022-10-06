@@ -4,6 +4,7 @@ import logging
 
 import click
 
+from nile.common import is_alias
 from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
@@ -17,7 +18,13 @@ from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.version import version as version_command
+from nile.utils import normalize_number
 from nile.utils.status import status as status_command
+from nile.utils.get_accounts import get_accounts as get_accounts_command
+from nile.utils.get_accounts import (
+    get_predeployed_accounts as get_predeployed_accounts_command,
+)
+from nile.utils.get_nonce import get_nonce as get_nonce_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
@@ -103,11 +110,20 @@ def run(path, network):
 @click.argument("arguments", nargs=-1)
 @network_option
 @click.option("--alias")
+@click.option("--abi")
 @track_option
 @debug_option
-def deploy(artifact, arguments, network, alias, track, debug):
+def deploy(artifact, arguments, network, alias, track, debug, abi=None):
     """Deploy StarkNet smart contract."""
-    deploy_command(artifact, arguments, network, alias, track=track, debug=debug)
+    deploy_command(
+        contract_name=artifact,
+        arguments=arguments,
+        network=network,
+        alias=alias,
+        abi=abi,
+        track=track,
+        debug=debug
+    )
 
 
 @cli.command()
@@ -118,68 +134,95 @@ def deploy(artifact, arguments, network, alias, track, debug):
 @debug_option
 def declare(artifact, network, alias, track, debug):
     """Declare StarkNet smart contract."""
-    declare_command(artifact, network, alias, track, debug)
+    declare_command(
+        contract_name=artifact,
+        network=network,
+        alias=alias,
+        track=track,
+        debug=debug
+    )
 
 
 @cli.command()
 @click.argument("signer", nargs=1)
-@network_option
-def setup(signer, network):
-    """Set up an Account contract."""
-    Account(signer, network)
-
-
-@cli.command()
-@click.argument("signer", nargs=1)
-@click.argument("contract_name", nargs=1)
-@click.argument("method", nargs=1)
-@click.argument("params", nargs=-1)
 @network_option
 @track_option
 @debug_option
+def setup(signer, network, track=False, debug=False):
+    """Set up an Account contract."""
+    Account(signer, network=network, track=track, debug=debug)
+
+
+@cli.command()
+@click.argument("signer", nargs=1)
+@click.argument("address_or_alias", nargs=1)
+@click.argument("method", nargs=1)
+@click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
-def send(signer, contract_name, method, params, network, track, debug, max_fee=None):
+@track_option
+@debug_option
+@network_option
+def send(signer, address_or_alias, method, params, network, track, debug, max_fee=None):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = Account(signer, network)
     print(
         "Calling {} on {} with params: {}".format(
-            method, contract_name, [x for x in params]
+            method, address_or_alias, [x for x in params]
         )
     )
-    out = account.send(contract_name, method, params, max_fee, track, debug)
+    # Account.send is part of the public API, so it accepts addresses as string
+    account.send(
+        address_or_alias=address_or_alias,
+        method=method,
+        calldata=params,
+        max_fee=max_fee,
+        track=track,
+        debug=debug
+    )
+
+
+@cli.command()
+@click.argument("address_or_alias", nargs=1)
+@click.argument("method", nargs=1)
+@click.argument("params", nargs=-1)
+@click.option("--max_fee", nargs=1)
+@network_option
+@track_option
+@debug_option
+def invoke(address_or_alias, method, params, network, track, debug, max_fee=None):
+    """Invoke functions of StarkNet smart contracts."""
+    if not is_alias(address_or_alias):
+        address_or_alias = normalize_number(address_or_alias)
+
+    out = call_or_invoke_command(
+        address_or_alias=address_or_alias,
+        type="invoke",
+        method=method,
+        params=params,
+        network=network,
+        max_fee=max_fee,
+        track=track,
+        debug=debug
+    )
     print(out)
 
 
 @cli.command()
-@click.argument("contract_name", nargs=1)
+@click.argument("address_or_alias", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @network_option
-@track_option
-@debug_option
-@click.option("--max_fee", nargs=1)
-def invoke(contract_name, method, params, network, track, debug, max_fee=None):
-    """Invoke functions of StarkNet smart contracts."""
-    call_or_invoke_command(
-        contract_name,
-        "invoke",
-        method,
-        params,
-        network,
-        max_fee=max_fee,
-        track=track,
-        debug=debug,
-    )
-
-
-@cli.command()
-@click.argument("contract_name", nargs=1)
-@click.argument("method", nargs=1)
-@click.argument("params", nargs=-1)
-@network_option
-def call(contract_name, method, params, network):
+def call(address_or_alias, method, params, network):
     """Call functions of StarkNet smart contracts."""
-    out = call_or_invoke_command(contract_name, "call", method, params, network)
+    if not is_alias(address_or_alias):
+        address_or_alias = normalize_number(address_or_alias)
+    out = call_or_invoke_command(
+        address_or_alias=address_or_alias,
+        type="call",
+        method=method,
+        params=params,
+        network=network
+    )
     print(out)
 
 
@@ -231,7 +274,9 @@ def clean():
 @cli.command()
 @click.option("--host", default="127.0.0.1")
 @click.option("--port", default=5050)
-def node(host, port):
+@click.option("--seed", type=int)
+@click.option("--lite_mode", is_flag=True)
+def node(host, port, seed, lite_mode):
     """Start StarkNet local network.
 
     $ nile node
@@ -239,8 +284,14 @@ def node(host, port):
 
     $ nile node --host HOST --port 5001
       Start StarkNet network on address HOST listening at port 5001
+
+    $ nile node --seed SEED
+      Start StarkNet local network with seed SEED
+
+    $ nile node --lite_mode
+      Start StarkNet network on lite-mode
     """
-    node_command(host, port)
+    node_command(host, port, seed, lite_mode)
 
 
 @cli.command()
@@ -256,13 +307,9 @@ def version():
 @click.option("--contracts_file", nargs=1)
 def debug(tx_hash, network, contracts_file):
     """Locate an error in a transaction using available contracts.
-
     Alias for `nile status --debug`.
     """
     status_command(tx_hash, network, True, True, contracts_file)
-
-
-cli = load_plugins(cli)
 
 
 @cli.command()
@@ -287,6 +334,28 @@ def status(tx_hash, network, track, debug, contracts_file):
     status_command(
         tx_hash, network, track=track, debug=debug, contracts_file=contracts_file
     )
+
+
+@cli.command()
+@network_option
+@click.option("--predeployed/--registered", default=False)
+def get_accounts(network, predeployed):
+    """Retrieve and manage deployed accounts."""
+    if not predeployed:
+        return get_accounts_command(network)
+    else:
+        return get_predeployed_accounts_command(network)
+
+
+@cli.command()
+@click.argument("contract_address")
+@network_option
+def get_nonce(contract_address, network):
+    """Retrieve the nonce for a contract."""
+    return get_nonce_command(normalize_number(contract_address), network)
+
+
+cli = load_plugins(cli)
 
 
 if __name__ == "__main__":
