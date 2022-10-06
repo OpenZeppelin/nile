@@ -1,12 +1,15 @@
 """nile runtime environment."""
 from nile import deployments
+from nile.common import is_alias
 from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
 from nile.core.declare import declare
 from nile.core.deploy import deploy
 from nile.core.plugins import get_installed_plugins, skip_click_exit
-from nile.utils.status import status
+from nile.utils import normalize_number
+from nile.utils.get_accounts import get_accounts, get_predeployed_accounts
+from nile.utils.get_nonce import get_nonce
 
 
 class NileRuntimeEnvironment:
@@ -22,65 +25,77 @@ class NileRuntimeEnvironment:
         """Compile a list of contracts."""
         return compile(contracts)
 
-    def declare(
-        self,
-        contract,
-        alias=None,
-        overriding_path=None,
-        track=False,
-        debug=False,
-    ):
+    def declare(self, contract, alias=None, overriding_path=None, track=False, debug=False):
         """Declare a smart contract class."""
-        return declare(contract, self.network, alias, overriding_path, track, debug)
+        return declare(
+            contract_name=contract,
+            network=self.network,
+            alias=alias,
+            overriding_path=overriding_path,
+            track=track,
+            debug=debug
+        )
 
     def deploy(
-        self,
-        contract,
-        arguments=None,
-        alias=None,
-        overriding_path=None,
-        track=False,
-        debug=False,
+        self, contract, arguments=None, alias=None, overriding_path=None, abi=None, track=False, debug=False
     ):
         """Deploy a smart contract."""
-        if arguments is None:
-            arguments = []
         return deploy(
-            contract,
-            arguments,
-            self.network,
-            alias,
-            overriding_path,
+            contract_name=contract,
+            arguments=arguments,
+            network=self.network,
+            alias=alias,
+            overriding_path=overriding_path,
+            abi=abi,
             track=track,
-            debug=debug,
+            debug=debug
         )
 
-    def call(self, contract, method, params=None):
+    def call(self, address_or_alias, method, params=None):
         """Call a view function in a smart contract."""
-        if params is None:
-            params = []
-        return call_or_invoke(contract, "call", method, params, self.network)
+        if not is_alias(address_or_alias):
+            address_or_alias = normalize_number(address_or_alias)
+        return str(
+            call_or_invoke(address_or_alias, "call", method, params, self.network)
+        ).split()
 
-    def invoke(self, contract, method, params=None, track=False, debug=False):
-        """Invoke a mutable function in a smart contract. Return TransactionStatus."""
-        if params is None:
-            params = []
+    def invoke(self, address_or_alias, method, params=None, track=False, debug=False):
+        """Invoke a mutable function in a smart contract."""
+        if not is_alias(address_or_alias):
+            address_or_alias = normalize_number(address_or_alias)
         return call_or_invoke(
-            contract, "invoke", method, params, self.network, track=track, debug=debug
+            address_or_alias=address_or_alias,
+            type="invoke",
+            method=method,
+            params=params,
+            network=self.network,
+            track=track,
+            debug=debug
         )
 
-    def get_deployment(self, identifier):
+    def get_deployment(self, address_or_alias):
         """Get a deployment by its identifier (address or alias)."""
-        return next(deployments.load(identifier, self.network))
+        if not is_alias(address_or_alias):
+            address_or_alias = normalize_number(address_or_alias)
+        return next(deployments.load(address_or_alias, self.network))
 
-    def get_declaration(self, identifier):
+    def get_declaration(self, address_or_alias):
         """Get a declared class by its identifier (class hash or alias)."""
-        return next(deployments.load_class(identifier, self.network))
+        if not is_alias(address_or_alias):
+            address_or_alias = normalize_number(address_or_alias)
+        return next(deployments.load_class(address_or_alias, self.network))
 
     def get_or_deploy_account(self, signer, track=False, debug=False):
         """Get or deploy an Account contract."""
-        return Account(signer, self.network, track=False, debug=False)
+        return Account(signer=signer, network=self.network, track=track, debug=debug)
 
-    def status(self, tx_hash, track=False, debug=False, contracts_file=None):
-        """Get/track/debug the status of a transaction."""
-        return status(tx_hash, self.network, track, debug, contracts_file)
+    def get_accounts(self, predeployed=False):
+        """Retrieve and manage deployed accounts."""
+        if not predeployed:
+            return get_accounts(self.network)
+        else:
+            return get_predeployed_accounts(self.network)
+
+    def get_nonce(self, contract_address):
+        """Retrieve the nonce for a contract."""
+        return get_nonce(contract_address, self.network)
