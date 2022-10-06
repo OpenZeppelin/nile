@@ -4,24 +4,23 @@ import re
 import subprocess
 
 from nile import deployments
-from nile.common import get_network_parameter
+from nile.common import GATEWAYS, prepare_params, get_network_parameter
+from nile.core import account
+from nile.utils import hex_address
 from nile.utils.status import status
 
 
 def call_or_invoke(
-    contract,
-    type,
-    method,
-    params,
-    network,
-    signature=None,
-    max_fee=None,
-    track=False,
-    debug=False,
+    contract, type, method, params, network, signature=None, max_fee=None, track=False, debug=False
 ):
     """Call or invoke functions of StarkNet smart contracts."""
-    address, abi = next(deployments.load(contract, network))
+    if isinstance(contract, account.Account):
+        address = contract.address
+        abi = contract.abi_path
+    else:
+        address, abi = next(deployments.load(contract, network))
 
+    address = hex_address(address)
     command = [
         "starknet",
         type,
@@ -32,9 +31,10 @@ def call_or_invoke(
         "--function",
         method,
     ]
-    command += get_network_parameter(
-        network, "feeder_gateway" if type == "call" else "gateway"
-    )
+
+    command += get_network_parameter(network, with_feeder=True)
+
+    params = prepare_params(params)
 
     if len(params) > 0:
         command.append("--inputs")
@@ -48,23 +48,29 @@ def call_or_invoke(
         command.append("--max_fee")
         command.append(max_fee)
 
+    command.append("--no_wallet")
+
     try:
         output = subprocess.check_output(command).strip().decode("utf-8")
-
     except subprocess.CalledProcessError:
         p = subprocess.Popen(command, stderr=subprocess.PIPE)
         _, error = p.communicate()
+        err_msg = error.decode()
 
-        if "max_fee must be bigger than 0" in error.decode():
+        if "max_fee must be bigger than 0" in err_msg:
             logging.error(
                 """
                 \n😰 Whoops, looks like max fee is missing. Try with:\n
                 --max_fee=`MAX_FEE`
                 """
             )
-            output = None
-        else:
-            raise
+        elif "transactions should go through the __execute__ entrypoint." in err_msg:
+            logging.error(
+                "\n\n😰 Whoops, looks like you're not using an account. Try with:\n"
+                "\nnile send [OPTIONS] SIGNER CONTRACT_NAME METHOD [PARAMS]"
+            )
+
+        return ""
 
     if type != "call" and output:
         logging.info(output)
