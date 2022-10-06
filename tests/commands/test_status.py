@@ -6,11 +6,11 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.common import BUILD_DIRECTORY
+from nile.common import BUILD_DIRECTORY, normalize_number
 from nile.utils.debug import _abi_to_build_path, _locate_error_lines_with_abis
 from nile.utils.status import status
 
-MOCK_HASH = "0x1234"
+MOCK_HASH = normalize_number(0x1234)
 NETWORK = "goerli"
 ERROR_MESSAGE = "Error at pc=0:1:\nAn ASSERT_EQ instruction failed: 3 != 0."
 DEBUG_ADDRESS = "0x07826b88e404632d9835ab1ec2076c6cf1910e6ecb2ed270647fc211ff55e76f"
