@@ -7,10 +7,12 @@ A high-level synchronization check between the Account artifacts and Signer modu
 import asyncio
 
 import pytest
+from starkware.starknet.business_logic.transaction.objects import InternalTransaction
 from starkware.starknet.services.api.contract_class import ContractClass
+from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.testing.starknet import Starknet
 
-from nile.signer import Signer
+from nile.signer import TRANSACTION_VERSION, Signer, from_call_to_call_array
 
 SIGNER = Signer(12345678987654321)
 
@@ -29,22 +31,34 @@ async def send_transaction(
 
 
 async def send_transactions(signer, account, calls, nonce=None, max_fee=0):
+    # hexify address before passing to from_call_to_call_array
+    raw_invocation = get_raw_invoke(account, calls)
+    state = raw_invocation.state
+
     if nonce is None:
-        execution_info = await account.get_nonce().call()
-        (nonce,) = execution_info.result
+        nonce = await state.state.get_nonce_at(account.contract_address)
 
-    build_calls = []
-    for call in calls:
-        build_call = list(call)
-        build_call[0] = hex(build_call[0])
-        build_calls.append(build_call)
+    # get signature
+    calldata, sig_r, sig_s = signer.sign_transaction(
+        account.contract_address, calls, nonce, max_fee
+    )
 
-    (call_array, calldata, sig_r, sig_s) = signer.sign_transaction(
-        hex(account.contract_address), build_calls, nonce, max_fee
+    # craft invoke and execute tx
+    external_tx = InvokeFunction(
+        contract_address=account.contract_address,
+        calldata=calldata,
+        entry_point_selector=None,
+        signature=[sig_r, sig_s],
+        max_fee=max_fee,
+        version=TRANSACTION_VERSION,
+        nonce=nonce,
     )
-    return await account.__execute__(call_array, calldata, nonce).invoke(
-        signature=[sig_r, sig_s]
+
+    tx = InternalTransaction.from_external(
+        external_tx=external_tx, general_config=state.general_config
     )
+    execution_info = await state.execute_tx(tx=tx)
+    return execution_info
 
 
 @pytest.fixture(scope="module")
@@ -68,13 +82,16 @@ async def test_execute():
     assert execution_info.result == (0,)
 
     # Single tx
+    nonce = await starknet.state.state.get_nonce_at(account.contract_address)
     await send_transaction(
-        SIGNER, account, contract.contract_address, "increase_balance", [1]
+        SIGNER, account, contract.contract_address, "increase_balance", [1], nonce
     )
+
     execution_info = await contract.get_balance().call()
     assert execution_info.result == (1,)
 
     # Multicall tx
+    nonce = await starknet.state.state.get_nonce_at(account.contract_address)
     await send_transactions(
         SIGNER,
         account,
@@ -82,6 +99,14 @@ async def test_execute():
             (contract.contract_address, "increase_balance", [1]),
             (contract.contract_address, "increase_balance", [1]),
         ],
+        nonce,
     )
     execution_info = await contract.get_balance().call()
     assert execution_info.result == (3,)
+
+
+def get_raw_invoke(sender, calls):
+    """Construct and return StarkNet's internal raw_invocation."""
+    call_array, calldata = from_call_to_call_array(calls)
+    raw_invocation = sender.__execute__(call_array, calldata)
+    return raw_invocation

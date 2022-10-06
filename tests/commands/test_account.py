@@ -1,5 +1,6 @@
 """Tests for account commands."""
-from unittest.mock import MagicMock, patch
+import logging
+from unittest.mock import ANY, MagicMock, patch
 
 import pytest
 
@@ -27,16 +28,15 @@ def test_account_init(mock_deploy):
     mock_deploy.assert_called_once()
 
 
-def test_account_multiple_inits_with_same_key():
-    account = Account(KEY, NETWORK)
-    account.deploy()
-    account2 = Account(KEY, NETWORK)
+def test_account_init_bad_key(caplog):
+    logging.getLogger().setLevel(logging.INFO)
 
-    # Check addresses don't match
-    assert account.address != account2.address
-    # Check indexing
-    assert account.index == 0
-    assert account2.index == 1
+    Account("BAD_KEY", NETWORK)
+    assert (
+        "\n❌ Cannot find BAD_KEY in env."
+        "\nCheck spelling and that it exists."
+        "\nTry moving the .env to the root of your project."
+    ) in caplog.text
 
 
 @patch("nile.core.account.deploy", return_value=(1, 2))
@@ -46,16 +46,14 @@ def test_deploy(mock_deploy):
         test_path = "/overriding_path"
         mock_path.return_value.replace.return_value = test_path
 
-        account.deploy()
-
         mock_deploy.assert_called_with(
             "Account",
-            [str(account.signer.public_key)],
+            [account.signer.public_key],
             NETWORK,
-            f"account-{account.index + 1}",
-            (f"{test_path}/artifacts", f"{test_path}/artifacts/abis"),
+            f"account-{account.index}",
+            ANY,
             track=False,
-            debug=False,
+            debug=False
         )
 
 
@@ -65,43 +63,37 @@ def test_deploy_accounts_register(mock_register, mock_deploy):
     account = Account(KEY, NETWORK)
 
     mock_register.assert_called_once_with(
-        account.signer.public_key, MOCK_ADDRESS, MOCK_INDEX, NETWORK
+        account.signer.public_key, MOCK_ADDRESS, MOCK_INDEX, KEY, NETWORK
     )
 
 
+@patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
-def test_send_nonce_call(mock_call):
+def test_send_nonce_call(mock_call, mock_nonce):
     account = Account(KEY, NETWORK)
-    contract_address, _ = account.deploy()
 
     # Instead of creating and populating a tmp .txt file, this uses the
     # deployed account address (contract_address) as the target
-    account.send(contract_address, "method", [1, 2, 3], max_fee=1)
+    account.send(account.address, "method", [1, 2, 3], max_fee=1)
 
-    # 'call_or_invoke' is called twice ('get_nonce' and '__execute__')
-    assert mock_call.call_count == 2
+    # 'call_or_invoke' is called once for '__execute__'
+    assert mock_call.call_count == 1
 
     # Check 'get_nonce' call
-    mock_call.assert_any_call(account.address, "call", "get_nonce", [], NETWORK)
+    mock_nonce.assert_called_once_with(account.address, NETWORK)
 
 
-@pytest.mark.parametrize(
-    "callarray, calldata",
-    # The following callarray and calldata args tests the Account's list comprehensions
-    # ensuring they're set to strings and passed correctly
-    [([[111]], []), ([[111, 222]], [333, 444, 555])],
-)
-def test_send_sign_transaction_and_execute(callarray, calldata):
+def test_send_sign_transaction_and_execute():
     account = Account(KEY, NETWORK)
-    contract_address, _ = account.deploy()
 
+    calldata = ["111", "222", "333"]
     sig_r, sig_s = [999, 888]
-    return_signature = [callarray, calldata, sig_r, sig_s]
+    return_signature = [calldata, sig_r, sig_s]
 
     account.signer.sign_transaction = MagicMock(return_value=return_signature)
 
     with patch("nile.core.account.call_or_invoke") as mock_call:
-        send_args = [contract_address, "method", [1, 2, 3]]
+        send_args = [account.address, "method", [1, 2, 3]]
         nonce = 4
         max_fee = 1
         account.send(*send_args, max_fee, nonce)
@@ -113,19 +105,13 @@ def test_send_sign_transaction_and_execute(callarray, calldata):
 
         # Check values are correctly passed to '__execute__'
         mock_call.assert_called_with(
-            contract=account.address,
+            contract=account,
             max_fee=str(max_fee),
             method="__execute__",
             network=NETWORK,
-            params=[
-                str(len(callarray)),
-                *(str(elem) for sublist in callarray for elem in sublist),
-                str(len(calldata)),
-                *(str(param) for param in calldata),
-                str(nonce),
-            ],
+            params=calldata,
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
             track=False,
-            debug=False,
+            debug=False
         )
