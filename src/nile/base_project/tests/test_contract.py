@@ -23,8 +23,8 @@ async def test_increase_balance():
     )
 
     # Invoke increase_balance() twice.
-    await contract.increase_balance(amount=10).invoke()
-    await contract.increase_balance(amount=20).invoke()
+    await contract.increase_balance(amount=10).execute()
+    await contract.increase_balance(amount=20).execute()
 
     # Check the result of get_balance().
     execution_info = await contract.get_balance().call()
