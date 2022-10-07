@@ -190,7 +190,7 @@ Some things to note:
 
 ### `call`
 
-Using `call`, we can perform read operations against our local node (or public one using the `--network mainnet` parameter). The syntax is:
+Using `call`, we can perform read operations against our local node or the specified public network. The syntax is:
 
 ```sh
 nile call <contract_identifier> <method> [PARAM_1, PARAM2...]
