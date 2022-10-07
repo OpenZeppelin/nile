@@ -4,7 +4,7 @@ import re
 import subprocess
 
 from nile import deployments
-from nile.common import get_network_parameter, normalize_number, prepare_params
+from nile.common import get_network_parameter_or_set_env, normalize_number, prepare_params
 from nile.core import account
 from nile.utils import hex_address
 from nile.utils.status import status
@@ -40,7 +40,7 @@ def call_or_invoke(
         method,
     ]
 
-    command += get_network_parameter(network)
+    command += get_network_parameter_or_set_env(network)
 
     params = prepare_params(params)
 

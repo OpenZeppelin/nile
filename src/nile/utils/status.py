@@ -7,7 +7,7 @@ import time
 from collections import namedtuple
 from enum import Enum
 
-from nile.common import RETRY_AFTER_SECONDS, get_network_parameter
+from nile.common import RETRY_AFTER_SECONDS, get_network_parameter_or_set_env
 from nile.utils.debug import debug_message
 
 TransactionStatus = namedtuple(
@@ -24,7 +24,7 @@ def status(
     use available contracts to help locate the error. Debug implies track.
     """
     command = ["starknet", "tx_status", "--hash", hex(tx_hash)]
-    command += get_network_parameter(network)
+    command += get_network_parameter_or_set_env(network)
 
     logging.info("⏳ Querying the network for transaction status...")
 

@@ -62,7 +62,7 @@ def run_command(
         command.append("--inputs")
         command.extend(prepare_params(arguments))
 
-    command += get_network_parameter(network)
+    command += get_network_parameter_or_set_env(network)
 
     command.append("--no_wallet")
 
@@ -119,7 +119,7 @@ def is_alias(param):
     return is_string(param)
 
 
-def get_network_parameter(network):
+def get_network_parameter_or_set_env(network):
     """Update environment variables or return network parameter for StarkNet-cli."""
     extra_param = []
     if network == "mainnet":
