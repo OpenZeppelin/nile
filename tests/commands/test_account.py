@@ -4,7 +4,7 @@ from unittest.mock import ANY, MagicMock, patch
 
 import pytest
 
-from nile.common import TRANSACTION_VERSION
+from nile.common import QUERY_VERSION, TRANSACTION_VERSION
 from nile.core.account import Account
 
 KEY = "TEST_KEY"
@@ -116,3 +116,69 @@ def test_send_sign_transaction_and_execute():
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
         )
+
+
+def test_estimate_fee():
+    account = Account(KEY, NETWORK)
+    # Mock execute_query
+    account.execute_query = MagicMock()
+
+    account.estimate_fee(account.address, "method", [1, 2, 3], max_fee=0)
+
+    account.execute_query.assert_called_once_with(
+        "estimate_fee", account.address, "method", [1, 2, 3], 0, None
+    )
+
+
+def test_simulate():
+    account = Account(KEY, NETWORK)
+    # Mock execute_query
+    account.execute_query = MagicMock()
+
+    account.simulate(account.address, "method", [1, 2, 3], max_fee=0)
+
+    account.execute_query.assert_called_once_with(
+        "simulate",
+        account.address,
+        "method",
+        [1, 2, 3],
+        0,
+        None,
+    )
+
+
+@pytest.mark.parametrize("query_type", ["estimate_fee", "simulate"])
+@patch("nile.core.account.get_nonce", return_value=0)
+@patch("nile.core.account.call_or_invoke")
+def test_execute_query(mock_call, mock_nonce, query_type):
+    account = Account(KEY, NETWORK)
+
+    send_args = [account.address, "method", [1, 2, 3]]
+    calldata = ["111", "222", "333"]
+    sig_r, sig_s = [999, 888]
+    return_signature = [calldata, sig_r, sig_s]
+
+    # Mock sign_transaction
+    account.signer.sign_transaction = MagicMock(return_value=return_signature)
+
+    account.execute_query(query_type, account.address, "method", [1, 2, 3], max_fee=0)
+
+    account.signer.sign_transaction.assert_called_once_with(
+        calls=[send_args],
+        nonce=0,
+        sender=account.address,
+        max_fee=0,
+        version=QUERY_VERSION,
+    )
+
+    # Check query_flag is correctly passed
+    mock_call.assert_called_with(
+        contract=account,
+        max_fee="0",
+        method="__execute__",
+        network=NETWORK,
+        params=calldata,
+        signature=[str(sig_r), str(sig_s)],
+        type="invoke",
+        query_flag=query_type,
+    )
