@@ -126,8 +126,8 @@ def send(signer, address_or_alias, method, params, network, max_fee=None):
             method, address_or_alias, [x for x in params]
         )
     )
-    # address_or_alias is not normalized first here, because Account.send
-    # is part of the nile public API, consequently accepting address as hex too
+    # address_or_alias is not normalized first here because
+    # Account.send is part of Nile's public API and can accept hex addresses
     out = account.send(address_or_alias, method, params, max_fee=max_fee)
     print(out)
 
