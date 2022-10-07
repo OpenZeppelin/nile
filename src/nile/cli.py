@@ -146,7 +146,7 @@ def declare(artifact, network, alias, track, debug):
 @debug_option
 def setup(signer, network, track=False, debug=False):
     """Set up an Account contract."""
-    Account(signer, network=network, track=track, debug=debug)
+    Account(signer, network, track=track, debug=debug)
 
 
 @cli.command()
