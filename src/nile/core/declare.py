@@ -6,9 +6,7 @@ from nile.common import DECLARATIONS_FILENAME, parse_information, run_command
 from nile.utils.status import status
 
 
-def declare(
-    contract_name, network, alias=None, overriding_path=None, track=False, debug=False
-):
+def declare(contract_name, network, alias=None, overriding_path=None, track=None):
     """Declare StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")
 
@@ -23,8 +21,8 @@ def declare(
     )
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
-    if track or debug:
-        status(tx_hash, network, track=track, debug=debug)
+    if track is not None:
+        status(tx_hash, network, track=track)
 
     deployments.register_class_hash(class_hash, network, alias)
     return class_hash

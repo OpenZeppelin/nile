@@ -57,28 +57,6 @@ def _validate_network(_ctx, _param, value):
     raise click.BadParameter(f"'{value}'. Use one of {NETWORKS}")
 
 
-def track_option(f):
-    """Configure TRACK option for the cli."""
-    return click.option(  # noqa: E731
-        "--track",
-        "-t",
-        is_flag=True,
-        default=False,
-        help="Wait for the final (resulting) transaction status.",
-    )(f)
-
-
-def debug_option(f):
-    """Configure DEBUG option for the cli."""
-    return click.option(  # noqa: E731
-        "--debug",
-        "-d",
-        is_flag=True,
-        default=False,
-        help="Try debugging with local contracts. See `nile debug`.",
-    )(f)
-
-
 @click.group()
 def cli():
     """Nile CLI group."""
@@ -110,10 +88,10 @@ def run(path, network):
 @click.argument("arguments", nargs=-1)
 @network_option
 @click.option("--alias")
+@click.option("--track", "-t", "track", flag_value="track")
+@click.option("--debug", "-d", "track", flag_value="debug")
 @click.option("--abi")
-@track_option
-@debug_option
-def deploy(artifact, arguments, network, alias, track, debug, abi=None):
+def deploy(artifact, arguments, network, alias, track, abi=None):
     """Deploy StarkNet smart contract."""
     deploy_command(
         contract_name=artifact,
@@ -122,7 +100,6 @@ def deploy(artifact, arguments, network, alias, track, debug, abi=None):
         alias=alias,
         abi=abi,
         track=track,
-        debug=debug,
     )
 
 
@@ -130,23 +107,21 @@ def deploy(artifact, arguments, network, alias, track, debug, abi=None):
 @click.argument("artifact", nargs=1)
 @network_option
 @click.option("--alias")
-@track_option
-@debug_option
-def declare(artifact, network, alias, track, debug):
+@click.option("--track", "-t", "track", flag_value="track")
+@click.option("--debug", "-d", "track", flag_value="debug")
+def declare(artifact, network, alias, track):
     """Declare StarkNet smart contract."""
-    declare_command(
-        contract_name=artifact, network=network, alias=alias, track=track, debug=debug
-    )
+    declare_command(contract_name=artifact, network=network, alias=alias, track=track)
 
 
 @cli.command()
 @click.argument("signer", nargs=1)
 @network_option
-@track_option
-@debug_option
-def setup(signer, network, track=False, debug=False):
+@click.option("--track", "-t", "track", flag_value="track")
+@click.option("--debug", "-d", "track", flag_value="debug")
+def setup(signer, network, track=None):
     """Set up an Account contract."""
-    Account(signer, network, track=track, debug=debug)
+    Account(signer, network, track=track)
 
 
 @cli.command()
@@ -155,10 +130,10 @@ def setup(signer, network, track=False, debug=False):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
-@track_option
-@debug_option
+@click.option("--track", "-t", "track", flag_value="track")
+@click.option("--debug", "-d", "track", flag_value="debug")
 @network_option
-def send(signer, address_or_alias, method, params, network, track, debug, max_fee=None):
+def send(signer, address_or_alias, method, params, network, track, max_fee=None):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = Account(signer, network)
     print(
@@ -173,7 +148,6 @@ def send(signer, address_or_alias, method, params, network, track, debug, max_fe
         calldata=params,
         max_fee=max_fee,
         track=track,
-        debug=debug,
     )
 
 
@@ -183,9 +157,9 @@ def send(signer, address_or_alias, method, params, network, track, debug, max_fe
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
 @network_option
-@track_option
-@debug_option
-def invoke(address_or_alias, method, params, network, track, debug, max_fee=None):
+@click.option("--track", "-t", "track", flag_value="track")
+@click.option("--debug", "-d", "track", flag_value="debug")
+def invoke(address_or_alias, method, params, network, track, max_fee=None):
     """Invoke functions of StarkNet smart contracts."""
     if not is_alias(address_or_alias):
         address_or_alias = normalize_number(address_or_alias)
@@ -198,7 +172,6 @@ def invoke(address_or_alias, method, params, network, track, debug, max_fee=None
         network=network,
         max_fee=max_fee,
         track=track,
-        debug=debug,
     )
     print(out)
 
@@ -307,16 +280,16 @@ def debug(tx_hash, network, contracts_file):
 
     Alias for `nile status --debug`.
     """
-    status_command(normalize_number(tx_hash), network, True, True, contracts_file)
+    status_command(normalize_number(tx_hash), network, "debug", contracts_file)
 
 
 @cli.command()
 @click.argument("tx_hash", nargs=1)
 @network_option
-@track_option
-@debug_option
+@click.option("--track", "-t", "track", flag_value="track")
+@click.option("--debug", "-d", "track", flag_value="debug")
 @click.option("--contracts_file", nargs=1)
-def status(tx_hash, network, track, debug, contracts_file):
+def status(tx_hash, network, track, contracts_file):
     """
     Get the status of a transaction.
 
@@ -333,7 +306,6 @@ def status(tx_hash, network, track, debug, contracts_file):
         normalize_number(tx_hash),
         network,
         track=track,
-        debug=debug,
         contracts_file=contracts_file,
     )
 

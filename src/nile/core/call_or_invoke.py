@@ -4,7 +4,11 @@ import re
 import subprocess
 
 from nile import deployments
-from nile.common import get_network_parameter_or_set_env, normalize_number, prepare_params
+from nile.common import (
+    get_network_parameter_or_set_env,
+    normalize_number,
+    prepare_params,
+)
 from nile.core import account
 from nile.utils import hex_address
 from nile.utils.status import status
@@ -18,8 +22,7 @@ def call_or_invoke(
     network,
     signature=None,
     max_fee=None,
-    track=False,
-    debug=False,
+    track=None,
 ):
     """Call or invoke functions of StarkNet smart contracts."""
     if isinstance(contract, account.Account):
@@ -83,7 +86,7 @@ def call_or_invoke(
     if type != "call" and output:
         logging.info(output)
         transaction_hash = _get_transaction_hash(output)
-        return status(normalize_number(transaction_hash), network, track, debug)
+        return status(normalize_number(transaction_hash), network, track)
 
     return output
 
