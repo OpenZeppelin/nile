@@ -15,7 +15,9 @@ TransactionStatus = namedtuple(
 )
 
 
-def status(tx_hash, network, status_type=None, contracts_file=None) -> TransactionStatus:
+def status(
+    tx_hash, network, status_type=None, contracts_file=None
+) -> TransactionStatus:
     """Fetch a transaction status.
 
     Optionally track until resolved (accepted on L2 or rejected) and/or

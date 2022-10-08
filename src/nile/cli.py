@@ -111,7 +111,9 @@ def deploy(artifact, arguments, network, alias, status_type, abi=None):
 @click.option("--debug", "-d", "status_type", flag_value="debug")
 def declare(artifact, network, alias, status_type):
     """Declare StarkNet smart contract."""
-    declare_command(contract_name=artifact, network=network, alias=alias, status_type=status_type)
+    declare_command(
+        contract_name=artifact, network=network, alias=alias, status_type=status_type
+    )
 
 
 @cli.command()
