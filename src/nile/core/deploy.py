@@ -14,7 +14,7 @@ def deploy(
     alias,
     overriding_path=None,
     abi=None,
-    track=None,
+    status_type=None,
 ):
     """Deploy StarkNet smart contracts."""
     logging.info(f"🚀 Deploying {contract_name}")
@@ -31,8 +31,8 @@ def deploy(
     )
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
-    if track is not None:
-        status(tx_hash, network, track)
+    if status_type is not None:
+        status(tx_hash, network, status_type)
 
     deployments.register(address, register_abi, network, alias)
     return address, register_abi

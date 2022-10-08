@@ -86,7 +86,7 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
 def test_debug_feedback_with_message(mock_json, caplog, args, expected):
     logging.getLogger().setLevel(logging.INFO)
     mock_json.return_value = mocked_json_message(args)
-    status(MOCK_HASH, NETWORK, debug=True)
+    status(MOCK_HASH, NETWORK, "debug")
     assert expected in caplog.text
 
 
@@ -106,5 +106,5 @@ def test_debug_feedback_with_message(mock_json, caplog, args, expected):
 def test_status_feedback_no_message(mock_json, caplog, args, expected):
     logging.getLogger().setLevel(logging.INFO)
     mock_json.return_value = mocked_json_message(args)
-    status(MOCK_HASH, NETWORK, debug=False)
+    status(MOCK_HASH, NETWORK, "debug")
     assert expected in caplog.text

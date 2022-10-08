@@ -15,7 +15,7 @@ TransactionStatus = namedtuple(
 )
 
 
-def status(tx_hash, network, track=None, contracts_file=None) -> TransactionStatus:
+def status(tx_hash, network, status_type=None, contracts_file=None) -> TransactionStatus:
     """Fetch a transaction status.
 
     Optionally track until resolved (accepted on L2 or rejected) and/or
@@ -26,13 +26,13 @@ def status(tx_hash, network, track=None, contracts_file=None) -> TransactionStat
 
     logging.info("⏳ Querying the network for transaction status...")
 
-    receipt = _get_tx_receipt(tx_hash, command, track)
+    receipt = _get_tx_receipt(tx_hash, command, status_type)
 
     if not receipt.status.is_rejected:
         return TransactionStatus(tx_hash, receipt.status, None)
 
     error_message = receipt.receipt["tx_failure_reason"]["error_message"]
-    if track == "debug":
+    if status_type == "debug":
         error_message = debug_message(error_message, command, network, contracts_file)
 
     logging.info(f"🧾 Error message:\n{error_message}")
@@ -43,7 +43,7 @@ def status(tx_hash, network, track=None, contracts_file=None) -> TransactionStat
 _TransactionReceipt = namedtuple("TransactionReceipt", ["tx_hash", "status", "receipt"])
 
 
-def _get_tx_receipt(tx_hash, command, track) -> _TransactionReceipt:
+def _get_tx_receipt(tx_hash, command, status_type) -> _TransactionReceipt:
     while True:
         raw_receipt = json.loads(subprocess.check_output(command))
         receipt = _TransactionReceipt(
@@ -60,7 +60,7 @@ def _get_tx_receipt(tx_hash, command, track) -> _TransactionReceipt:
             logging.info(f"✅ {log_output}. No error in transaction.")
             return receipt
 
-        if track is None:
+        if status_type is None:
             logging.info(f"🕒 {log_output}.")
             print("SUCCESSSS")
             return receipt

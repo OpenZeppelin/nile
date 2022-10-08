@@ -88,10 +88,10 @@ def run(path, network):
 @click.argument("arguments", nargs=-1)
 @network_option
 @click.option("--alias")
-@click.option("--track", "-t", "track", flag_value="track")
-@click.option("--debug", "-d", "track", flag_value="debug")
+@click.option("--track", "-t", "status_type", flag_value="track")
+@click.option("--debug", "-d", "status_type", flag_value="debug")
 @click.option("--abi")
-def deploy(artifact, arguments, network, alias, track, abi=None):
+def deploy(artifact, arguments, network, alias, status_type, abi=None):
     """Deploy StarkNet smart contract."""
     deploy_command(
         contract_name=artifact,
@@ -99,7 +99,7 @@ def deploy(artifact, arguments, network, alias, track, abi=None):
         network=network,
         alias=alias,
         abi=abi,
-        track=track,
+        status_type=status_type,
     )
 
 
@@ -107,21 +107,21 @@ def deploy(artifact, arguments, network, alias, track, abi=None):
 @click.argument("artifact", nargs=1)
 @network_option
 @click.option("--alias")
-@click.option("--track", "-t", "track", flag_value="track")
-@click.option("--debug", "-d", "track", flag_value="debug")
-def declare(artifact, network, alias, track):
+@click.option("--track", "-t", "status_type", flag_value="track")
+@click.option("--debug", "-d", "status_type", flag_value="debug")
+def declare(artifact, network, alias, status_type):
     """Declare StarkNet smart contract."""
-    declare_command(contract_name=artifact, network=network, alias=alias, track=track)
+    declare_command(contract_name=artifact, network=network, alias=alias, status_type=status_type)
 
 
 @cli.command()
 @click.argument("signer", nargs=1)
 @network_option
-@click.option("--track", "-t", "track", flag_value="track")
-@click.option("--debug", "-d", "track", flag_value="debug")
-def setup(signer, network, track=None):
+@click.option("--track", "-t", "status_type", flag_value="track")
+@click.option("--debug", "-d", "status_type", flag_value="debug")
+def setup(signer, network, status_type):
     """Set up an Account contract."""
-    Account(signer, network, track=track)
+    Account(signer, network, status_type=status_type)
 
 
 @cli.command()
@@ -130,10 +130,10 @@ def setup(signer, network, track=None):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
-@click.option("--track", "-t", "track", flag_value="track")
-@click.option("--debug", "-d", "track", flag_value="debug")
+@click.option("--track", "-t", "status_type", flag_value="track")
+@click.option("--debug", "-d", "status_type", flag_value="debug")
 @network_option
-def send(signer, address_or_alias, method, params, network, track, max_fee=None):
+def send(signer, address_or_alias, method, params, network, status_type, max_fee=None):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
     account = Account(signer, network)
     print(
@@ -147,7 +147,7 @@ def send(signer, address_or_alias, method, params, network, track, max_fee=None)
         method=method,
         calldata=params,
         max_fee=max_fee,
-        track=track,
+        status_type=status_type,
     )
 
 
@@ -157,9 +157,9 @@ def send(signer, address_or_alias, method, params, network, track, max_fee=None)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
 @network_option
-@click.option("--track", "-t", "track", flag_value="track")
-@click.option("--debug", "-d", "track", flag_value="debug")
-def invoke(address_or_alias, method, params, network, track, max_fee=None):
+@click.option("--track", "-t", "status_type", flag_value="track")
+@click.option("--debug", "-d", "status_type", flag_value="debug")
+def invoke(address_or_alias, method, params, network, status_type, max_fee=None):
     """Invoke functions of StarkNet smart contracts."""
     if not is_alias(address_or_alias):
         address_or_alias = normalize_number(address_or_alias)
@@ -171,7 +171,7 @@ def invoke(address_or_alias, method, params, network, track, max_fee=None):
         params=params,
         network=network,
         max_fee=max_fee,
-        track=track,
+        status_type=status_type,
     )
     print(out)
 
@@ -286,10 +286,10 @@ def debug(tx_hash, network, contracts_file):
 @cli.command()
 @click.argument("tx_hash", nargs=1)
 @network_option
-@click.option("--track", "-t", "track", flag_value="track")
-@click.option("--debug", "-d", "track", flag_value="debug")
+@click.option("--track", "-t", "status_type", flag_value="track")
+@click.option("--debug", "-d", "status_type", flag_value="debug")
 @click.option("--contracts_file", nargs=1)
-def status(tx_hash, network, track, contracts_file):
+def status(tx_hash, network, status_type, contracts_file):
     """
     Get the status of a transaction.
 
@@ -305,7 +305,7 @@ def status(tx_hash, network, track, contracts_file):
     status_command(
         normalize_number(tx_hash),
         network,
-        track=track,
+        status_type=status_type,
         contracts_file=contracts_file,
     )
 

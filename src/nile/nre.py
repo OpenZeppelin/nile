@@ -25,14 +25,14 @@ class NileRuntimeEnvironment:
         """Compile a list of contracts."""
         return compile(contracts)
 
-    def declare(self, contract, alias=None, overriding_path=None, track=None):
+    def declare(self, contract, alias=None, overriding_path=None, status_type=None):
         """Declare a smart contract class."""
         return declare(
             contract_name=contract,
             network=self.network,
             alias=alias,
             overriding_path=overriding_path,
-            track=track,
+            status_type=status_type,
         )
 
     def deploy(
@@ -42,7 +42,7 @@ class NileRuntimeEnvironment:
         alias=None,
         overriding_path=None,
         abi=None,
-        track=None,
+        status_type=None,
     ):
         """Deploy a smart contract."""
         return deploy(
@@ -52,7 +52,7 @@ class NileRuntimeEnvironment:
             alias=alias,
             overriding_path=overriding_path,
             abi=abi,
-            track=track,
+            status_type=status_type,
         )
 
     def call(self, address_or_alias, method, params=None):
@@ -63,7 +63,7 @@ class NileRuntimeEnvironment:
             call_or_invoke(address_or_alias, "call", method, params, self.network)
         ).split()
 
-    def invoke(self, address_or_alias, method, params=None, track=None):
+    def invoke(self, address_or_alias, method, params=None, status_type=None):
         """Invoke a mutable function in a smart contract."""
         if not is_alias(address_or_alias):
             address_or_alias = normalize_number(address_or_alias)
@@ -73,7 +73,7 @@ class NileRuntimeEnvironment:
             method=method,
             params=params,
             network=self.network,
-            track=track,
+            status_type=status_type,
         )
 
     def get_deployment(self, address_or_alias):
@@ -88,9 +88,9 @@ class NileRuntimeEnvironment:
             address_or_alias = normalize_number(address_or_alias)
         return next(deployments.load_class(address_or_alias, self.network))
 
-    def get_or_deploy_account(self, signer, track=None):
+    def get_or_deploy_account(self, signer, status_type=None):
         """Get or deploy an Account contract."""
-        return Account(signer=signer, network=self.network, track=track)
+        return Account(signer=signer, network=self.network, status_type=status_type)
 
     def get_accounts(self, predeployed=False):
         """Retrieve and manage deployed accounts."""
