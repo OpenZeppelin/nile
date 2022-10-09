@@ -17,7 +17,8 @@ from nile.common import (
 
 def debug(tx_hash, network, contracts_file=None):
     """Use available contracts to help locate the error in a rejected transaction."""
-    command = ["starknet", "tx_status", "--hash", tx_hash]
+    # Starknet CLI expects hex strings
+    command = ["starknet", "tx_status", "--hash", hex(tx_hash)]
 
     if network == "mainnet":
         os.environ["STARKNET_NETWORK"] = "alpha-mainnet"

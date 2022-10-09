@@ -125,6 +125,7 @@ A few things to notice here:
 2. This created a `localhost.deployments.txt` file storing all data related to my deployment
 3. The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
+5. By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
 
 ### `setup`
 
@@ -393,7 +394,67 @@ def run(nre):
     bob.send(...)
 ```
 
-> Please note that the list of accounts includes only those that exist in the local `<network>.accounts.json` file.
+> Please note that the list of accounts includes only those that exist in the local `<network>.accounts.json` file. In a recent release we added a flag to the command, to get predeployed accounts if the network you are connected to is a [starknet-devnet](https://github.com/Shard-Labs/starknet-devnet) instance.
+
+### `get-accounts --predeployed`
+
+This flag retrieves the predeployed accounts if the network you are connecting to is a [starknet-devnet](https://github.com/Shard-Labs/starknet-devnet) instance.
+
+You can use it either from the cli:
+
+```sh
+nile get-accounts --predeployed
+```
+
+Or from the nile runtime environment for scripting:
+
+```python
+def run(nre):
+
+    # fetch the list of pre-deployed accounts from devnet
+    accounts = nre.get_accounts(predeployed=True)
+
+    # then
+    accounts[0].send(...)
+
+    # or
+    alice, bob, *_ = accounts
+    alice.send(...)
+    bob.send(...)
+```
+
+### `get-nonce`
+
+Retrieves the nonce for the given contract address (usually an account).
+
+```sh
+nile get-nonce <contract_address>
+```
+
+## Short string literals
+
+From [cairo-lang docs](https://www.cairo-lang.org/docs/how_cairo_works/consts.html#short-string-literals): A short string is a string whose length is at most 31 characters, and therefore can fit into a single field element.
+
+In Nile, arguments to contract calls (calldata) that are neither int nor hex, are treated as short strings and converted automatically to the corresponding felt representation. Because of this, you can run the following from the CLI:
+
+```sh
+nile deploy MyToken 'MyToken name' 'MyToken symbol' (...)
+```
+
+And this is equivalent to passing the felt representation directly like this:
+
+```sh
+nile deploy MyToken 0x4d79546f6b656e206e616d65 0x4d79546f6b656e2073796d626f6c (...)
+```
+
+Note that if you want to pass the token name as a hex or an int, you need to provide the felt representation directly because these values are not interpreted as short strings. You can open a python terminal, and import and use the `str_to_felt` util like this:
+
+```python
+>>> from nile.utils import str_to_felt
+>>>
+>>> str_to_felt('any string')
+460107418789485453340263
+```
 
 ## Extending Nile with plugins
 

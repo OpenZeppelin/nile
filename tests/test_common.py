@@ -53,6 +53,11 @@ def test_stringify(args, expected):
     [
         ([], []),
         ([LIST1], [["1", "2", "3"]]),
+        (
+            ["MyToken name", "MyToken symbol"],
+            ["23977024514528806274181721445", "1571358278584159847990373933805420"],
+        ),
+        (["0xbad", 1234, "1234", "bad"], ["0xbad", "1234", "1234", "6447460"]),
     ],
 )
 def test_prepare_params(args, expected):

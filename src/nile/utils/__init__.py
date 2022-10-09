@@ -15,7 +15,7 @@ try:
 except BaseException:
     pass
 
-MAX_UINT256 = (2**128 - 1, 2**128 - 1)
+MAX_UINT256 = (2 ** 128 - 1, 2 ** 128 - 1)
 INVALID_UINT256 = (MAX_UINT256[0] + 1, MAX_UINT256[1])
 ZERO_ADDRESS = 0
 TRUE = 1
@@ -138,3 +138,25 @@ def get_hash(contract_name, overriding_path=None):
     """Return the class_hash for a given contract name."""
     contract_class = get_contract_class(contract_name, overriding_path)
     return compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
+
+
+def normalize_number(number):
+    """Normalize hex or int to int."""
+    if type(number) == str and number.startswith("0x"):
+        return int(number, 16)
+    else:
+        return int(number)
+
+
+def hex_address(number):
+    """Return the 64 hexadecimal characters length address."""
+    if type(number) == str and number.startswith("0x"):
+        return _pad_hex_to_64(number)
+    else:
+        return _pad_hex_to_64(hex(int(number)))
+
+
+def _pad_hex_to_64(hexadecimal):
+    if len(hexadecimal) < 66:
+        missing_zeros = 66 - len(hexadecimal)
+        return hexadecimal[:2] + missing_zeros * "0" + hexadecimal[2:]
