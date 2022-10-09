@@ -66,7 +66,7 @@ class Account:
         return address, index
 
     def declare(
-        self, contract_name, max_fee, nonce=None, alias=None, contracts_directory=None
+        self, contract_name, max_fee=None, nonce=None, alias=None, contracts_directory=None
     ):
         """Declare a contract through an Account contract."""
         if contracts_directory is None:
@@ -101,7 +101,7 @@ class Account:
         )
 
     def deploy_contract(
-        self, class_hash, salt, unique, calldata, max_fee, deployer_address=None
+        self, class_hash, salt, unique, calldata, max_fee=None, deployer_address=None
     ):
         """Deploy a contract through an Account contract."""
         return self.send(
@@ -111,7 +111,7 @@ class Account:
             max_fee=max_fee,
         )
 
-    def send(self, to, method, calldata, max_fee, nonce=None):
+    def send(self, to, method, calldata, max_fee=None, nonce=None):
         """Execute a tx going through an Account contract."""
         try:
             target_address, _ = next(deployments.load(to, self.network))

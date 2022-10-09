@@ -126,23 +126,6 @@ A few things to notice here:
 3. The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 
-### `declare`
-
-```sh
-nile declare contract --alias my_contract
-
-🚀 Declaring contract
-⏳ Declaration of contract successfully sent at 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
-📦 Registering declaration as my_contract in localhost.declarations.txt
-```
-
-A few things to notice here:
-
-1. `nile declare <contract_name>` looks for an artifact with the same name
-2. This created a `localhost.declarations.txt` file storing all data related to my declarations
-3. The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
-4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
-
 ### `setup`
 
 Deploy an Account associated with a given private key.
