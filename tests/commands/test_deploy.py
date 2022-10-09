@@ -4,7 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.core.deploy import ABIS_DIRECTORY, BUILD_DIRECTORY, deploy
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
+from nile.core.deploy import deploy
 
 
 @pytest.fixture(autouse=True)

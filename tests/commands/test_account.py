@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
 from nile.core.account import Account
 
 KEY = "TEST_KEY"
@@ -79,30 +80,30 @@ def test_deploy_accounts_register(mock_register, mock_deploy):
     )
 
 
-@patch("nile.core.account.compile_starknet_files", return_value="ContractClass")
+@patch("nile.core.account.get_contract_class", return_value="ContractClass")
 @patch("nile.core.account.declare")
-def test_declare(mock_declare, mock_compile):
+def test_declare(mock_declare, mock_get_class):
     account = Account(KEY, NETWORK)
     signature = [999, 888]
     nonce = 4
     max_fee = 1
     contract_name = "contract"
     alias = "my_contract"
-    contracts_directory = "a/given/path"
+    overriding_path = (BUILD_DIRECTORY, ABIS_DIRECTORY)
 
     account.signer.sign_declare = MagicMock(return_value=signature)
 
     account.declare(
         contract_name,
-        max_fee,
-        nonce,
+        max_fee=max_fee,
+        nonce=nonce,
         alias=alias,
-        contracts_directory=contracts_directory,
+        overriding_path=overriding_path,
     )
 
-    # Check 'compile_starknet_files' call
-    mock_compile.assert_called_once_with(
-        files=[f"{contracts_directory}/{contract_name}.cairo"], debug_info=True
+    # Check 'get_contract_class' call
+    mock_get_class.assert_called_once_with(
+        contract_name=contract_name, overriding_path=overriding_path
     )
 
     # Check values are correctly passed to 'sign_transaction'

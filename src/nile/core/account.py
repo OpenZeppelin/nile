@@ -3,13 +3,13 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from starkware.starknet.compiler.compile import compile_starknet_files
 
 from nile import accounts, deployments
-from nile.common import CONTRACTS_DIRECTORY, UNIVERSAL_DEPLOYER_ADDRESS, get_nonce
+from nile.common import UNIVERSAL_DEPLOYER_ADDRESS, get_nonce
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.declare import declare
 from nile.core.deploy import deploy
+from nile.utils import get_contract_class
 
 try:
     from nile.signer import Signer
@@ -66,12 +66,9 @@ class Account:
         return address, index
 
     def declare(
-        self, contract_name, max_fee=None, nonce=None, alias=None, contracts_directory=None
+        self, contract_name, max_fee=None, nonce=None, alias=None, overriding_path=None
     ):
         """Declare a contract through an Account contract."""
-        if contracts_directory is None:
-            contracts_directory = CONTRACTS_DIRECTORY
-
         if nonce is None:
             nonce = get_nonce(self.address, self.network)
 
@@ -80,8 +77,8 @@ class Account:
         else:
             max_fee = int(max_fee)
 
-        contract_class = compile_starknet_files(
-            files=[f"{contracts_directory}/{contract_name}.cairo"], debug_info=True
+        contract_class = get_contract_class(
+            contract_name=contract_name, overriding_path=overriding_path
         )
 
         sig_r, sig_s = self.signer.sign_declare(

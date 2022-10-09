@@ -91,16 +91,18 @@ def deploy(artifact, arguments, network, alias):
 @click.argument("contract_name", nargs=1)
 @click.option("--max_fee", nargs=1)
 @click.option("--alias")
-@click.option("--directory")
+@click.option("--overriding_path")
 @network_option
-def declare(signer, contract_name, network, max_fee, alias=None, directory=None):
+def declare(
+    signer, contract_name, network, max_fee=None, alias=None, overriding_path=None
+):
     """Declare StarkNet smart contract."""
     account = Account(signer, network)
     account.declare(
         contract_name,
         alias=alias,
         max_fee=max_fee,
-        contracts_directory=directory,
+        overriding_path=overriding_path,
     )
 
 

@@ -3,7 +3,6 @@ from nile import deployments
 from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
-from nile.core.declare import declare
 from nile.core.deploy import deploy
 from nile.core.plugins import get_installed_plugins, skip_click_exit
 from nile.utils.get_accounts import get_accounts
@@ -22,9 +21,15 @@ class NileRuntimeEnvironment:
         """Compile a list of contracts."""
         return compile(contracts)
 
-    def declare(self, contract, alias=None, overriding_path=None):
+    def declare(self, signer, contract, alias=None, max_fee=None, overriding_path=None):
         """Declare a smart contract class."""
-        return declare(contract, self.network, alias)
+        account = Account(signer, self.network)
+        return account.declare(
+            contract,
+            alias=alias,
+            max_fee=max_fee,
+            overriding_path=overriding_path,
+        )
 
     def deploy(self, contract, arguments=None, alias=None, overriding_path=None):
         """Deploy a smart contract."""
