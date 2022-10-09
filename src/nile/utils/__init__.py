@@ -3,14 +3,9 @@
 import math
 from pathlib import Path
 
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
-
 try:
-    from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
     from starkware.starknet.business_logic.execution.objects import Event
-    from starkware.starknet.core.os.class_hash import compute_class_hash
     from starkware.starknet.public.abi import get_selector_from_name
-    from starkware.starknet.services.api.contract_class import ContractClass
     from starkware.starkware_utils.error_handling import StarkException
 except BaseException:
     pass
@@ -121,23 +116,6 @@ def assert_event_emitted(tx_exec_info, from_address, name, data):
         )
         in tx_exec_info.raw_events
     )
-
-
-def get_contract_class(contract_name, overriding_path=None):
-    """Return the contract_class for a given contract name."""
-    base_path = (
-        overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
-    )
-    with open(f"{base_path[0]}/{contract_name}.json", "r") as fp:
-        contract_class = ContractClass.loads(fp.read())
-
-    return contract_class
-
-
-def get_hash(contract_name, overriding_path=None):
-    """Return the class_hash for a given contract name."""
-    contract_class = get_contract_class(contract_name, overriding_path)
-    return compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
 
 
 def normalize_number(number):

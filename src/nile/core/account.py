@@ -5,11 +5,15 @@ import os
 from dotenv import load_dotenv
 
 from nile import accounts, deployments
-from nile.common import UNIVERSAL_DEPLOYER_ADDRESS, is_alias
+from nile.common import (
+    UNIVERSAL_DEPLOYER_ADDRESS,
+    get_contract_class,
+    is_alias,
+    normalize_number,
+)
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.declare import declare
 from nile.core.deploy import deploy
-from nile.utils import get_contract_class, normalize_number
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
