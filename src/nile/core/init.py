@@ -1,16 +1,11 @@
 """Command to kickstart a Nile project."""
 import logging
-import subprocess
-import sys
 from distutils.dir_util import copy_tree
 from pathlib import Path
-
-from nile.core.install import install
 
 
 def init():
     """Kickstart a new Nile project."""
-
     # create project directories
     logging.info("🗄  Creating project directory tree")
 
