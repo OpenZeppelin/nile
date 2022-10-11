@@ -31,8 +31,9 @@ def deploy(
     )
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
+    deployments.register(address, register_abi, network, alias)
+
     if status_type is not None:
         status(tx_hash, network, status_type)
 
-    deployments.register(address, register_abi, network, alias)
     return address, register_abi

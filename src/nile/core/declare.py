@@ -21,10 +21,11 @@ def declare(contract_name, network, alias=None, overriding_path=None, status_typ
     )
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
+    deployments.register_class_hash(class_hash, network, alias)
+
     if status_type is not None:
         status(tx_hash, network, status_type=status_type)
 
-    deployments.register_class_hash(class_hash, network, alias)
     return class_hash
 
 
