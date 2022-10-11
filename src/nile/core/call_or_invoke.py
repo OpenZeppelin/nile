@@ -22,7 +22,7 @@ def call_or_invoke(
     """
     Call or invoke functions of StarkNet smart contracts.
 
-    @param contract: can be an address, and alias, or an Account instance.
+    @param contract: can be an address, an alias, or an Account instance.
     @param type: can be either call or invoke.
     @param method: the targeted function.
     @param params: the targeted function arguments.
