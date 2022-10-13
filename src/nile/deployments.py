@@ -28,6 +28,25 @@ def register(address, abi, network, alias):
         fp.write("\n")
 
 
+def unregister(address_or_class_hash, network, alias, abi=None):
+    """Unregister deployment or class hash from file."""
+    file = f"{network}.{DEPLOYMENTS_FILENAME}"
+    to_delete = hex_address(address_or_class_hash)
+
+    if abi is not None:
+        to_delete = f"{to_delete}:{abi}"
+
+    if alias:
+        to_delete = f"{to_delete}:{alias}"
+
+    with open(file, "r") as fp:
+        lines = fp.readlines()
+        with open(file, "w") as new_fp:
+            for line in lines:
+                if not line.startswith(to_delete):
+                    new_fp.write(line)
+
+
 def update_abi(address_or_alias, abi, network):
     """
     Update the ABI for an existing deployment that matches an identifier.

@@ -3,7 +3,7 @@ import logging
 
 from nile import deployments
 from nile.common import DECLARATIONS_FILENAME, parse_information, run_command
-from nile.utils.status import status
+from nile.utils.status import Status, status
 
 
 def declare(contract_name, network, alias=None, overriding_path=None, status_type=None):
@@ -24,7 +24,10 @@ def declare(contract_name, network, alias=None, overriding_path=None, status_typ
     deployments.register_class_hash(class_hash, network, alias)
 
     if status_type is not None:
-        status(tx_hash, network, status_type=status_type)
+        is_accepted = status(tx_hash, network, status_type)
+        if is_accepted.status == Status.REJECTED:
+            deployments.unregister(class_hash, network, alias)
+            return
 
     return class_hash
 

@@ -4,7 +4,7 @@ import logging
 from nile import deployments
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, parse_information, run_command
 from nile.utils import hex_address
-from nile.utils.status import status
+from nile.utils.status import Status, status
 
 
 def deploy(
@@ -34,6 +34,9 @@ def deploy(
     deployments.register(address, register_abi, network, alias)
 
     if status_type is not None:
-        status(tx_hash, network, status_type)
+        is_accepted = status(tx_hash, network, status_type)
+        if is_accepted.status == Status.REJECTED:
+            deployments.unregister(address, network, alias, abi=register_abi)
+            return
 
     return address, register_abi
