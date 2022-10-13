@@ -64,7 +64,6 @@ def _get_tx_receipt(tx_hash, command, status_type) -> _TransactionReceipt:
 
         if status_type is None:
             logging.info(f"🕒 {log_output}.")
-            print("SUCCESSSS")
             return receipt
 
         logging.info(f"🕒 {log_output}. Trying again in a moment...")
