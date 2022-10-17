@@ -33,12 +33,11 @@ nile init
 ...
 ✨  Cairo successfully installed!
 ...
-✅ Dependencies successfully installed
 🗄  Creating project directory tree
 ⛵️ Nile project ready! Try running:
 ```
 
-This command creates the project directory structure and installs `cairo-lang`, `starknet-devnet`, `pytest`, and `pytest-asyncio` for you. The template includes a makefile to build the project (`make build`) and run tests (`make test`).
+This command provides a template with a makefile to build the project (`make build`) and run tests (`make test`).
 
 ## Usage
 
