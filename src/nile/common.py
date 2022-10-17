@@ -1,8 +1,12 @@
 """nile common module."""
 import json
+import io
 import os
 import re
-import subprocess
+import argparse
+import sys
+
+from starkware.starknet.cli.starknet_cli import NETWORKS, deploy
 
 from nile.utils import normalize_number, str_to_felt
 
@@ -48,7 +52,7 @@ def get_all_contracts(ext=None, directory=None):
     return files
 
 
-def run_command(
+async def run_command(
     contract_name, network, overriding_path=None, operation="deploy", arguments=None
 ):
     """Execute CLI command with given parameters."""
@@ -56,22 +60,17 @@ def run_command(
         overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
     )
     contract = f"{base_path[0]}/{contract_name}.json"
-    command = ["starknet", operation, "--contract", contract]
+    command = ["--contract", contract]
 
     if arguments:
         command.append("--inputs")
         command.extend(prepare_params(arguments))
 
-    if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-    elif network == "goerli":
-        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
-    else:
-        command.append(f"--gateway_url={GATEWAYS.get(network)}")
+    args = argparse
+    args.wallet = ""
+    args.gateway_url = get_gateway_url(network)
 
-    command.append("--no_wallet")
-
-    return subprocess.check_output(command)
+    return await deploy(args=args, command_args=command)
 
 
 def parse_information(x):
@@ -122,3 +121,31 @@ def is_string(param):
 def is_alias(param):
     """Identiy param as alias (instead of address)."""
     return is_string(param)
+
+
+def get_gateway_url(network):
+    """Return gateway URL for specified network."""
+    if network == "localhost":
+        return GATEWAYS.get(network)
+    else:
+        network = "alpha-" + network
+        return f"https://{NETWORKS[network]}/gateway"
+
+
+def get_feeder_url(network):
+    """Return feeder gateway URL for specified network."""
+    if network == "localhost":
+        return GATEWAYS.get(network)
+    else:
+        network = "alpha-" + network
+        return f"https://{NETWORKS[network]}/feeder_gateway"
+
+
+async def capture_stdout(func):
+    """Return the stdout during the passed function call."""
+    stdout = sys.stdout
+    sys.stdout = io.StringIO()
+    await func
+    output = sys.stdout.getvalue()
+    sys.stdout = stdout
+    return output
