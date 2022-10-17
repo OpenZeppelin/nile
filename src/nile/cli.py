@@ -2,7 +2,7 @@
 """Nile CLI entry point."""
 import logging
 
-import click
+import asyncclick as click
 
 from nile.common import is_alias
 from nile.core.account import Account
@@ -89,9 +89,9 @@ def run(path, network):
 @network_option
 @click.option("--alias")
 @click.option("--abi")
-def deploy(artifact, arguments, network, alias, abi=None):
+async def deploy(artifact, arguments, network, alias, abi=None):
     """Deploy StarkNet smart contract."""
-    deploy_command(artifact, arguments, network, alias, abi=abi)
+    await deploy_command(artifact, arguments, network, alias, abi=abi)
 
 
 @cli.command()
@@ -106,9 +106,9 @@ def declare(artifact, network, alias):
 @cli.command()
 @click.argument("signer", nargs=1)
 @network_option
-def setup(signer, network):
+async def setup(signer, network):
     """Set up an Account contract."""
-    Account(signer, network)
+    await Account(signer, network)
 
 
 @cli.command()
@@ -118,9 +118,9 @@ def setup(signer, network):
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
 @network_option
-def send(signer, address_or_alias, method, params, network, max_fee=None):
+async def send(signer, address_or_alias, method, params, network, max_fee=None):
     """Invoke a contract's method through an Account. Same usage as nile invoke."""
-    account = Account(signer, network)
+    account = await Account(signer, network)
     print(
         "Calling {} on {} with params: {}".format(
             method, address_or_alias, [x for x in params]
@@ -128,7 +128,7 @@ def send(signer, address_or_alias, method, params, network, max_fee=None):
     )
     # address_or_alias is not normalized first here because
     # Account.send is part of Nile's public API and can accept hex addresses
-    out = account.send(address_or_alias, method, params, max_fee=max_fee)
+    out = await account.send(address_or_alias, method, params, max_fee=max_fee)
     print(out)
 
 
@@ -154,11 +154,11 @@ def invoke(address_or_alias, method, params, network, max_fee=None):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @network_option
-def call(address_or_alias, method, params, network):
+async def call(address_or_alias, method, params, network):
     """Call functions of StarkNet smart contracts."""
     if not is_alias(address_or_alias):
         address_or_alias = normalize_number(address_or_alias)
-    out = call_or_invoke_command(address_or_alias, "call", method, params, network)
+    out = await call_or_invoke_command(address_or_alias, "call", method, params, network)
     print(out)
 
 
@@ -269,4 +269,4 @@ cli = load_plugins(cli)
 
 
 if __name__ == "__main__":
-    cli()
+    cli(_anyion_backend="asyncio")
