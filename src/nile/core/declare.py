@@ -2,10 +2,10 @@
 import logging
 
 from nile import deployments
-from nile.common import DECLARATIONS_FILENAME, parse_information, run_command
+from nile.common import DECLARATIONS_FILENAME, parse_information, run_command, capture_stdout
 
 
-def declare(contract_name, network, alias=None, overriding_path=None):
+async def declare(contract_name, network, alias=None, overriding_path=None):
     """Declare StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")
 
@@ -13,7 +13,9 @@ def declare(contract_name, network, alias=None, overriding_path=None):
         file = f"{network}.{DECLARATIONS_FILENAME}"
         raise Exception(f"Alias {alias} already exists in {file}")
 
-    output = run_command(contract_name, network, overriding_path, operation="declare")
+    output = await capture_stdout(
+        run_command(contract_name, network, overriding_path, operation="declare")
+    )
     class_hash, tx_hash = parse_information(output)
     logging.info(
         f"⏳ Declaration of {contract_name} successfully sent at {hex(class_hash)}"

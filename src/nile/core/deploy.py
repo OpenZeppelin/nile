@@ -1,20 +1,27 @@
 """Command to deploy StarkNet smart contracts."""
 import logging
+import sys
+import io
 
 from nile import deployments
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, parse_information, run_command
+from nile.common import (
+    ABIS_DIRECTORY, BUILD_DIRECTORY, parse_information, run_command, capture_stdout
+)
 from nile.utils import hex_address
 
-
-def deploy(contract_name, arguments, network, alias, overriding_path=None, abi=None):
+async def deploy(contract_name, arguments, network, alias, overriding_path=None, abi=None):
     """Deploy StarkNet smart contracts."""
+
     logging.info(f"🚀 Deploying {contract_name}")
+
     base_path = (
         overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
     )
     register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
 
-    output = run_command(contract_name, network, overriding_path, arguments=arguments)
+    output = await capture_stdout(
+        run_command(contract_name, network, overriding_path, arguments=arguments)
+    )
 
     address, tx_hash = parse_information(output)
     logging.info(

@@ -1,15 +1,14 @@
 """Command to call or invoke StarkNet smart contracts."""
+import argparse
 import logging
-import os
-import subprocess
 
 from nile import deployments
-from nile.common import GATEWAYS, prepare_params
+from nile.common import get_gateway_url, get_feeder_url, prepare_params, capture_stdout
 from nile.core import account
 from nile.utils import hex_address
+from starkware.starknet.cli.starknet_cli import call, invoke, AbiFormatError
 
-
-def call_or_invoke(
+async def call_or_invoke(
     contract, type, method, params, network, signature=None, max_fee=None
 ):
     """Call or invoke functions of StarkNet smart contracts."""
@@ -21,8 +20,6 @@ def call_or_invoke(
 
     address = hex_address(address)
     command = [
-        "starknet",
-        type,
         "--address",
         address,
         "--abi",
@@ -30,14 +27,6 @@ def call_or_invoke(
         "--function",
         method,
     ]
-
-    if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-    elif network == "goerli":
-        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
-    else:
-        command.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
-        command.append(f"--gateway_url={GATEWAYS.get(network)}")
 
     params = prepare_params(params)
 
@@ -53,26 +42,41 @@ def call_or_invoke(
         command.append("--max_fee")
         command.append(max_fee)
 
-    command.append("--no_wallet")
+    if type == "call":
+        try:
+            return await _call_command(command, network)
+        except AbiFormatError as err:
+            logging.error(err)
 
-    try:
-        return subprocess.check_output(command).strip().decode("utf-8")
-    except subprocess.CalledProcessError:
-        p = subprocess.Popen(command, stderr=subprocess.PIPE)
-        _, error = p.communicate()
-        err_msg = error.decode()
+    elif type == "invoke":
+        try:
+            return await _invoke_command(command, network)
+        except BaseException as err:
+            if "max_fee must be bigger than 0." in str(err):
+                logging.error(
+                    """
+                    \n😰 Whoops, looks like max fee is missing. Try with:\n
+                    --max_fee=`MAX_FEE`
+                    """
+                )
 
-        if "max_fee must be bigger than 0" in err_msg:
-            logging.error(
-                """
-                \n😰 Whoops, looks like max fee is missing. Try with:\n
-                --max_fee=`MAX_FEE`
-                """
-            )
-        elif "transactions should go through the __execute__ entrypoint." in err_msg:
-            logging.error(
-                "\n\n😰 Whoops, looks like you're not using an account. Try with:\n"
-                "\nnile send [OPTIONS] SIGNER CONTRACT_NAME METHOD [PARAMS]"
-            )
+async def _call_command(command, network):
+    args = argparse
+    args.feeder_gateway_url = get_feeder_url(network)
 
-        return ""
+    return await capture_stdout(
+        call(args=args, command_args=command)
+    )
+
+async def _invoke_command(command, network):
+    args = argparse
+    args.feeder_gateway_url = get_feeder_url(network)
+    args.gateway_url = get_gateway_url(network)
+    args.wallet = ""
+    args.network_id = network
+    args.account_dir = None
+    args.account = None
+
+    return await capture_stdout(
+        invoke(args=args, command_args=command)
+    )
