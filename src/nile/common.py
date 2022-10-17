@@ -124,6 +124,7 @@ def is_alias(param):
 
 class Args(dict):
     """Helper class to mimic argparse dict."""
+
     def __init__(self, *args, **kwargs):
         """Instantiate class and key/value pairs through dot notation."""
         super().__init__(*args, **kwargs)
