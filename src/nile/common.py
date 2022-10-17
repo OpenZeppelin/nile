@@ -1,9 +1,9 @@
 """nile common module."""
-import json
+import argparse
 import io
+import json
 import os
 import re
-import argparse
 import sys
 
 from starkware.starknet.cli.starknet_cli import NETWORKS, deploy

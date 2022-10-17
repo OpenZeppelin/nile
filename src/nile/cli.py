@@ -158,7 +158,9 @@ async def call(address_or_alias, method, params, network):
     """Call functions of StarkNet smart contracts."""
     if not is_alias(address_or_alias):
         address_or_alias = normalize_number(address_or_alias)
-    out = await call_or_invoke_command(address_or_alias, "call", method, params, network)
+    out = await call_or_invoke_command(
+        address_or_alias, "call", method, params, network
+    )
     print(out)
 
 

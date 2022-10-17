@@ -2,7 +2,12 @@
 import logging
 
 from nile import deployments
-from nile.common import DECLARATIONS_FILENAME, parse_information, run_command, capture_stdout
+from nile.common import (
+    DECLARATIONS_FILENAME,
+    capture_stdout,
+    parse_information,
+    run_command,
+)
 
 
 async def declare(contract_name, network, alias=None, overriding_path=None):

@@ -2,11 +2,13 @@
 import argparse
 import logging
 
+from starkware.starknet.cli.starknet_cli import AbiFormatError, call, invoke
+
 from nile import deployments
-from nile.common import get_gateway_url, get_feeder_url, prepare_params, capture_stdout
+from nile.common import capture_stdout, get_feeder_url, get_gateway_url, prepare_params
 from nile.core import account
 from nile.utils import hex_address
-from starkware.starknet.cli.starknet_cli import call, invoke, AbiFormatError
+
 
 async def call_or_invoke(
     contract, type, method, params, network, signature=None, max_fee=None
@@ -60,13 +62,13 @@ async def call_or_invoke(
                     """
                 )
 
+
 async def _call_command(command, network):
     args = argparse
     args.feeder_gateway_url = get_feeder_url(network)
 
-    return await capture_stdout(
-        call(args=args, command_args=command)
-    )
+    return await capture_stdout(call(args=args, command_args=command))
+
 
 async def _invoke_command(command, network):
     args = argparse
@@ -77,6 +79,4 @@ async def _invoke_command(command, network):
     args.account_dir = None
     args.account = None
 
-    return await capture_stdout(
-        invoke(args=args, command_args=command)
-    )
+    return await capture_stdout(invoke(args=args, command_args=command))
