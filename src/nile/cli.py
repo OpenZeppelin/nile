@@ -78,9 +78,9 @@ def install():
 @cli.command()
 @click.argument("path", nargs=1)
 @network_option
-def run(path, network):
+async def run(path, network):
     """Run Nile scripts with NileRuntimeEnvironment."""
-    run_command(path, network)
+    await run_command(path, network)
 
 
 @cli.command()
@@ -161,7 +161,8 @@ async def call(address_or_alias, method, params, network):
     out = await call_or_invoke_command(
         address_or_alias, "call", method, params, network
     )
-    print(out)
+    logging.info(out)
+    return out
 
 
 @cli.command()

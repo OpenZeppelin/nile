@@ -1,11 +1,10 @@
 """Command to call or invoke StarkNet smart contracts."""
-import argparse
 import logging
 
 from starkware.starknet.cli.starknet_cli import AbiFormatError, call, invoke
 
 from nile import deployments
-from nile.common import capture_stdout, get_feeder_url, get_gateway_url, prepare_params
+from nile.common import Args, capture_stdout, get_feeder_url, get_gateway_url, prepare_params
 from nile.core import account
 from nile.utils import hex_address
 
@@ -64,14 +63,17 @@ async def call_or_invoke(
 
 
 async def _call_command(command, network):
-    args = argparse
+    args = Args()
     args.feeder_gateway_url = get_feeder_url(network)
 
-    return await capture_stdout(call(args=args, command_args=command))
+    result = await capture_stdout(
+        call(args=args, command_args=command)
+    )
+    return result.rstrip()
 
 
 async def _invoke_command(command, network):
-    args = argparse
+    args = Args()
     args.feeder_gateway_url = get_feeder_url(network)
     args.gateway_url = get_gateway_url(network)
     args.wallet = ""
@@ -79,4 +81,7 @@ async def _invoke_command(command, network):
     args.account_dir = None
     args.account = None
 
-    return await capture_stdout(invoke(args=args, command_args=command))
+    result = await capture_stdout(
+        invoke(args=args, command_args=command)
+    )
+    return result.rstrip()

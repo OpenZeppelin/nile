@@ -1,5 +1,4 @@
 """nile common module."""
-import argparse
 import io
 import json
 import os
@@ -66,7 +65,7 @@ async def run_command(
         command.append("--inputs")
         command.extend(prepare_params(arguments))
 
-    args = argparse
+    args = Args()
     args.wallet = ""
     args.gateway_url = get_gateway_url(network)
 
@@ -121,6 +120,14 @@ def is_string(param):
 def is_alias(param):
     """Identiy param as alias (instead of address)."""
     return is_string(param)
+
+
+class Args(dict):
+    """Helper class to mimic argparse dict."""
+    def __init__(self, *args, **kwargs):
+        """Instantiate class and key/value pairs through dot notation."""
+        super().__init__(*args, **kwargs)
+        self.__dict__ = self
 
 
 def get_gateway_url(network):
