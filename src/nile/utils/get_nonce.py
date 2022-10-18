@@ -3,7 +3,7 @@ import logging
 
 from starkware.starknet.cli import starknet_cli
 
-from nile.common import Args, get_feeder_url, capture_stdout
+from nile.common import Args, capture_stdout, get_feeder_url
 
 
 async def get_nonce(contract_address, network):
@@ -26,6 +26,4 @@ async def get_nonce_without_log(contract_address, network):
     args = Args()
     args.feeder_gateway_url = get_feeder_url(network)
 
-    return await capture_stdout(
-        starknet_cli.get_nonce(args=args, command_args=command)
-    )
+    return await capture_stdout(starknet_cli.get_nonce(args=args, command_args=command))
