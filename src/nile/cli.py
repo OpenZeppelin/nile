@@ -263,9 +263,9 @@ def get_accounts(network, predeployed):
 @cli.command()
 @click.argument("contract_address")
 @network_option
-def get_nonce(contract_address, network):
+async def get_nonce(contract_address, network):
     """Retrieve the nonce for a contract."""
-    return get_nonce_command(normalize_number(contract_address), network)
+    return await get_nonce_command(normalize_number(contract_address), network)
 
 
 cli = load_plugins(cli)

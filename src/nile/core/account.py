@@ -104,7 +104,7 @@ class Account(AsyncObject):
         calldata = [int(x) for x in calldata]
 
         if nonce is None:
-            nonce = get_nonce(self.address, self.network)
+            nonce = int(await get_nonce(self.address, self.network))
 
         if max_fee is None:
             max_fee = 0
