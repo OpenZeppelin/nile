@@ -22389,6 +22389,10 @@
                 "type": "const",
                 "value": 340282366920938463463374607431768211457
             },
+            "openzeppelin.utils.constants.library.QUERY_VERSION_BASE": {
+                "type": "const",
+                "value": 340282366920938463463374607431768211456
+            },
             "openzeppelin.utils.constants.library.TRANSACTION_VERSION": {
                 "type": "const",
                 "value": 1
