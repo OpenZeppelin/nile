@@ -75,7 +75,6 @@ async def _call_command(command, network):
     args.feeder_gateway_url = get_feeder_url(network)
 
     return await capture_stdout(call(args=args, command_args=command))
-    #return result.rstrip()
 
 
 async def _invoke_command(command, network):
@@ -88,4 +87,3 @@ async def _invoke_command(command, network):
     args.account = None
 
     return await capture_stdout(invoke(args=args, command_args=command))
-    #return result.rstrip()
