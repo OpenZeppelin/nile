@@ -8,6 +8,8 @@ from starkware.starknet.core.os.transaction_hash.transaction_hash import (
 from starkware.starknet.definitions.general_config import StarknetChainId
 from starkware.starknet.public.abi import get_selector_from_name
 
+from nile.common import TRANSACTION_VERSION
+
 
 class Signer:
     """Utility for signing transactions for an Account on Starknet."""
@@ -21,7 +23,9 @@ class Signer:
         """Sign a message hash."""
         return sign(msg_hash=message_hash, priv_key=self.private_key)
 
-    def sign_transaction(self, sender, calls, nonce, max_fee, version):
+    def sign_transaction(
+        self, sender, calls, nonce, max_fee, version=TRANSACTION_VERSION
+    ):
         """Sign a transaction."""
         call_array, calldata = from_call_to_call_array(calls)
         execute_calldata = [
