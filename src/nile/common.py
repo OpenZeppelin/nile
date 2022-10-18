@@ -156,4 +156,5 @@ async def capture_stdout(func):
     await func
     output = sys.stdout.getvalue()
     sys.stdout = stdout
-    return output
+    result = output.rstrip()
+    return result

@@ -66,14 +66,16 @@ async def call_or_invoke(
                     --max_fee=`MAX_FEE`
                     """
                 )
+            else:
+                raise err
 
 
 async def _call_command(command, network):
     args = Args()
     args.feeder_gateway_url = get_feeder_url(network)
 
-    result = await capture_stdout(call(args=args, command_args=command))
-    return result.rstrip()
+    return await capture_stdout(call(args=args, command_args=command))
+    #return result.rstrip()
 
 
 async def _invoke_command(command, network):
@@ -85,5 +87,5 @@ async def _invoke_command(command, network):
     args.account_dir = None
     args.account = None
 
-    result = await capture_stdout(invoke(args=args, command_args=command))
-    return result.rstrip()
+    return await capture_stdout(invoke(args=args, command_args=command))
+    #return result.rstrip()
