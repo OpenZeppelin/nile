@@ -1,13 +1,16 @@
 """Command to deploy StarkNet smart contracts."""
 import logging
 
+from starkware.starknet.cli import starknet_cli
+
 from nile import deployments
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     capture_stdout,
     parse_information,
-    run_command,
+    prepare_params,
+    set_args,
 )
 from nile.utils import hex_address
 
@@ -23,8 +26,17 @@ async def deploy(
     )
     register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
 
+    contract = f"{base_path[0]}/{contract_name}.json"
+    command_args = ["--contract", contract]
+
+    if arguments:
+        command_args.append("--inputs")
+        command_args.extend(prepare_params(arguments))
+
+    args = set_args(network)
+
     output = await capture_stdout(
-        run_command(contract_name, network, overriding_path, arguments=arguments)
+        starknet_cli.deploy(args=args, command_args=command_args)
     )
 
     address, tx_hash = parse_information(output)
