@@ -1,16 +1,29 @@
 """Command to declare StarkNet smart contracts."""
 import logging
 
+from starkware.starknet.cli import starknet_cli
+
 from nile import deployments
 from nile.common import (
+    ABIS_DIRECTORY,
+    BUILD_DIRECTORY,
     DECLARATIONS_FILENAME,
     capture_stdout,
     parse_information,
-    run_command,
+    prepare_params,
+    set_args,
 )
 
 
-async def declare(contract_name, network, alias=None, overriding_path=None):
+async def declare(
+    sender,
+    contract_name,
+    signature,
+    network,
+    alias=None,
+    overriding_path=None,
+    max_fee=None,
+):
     """Declare StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")
 
@@ -18,9 +31,30 @@ async def declare(contract_name, network, alias=None, overriding_path=None):
         file = f"{network}.{DECLARATIONS_FILENAME}"
         raise Exception(f"Alias {alias} already exists in {file}")
 
-    output = await capture_stdout(
-        run_command(contract_name, network, overriding_path, operation="declare")
+    base_path = (
+        overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
     )
+    contract = f"{base_path[0]}/{contract_name}.json"
+
+    command_args = [
+        "--contract",
+        contract,
+        "--sender",
+        hex(sender),
+        "--max_fee",
+        max_fee,
+    ]
+
+    if signature is not None:
+        command_args.append("--signature")
+        command_args.extend(prepare_params(signature))
+
+    args = set_args(network)
+
+    output = await capture_stdout(
+        starknet_cli.declare(args=args, command_args=command_args)
+    )
+
     class_hash, tx_hash = parse_information(output)
     logging.info(
         f"⏳ Declaration of {contract_name} successfully sent at {hex(class_hash)}"
