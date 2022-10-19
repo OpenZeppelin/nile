@@ -1,55 +1,56 @@
 """Tests for get-nonce command."""
 import logging
-import os
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
-from nile.utils.get_nonce import get_nonce
+from nile.utils.get_nonce import get_nonce, get_nonce_without_log
+from nile.common import Args, get_feeder_url
 
-GATEWAYS = {"localhost": "http://127.0.0.1:5050/"}
+
+NONCE = 5
+
+class AsyncMock(Mock):
+    """Return asynchronous mock."""
+
+    async def __call__(self, *args, **kwargs):
+        """Return mocked coroutine."""
+        return super(AsyncMock, self).__call__(*args, **kwargs)
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "contract_address, network",
     [("0xffff", "localhost"), ("0xffff", "goerli"), ("0xffff", "mainnet")],
 )
-@patch("nile.core.node.subprocess.check_output")
-@patch("nile.common.get_gateway", return_value=GATEWAYS)
-def test_call_format(mock_gateway, mock_subprocess, contract_address, network):
-    get_nonce(contract_address, network)
-
-    command = ["starknet", "get_nonce", "--contract_address", contract_address]
-    if network == "localhost":
-        command.append("--feeder_gateway_url=http://127.0.0.1:5050/")
-    else:
-        assert os.getenv("STARKNET_NETWORK") == f"alpha-{network}"
-
-    mock_subprocess.assert_called_once_with(command)
-
-
-@patch("nile.core.node.subprocess.check_output", return_value="5")
-@patch("nile.common.get_gateway", return_value=GATEWAYS)
-def test_get_nonce(mock_gateway, mock_subprocess, caplog):
+async def test_get_nonce(contract_address, network, caplog):
     logging.getLogger().setLevel(logging.INFO)
+    with patch("nile.utils.get_nonce.get_nonce_without_log", new=AsyncMock()) as mock_without_log:
+        mock_without_log.return_value = NONCE
 
-    # check return values
-    nonce = get_nonce("0xffff", "localhost")
-    assert nonce == 5
+        # Check return value
+        nonce = await get_nonce(contract_address, network)
+        assert nonce == NONCE
 
-    # check logs
-    assert "Current Nonce: 5" in caplog.text
+        # Check internal
+        mock_without_log.assert_called_once_with(contract_address, network)
+
+        # Check log
+        assert f"Current Nonce: {NONCE}" in caplog.text
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "contract_address",
     ["0x4d2", "1234", 1234],
 )
-@patch("nile.core.node.subprocess.check_output")
-@patch("nile.common.get_gateway", return_value=GATEWAYS)
-def test_contract_address_formats(mock_gateway, mock_subprocess, contract_address):
-    get_nonce(contract_address, "goerli")
+async def test_get_nonce_without_log_address_formats(contract_address):
+    with patch("nile.utils.get_nonce.starknet_cli.get_nonce", new=AsyncMock()) as mock_starknet_cli:
+        await get_nonce_without_log(contract_address, "goerli")
 
-    command = ["starknet", "get_nonce", "--contract_address", "0x4d2"]
+        args = Args()
+        args.feeder_gateway_url = get_feeder_url("goerli")
 
-    mock_subprocess.assert_called_once_with(command)
+        command = ["--contract_address", "0x4d2"]
+
+        mock_starknet_cli.assert_called_once_with(args=args, command_args=command)

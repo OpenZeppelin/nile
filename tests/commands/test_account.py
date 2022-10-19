@@ -1,6 +1,6 @@
 """Tests for account commands."""
 import logging
-from unittest.mock import ANY, MagicMock, patch
+from unittest.mock import ANY, Mock, MagicMock, patch
 
 import pytest
 
@@ -18,20 +18,30 @@ def tmp_working_dir(monkeypatch, tmp_path):
     return tmp_path
 
 
-@patch("nile.core.account.Account.deploy")
-def test_account_init(mock_deploy):
-    mock_deploy.return_value = MOCK_ADDRESS, MOCK_INDEX
-    account = Account(KEY, NETWORK)
+class AsyncMock(Mock):
+    """Return asynchronous mock."""
 
-    assert account.address == MOCK_ADDRESS
-    assert account.index == MOCK_INDEX
-    mock_deploy.assert_called_once()
+    async def __call__(self, *args, **kwargs):
+        """Return mocked coroutine."""
+        return super(AsyncMock, self).__call__(*args, **kwargs)
 
 
-def test_account_init_bad_key(caplog):
+@pytest.mark.asyncio
+async def test_account_init():
+    with patch("nile.core.account.Account.deploy", new=AsyncMock()) as mock_deploy:
+        mock_deploy.return_value = MOCK_ADDRESS, MOCK_INDEX
+        account = await Account(KEY, NETWORK)
+
+        assert account.address == MOCK_ADDRESS
+        assert account.index == MOCK_INDEX
+        mock_deploy.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_account_init_bad_key(caplog):
     logging.getLogger().setLevel(logging.INFO)
 
-    Account("BAD_KEY", NETWORK)
+    await Account("BAD_KEY", NETWORK)
     assert (
         "\n❌ Cannot find BAD_KEY in env."
         "\nCheck spelling and that it exists."
@@ -39,50 +49,45 @@ def test_account_init_bad_key(caplog):
     ) in caplog.text
 
 
-@patch("nile.core.account.deploy", return_value=(1, 2))
-def test_deploy(mock_deploy):
-    account = Account(KEY, NETWORK)
-    with patch("nile.core.account.os.path.dirname") as mock_path:
-        test_path = "/overriding_path"
-        mock_path.return_value.replace.return_value = test_path
+@pytest.mark.asyncio
+async def test_deploy():
+    with patch("nile.core.account.deploy", new=AsyncMock()) as mock_deploy:
+        mock_deploy.return_value = (1, 2)
+        with patch("nile.core.account.os.path.dirname") as mock_path:
+            test_path = "/overriding_path"
+            mock_path.return_value.replace.return_value = test_path
 
-        mock_deploy.assert_called_with(
-            "Account",
-            [account.signer.public_key],
-            NETWORK,
-            f"account-{account.index}",
-            ANY,
-        )
+            account = await Account(KEY, NETWORK)
 
+            expected = [
+                "Account",                          # contract
+                [account.signer.public_key],        # arguments
+                NETWORK,                            # network
+                f"account-{account.index}",         # alias
+                (
+                    f"{test_path}/artifacts",       # overriding-
+                    f"{test_path}/artifacts/abis",  # path
+                ),
+            ]
 
-@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
-@patch("nile.core.account.accounts.register")
-def test_deploy_accounts_register(mock_register, mock_deploy):
-    account = Account(KEY, NETWORK)
-
-    mock_register.assert_called_once_with(
-        account.signer.public_key, MOCK_ADDRESS, MOCK_INDEX, KEY, NETWORK
-    )
+            mock_deploy.assert_called_with(*expected)
 
 
-@patch("nile.core.account.get_nonce", return_value=0)
-@patch("nile.core.account.call_or_invoke")
-def test_send_nonce_call(mock_call, mock_nonce):
-    account = Account(KEY, NETWORK)
+@pytest.mark.asyncio
+async def test_deploy_accounts_register():
+    with patch("nile.core.account.deploy", new=AsyncMock()) as mock_deploy:
+        with patch("nile.core.account.accounts.register") as mock_register:
+            mock_deploy.return_value = (MOCK_ADDRESS, MOCK_INDEX)
+            account = await Account(KEY, NETWORK)
 
-    # Instead of creating and populating a tmp .txt file, this uses the
-    # deployed account address (contract_address) as the target
-    account.send(account.address, "method", [1, 2, 3], max_fee=1)
-
-    # 'call_or_invoke' is called once for '__execute__'
-    assert mock_call.call_count == 1
-
-    # Check 'get_nonce' call
-    mock_nonce.assert_called_once_with(account.address, NETWORK)
+            mock_register.assert_called_once_with(
+                account.signer.public_key, MOCK_ADDRESS, MOCK_INDEX, KEY, NETWORK
+            )
 
 
-def test_send_sign_transaction_and_execute():
-    account = Account(KEY, NETWORK)
+@pytest.mark.asyncio
+async def test_send_sign_transaction_and_execute():
+    account = await Account(KEY, NETWORK)
 
     calldata = ["111", "222", "333"]
     sig_r, sig_s = [999, 888]
@@ -90,11 +95,11 @@ def test_send_sign_transaction_and_execute():
 
     account.signer.sign_transaction = MagicMock(return_value=return_signature)
 
-    with patch("nile.core.account.call_or_invoke") as mock_call:
+    with patch("nile.core.account.call_or_invoke", new=AsyncMock()) as mock_call:
         send_args = [account.address, "method", [1, 2, 3]]
         nonce = 4
         max_fee = 1
-        account.send(*send_args, max_fee, nonce)
+        await account.send(*send_args, max_fee, nonce)
 
         # Check values are correctly passed to 'sign_transaction'
         account.signer.sign_transaction.assert_called_once_with(

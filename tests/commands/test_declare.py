@@ -1,6 +1,6 @@
 """Tests for declare command."""
 import logging
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -14,13 +14,21 @@ def tmp_working_dir(monkeypatch, tmp_path):
     return tmp_path
 
 
+class AsyncMock(Mock):
+    """Return asynchronous mock."""
+
+    async def __call__(self, *args, **kwargs):
+        """Return mocked coroutine."""
+        return super(AsyncMock, self).__call__(*args, **kwargs)
+
+
 CONTRACT = "contract"
 NETWORK = "goerli"
 ALIAS = "alias"
 PATH = "path"
-RUN_OUTPUT = b"output"
 HASH = 111
 TX_HASH = 222
+RUN_OUTPUT = [HASH, TX_HASH]
 
 
 def test_alias_exists():
@@ -33,56 +41,54 @@ def test_alias_exists():
         assert alias_exists(ALIAS, NETWORK) is True
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "args, exp_command, exp_register",
+    "args, exp_register",
     [
         (
             [CONTRACT, NETWORK],  # args
-            [CONTRACT, NETWORK, None],  # expected command
             [HASH, NETWORK, None],  # expected register
         ),
         (
             [CONTRACT, NETWORK, ALIAS],  # args
-            [CONTRACT, NETWORK, None],  # expected command
             [HASH, NETWORK, ALIAS],  # expected register
         ),
         (
             [CONTRACT, NETWORK, ALIAS, PATH],  # args
-            [CONTRACT, NETWORK, PATH],  # expected command
             [HASH, NETWORK, ALIAS],  # expected register
         ),
     ],
 )
-@patch("nile.core.declare.run_command", return_value=RUN_OUTPUT)
-@patch("nile.core.declare.parse_information", return_value=[HASH, TX_HASH])
-@patch("nile.core.declare.deployments.register_class_hash")
-def test_declare(
-    mock_register, mock_parse, mock_run_cmd, caplog, args, exp_command, exp_register
-):
+async def test_declare(caplog, args, exp_register):
     logging.getLogger().setLevel(logging.INFO)
+    with patch("nile.core.declare.capture_stdout", new=AsyncMock()) as mock_capture:
+        mock_capture.return_value = [HASH, TX_HASH]
+        with patch("nile.core.declare.parse_information") as mock_parse:
+            mock_parse.return_value = [HASH, TX_HASH]
+            with patch("nile.core.declare.run_command", new=AsyncMock()):
+                with patch("nile.core.declare.deployments.register_class_hash") as mock_register:
+                    # check return value
+                    res = await declare(*args)
+                    assert res == HASH
 
-    # check return value
-    res = declare(*args)
-    assert res == HASH
+                    # check internals
+                    mock_parse.assert_called_once_with(RUN_OUTPUT)
+                    mock_register.assert_called_once_with(*exp_register)
 
-    # check internals
-    mock_run_cmd.assert_called_once_with(*exp_command, operation="declare")
-    mock_parse.assert_called_once_with(RUN_OUTPUT)
-    mock_register.assert_called_once_with(*exp_register)
-
-    # check logs
-    assert f"🚀 Declaring {CONTRACT}" in caplog.text
-    assert (
-        f"⏳ Declaration of {CONTRACT} successfully sent at {hex(HASH)}" in caplog.text
-    )
-    assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
+                    # check logs
+                    assert f"🚀 Declaring {CONTRACT}" in caplog.text
+                    assert (
+                        f"⏳ Declaration of {CONTRACT} successfully sent at {hex(HASH)}" in caplog.text
+                    )
+                    assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
 
 
+@pytest.mark.asyncio
 @patch("nile.core.declare.alias_exists", return_value=True)
-def test_declare_duplicate_hash(mock_alias_check):
+async def test_declare_duplicate_hash(mock_alias_check):
 
     with pytest.raises(Exception) as err:
-        declare(ALIAS, NETWORK)
+        await declare(ALIAS, NETWORK)
 
         assert (
             f"Alias {ALIAS} already exists in {NETWORK}.{DECLARATIONS_FILENAME}"
