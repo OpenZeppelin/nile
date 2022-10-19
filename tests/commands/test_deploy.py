@@ -59,6 +59,10 @@ RUN_OUTPUT = [ADDRESS, TX_HASH]
 )
 async def test_deploy(caplog, args, exp_abi):
     logging.getLogger().setLevel(logging.INFO)
+    log_1 = f"🚀 Deploying {CONTRACT}"
+    log_2 = f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(ADDRESS)}"
+    log_3 = f"🧾 Transaction hash: {hex(TX_HASH)}"
+
     with patch("nile.core.deploy.capture_stdout", new=AsyncMock()) as mock_capture:
         mock_capture.return_value = RUN_OUTPUT
         with patch("nile.core.deploy.run_command", new=AsyncMock()):
@@ -71,12 +75,11 @@ async def test_deploy(caplog, args, exp_abi):
 
                     # check internals
                     mock_parse.assert_called_once_with(RUN_OUTPUT)
-                    mock_register.assert_called_once_with(ADDRESS, exp_abi, NETWORK, ALIAS)
+                    mock_register.assert_called_once_with(
+                        ADDRESS, exp_abi, NETWORK, ALIAS
+                    )
 
                     # check logs
-                    assert f"🚀 Deploying {CONTRACT}" in caplog.text
-                    assert (
-                        f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(ADDRESS)}"
-                        in caplog.text
-                    )
-                    assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
+                    assert log_1 in caplog.text
+                    assert log_2 in caplog.text
+                    assert log_3 in caplog.text

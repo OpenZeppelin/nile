@@ -66,7 +66,9 @@ async def test_declare(caplog, args, exp_register):
         with patch("nile.core.declare.parse_information") as mock_parse:
             mock_parse.return_value = [HASH, TX_HASH]
             with patch("nile.core.declare.run_command", new=AsyncMock()):
-                with patch("nile.core.declare.deployments.register_class_hash") as mock_register:
+                with patch(
+                    "nile.core.declare.deployments.register_class_hash"
+                ) as mock_register:
                     # check return value
                     res = await declare(*args)
                     assert res == HASH
@@ -78,7 +80,8 @@ async def test_declare(caplog, args, exp_register):
                     # check logs
                     assert f"🚀 Declaring {CONTRACT}" in caplog.text
                     assert (
-                        f"⏳ Declaration of {CONTRACT} successfully sent at {hex(HASH)}" in caplog.text
+                        f"⏳ Declaration of {CONTRACT} successfully sent at {hex(HASH)}"
+                        in caplog.text
                     )
                     assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
 

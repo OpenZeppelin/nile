@@ -4,11 +4,11 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from nile.utils.get_nonce import get_nonce, get_nonce_without_log
 from nile.common import Args, get_feeder_url
-
+from nile.utils.get_nonce import get_nonce, get_nonce_without_log
 
 NONCE = 5
+
 
 class AsyncMock(Mock):
     """Return asynchronous mock."""
@@ -25,7 +25,9 @@ class AsyncMock(Mock):
 )
 async def test_get_nonce(contract_address, network, caplog):
     logging.getLogger().setLevel(logging.INFO)
-    with patch("nile.utils.get_nonce.get_nonce_without_log", new=AsyncMock()) as mock_without_log:
+    with patch(
+        "nile.utils.get_nonce.get_nonce_without_log", new=AsyncMock()
+    ) as mock_without_log:
         mock_without_log.return_value = NONCE
 
         # Check return value
@@ -45,7 +47,9 @@ async def test_get_nonce(contract_address, network, caplog):
     ["0x4d2", "1234", 1234],
 )
 async def test_get_nonce_without_log_address_formats(contract_address):
-    with patch("nile.utils.get_nonce.starknet_cli.get_nonce", new=AsyncMock()) as mock_starknet_cli:
+    with patch(
+        "nile.utils.get_nonce.starknet_cli.get_nonce", new=AsyncMock()
+    ) as mock_starknet_cli:
         await get_nonce_without_log(contract_address, "goerli")
 
         args = Args()

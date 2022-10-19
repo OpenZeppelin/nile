@@ -1,6 +1,6 @@
 """Tests for account commands."""
 import logging
-from unittest.mock import ANY, Mock, MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -60,12 +60,12 @@ async def test_deploy():
             account = await Account(KEY, NETWORK)
 
             expected = [
-                "Account",                          # contract
-                [account.signer.public_key],        # arguments
-                NETWORK,                            # network
-                f"account-{account.index}",         # alias
+                "Account",  # contract
+                [account.signer.public_key],  # arguments
+                NETWORK,  # network
+                f"account-{account.index}",  # alias
                 (
-                    f"{test_path}/artifacts",       # overriding-
+                    f"{test_path}/artifacts",  # overriding-
                     f"{test_path}/artifacts/abis",  # path
                 ),
             ]

@@ -9,7 +9,7 @@ from pathlib import Path
 from signal import SIGINT
 from threading import Timer
 from time import sleep
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 from urllib.error import URLError
 from urllib.request import urlopen
 
