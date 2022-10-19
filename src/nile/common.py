@@ -4,8 +4,9 @@ import json
 import os
 import re
 import sys
+from types import SimpleNamespace
 
-from starkware.starknet.cli.starknet_cli import NETWORKS, deploy
+from starkware.starknet.cli.starknet_cli import NETWORKS
 
 from nile.utils import normalize_number, str_to_felt
 
@@ -49,27 +50,6 @@ def get_all_contracts(ext=None, directory=None):
         ]
 
     return files
-
-
-async def run_command(
-    contract_name, network, overriding_path=None, operation="deploy", arguments=None
-):
-    """Execute CLI command with given parameters."""
-    base_path = (
-        overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
-    )
-    contract = f"{base_path[0]}/{contract_name}.json"
-    command = ["--contract", contract]
-
-    if arguments:
-        command.append("--inputs")
-        command.extend(prepare_params(arguments))
-
-    args = Args()
-    args.wallet = ""
-    args.gateway_url = get_gateway_url(network)
-
-    return await deploy(args=args, command_args=command)
 
 
 def parse_information(x):
@@ -122,15 +102,6 @@ def is_alias(param):
     return is_string(param)
 
 
-class Args(dict):
-    """Helper class to mimic argparse dict."""
-
-    def __init__(self, *args, **kwargs):
-        """Instantiate class and key/value pairs through dot notation."""
-        super().__init__(*args, **kwargs)
-        self.__dict__ = self
-
-
 def get_gateway_url(network):
     """Return gateway URL for specified network."""
     if network == "localhost":
@@ -158,3 +129,17 @@ async def capture_stdout(func):
     sys.stdout = stdout
     result = output.rstrip()
     return result
+
+
+def set_args(network):
+    """Set context args for StarkNet CLI call."""
+    args = {
+        "gateway_url": get_gateway_url(network),
+        "feeder_gateway_url": get_feeder_url(network),
+        "wallet": "",
+        "network_id": network,
+        "account_dir": None,
+        "account": None,
+    }
+    ret_obj = SimpleNamespace(**args)
+    return ret_obj
