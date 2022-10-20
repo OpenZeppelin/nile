@@ -49,7 +49,7 @@ def test_compile_get_all_contracts_called(mock_get_all_contracts):
 def test_compile__compile_contract_called(mock__compile_contract):
     compile([CONTRACT])
     mock__compile_contract.assert_called_once_with(
-        CONTRACT, CONTRACTS_DIRECTORY, False, False
+        CONTRACT, CONTRACTS_DIRECTORY, None, False, False
     )
 
 
@@ -138,6 +138,43 @@ def test__compile_auto_account_flag(mock_subprocess, contract_name, flag):
 
     if flag is not False:
         returned_subprocess.append(flag)
+
+    mock_subprocess.Popen.assert_called_once_with(
+        returned_subprocess,
+        stdout=mock_subprocess.PIPE,
+    )
+    mock_process.communicate.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "contract_name, directory, cairo_path, expected_internal_cairo_path",
+    [
+        ("Contract1", "contracts", None, "contracts"),
+        ("Contract3", "src", "contracts:src", "contracts:src"),
+        ("Contract1", None, "src", "src"),
+        ("Contract4", None, None, CONTRACTS_DIRECTORY),
+    ],
+)
+def test__compile_cairo_path(
+    mock_subprocess, contract_name, directory, cairo_path, expected_internal_cairo_path
+):
+    path = f"path/to/{contract_name}.cairo"
+
+    mock_process = Mock()
+    mock_subprocess.Popen.return_value = mock_process
+
+    # Use named arguments to allow changing the order without modifying tests
+    compile([path], directory=directory, cairo_path=cairo_path)
+
+    returned_subprocess = [
+        "starknet-compile",
+        path,
+        f"--cairo_path={expected_internal_cairo_path}",
+        "--output",
+        f"artifacts/{contract_name}.json",
+        "--abi",
+        f"artifacts/abis/{contract_name}.json",
+    ]
 
     mock_subprocess.Popen.assert_called_once_with(
         returned_subprocess,
