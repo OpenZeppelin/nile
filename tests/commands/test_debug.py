@@ -2,7 +2,7 @@
 import logging
 import sys
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -26,6 +26,14 @@ def mocked_json_message(arg):
 def tmp_working_dir(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     return tmp_path
+
+
+class AsyncMock(Mock):
+    """Return asynchronous mock."""
+
+    async def __call__(self, *args, **kwargs):
+        """Return mocked coroutine."""
+        return super(AsyncMock, self).__call__(*args, **kwargs)
 
 
 def test__abi_to_build_path():
@@ -64,6 +72,7 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
         assert f"⚠ Skipping misformatted line #1 in {MOCK_FILE}" in caplog.text
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "args, expected",
     [
@@ -78,10 +87,10 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
 @patch("nile.utils.debug.json.loads")
-def test_debug_feedback_with_message(mock_json, caplog, args, expected):
+async def test_debug_feedback_with_message(mock_json, caplog, args, expected):
     logging.getLogger().setLevel(logging.INFO)
     mock_json.return_value = mocked_json_message(args)
 
-    debug(MOCK_HASH, NETWORK)
+    await debug(MOCK_HASH, NETWORK)
 
     assert expected in caplog.text

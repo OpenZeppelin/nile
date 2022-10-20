@@ -244,9 +244,9 @@ def version():
 @click.argument("tx_hash", nargs=1)
 @network_option
 @click.option("--contracts_file", nargs=1)
-def debug(tx_hash, network, contracts_file):
+async def debug(tx_hash, network, contracts_file):
     """Locate an error in a transaction using contracts."""
-    debug_command(normalize_number(tx_hash), network, contracts_file)
+    await debug_command(normalize_number(tx_hash), network, contracts_file)
 
 
 @cli.command()
