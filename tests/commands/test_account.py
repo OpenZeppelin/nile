@@ -11,6 +11,7 @@ KEY = "TEST_KEY"
 NETWORK = "goerli"
 MOCK_ADDRESS = "0x123"
 MOCK_INDEX = 0
+MAX_FEE = 10
 
 
 @pytest.fixture(autouse=True)
@@ -120,30 +121,25 @@ def test_send_sign_transaction_and_execute():
 
 def test_estimate_fee():
     account = Account(KEY, NETWORK)
-    # Mock execute_query
-    account.execute_query = MagicMock()
+    # Mock send
+    account.send = MagicMock()
 
     account.estimate_fee(account.address, "method", [1, 2, 3], max_fee=0)
 
-    account.execute_query.assert_called_once_with(
-        "estimate_fee", account.address, "method", [1, 2, 3], 0, None
+    account.send.assert_called_once_with(
+        account.address, "method", [1, 2, 3], 0, None, "estimate_fee"
     )
 
 
 def test_simulate():
     account = Account(KEY, NETWORK)
-    # Mock execute_query
-    account.execute_query = MagicMock()
+    # Mock send
+    account.send = MagicMock()
 
     account.simulate(account.address, "method", [1, 2, 3], max_fee=0)
 
-    account.execute_query.assert_called_once_with(
-        "simulate",
-        account.address,
-        "method",
-        [1, 2, 3],
-        0,
-        None,
+    account.send.assert_called_once_with(
+        account.address, "method", [1, 2, 3], 0, None, "simulate"
     )
 
 
@@ -161,20 +157,22 @@ def test_execute_query(mock_call, mock_nonce, query_type):
     # Mock sign_transaction
     account.signer.sign_transaction = MagicMock(return_value=return_signature)
 
-    account.execute_query(query_type, account.address, "method", [1, 2, 3], max_fee=0)
+    account.send(
+        account.address, "method", [1, 2, 3], max_fee=MAX_FEE, query_type=query_type
+    )
 
     account.signer.sign_transaction.assert_called_once_with(
         calls=[send_args],
         nonce=0,
         sender=account.address,
-        max_fee=0,
+        max_fee=MAX_FEE,
         version=QUERY_VERSION,
     )
 
     # Check query_flag is correctly passed
     mock_call.assert_called_with(
         contract=account,
-        max_fee="0",
+        max_fee=str(MAX_FEE),
         method="__execute__",
         network=NETWORK,
         params=calldata,

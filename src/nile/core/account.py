@@ -77,60 +77,25 @@ class Account:
 
         return address, index
 
-    def send(self, address_or_alias, method, calldata, max_fee, nonce=None):
-        """Execute a tx going through an Account contract."""
-        # get target address with the right format
-        target_address = self._get_target_address(address_or_alias)
-
-        # process and parse arguments
-        calldata, max_fee, nonce = self._process_arguments(calldata, max_fee, nonce)
-
-        calldata, sig_r, sig_s = self.signer.sign_transaction(
-            sender=self.address,
-            calls=[[target_address, method, calldata]],
-            nonce=nonce,
-            max_fee=max_fee,
-            version=TRANSACTION_VERSION,
-        )
-
-        return call_or_invoke(
-            contract=self,
-            type="invoke",
-            method="__execute__",
-            params=calldata,
-            network=self.network,
-            signature=[str(sig_r), str(sig_s)],
-            max_fee=str(max_fee),
-        )
-
-    def simulate(self, address_or_alias, method, calldata, max_fee, nonce=None):
-        """Simulate a tx going through an Account contract."""
-        return self.execute_query(
-            "simulate", address_or_alias, method, calldata, max_fee, nonce
-        )
-
-    def estimate_fee(self, address_or_alias, method, calldata, max_fee, nonce=None):
-        """Estimate fee for a tx going through an Account contract."""
-        return self.execute_query(
-            "estimate_fee", address_or_alias, method, calldata, max_fee, nonce
-        )
-
-    def execute_query(
-        self, query_type, address_or_alias, method, calldata, max_fee, nonce=None
+    def send(
+        self, address_or_alias, method, calldata, max_fee, nonce=None, query_type=None
     ):
-        """Execute a query call for a tx going through an Account contract."""
+        """Execute a query or invoke call for a tx going through an Account contract."""
         # get target address with the right format
         target_address = self._get_target_address(address_or_alias)
 
         # process and parse arguments
         calldata, max_fee, nonce = self._process_arguments(calldata, max_fee, nonce)
 
+        # get tx version
+        tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
+
         calldata, sig_r, sig_s = self.signer.sign_transaction(
             sender=self.address,
             calls=[[target_address, method, calldata]],
             nonce=nonce,
             max_fee=max_fee,
-            version=QUERY_VERSION,
+            version=tx_version,
         )
 
         return call_or_invoke(
@@ -142,6 +107,16 @@ class Account:
             signature=[str(sig_r), str(sig_s)],
             max_fee=str(max_fee),
             query_flag=query_type,
+        )
+
+    def simulate(self, address_or_alias, method, calldata, max_fee, nonce=None):
+        """Simulate a tx going through an Account contract."""
+        return self.send(address_or_alias, method, calldata, max_fee, nonce, "simulate")
+
+    def estimate_fee(self, address_or_alias, method, calldata, max_fee, nonce=None):
+        """Estimate fee for a tx going through an Account contract."""
+        return self.send(
+            address_or_alias, method, calldata, max_fee, nonce, "estimate_fee"
         )
 
     def _get_target_address(self, address_or_alias):
