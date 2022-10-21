@@ -500,7 +500,7 @@ OpenZeppelin Nile exists thanks to its contributors. There are many ways you can
 
 ## Hacking on Nile
 
-Nile uses tox to manage development tasks. Some hints to play with the source code:
+Nile uses tox to manage development tasks. Here are some hints to play with the source code:
 
 - Install a development version of the package with `python -m pip install .`
 - Install tox for development tasks with `python -m pip install tox`
