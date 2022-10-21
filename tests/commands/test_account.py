@@ -116,6 +116,7 @@ def test_send_sign_transaction_and_execute():
             params=calldata,
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
+            query_flag=None
         )
 
 
