@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from nile.common import Args, get_feeder_url
+from nile.common import set_args
 from nile.utils.get_nonce import get_nonce, get_nonce_without_log
 
 NONCE = 5
@@ -52,8 +52,7 @@ async def test_get_nonce_without_log_address_formats(contract_address):
     ) as mock_starknet_cli:
         await get_nonce_without_log(contract_address, "goerli")
 
-        args = Args()
-        args.feeder_gateway_url = get_feeder_url("goerli")
+        args = set_args("goerli")
 
         command = ["--contract_address", "0x4d2"]
 
