@@ -497,13 +497,15 @@ OpenZeppelin Nile exists thanks to its contributors. There are many ways you can
 
 ## Hacking on Nile
 
-Nile uses tox to manage development tasks, you can get a list of
-available task with `tox -av`.
+Nile uses tox to manage development tasks. Here are some hints to play with the source code:
 
 - Install a development version of the package with `python -m pip install .`
+- Install tox for development tasks with `python -m pip install tox`
+- Get a list of available tasks with `tox -av`
 - Build the package with `tox -e build`
 - Format all files with `tox -e format`
 - Check files formatting with `tox -e lint`
+
 
 ### Testing
 
