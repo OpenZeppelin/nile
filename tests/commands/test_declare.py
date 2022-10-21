@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from nile.utils import hex_address
 from nile.common import DECLARATIONS_FILENAME
 from nile.core.declare import alias_exists, declare
 
@@ -45,7 +46,7 @@ def test_alias_exists():
                 "contract_name": CONTRACT,
                 "signature": SIGNATURE,
                 "network": NETWORK,
-                "arguments": ["--sender", SENDER],
+                "arguments": ["--sender", hex_address(SENDER)],
                 "overriding_path": None,
                 "max_fee": "0",
             },
@@ -57,7 +58,7 @@ def test_alias_exists():
                 "contract_name": CONTRACT,
                 "signature": SIGNATURE,
                 "network": NETWORK,
-                "arguments": ["--sender", SENDER],
+                "arguments": ["--sender", hex_address(SENDER)],
                 "overriding_path": None,
                 "max_fee": "0",
             },
@@ -69,7 +70,7 @@ def test_alias_exists():
                 "contract_name": CONTRACT,
                 "signature": SIGNATURE,
                 "network": NETWORK,
-                "arguments": ["--sender", SENDER],
+                "arguments": ["--sender", hex_address(SENDER)],
                 "overriding_path": PATH,
                 "max_fee": "0",
             },
@@ -81,7 +82,7 @@ def test_alias_exists():
                 "contract_name": CONTRACT,
                 "signature": SIGNATURE,
                 "network": NETWORK,
-                "arguments": ["--sender", SENDER],
+                "arguments": ["--sender", hex_address(SENDER)],
                 "overriding_path": PATH,
                 "max_fee": str(MAX_FEE),
             },

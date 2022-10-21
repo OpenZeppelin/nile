@@ -3,6 +3,7 @@ import logging
 
 from nile import deployments
 from nile.common import DECLARATIONS_FILENAME, parse_information, run_command
+from nile.utils import hex_address
 
 
 def declare(
@@ -21,7 +22,7 @@ def declare(
         file = f"{network}.{DECLARATIONS_FILENAME}"
         raise Exception(f"Alias {alias} already exists in {file}")
 
-    arguments = ["--sender", hex(sender)]
+    arguments = ["--sender", hex_address(sender)]
     max_fee = "0" if max_fee is None else str(max_fee)
 
     output = run_command(
