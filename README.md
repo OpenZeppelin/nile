@@ -159,7 +159,7 @@ nile setup <private_key_alias>
 📦 Registering deployment as account-0 in localhost.deployments.txt
 ```
 
-A few things to notice here:
+A few things to note here:
 
 1. `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias
 2. This creates or updates `localhost.accounts.json` file storing all data related to accounts management
