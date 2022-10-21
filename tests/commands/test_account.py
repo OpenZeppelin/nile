@@ -92,7 +92,7 @@ def test_declare(mock_declare, mock_get_class):
         contract_name=contract_name, overriding_path=overriding_path
     )
 
-    # Check values are correctly passed to 'sign_transaction'
+    # Check values are correctly passed to 'sign_declare'
     account.signer.sign_declare.assert_called_once_with(
         sender=account.address,
         contract_class="ContractClass",

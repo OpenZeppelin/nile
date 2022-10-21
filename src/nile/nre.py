@@ -24,16 +24,6 @@ class NileRuntimeEnvironment:
         """Compile a list of contracts."""
         return compile(contracts)
 
-    def declare(self, signer, contract, alias=None, max_fee=None, overriding_path=None):
-        """Declare a smart contract class."""
-        account = Account(signer, self.network)
-        return account.declare(
-            contract,
-            alias=alias,
-            max_fee=max_fee,
-            overriding_path=overriding_path,
-        )
-
     def deploy(
         self, contract, arguments=None, alias=None, overriding_path=None, abi=None
     ):

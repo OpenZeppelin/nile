@@ -21,7 +21,7 @@ def declare(
         file = f"{network}.{DECLARATIONS_FILENAME}"
         raise Exception(f"Alias {alias} already exists in {file}")
 
-    arguments = ["--sender", sender]
+    arguments = ["--sender", hex(sender)]
     max_fee = "0" if max_fee is None else str(max_fee)
 
     output = run_command(
