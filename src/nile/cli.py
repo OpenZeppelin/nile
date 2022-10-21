@@ -119,7 +119,7 @@ def setup(signer, network):
 @click.option("--max_fee", nargs=1)
 @network_option
 def send(signer, address_or_alias, method, params, network, max_fee=None):
-    """Invoke a contract's method through an Account. Same usage as nile invoke."""
+    """Invoke a contract's method through an Account."""
     account = Account(signer, network)
     print(
         "Calling {} on {} with params: {}".format(
@@ -129,23 +129,6 @@ def send(signer, address_or_alias, method, params, network, max_fee=None):
     # address_or_alias is not normalized first here because
     # Account.send is part of Nile's public API and can accept hex addresses
     out = account.send(address_or_alias, method, params, max_fee=max_fee)
-    print(out)
-
-
-@cli.command()
-@click.argument("address_or_alias", nargs=1)
-@click.argument("method", nargs=1)
-@click.argument("params", nargs=-1)
-@click.option("--max_fee", nargs=1)
-@network_option
-def invoke(address_or_alias, method, params, network, max_fee=None):
-    """Invoke functions of StarkNet smart contracts."""
-    if not is_alias(address_or_alias):
-        address_or_alias = normalize_number(address_or_alias)
-
-    out = call_or_invoke_command(
-        address_or_alias, "invoke", method, params, network, max_fee=max_fee
-    )
     print(out)
 
 

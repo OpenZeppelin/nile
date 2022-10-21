@@ -154,17 +154,16 @@ You can find an example `.env` file in `example.env`. These are private keys onl
 nile setup <private_key_alias>
 
 🚀 Deploying Account
-🌕 artifacts/Account.json successfully deployed to 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
+⏳ ️Deployment of Account successfully sent at 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
+🧾 Transaction hash: 0x17
 📦 Registering deployment as account-0 in localhost.deployments.txt
-Invoke transaction was sent.
-Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
-Transaction hash: 0x17
 ```
 
-A few things to notice here:
+A few things to note here:
 
 1. `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias
-2. This creates a `localhost.accounts.json` file storing all data related to accounts management
+2. This creates or updates `localhost.accounts.json` file storing all data related to accounts management
+3. The creates or updates `localhost.deployments.txt` file storing all data related to deployments
 
 ### `send`
 
@@ -189,23 +188,15 @@ Some things to note:
 - `max_fee` defaults to `0`. Add `--max_fee <max_fee>` to set the maximum fee for the transaction
 - `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction
 
-### `call` and `invoke`
+### `call`
 
-Using `call` and `invoke`, we can perform read and write operations against our local node (or public one using the `--network mainnet` parameter). The syntax is:
-
-```sh
-nile <command> <contract_identifier> <method> [PARAM_1, PARAM2...]
-```
-
-Where `<command>` is either `call` or `invoke` and `<contract_identifier>` is either our contract address or alias, as defined on `deploy`.
+Using `call`, we can perform read operations against our local node or the specified public network. The syntax is:
 
 ```sh
-nile invoke my_contract increase_balance 1
-
-Invoke transaction was sent.
-Contract address: 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
-Transaction hash: 0x1
+nile call <contract_identifier> <method> [PARAM_1, PARAM2...]
 ```
+
+Where `<contract_identifier>` is either our contract address or alias, as defined on `deploy`.
 
 ```sh
 nile call my_contract get_balance
@@ -238,17 +229,6 @@ nile run path/to/script.py
 Please note:
 
 - `localhost` is the default network. Add `--network <network>` to change the network for the script
-
-### `get_declaration` (NRE only)
-
-Return the hash of a declared class. This can be useful in scenarios where a contract class is already declared with an alias prior to running a script.
-
-```python
-def run(nre):
-    predeclared_class = nre.get_declaration("alias")
-```
-
-> Note that this command is only available in the context of scripting in the Nile Runtime Environment.
 
 ### `clean`
 
@@ -391,7 +371,7 @@ def run(nre):
 
 > Please note that the list of accounts includes only those that exist in the local `<network>.accounts.json` file. In a recent release we added a flag to the command, to get predeployed accounts if the network you are connected to is a [starknet-devnet](https://github.com/Shard-Labs/starknet-devnet) instance.
 
-### `get-accounts --predeployed`
+### `get-accounts --predeployed (only starknet-devnet)`
 
 This flag retrieves the predeployed accounts if the network you are connecting to is a [starknet-devnet](https://github.com/Shard-Labs/starknet-devnet) instance.
 
@@ -425,6 +405,18 @@ Retrieves the nonce for the given contract address (usually an account).
 ```sh
 nile get-nonce <contract_address>
 ```
+
+### `get_declaration` (NRE only)
+
+Return the hash of a declared class. This can be useful in scenarios where a contract class is already declared with an alias prior to running a script.
+
+```python
+def run(nre):
+    predeclared_class = nre.get_declaration("alias")
+```
+
+> Note that this command is only available in the context of scripting in the Nile Runtime Environment.
+
 
 ## Short string literals
 
