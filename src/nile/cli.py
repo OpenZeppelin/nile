@@ -12,7 +12,6 @@ from nile.core.compile import compile as compile_command
 from nile.core.declare import declare as declare_command
 from nile.core.deploy import deploy as deploy_command
 from nile.core.init import init as init_command
-from nile.core.install import install as install_command
 from nile.core.node import node as node_command
 from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
@@ -67,12 +66,6 @@ def cli():
 def init():
     """Nile CLI group."""
     init_command()
-
-
-@cli.command()
-def install():
-    """Install Cairo."""
-    install_command()
 
 
 @cli.command()
