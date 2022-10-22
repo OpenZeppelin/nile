@@ -37,8 +37,6 @@ nile init
 ⛵️ Nile project ready! Try running:
 ```
 
-This command provides a template with a makefile to build the project (`make build`) and run tests (`make test`).
-
 ## Usage
 
 ### `node`
@@ -259,14 +257,6 @@ nile clean
 🚮 Deleting localhost.deployments.txt
 🚮 Deleting artifacts directory
 ✨ Workspace clean, keep going!
-```
-
-### `install`
-
-Install the latest version of the Cairo language and the starknet-devnet local node.
-
-```sh
-nile install
 ```
 
 ### `version`
