@@ -147,7 +147,7 @@ nile setup <private_key_alias> [--track, --debug]
 A few things to note here:
 
 1. `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias
-2. `--track` and `--debug` flags : Chain `declare` call with `nile status` + the chosen flag. See `status` below for a complete description.
+2. `--track` and `--debug` flags : Chain `setup` call with `nile status` + the chosen flag. See `status` below for a complete description.
 3. This creates or updates `localhost.accounts.json` file storing all data related to accounts management
 4. The creates or updates `localhost.deployments.txt` file storing all data related to deployments
 
