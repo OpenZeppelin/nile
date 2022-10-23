@@ -218,10 +218,6 @@ Please note:
 
 - `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction.
 
-#### `--track` and `--debug` flags
-
-Chain `invoke` calls with `nile status` + the chosen flag. See `status` below for a complete description.
-
 ### `run`
 
 Execute a script in the context of Nile. The script must implement a `run(nre)` function to receive a `NileRuntimeEnvironment` object exposing Nile's scripting API.
