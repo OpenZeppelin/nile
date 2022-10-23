@@ -109,7 +109,7 @@ def test_declare(mock_declare, mock_get_class):
         network=NETWORK,
         alias=alias,
         max_fee=max_fee,
-        status_type=None
+        status_type=None,
     )
 
 
