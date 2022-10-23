@@ -294,7 +294,7 @@ nile status -t <transaction_hash> [CONTRACTS_FILE, NETWORK, DEBUG]
 #### `--debug`, `-d` flag
 
 Use locally available contracts to make error messages from rejected transactions more explicit.  
-NB: Implies `--track`.
+Note: Implies `--track`.
 
 For example, this transaction returns the very cryptic error message:
 `An ASSERT_EQ instruction failed: 0 != 1.`
