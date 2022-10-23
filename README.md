@@ -112,7 +112,7 @@ Creating artifacts/abis/ to store compilation artifacts
 > NOTICE: this method doesn't use an account, which will be deprecated very soon as StarkNet makes deployments from accounts mandatory.
 
 ```sh
-nile deploy contract --alias my_contract [TRACK, DEBUG]
+nile deploy contract --alias my_contract [--track, --debug]
 
 🚀 Deploying contract
 🌕 artifacts/contract.json successfully deployed to 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
@@ -136,7 +136,7 @@ To avoid accidentally leaking private keys, this command takes an alias instead 
 You can find an example `.env` file in `example.env`. These are private keys only to be used for testing and never in production.
 
 ```sh
-nile setup <private_key_alias> [TRACK, DEBUG]
+nile setup <private_key_alias> [--track, --debug]
 
 🚀 Deploying Account
 ⏳ ️Deployment of Account successfully sent at 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
@@ -156,7 +156,7 @@ A few things to note here:
 Execute a transaction through the `Account` associated with the private key provided. The syntax is:
 
 ```sh
-nile send [TRACK, DEBUG] <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
+nile send [--track , --debug] <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
 ```
 
 For example:
@@ -277,7 +277,7 @@ nile version
 Prints the current status of a transaction.
 
 ```sh
-nile status <transaction_hash> [CONTRACTS_FILE, NETWORK, TRACK, DEBUG]
+nile status <transaction_hash> [CONTRACTS_FILE, NETWORK, --track, --debug]
 ⏳ Querying the network for transaction status...
 ✅ Transaction status: ACCEPTED ON L1. No error in transaction.
 ```
