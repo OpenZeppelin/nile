@@ -5,10 +5,17 @@ import os
 from dotenv import load_dotenv
 
 from nile import accounts, deployments
-from nile.common import QUERY_VERSION, TRANSACTION_VERSION, is_alias
+from nile.common import (
+    QUERY_VERSION,
+    TRANSACTION_VERSION,
+    UNIVERSAL_DEPLOYER_ADDRESS,
+    get_contract_class,
+    is_alias,
+    normalize_number,
+)
 from nile.core.call_or_invoke import call_or_invoke
+from nile.core.declare import declare
 from nile.core.deploy import deploy
-from nile.utils import normalize_number
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
@@ -76,6 +83,49 @@ class Account:
         )
 
         return address, index
+
+    def declare(
+        self, contract_name, max_fee=None, nonce=None, alias=None, overriding_path=None
+    ):
+        """Declare a contract through an Account contract."""
+        if nonce is None:
+            nonce = get_nonce(self.address, self.network)
+
+        if max_fee is None:
+            max_fee = 0
+        else:
+            max_fee = int(max_fee)
+
+        contract_class = get_contract_class(
+            contract_name=contract_name, overriding_path=overriding_path
+        )
+
+        sig_r, sig_s = self.signer.sign_declare(
+            sender=self.address,
+            contract_class=contract_class,
+            nonce=nonce,
+            max_fee=max_fee,
+        )
+
+        return declare(
+            sender=self.address,
+            contract_name=contract_name,
+            signature=[sig_r, sig_s],
+            alias=alias,
+            network=self.network,
+            max_fee=max_fee,
+        )
+
+    def deploy_contract(
+        self, class_hash, salt, unique, calldata, max_fee=None, deployer_address=None
+    ):
+        """Deploy a contract through an Account contract."""
+        return self.send(
+            to=deployer_address or UNIVERSAL_DEPLOYER_ADDRESS,
+            method="deployContract",
+            calldata=[class_hash, salt, unique, len(calldata), *calldata],
+            max_fee=max_fee,
+        )
 
     def send(
         self, address_or_alias, method, calldata, max_fee, nonce=None, query_type=None

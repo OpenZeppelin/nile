@@ -3,6 +3,7 @@
 from starkware.crypto.signature.signature import private_to_stark_key, sign
 from starkware.starknet.core.os.transaction_hash.transaction_hash import (
     TransactionHashPrefix,
+    calculate_declare_transaction_hash,
     calculate_transaction_hash_common,
 )
 from starkware.starknet.definitions.general_config import StarknetChainId
@@ -22,6 +23,20 @@ class Signer:
     def sign(self, message_hash):
         """Sign a message hash."""
         return sign(msg_hash=message_hash, priv_key=self.private_key)
+
+    def sign_declare(self, sender, contract_class, nonce, max_fee):
+        """Sign a declare transaction."""
+        if isinstance(sender, str):
+            sender = int(sender, 16)
+
+        transaction_hash = get_declare_hash(
+            sender=sender,
+            contract_class=contract_class,
+            max_fee=max_fee,
+            nonce=nonce,
+        )
+
+        return self.sign(message_hash=transaction_hash)
 
     def sign_transaction(
         self, sender, calls, nonce, max_fee, version=TRANSACTION_VERSION
@@ -69,6 +84,18 @@ def from_call_to_call_array(calls):
         call_array.append(entry)
         calldata.extend(call[2])
     return (call_array, calldata)
+
+
+def get_declare_hash(sender, contract_class, max_fee, nonce):
+    """Compute the hash of a declare transaction."""
+    return calculate_declare_transaction_hash(
+        contract_class=contract_class,
+        chain_id=StarknetChainId.TESTNET.value,
+        sender_address=sender,
+        max_fee=max_fee,
+        version=TRANSACTION_VERSION,
+        nonce=nonce,
+    )
 
 
 def get_transaction_hash(prefix, account, calldata, nonce, max_fee, version):
