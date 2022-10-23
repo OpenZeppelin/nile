@@ -4,7 +4,6 @@ from nile.common import is_alias
 from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
-from nile.core.declare import declare
 from nile.core.deploy import deploy
 from nile.core.plugins import get_installed_plugins, skip_click_exit
 from nile.utils import normalize_number
@@ -24,16 +23,6 @@ class NileRuntimeEnvironment:
     def compile(self, contracts):
         """Compile a list of contracts."""
         return compile(contracts)
-
-    def declare(self, contract, alias=None, overriding_path=None, status_type=None):
-        """Declare a smart contract class."""
-        return declare(
-            contract_name=contract,
-            network=self.network,
-            alias=alias,
-            overriding_path=overriding_path,
-            status_type=status_type,
-        )
 
     def deploy(
         self,
@@ -62,19 +51,6 @@ class NileRuntimeEnvironment:
         return str(
             call_or_invoke(address_or_alias, "call", method, params, self.network)
         ).split()
-
-    def invoke(self, address_or_alias, method, params=None, status_type=None):
-        """Invoke a mutable function in a smart contract."""
-        if not is_alias(address_or_alias):
-            address_or_alias = normalize_number(address_or_alias)
-        return call_or_invoke(
-            contract=address_or_alias,
-            type="invoke",
-            method=method,
-            params=params,
-            network=self.network,
-            status_type=status_type,
-        )
 
     def get_deployment(self, address_or_alias):
         """Get a deployment by its identifier (address or alias)."""

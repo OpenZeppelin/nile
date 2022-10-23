@@ -4,6 +4,7 @@ from unittest.mock import ANY, MagicMock, patch
 
 import pytest
 
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
 from nile.core.account import Account
 
 KEY = "TEST_KEY"
@@ -63,6 +64,52 @@ def test_deploy_accounts_register(mock_register, mock_deploy):
 
     mock_register.assert_called_once_with(
         account.signer.public_key, MOCK_ADDRESS, MOCK_INDEX, KEY, NETWORK
+    )
+
+
+@patch("nile.core.account.get_contract_class", return_value="ContractClass")
+@patch("nile.core.account.declare")
+def test_declare(mock_declare, mock_get_class):
+    account = Account(KEY, NETWORK)
+    signature = [999, 888]
+    nonce = 4
+    max_fee = 1
+    contract_name = "contract"
+    alias = "my_contract"
+    overriding_path = (BUILD_DIRECTORY, ABIS_DIRECTORY)
+
+    account.signer.sign_declare = MagicMock(return_value=signature)
+
+    account.declare(
+        contract_name,
+        max_fee=max_fee,
+        nonce=nonce,
+        alias=alias,
+        overriding_path=overriding_path,
+    )
+
+    # Check 'get_contract_class' call
+    mock_get_class.assert_called_once_with(
+        contract_name=contract_name, overriding_path=overriding_path
+    )
+
+    # Check values are correctly passed to 'sign_declare'
+    account.signer.sign_declare.assert_called_once_with(
+        sender=account.address,
+        contract_class="ContractClass",
+        nonce=nonce,
+        max_fee=max_fee,
+    )
+
+    # Check values are correctly passed to 'core.declare'
+    mock_declare.assert_called_with(
+        sender=account.address,
+        contract_name=contract_name,
+        signature=signature,
+        network=NETWORK,
+        alias=alias,
+        max_fee=max_fee,
+        status_type=None
     )
 
 

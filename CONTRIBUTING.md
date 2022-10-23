@@ -33,20 +33,20 @@ As a contributor, you are expected to fork this repository, work on your own for
     git checkout -b fix/some-bug-#123
     ```
 
-3. Make your changes, add your files, commit, and push to your fork.
-
-    ```sh
-    git add some_file.py
-    git commit "Fix some bug #123"
-    git push origin fix/some-bug-#123
-    ```
-
-4. Run tests, linter, etc. This can be done by running local continuous integration and make sure it passes.
+3. Make your changes and run tests, linter, etc. This can be done by running local continuous integration and make sure it passes.
 
     ```bash
     tox
     tox -e format
     tox -e lint
+    ```
+
+4. Add your files, commit, and push to your fork.
+
+    ```sh
+    git add some_file.py
+    git commit "Fix some bug #123"
+    git push origin fix/some-bug-#123
     ```
 
 5. Go to [github.com/OpenZeppelin/nile](https://github.com/OpenZeppelin/nile) in your web browser and issue a new pull request.
