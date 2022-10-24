@@ -134,7 +134,8 @@ class Account:
         # get target address with the right format
         target_address = self._get_target_address(address_or_alias)
 
-        calldata = [normalize_number(x) for x in calldata]
+        # process and parse arguments
+        calldata, max_fee, nonce = self._process_arguments(calldata, max_fee, nonce)
 
         # get tx version
         tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
