@@ -207,4 +207,3 @@ def get_addresses_from_string(string):
     return set(
         int(address, 16) for address in re.findall("0x[\\da-f]{1,64}", str(string))
     )
-
