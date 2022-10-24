@@ -4,13 +4,19 @@ from unittest.mock import ANY, MagicMock, patch
 
 import pytest
 
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
+from nile.common import (
+    ABIS_DIRECTORY,
+    BUILD_DIRECTORY,
+    QUERY_VERSION,
+    TRANSACTION_VERSION,
+)
 from nile.core.account import Account
 
 KEY = "TEST_KEY"
 NETWORK = "goerli"
 MOCK_ADDRESS = "0x123"
 MOCK_INDEX = 0
+MAX_FEE = 10
 
 
 @pytest.fixture(autouse=True)
@@ -144,7 +150,11 @@ def test_send_sign_transaction_and_execute():
 
         # Check values are correctly passed to 'sign_transaction'
         account.signer.sign_transaction.assert_called_once_with(
-            calls=[send_args], nonce=nonce, sender=account.address, max_fee=1
+            calls=[send_args],
+            nonce=nonce,
+            sender=account.address,
+            max_fee=1,
+            version=TRANSACTION_VERSION,
         )
 
         # Check values are correctly passed to '__execute__'
@@ -156,4 +166,68 @@ def test_send_sign_transaction_and_execute():
             params=calldata,
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
+            query_flag=None,
         )
+
+
+def test_estimate_fee():
+    account = Account(KEY, NETWORK)
+    # Mock send
+    account.send = MagicMock()
+
+    account.estimate_fee(account.address, "method", [1, 2, 3], max_fee=0)
+
+    account.send.assert_called_once_with(
+        account.address, "method", [1, 2, 3], 0, None, "estimate_fee"
+    )
+
+
+def test_simulate():
+    account = Account(KEY, NETWORK)
+    # Mock send
+    account.send = MagicMock()
+
+    account.simulate(account.address, "method", [1, 2, 3], max_fee=0)
+
+    account.send.assert_called_once_with(
+        account.address, "method", [1, 2, 3], 0, None, "simulate"
+    )
+
+
+@pytest.mark.parametrize("query_type", ["estimate_fee", "simulate"])
+@patch("nile.core.account.get_nonce", return_value=0)
+@patch("nile.core.account.call_or_invoke")
+def test_execute_query(mock_call, mock_nonce, query_type):
+    account = Account(KEY, NETWORK)
+
+    send_args = [account.address, "method", [1, 2, 3]]
+    calldata = ["111", "222", "333"]
+    sig_r, sig_s = [999, 888]
+    return_signature = [calldata, sig_r, sig_s]
+
+    # Mock sign_transaction
+    account.signer.sign_transaction = MagicMock(return_value=return_signature)
+
+    account.send(
+        account.address, "method", [1, 2, 3], max_fee=MAX_FEE, query_type=query_type
+    )
+
+    account.signer.sign_transaction.assert_called_once_with(
+        calls=[send_args],
+        nonce=0,
+        sender=account.address,
+        max_fee=MAX_FEE,
+        version=QUERY_VERSION,
+    )
+
+    # Check query_flag is correctly passed
+    mock_call.assert_called_with(
+        contract=account,
+        max_fee=str(MAX_FEE),
+        method="__execute__",
+        network=NETWORK,
+        params=calldata,
+        signature=[str(sig_r), str(sig_s)],
+        type="invoke",
+        query_flag=query_type,
+    )

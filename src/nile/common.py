@@ -20,6 +20,9 @@ DECLARATIONS_FILENAME = "declarations.txt"
 ACCOUNTS_FILENAME = "accounts.json"
 NODE_FILENAME = "node.json"
 RETRY_AFTER_SECONDS = 30
+TRANSACTION_VERSION = 1
+QUERY_VERSION_BASE = 2**128
+QUERY_VERSION = QUERY_VERSION_BASE + TRANSACTION_VERSION
 UNIVERSAL_DEPLOYER_ADDRESS = (
     # subject to change
     "0x1a8e53128903a412d86f33742d7f907f14ee8db566a14592cced70d52f96222"
@@ -65,6 +68,7 @@ def run_command(
     inputs=None,
     signature=None,
     max_fee=None,
+    query_flag=None,
     overriding_path=None,
 ):
     """Execute CLI command with given parameters."""
@@ -89,6 +93,9 @@ def run_command(
     if max_fee is not None:
         command.append("--max_fee")
         command.append(max_fee)
+
+    if query_flag is not None:
+        command.append(f"--{query_flag}")
 
     if arguments is not None:
         command.extend(arguments)

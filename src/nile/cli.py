@@ -11,7 +11,6 @@ from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
 from nile.core.deploy import deploy as deploy_command
 from nile.core.init import init as init_command
-from nile.core.install import install as install_command
 from nile.core.node import node as node_command
 from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
@@ -69,12 +68,6 @@ def init():
 
 
 @cli.command()
-def install():
-    """Install Cairo."""
-    install_command()
-
-
-@cli.command()
 @click.argument("path", nargs=1)
 @network_option
 def run(path, network):
@@ -127,8 +120,10 @@ def setup(signer, network):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
+@click.option("--simulate", "query", flag_value="simulate")
+@click.option("--estimate_fee", "query", flag_value="estimate_fee")
 @network_option
-def send(signer, address_or_alias, method, params, network, max_fee=None):
+def send(signer, address_or_alias, method, params, network, max_fee=None, query=None):
     """Invoke a contract's method through an Account."""
     account = Account(signer, network)
     print(
@@ -138,7 +133,10 @@ def send(signer, address_or_alias, method, params, network, max_fee=None):
     )
     # address_or_alias is not normalized first here because
     # Account.send is part of Nile's public API and can accept hex addresses
-    out = account.send(address_or_alias, method, params, max_fee=max_fee)
+    out = account.send(
+        address_or_alias, method, params, max_fee=max_fee, query_type=query
+    )
+
     print(out)
 
 
