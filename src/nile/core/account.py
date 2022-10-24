@@ -135,7 +135,7 @@ class Account:
         except StopIteration:
             target_address = to
 
-        calldata = [int(x) for x in calldata]
+        calldata = [normalize_number(x) for x in calldata]
 
         if nonce is None:
             nonce = get_nonce(self.address, self.network)
