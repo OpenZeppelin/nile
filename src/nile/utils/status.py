@@ -66,7 +66,9 @@ def _get_tx_receipt(tx_hash, command, status_type) -> _TransactionReceipt:
             logging.info(f"🕒 {log_output}.")
             return receipt
 
-        logging.info(f"🕒 {log_output}. Trying again in {RETRY_AFTER_SECONDS} seconds...")
+        logging.info(
+            f"🕒 {log_output}. Trying again in {RETRY_AFTER_SECONDS} seconds..."
+        )
         time.sleep(RETRY_AFTER_SECONDS)
 
 
