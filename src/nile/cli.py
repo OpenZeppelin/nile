@@ -120,8 +120,10 @@ def setup(signer, network):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
+@click.option("--simulate", "query", flag_value="simulate")
+@click.option("--estimate_fee", "query", flag_value="estimate_fee")
 @network_option
-def send(signer, address_or_alias, method, params, network, max_fee=None):
+def send(signer, address_or_alias, method, params, network, max_fee=None, query=None):
     """Invoke a contract's method through an Account."""
     account = Account(signer, network)
     print(
@@ -131,7 +133,10 @@ def send(signer, address_or_alias, method, params, network, max_fee=None):
     )
     # address_or_alias is not normalized first here because
     # Account.send is part of Nile's public API and can accept hex addresses
-    out = account.send(address_or_alias, method, params, max_fee=max_fee)
+    out = account.send(
+        address_or_alias, method, params, max_fee=max_fee, query_type=query
+    )
+
     print(out)
 
 

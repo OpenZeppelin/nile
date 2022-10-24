@@ -12,7 +12,8 @@ from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.testing.starknet import Starknet
 
-from nile.signer import TRANSACTION_VERSION, Signer, from_call_to_call_array
+from nile.common import TRANSACTION_VERSION
+from nile.signer import Signer, from_call_to_call_array
 
 SIGNER = Signer(12345678987654321)
 
@@ -40,7 +41,7 @@ async def send_transactions(signer, account, calls, nonce=None, max_fee=0):
 
     # get signature
     calldata, sig_r, sig_s = signer.sign_transaction(
-        account.contract_address, calls, nonce, max_fee
+        account.contract_address, calls, nonce, max_fee, TRANSACTION_VERSION
     )
 
     # craft invoke and execute tx

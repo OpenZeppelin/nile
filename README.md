@@ -167,6 +167,7 @@ Transaction hash: 0x1c
 
 Some things to note:
 
+- This sends the transaction to the network by default, but you can use the `--estimate_fee` flag to estimate the fee without sending the transaction, or the `--simulate` flag to get a traceback of the simulated execution.
 - `max_fee` defaults to `0`. Add `--max_fee <max_fee>` to set the maximum fee for the transaction
 - `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction
 

@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.utils import hex_address
 from nile.common import DECLARATIONS_FILENAME
 from nile.core.declare import alias_exists, declare
+from nile.utils import hex_address
 
 
 @pytest.fixture(autouse=True)
