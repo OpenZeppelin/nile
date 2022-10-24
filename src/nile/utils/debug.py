@@ -2,10 +2,9 @@
 
 import logging
 import os
-import re
 import subprocess
 
-from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
+from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME, get_addresses_from_string
 
 
 def debug_message(error_message, command, network, contracts_file=None):
@@ -41,13 +40,6 @@ def debug_message(error_message, command, network, contracts_file=None):
     logging.info("⏳ Querying the network with identified contracts...")
     output = subprocess.check_output(command)
     return output.decode()
-
-
-def get_addresses_from_string(string):
-    """Return a set of integers with identified addresses in a string."""
-    return set(
-        int(address, 16) for address in re.findall("0x[\\da-f]{1,64}", str(string))
-    )
 
 
 def _get_contracts_data(contracts_file, network, addresses):

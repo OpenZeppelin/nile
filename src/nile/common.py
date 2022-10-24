@@ -200,3 +200,11 @@ def get_hash(contract_name, overriding_path=None):
     """Return the class_hash for a given contract name."""
     contract_class = get_contract_class(contract_name, overriding_path)
     return compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
+
+
+def get_addresses_from_string(string):
+    """Return a set of integers with identified addresses in a string."""
+    return set(
+        int(address, 16) for address in re.findall("0x[\\da-f]{1,64}", str(string))
+    )
+
