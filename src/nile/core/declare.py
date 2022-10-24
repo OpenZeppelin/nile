@@ -48,7 +48,7 @@ def declare(
     if status_type is not None:
         is_accepted = status(tx_hash, network, status_type)
         if is_accepted.status == Status.REJECTED:
-            deployments.unregister(class_hash, network, alias)
+            deployments.unregister(class_hash, network, alias, is_deployment=False)
             return
 
     return class_hash

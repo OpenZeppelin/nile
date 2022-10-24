@@ -28,10 +28,10 @@ def register(address, abi, network, alias):
         fp.write("\n")
 
 
-def unregister(address_or_class_hash, network, alias, abi=None):
+def unregister(address_or_class_hash, network, alias, abi=None, is_deployment=True):
     """Unregister deployment or class hash from file."""
-    file = f"{network}.{DEPLOYMENTS_FILENAME}"
-    to_delete = hex_address(address_or_class_hash)
+    file = f"{network}.{DEPLOYMENTS_FILENAME}" if is_deployment else f"{network}.{DECLARATIONS_FILENAME}"
+    to_delete = hex_address(address_or_class_hash) if is_deployment else hex(address_or_class_hash)
 
     if abi is not None:
         to_delete = f"{to_delete}:{abi}"
