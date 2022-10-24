@@ -21,7 +21,7 @@ def status(
     """Fetch a transaction status.
 
     Optionally track until resolved (accepted on L2 or rejected) and/or
-    use available contracts to help locate the error. Debug implies track.
+    use available artifacts to help locate the error. Debug implies track.
     """
     command = ["starknet", "tx_status", "--hash", hex(tx_hash)]
     command += get_network_parameter_or_set_env(network)
@@ -66,7 +66,7 @@ def _get_tx_receipt(tx_hash, command, status_type) -> _TransactionReceipt:
             logging.info(f"🕒 {log_output}.")
             return receipt
 
-        logging.info(f"🕒 {log_output}. Trying again in a moment...")
+        logging.info(f"🕒 {log_output}. Trying again in {RETRY_AFTER_SECONDS} seconds...")
         time.sleep(RETRY_AFTER_SECONDS)
 
 
