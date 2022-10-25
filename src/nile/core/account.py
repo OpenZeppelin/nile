@@ -135,9 +135,15 @@ class Account:
             max_fee=max_fee,
         )
 
-
     def send(
-        self, address_or_alias, method, calldata, max_fee, nonce=None, query_type=None, watch_mode=None
+        self,
+        address_or_alias,
+        method,
+        calldata,
+        max_fee,
+        nonce=None,
+        query_type=None,
+        watch_mode=None,
     ):
         """Execute a query or invoke call for a tx going through an Account contract."""
         # get target address with the right format

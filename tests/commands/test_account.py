@@ -198,7 +198,7 @@ def test_simulate():
 
 
 @pytest.mark.parametrize(
-    "query_type, watch_mode", [("estimate_fee", "track"),("simulate", "debug")]
+    "query_type, watch_mode", [("estimate_fee", "track"), ("simulate", "debug")]
 )
 @patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
@@ -214,7 +214,12 @@ def test_execute_query_and_watch_mode(mock_call, mock_nonce, query_type, watch_m
     account.signer.sign_transaction = MagicMock(return_value=return_signature)
 
     account.send(
-        account.address, "method", [1, 2, 3], max_fee=MAX_FEE, query_type=query_type, watch_mode=watch_mode
+        account.address,
+        "method",
+        [1, 2, 3],
+        max_fee=MAX_FEE,
+        query_type=query_type,
+        watch_mode=watch_mode,
     )
 
     account.signer.sign_transaction.assert_called_once_with(
