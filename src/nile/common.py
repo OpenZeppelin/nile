@@ -70,6 +70,7 @@ def run_command(
     max_fee=None,
     query_flag=None,
     overriding_path=None,
+    mainnet_token=None,
 ):
     """Execute CLI command with given parameters."""
     command = ["starknet", operation]
@@ -93,6 +94,10 @@ def run_command(
     if max_fee is not None:
         command.append("--max_fee")
         command.append(max_fee)
+
+    if mainnet_token is not None:
+        command.append("--token")
+        command.append(mainnet_token)
 
     if query_flag is not None:
         command.append(f"--{query_flag}")

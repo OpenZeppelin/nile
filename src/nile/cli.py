@@ -40,6 +40,14 @@ def network_option(f):
     )(f)
 
 
+def mainnet_token_option(f):
+    """Configure TOKEN option for the cli."""
+    return click.option(
+        "--token",
+        help="Used for deploying contracts in Alpha MainNet.",
+    )(f)
+
+
 def _validate_network(_ctx, _param, value):
     """Normalize network values."""
     # normalize goerli
@@ -81,9 +89,10 @@ def run(path, network):
 @network_option
 @click.option("--alias")
 @click.option("--abi")
-def deploy(artifact, arguments, network, alias, abi=None):
+@mainnet_token_option
+def deploy(artifact, arguments, network, alias, abi=None, token=None):
     """Deploy StarkNet smart contract."""
-    deploy_command(artifact, arguments, network, alias, abi=abi)
+    deploy_command(artifact, arguments, network, alias, abi=abi, mainnet_token=token)
 
 
 @cli.command()
@@ -92,9 +101,16 @@ def deploy(artifact, arguments, network, alias, abi=None):
 @click.option("--max_fee", nargs=1)
 @click.option("--alias")
 @click.option("--overriding_path")
+@mainnet_token_option
 @network_option
 def declare(
-    signer, contract_name, network, max_fee=None, alias=None, overriding_path=None
+    signer,
+    contract_name,
+    network,
+    max_fee=None,
+    alias=None,
+    overriding_path=None,
+    token=None,
 ):
     """Declare StarkNet smart contract."""
     account = Account(signer, network)
@@ -103,6 +119,7 @@ def declare(
         alias=alias,
         max_fee=max_fee,
         overriding_path=overriding_path,
+        mainnet_token=token,
     )
 
 

@@ -25,11 +25,23 @@ class NileRuntimeEnvironment:
         return compile(contracts)
 
     def deploy(
-        self, contract, arguments=None, alias=None, overriding_path=None, abi=None
+        self,
+        contract,
+        arguments=None,
+        alias=None,
+        overriding_path=None,
+        abi=None,
+        mainnet_token=None,
     ):
         """Deploy a smart contract."""
         return deploy(
-            contract, arguments, self.network, alias, overriding_path, abi=abi
+            contract,
+            arguments,
+            self.network,
+            alias,
+            overriding_path,
+            abi=abi,
+            mainnet_token=mainnet_token,
         )
 
     def call(self, address_or_alias, method, params=None):
