@@ -53,7 +53,7 @@ def test_deploy(mock_deploy):
             NETWORK,
             f"account-{account.index}",
             ANY,
-            status_type=None,
+            watch_mode=None,
         )
 
 
@@ -109,7 +109,7 @@ def test_declare(mock_declare, mock_get_class):
         network=NETWORK,
         alias=alias,
         max_fee=max_fee,
-        status_type=None,
+        watch_mode=None,
     )
 
 
@@ -158,5 +158,5 @@ def test_send_sign_transaction_and_execute():
             params=calldata,
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
-            status_type=None,
+            watch_mode=None,
         )

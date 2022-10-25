@@ -27,7 +27,7 @@ load_dotenv()
 class Account:
     """Account contract abstraction."""
 
-    def __init__(self, signer, network, predeployed_info=None, status_type=None):
+    def __init__(self, signer, network, predeployed_info=None, watch_mode=None):
         """Get or deploy an Account contract for the given private key."""
         try:
             if predeployed_info is None:
@@ -58,11 +58,11 @@ class Account:
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
-            address, index = self.deploy(status_type=status_type)
+            address, index = self.deploy(watch_mode=watch_mode)
             self.address = address
             self.index = index
 
-    def deploy(self, status_type=None):
+    def deploy(self, watch_mode=None):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
@@ -74,7 +74,7 @@ class Account:
             self.network,
             f"account-{index}",
             overriding_path,
-            status_type=status_type,
+            watch_mode=watch_mode,
         )
 
         accounts.register(
@@ -90,7 +90,7 @@ class Account:
         nonce=None,
         alias=None,
         overriding_path=None,
-        status_type=None,
+        watch_mode=None,
     ):
         """Declare a contract through an Account contract."""
         if nonce is None:
@@ -119,7 +119,7 @@ class Account:
             alias=alias,
             network=self.network,
             max_fee=max_fee,
-            status_type=status_type,
+            watch_mode=watch_mode,
         )
 
     def deploy_contract(
@@ -133,7 +133,7 @@ class Account:
             max_fee=max_fee,
         )
 
-    def send(self, to, method, calldata, max_fee=None, nonce=None, status_type=None):
+    def send(self, to, method, calldata, max_fee=None, nonce=None, watch_mode=None):
         """Execute a tx going through an Account contract."""
         if not is_alias(to):
             to = normalize_number(to)
@@ -168,5 +168,5 @@ class Account:
             network=self.network,
             signature=[str(sig_r), str(sig_s)],
             max_fee=str(max_fee),
-            status_type=status_type,
+            watch_mode=watch_mode,
         )

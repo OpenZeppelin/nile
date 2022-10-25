@@ -15,7 +15,7 @@ def declare(
     alias=None,
     overriding_path=None,
     max_fee=None,
-    status_type=None,
+    watch_mode=None,
 ):
     """Declare StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")
@@ -45,8 +45,8 @@ def declare(
 
     deployments.register_class_hash(class_hash, network, alias)
 
-    if status_type is not None:
-        is_accepted = status(tx_hash, network, status_type)
+    if watch_mode is not None:
+        is_accepted = status(tx_hash, network, watch_mode)
         if is_accepted.status == Status.REJECTED:
             deployments.unregister(class_hash, network, alias, is_deployment=False)
             return

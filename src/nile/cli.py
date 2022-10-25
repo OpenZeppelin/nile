@@ -87,10 +87,10 @@ def run(path, network):
 @click.argument("arguments", nargs=-1)
 @network_option
 @click.option("--alias")
-@click.option("--track", "-t", "status_type", flag_value="track")
-@click.option("--debug", "-d", "status_type", flag_value="debug")
+@click.option("--track", "-t", "watch_mode", flag_value="track")
+@click.option("--debug", "-d", "watch_mode", flag_value="debug")
 @click.option("--abi")
-def deploy(artifact, arguments, network, alias, status_type, abi=None):
+def deploy(artifact, arguments, network, alias, watch_mode, abi=None):
     """Deploy StarkNet smart contract."""
     deploy_command(
         contract_name=artifact,
@@ -98,7 +98,7 @@ def deploy(artifact, arguments, network, alias, status_type, abi=None):
         network=network,
         alias=alias,
         abi=abi,
-        status_type=status_type,
+        watch_mode=watch_mode,
     )
 
 
@@ -107,15 +107,15 @@ def deploy(artifact, arguments, network, alias, status_type, abi=None):
 @click.argument("contract_name", nargs=1)
 @click.option("--max_fee", nargs=1)
 @click.option("--alias")
-@click.option("--track", "-t", "status_type", flag_value="track")
-@click.option("--debug", "-d", "status_type", flag_value="debug")
+@click.option("--track", "-t", "watch_mode", flag_value="track")
+@click.option("--debug", "-d", "watch_mode", flag_value="debug")
 @click.option("--overriding_path")
 @network_option
 def declare(
     signer,
     contract_name,
     network,
-    status_type,
+    watch_mode,
     max_fee=None,
     alias=None,
     overriding_path=None,
@@ -127,18 +127,18 @@ def declare(
         alias=alias,
         max_fee=max_fee,
         overriding_path=overriding_path,
-        status_type=status_type,
+        watch_mode=watch_mode,
     )
 
 
 @cli.command()
 @click.argument("signer", nargs=1)
 @network_option
-@click.option("--track", "-t", "status_type", flag_value="track")
-@click.option("--debug", "-d", "status_type", flag_value="debug")
-def setup(signer, network, status_type):
+@click.option("--track", "-t", "watch_mode", flag_value="track")
+@click.option("--debug", "-d", "watch_mode", flag_value="debug")
+def setup(signer, network, watch_mode):
     """Set up an Account contract."""
-    Account(signer, network, status_type=status_type)
+    Account(signer, network, watch_mode=watch_mode)
 
 
 @cli.command()
@@ -147,10 +147,10 @@ def setup(signer, network, status_type):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
-@click.option("--track", "-t", "status_type", flag_value="track")
-@click.option("--debug", "-d", "status_type", flag_value="debug")
+@click.option("--track", "-t", "watch_mode", flag_value="track")
+@click.option("--debug", "-d", "watch_mode", flag_value="debug")
 @network_option
-def send(signer, address_or_alias, method, params, network, status_type, max_fee=None):
+def send(signer, address_or_alias, method, params, network, watch_mode, max_fee=None):
     """Invoke a contract's method through an Account."""
     account = Account(signer, network)
     print(
@@ -164,7 +164,7 @@ def send(signer, address_or_alias, method, params, network, status_type, max_fee
         method=method,
         calldata=params,
         max_fee=max_fee,
-        status_type=status_type,
+        watch_mode=watch_mode,
     )
 
 
@@ -278,10 +278,10 @@ def debug(tx_hash, network, contracts_file):
 @cli.command()
 @click.argument("tx_hash", nargs=1)
 @network_option
-@click.option("--track", "-t", "status_type", flag_value="track")
-@click.option("--debug", "-d", "status_type", flag_value="debug")
+@click.option("--track", "-t", "watch_mode", flag_value="track")
+@click.option("--debug", "-d", "watch_mode", flag_value="debug")
 @click.option("--contracts_file", nargs=1)
-def status(tx_hash, network, status_type, contracts_file):
+def status(tx_hash, network, watch_mode, contracts_file):
     """
     Get the status of a transaction.
 
@@ -297,7 +297,7 @@ def status(tx_hash, network, status_type, contracts_file):
     status_command(
         normalize_number(tx_hash),
         network,
-        status_type=status_type,
+        watch_mode=watch_mode,
         contracts_file=contracts_file,
     )
 

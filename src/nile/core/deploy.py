@@ -14,7 +14,7 @@ def deploy(
     alias,
     overriding_path=None,
     abi=None,
-    status_type=None,
+    watch_mode=None,
 ):
     """Deploy StarkNet smart contracts."""
     logging.info(f"🚀 Deploying {contract_name}")
@@ -39,8 +39,8 @@ def deploy(
 
     deployments.register(address, register_abi, network, alias)
 
-    if status_type is not None:
-        is_accepted = status(tx_hash, network, status_type)
+    if watch_mode is not None:
+        is_accepted = status(tx_hash, network, watch_mode)
         if is_accepted.status == Status.REJECTED:
             deployments.unregister(address, network, alias, abi=register_abi)
             return
