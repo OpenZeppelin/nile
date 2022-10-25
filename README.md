@@ -121,11 +121,12 @@ nile deploy contract --alias my_contract [--track, --debug]
 
 A few things to notice here:
 
-1. `nile deploy <contract_name>` looks for an artifact with the same name
-2. This created a `localhost.deployments.txt` file storing all data related to my deployment
-3. The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
-4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
-5. By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
+- `nile deploy <contract_name>` looks for an artifact with the same name.
+- This created a `localhost.deployments.txt` file storing all data related to my deployment.
+- The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
+- By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
+- By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
+- `--track` and `--debug` flags can be used to chain the `setup` call with `nile status` + the chosen flag. See `status` below for a complete description.
 
 ### `setup`
 
@@ -146,10 +147,10 @@ nile setup <private_key_alias> [--track, --debug]
 
 A few things to note here:
 
-1. `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias
-2. `--track` and `--debug` flags : Chain `setup` call with `nile status` + the chosen flag. See `status` below for a complete description.
-3. This creates or updates `localhost.accounts.json` file storing all data related to accounts management
-4. The creates or updates `localhost.deployments.txt` file storing all data related to deployments
+- `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias.
+- This creates or updates `localhost.accounts.json` file storing all data related to accounts management.
+- The creates or updates `localhost.deployments.txt` file storing all data related to deployments.
+- `--track` and `--debug` flags can be used to chain the `setup` call with `nile status` + the chosen flag. See `status` below for a complete description.
 
 ### `send`
 
@@ -173,10 +174,7 @@ Some things to note:
 
 - `max_fee` defaults to `0`. Add `--max_fee <max_fee>` to set the maximum fee for the transaction.
 - `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction.
-
-#### `--track` and `--debug` flags
-
-Chain `send` calls with `nile status` + the chosen flag. See `status` below for a complete description.
+- `--track` and `--debug` flags can be used to chain the `send` call with `nile status` + the chosen flag. See `status` below for a complete description.
 
 ### `declare`
 
@@ -193,10 +191,11 @@ nile declare <private_key_alias> contract --alias my_contract
 
 A few things to notice here:
 
-1. `nile declare <private_key_alias> <contract_name>` looks for an artifact with name `<contract_name>`
-2. This creates or updates a `localhost.declarations.txt` file storing all data related to your declarations
-3. The `--alias` parameter lets you create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
-4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
+- `nile declare <private_key_alias> <contract_name>` looks for an artifact with name `<contract_name>`.
+- This creates or updates a `localhost.declarations.txt` file storing all data related to your declarations.
+- The `--alias` parameter lets you create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
+- By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
+- `--track` and `--debug` flags can be used to chain the `declare` call with `nile status` + the chosen flag. See `status` below for a complete description.
 
 ### `call`
 
