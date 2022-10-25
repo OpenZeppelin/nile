@@ -49,6 +49,7 @@ def test_alias_exists():
                 "arguments": ["--sender", hex_address(SENDER)],
                 "overriding_path": None,
                 "max_fee": "0",
+                "mainnet_token": None,
             },
             [HASH, NETWORK, None],  # expected register
         ),
@@ -61,6 +62,7 @@ def test_alias_exists():
                 "arguments": ["--sender", hex_address(SENDER)],
                 "overriding_path": None,
                 "max_fee": "0",
+                "mainnet_token": None,
             },
             [HASH, NETWORK, ALIAS],  # expected register
         ),
@@ -73,6 +75,7 @@ def test_alias_exists():
                 "arguments": ["--sender", hex_address(SENDER)],
                 "overriding_path": PATH,
                 "max_fee": "0",
+                "mainnet_token": None,
             },
             [HASH, NETWORK, ALIAS],  # expected register
         ),
@@ -85,6 +88,7 @@ def test_alias_exists():
                 "arguments": ["--sender", hex_address(SENDER)],
                 "overriding_path": PATH,
                 "max_fee": str(MAX_FEE),
+                "mainnet_token": None,
             },
             [HASH, NETWORK, ALIAS],  # expected register
         ),
