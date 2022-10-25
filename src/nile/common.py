@@ -197,4 +197,6 @@ def get_contract_class(contract_name, overriding_path=None):
 def get_hash(contract_name, overriding_path=None):
     """Return the class_hash for a given contract name."""
     contract_class = get_contract_class(contract_name, overriding_path)
-    return hex(compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash))
+    return hex(
+        compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
+    )
