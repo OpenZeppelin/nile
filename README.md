@@ -33,12 +33,9 @@ nile init
 ...
 ✨  Cairo successfully installed!
 ...
-✅ Dependencies successfully installed
 🗄  Creating project directory tree
 ⛵️ Nile project ready! Try running:
 ```
-
-This command creates the project directory structure and installs `cairo-lang`, `starknet-devnet`, `pytest`, and `pytest-asyncio` for you. The template includes a makefile to build the project (`make build`) and run tests (`make test`).
 
 ## Usage
 
@@ -172,6 +169,7 @@ Transaction hash: 0x1c
 
 Some things to note:
 
+- This sends the transaction to the network by default, but you can use the `--estimate_fee` flag to estimate the fee without sending the transaction, or the `--simulate` flag to get a traceback of the simulated execution.
 - `max_fee` defaults to `0`. Add `--max_fee <max_fee>` to set the maximum fee for the transaction.
 - `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction.
 - `--track` and `--debug` flags can be used to chain the `send` call with `nile status` + the chosen flag. See `status` below for a complete description.
@@ -249,14 +247,6 @@ nile clean
 🚮 Deleting localhost.deployments.txt
 🚮 Deleting artifacts directory
 ✨ Workspace clean, keep going!
-```
-
-### `install`
-
-Install the latest version of the Cairo language and the starknet-devnet local node.
-
-```sh
-nile install
 ```
 
 ### `version`

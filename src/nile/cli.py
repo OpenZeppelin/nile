@@ -11,7 +11,6 @@ from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
 from nile.core.deploy import deploy as deploy_command
 from nile.core.init import init as init_command
-from nile.core.install import install as install_command
 from nile.core.node import node as node_command
 from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
@@ -66,12 +65,6 @@ def cli():
 def init():
     """Nile CLI group."""
     init_command()
-
-
-@cli.command()
-def install():
-    """Install Cairo."""
-    install_command()
 
 
 @cli.command()
@@ -147,10 +140,12 @@ def setup(signer, network, watch_mode):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
+@network_option
 @click.option("--track", "-t", "watch_mode", flag_value="track")
 @click.option("--debug", "-d", "watch_mode", flag_value="debug")
-@network_option
-def send(signer, address_or_alias, method, params, network, watch_mode, max_fee=None):
+@click.option("--simulate", "query", flag_value="simulate")
+@click.option("--estimate_fee", "query", flag_value="estimate_fee")
+def send(signer, address_or_alias, method, params, network, watch_mode, max_fee=None, query=None):
     """Invoke a contract's method through an Account."""
     account = Account(signer, network)
     print(
@@ -158,13 +153,10 @@ def send(signer, address_or_alias, method, params, network, watch_mode, max_fee=
             method, address_or_alias, [x for x in params]
         )
     )
-    # Account.send is part of the public API, so it accepts addresses as string
+    # address_or_alias is not normalized first here because
+    # Account.send is part of Nile's public API and can accept hex addresses
     account.send(
-        to=address_or_alias,
-        method=method,
-        calldata=params,
-        max_fee=max_fee,
-        watch_mode=watch_mode,
+        address_or_alias, method, params, max_fee=max_fee, query_type=query, watch_mode=watch_mode,
     )
 
 

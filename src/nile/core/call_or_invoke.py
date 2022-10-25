@@ -17,9 +17,22 @@ def call_or_invoke(
     network,
     signature=None,
     max_fee=None,
+    query_flag=None,
     watch_mode=None,
 ):
-    """Call or invoke functions of StarkNet smart contracts."""
+    """
+    Call or invoke functions of StarkNet smart contracts.
+
+    @param contract: can be an address, an alias, or an Account instance.
+    @param type: can be either call or invoke.
+    @param method: the targeted function.
+    @param params: the targeted function arguments.
+    @param network: goerli, mainnet, or predefined networks file.
+    @param signature: optional signature for invoke transactions.
+    @param max_fee: optional max fee for invoke transactions.
+    @param query_flag: either simulate or estimate_fee.
+    @param watch_mode: either track or debug.
+    """
     if isinstance(contract, account.Account):
         address = contract.address
         abi = contract.abi_path
@@ -43,6 +56,7 @@ def call_or_invoke(
         arguments=arguments,
         signature=signature,
         max_fee=max_fee,
+        query_flag=query_flag,
     )
 
     if type != "call" and output:
