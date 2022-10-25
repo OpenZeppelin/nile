@@ -170,15 +170,21 @@ def test_send_sign_transaction_and_execute():
         )
 
 
+def test_send_defaults():
+    account = Account(KEY, NETWORK)
+
+    account.send(account.address, "method", [1, 2, 3])
+
+
 def test_estimate_fee():
     account = Account(KEY, NETWORK)
     # Mock send
     account.send = MagicMock()
 
-    account.estimate_fee(account.address, "method", [1, 2, 3], max_fee=0)
+    account.estimate_fee(account.address, "method", [1, 2, 3])
 
     account.send.assert_called_once_with(
-        account.address, "method", [1, 2, 3], 0, None, "estimate_fee"
+        account.address, "method", [1, 2, 3], None, None, "estimate_fee"
     )
 
 
@@ -187,10 +193,10 @@ def test_simulate():
     # Mock send
     account.send = MagicMock()
 
-    account.simulate(account.address, "method", [1, 2, 3], max_fee=0)
+    account.simulate(account.address, "method", [1, 2, 3])
 
     account.send.assert_called_once_with(
-        account.address, "method", [1, 2, 3], 0, None, "simulate"
+        account.address, "method", [1, 2, 3], None, None, "simulate"
     )
 
 
