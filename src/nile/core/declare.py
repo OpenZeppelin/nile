@@ -4,7 +4,7 @@ import logging
 from nile import deployments
 from nile.common import DECLARATIONS_FILENAME, parse_information, run_command
 from nile.utils import hex_address
-from nile.utils.status import Status, status
+from nile.utils.status import status
 
 
 def declare(
