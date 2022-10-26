@@ -108,6 +108,8 @@ Creating artifacts/abis/ to store compilation artifacts
 
 > NOTICE: this method doesn't use an account, which will be deprecated very soon as StarkNet makes deployments from accounts mandatory.
 
+> Token for declarations to Alpha MainNet can be set with the `--token` option.
+
 ```sh
 nile deploy contract --alias my_contract
 
@@ -172,6 +174,8 @@ Some things to note:
 - `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction
 
 ### `declare`
+
+> Token for declarations to Alpha MainNet can be set with the `--token` option.
 
 Very similar to `send`, but for declaring a contract based on its name through an account.
 
