@@ -47,7 +47,7 @@ def _get_tx_receipt(tx_hash, command, watch_mode) -> _TransactionReceipt:
     while True:
         raw_receipt = json.loads(subprocess.check_output(command))
         receipt = _TransactionReceipt(
-            tx_hash, Status.from_receipt(raw_receipt), raw_receipt
+            tx_hash, TxStatus.from_receipt(raw_receipt), raw_receipt
         )
 
         if receipt.status.is_rejected:
@@ -83,12 +83,12 @@ class TxStatus(Enum):
     @property
     def is_accepted(self):
         """Whether transaction status is considered accepted."""
-        return self in {Status.ACCEPTED_ON_L1, Status.ACCEPTED_ON_L2}
+        return self in {TxStatus.ACCEPTED_ON_L1, TxStatus.ACCEPTED_ON_L2}
 
     @property
     def is_rejected(self):
         """Whether transaction status is considered rejected."""
-        return self == Status.REJECTED
+        return self == TxStatus.REJECTED
 
     def __str__(self):
         """Restore StarkNet status label (with spaces)."""
