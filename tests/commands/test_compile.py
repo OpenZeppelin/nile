@@ -126,7 +126,7 @@ def test__compile_auto_account_flag(mock_subprocess, contract_name, flag):
 
     _compile_contract(path)
 
-    returned_subprocess = [
+    command = [
         "starknet-compile",
         path,
         f"--cairo_path={CONTRACTS_DIRECTORY}",
@@ -137,10 +137,10 @@ def test__compile_auto_account_flag(mock_subprocess, contract_name, flag):
     ]
 
     if flag is not False:
-        returned_subprocess.append(flag)
+        command.append(flag)
 
     mock_subprocess.Popen.assert_called_once_with(
-        returned_subprocess,
+        command,
         stdout=mock_subprocess.PIPE,
     )
     mock_process.communicate.assert_called_once()
@@ -166,7 +166,7 @@ def test__compile_cairo_path(
     # Use named arguments to allow changing the order without modifying tests
     compile([path], directory=directory, cairo_path=cairo_path)
 
-    returned_subprocess = [
+    command = [
         "starknet-compile",
         path,
         f"--cairo_path={expected_internal_cairo_path}",
@@ -177,7 +177,7 @@ def test__compile_cairo_path(
     ]
 
     mock_subprocess.Popen.assert_called_once_with(
-        returned_subprocess,
+        command,
         stdout=mock_subprocess.PIPE,
     )
     mock_process.communicate.assert_called_once()
