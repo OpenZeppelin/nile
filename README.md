@@ -120,7 +120,7 @@ A few things to notice here:
 
 - `nile deploy <contract_name>` looks for an artifact with the same name.
 - This creates or updates the` localhost.deployments.txt` file storing all data related to deployments.
-- The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
+- The `--alias` parameter creates a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
 - By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 - By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
 - `--track` and `--debug` flags can be used to chain the `setup` call with `nile status` + the chosen flag. See `status` below for a complete description.
