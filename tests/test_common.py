@@ -14,25 +14,60 @@ LIST2 = [1, 2, 3, [4, 5, 6]]
 LIST3 = [1, 2, 3, [4, 5, 6, [7, 8, 9]]]
 
 
-@pytest.mark.parametrize("operation", ["invoke", "call"])
+@pytest.mark.only
+@pytest.mark.parametrize(
+    "operation, signature, max_fee, query_flag, mainnet_token",
+    [
+        ("invoke", None, 0, "simulate", None),
+        ("call", None, None, None, None),
+        ("deploy", None, 5, None, "token"),
+        ("declare", None, 3, "estimate_fee", "token2"),
+    ],
+)
 @patch("nile.common.subprocess.check_output")
-def test_run_command(mock_subprocess, operation):
+def test_run_command(
+    mock_subprocess, operation, signature, max_fee, query_flag, mainnet_token
+):
 
     run_command(
-        contract_name=CONTRACT, network=NETWORK, operation=operation, inputs=ARGS
+        contract_name=CONTRACT,
+        network=NETWORK,
+        operation=operation,
+        inputs=ARGS,
+        signature=signature,
+        max_fee=max_fee,
+        query_flag=query_flag,
+        mainnet_token=mainnet_token,
     )
 
-    mock_subprocess.assert_called_once_with(
-        [
-            "starknet",
-            operation,
-            "--contract",
-            f"{BUILD_DIRECTORY}/{CONTRACT}.json",
-            "--inputs",
-            *ARGS,
-            "--no_wallet",
-        ]
-    )
+    exp_command = [
+        "starknet",
+        operation,
+        "--contract",
+        f"{BUILD_DIRECTORY}/{CONTRACT}.json",
+        "--inputs",
+        *ARGS,
+    ]
+
+    # Add signature
+    if signature is not None:
+        exp_command.extend(["--signature", signature])
+
+    # Add max_fee
+    if max_fee is not None:
+        exp_command.extend(["--max_fee", max_fee])
+
+    # Add mainnet_token
+    if mainnet_token is not None:
+        exp_command.extend(["--token", mainnet_token])
+
+    # Add query_flag
+    if query_flag is not None:
+        exp_command.extend([f"--{query_flag}"])
+
+    exp_command.append("--no_wallet")
+
+    mock_subprocess.assert_called_once_with(exp_command)
 
 
 @pytest.mark.parametrize(
