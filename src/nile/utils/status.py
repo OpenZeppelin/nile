@@ -70,7 +70,7 @@ def _get_tx_receipt(tx_hash, command, watch_mode) -> _TransactionReceipt:
         time.sleep(RETRY_AFTER_SECONDS)
 
 
-class Status(Enum):
+class TxStatus(Enum):
     """StarkNet Transactions Status."""
 
     REJECTED = 0

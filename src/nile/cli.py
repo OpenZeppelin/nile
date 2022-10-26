@@ -298,7 +298,7 @@ def status(tx_hash, network, watch_mode, contracts_file):
       Get (wait for) the final status of a transaction (REJECTED / ACCEPTED ON L2)
 
     $ nile status --debug transaction_hash
-      Same as `status --track` then locate errors if rejected using local contracts
+      Same as `status --track` then locate errors if rejected using local artifacts
     """
     status_command(
         normalize_number(tx_hash),
