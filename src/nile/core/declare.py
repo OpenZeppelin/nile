@@ -46,8 +46,7 @@ def declare(
     deployments.register_class_hash(class_hash, network, alias)
 
     if watch_mode is not None:
-        is_accepted = status(tx_hash, network, watch_mode)
-        if is_accepted.status == Status.REJECTED:
+        if status(tx_hash, network, watch_mode).status.is_rejected:
             deployments.unregister(class_hash, network, alias, is_deployment=False)
             return
 
