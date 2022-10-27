@@ -14,6 +14,11 @@ def init():
     with open("accounts.json", "w") as file:
         file.write("{}")
 
+    logging.info("🔑  Creating .env file")
+
+    with open(".env", "w") as file:
+        file.write("# ALIAS = PRIVATE_KEY")
+
     logging.info("⛵️ Nile project ready! Try running:")
     logging.info("")
     logging.info("nile compile")
