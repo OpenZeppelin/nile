@@ -37,6 +37,13 @@ nile init
 ⛵️ Nile project ready! Try running:
 ```
 
+`nile init` builds the project structure by:
+
+- Creating directories for `contracts` and `tests`.
+- Populating these directories with test modules.
+- Generating a `.env` to store private key aliases.
+- Setting up a `node.json` for initializing a local node.
+
 ## Usage
 
 ### `node`
