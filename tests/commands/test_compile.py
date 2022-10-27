@@ -163,7 +163,6 @@ def test__compile_cairo_path(
     mock_process = Mock()
     mock_subprocess.Popen.return_value = mock_process
 
-    # Use named arguments to allow changing the order without modifying tests
     compile([path], directory=directory, cairo_path=cairo_path)
 
     command = [
