@@ -40,6 +40,13 @@ def network_option(f):
     )(f)
 
 
+def watch_option(f):
+    """Handle track and debug options for the cli."""
+    f = click.option("--track", "-t", "watch_mode", flag_value="track")(f)
+    f = click.option("--debug", "-d", "watch_mode", flag_value="debug")(f)
+    return f
+
+
 def _validate_network(_ctx, _param, value):
     """Normalize network values."""
     # normalize goerli
@@ -80,8 +87,7 @@ def run(path, network):
 @click.argument("arguments", nargs=-1)
 @network_option
 @click.option("--alias")
-@click.option("--track", "-t", "watch_mode", flag_value="track")
-@click.option("--debug", "-d", "watch_mode", flag_value="debug")
+@watch_option
 @click.option("--abi")
 def deploy(artifact, arguments, network, alias, watch_mode, abi=None):
     """Deploy StarkNet smart contract."""
@@ -100,8 +106,7 @@ def deploy(artifact, arguments, network, alias, watch_mode, abi=None):
 @click.argument("contract_name", nargs=1)
 @click.option("--max_fee", nargs=1)
 @click.option("--alias")
-@click.option("--track", "-t", "watch_mode", flag_value="track")
-@click.option("--debug", "-d", "watch_mode", flag_value="debug")
+@watch_option
 @click.option("--overriding_path")
 @network_option
 def declare(
@@ -127,8 +132,7 @@ def declare(
 @cli.command()
 @click.argument("signer", nargs=1)
 @network_option
-@click.option("--track", "-t", "watch_mode", flag_value="track")
-@click.option("--debug", "-d", "watch_mode", flag_value="debug")
+@watch_option
 def setup(signer, network, watch_mode):
     """Set up an Account contract."""
     Account(signer, network, watch_mode=watch_mode)
@@ -141,8 +145,7 @@ def setup(signer, network, watch_mode):
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
 @network_option
-@click.option("--track", "-t", "watch_mode", flag_value="track")
-@click.option("--debug", "-d", "watch_mode", flag_value="debug")
+@watch_option
 @click.option("--simulate", "query", flag_value="simulate")
 @click.option("--estimate_fee", "query", flag_value="estimate_fee")
 def send(
@@ -284,8 +287,7 @@ def debug(tx_hash, network, contracts_file):
 @cli.command()
 @click.argument("tx_hash", nargs=1)
 @network_option
-@click.option("--track", "-t", "watch_mode", flag_value="track")
-@click.option("--debug", "-d", "watch_mode", flag_value="debug")
+@watch_option
 @click.option("--contracts_file", nargs=1)
 def status(tx_hash, network, watch_mode, contracts_file):
     """
