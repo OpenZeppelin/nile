@@ -114,7 +114,7 @@ def declare(
     contract_name,
     network,
     watch_mode,
-    max_fee=None,
+    max_fee,
     alias=None,
     overriding_path=None,
 ):
@@ -154,9 +154,9 @@ def send(
     method,
     params,
     network,
+    max_fee,
+    query,
     watch_mode,
-    max_fee=None,
-    query=None,
 ):
     """Invoke a contract's method through an Account."""
     account = Account(signer, network)
