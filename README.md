@@ -33,12 +33,9 @@ nile init
 ...
 ✨  Cairo successfully installed!
 ...
-✅ Dependencies successfully installed
 🗄  Creating project directory tree
 ⛵️ Nile project ready! Try running:
 ```
-
-This command creates the project directory structure and installs `cairo-lang`, `starknet-devnet`, `pytest`, and `pytest-asyncio` for you. The template includes a makefile to build the project (`make build`) and run tests (`make test`).
 
 ## Usage
 
@@ -109,6 +106,8 @@ Creating artifacts/abis/ to store compilation artifacts
 
 ### `deploy`
 
+> NOTICE: this method doesn't use an account, which will be deprecated very soon as StarkNet makes deployments from accounts mandatory.
+
 ```sh
 nile deploy contract --alias my_contract
 
@@ -125,23 +124,6 @@ A few things to notice here:
 4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 5. By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
 
-### `declare`
-
-```sh
-nile declare contract --alias my_contract
-
-🚀 Declaring contract
-⏳ Declaration of contract successfully sent at 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
-📦 Registering declaration as my_contract in localhost.declarations.txt
-```
-
-A few things to notice here:
-
-1. `nile declare <contract_name>` looks for an artifact with the same name
-2. This created a `localhost.declarations.txt` file storing all data related to my declarations
-3. The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
-4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
-
 ### `setup`
 
 Deploy an Account associated with a given private key.
@@ -154,17 +136,16 @@ You can find an example `.env` file in `example.env`. These are private keys onl
 nile setup <private_key_alias>
 
 🚀 Deploying Account
-🌕 artifacts/Account.json successfully deployed to 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
+⏳ ️Deployment of Account successfully sent at 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
+🧾 Transaction hash: 0x17
 📦 Registering deployment as account-0 in localhost.deployments.txt
-Invoke transaction was sent.
-Contract address: 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
-Transaction hash: 0x17
 ```
 
-A few things to notice here:
+A few things to note here:
 
 1. `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias
-2. This creates a `localhost.accounts.json` file storing all data related to accounts management
+2. This creates or updates `localhost.accounts.json` file storing all data related to accounts management
+3. The creates or updates `localhost.deployments.txt` file storing all data related to deployments
 
 ### `send`
 
@@ -186,26 +167,39 @@ Transaction hash: 0x1c
 
 Some things to note:
 
+- This sends the transaction to the network by default, but you can use the `--estimate_fee` flag to estimate the fee without sending the transaction, or the `--simulate` flag to get a traceback of the simulated execution.
 - `max_fee` defaults to `0`. Add `--max_fee <max_fee>` to set the maximum fee for the transaction
 - `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction
 
-### `call` and `invoke`
+### `declare`
 
-Using `call` and `invoke`, we can perform read and write operations against our local node (or public one using the `--network mainnet` parameter). The syntax is:
-
-```sh
-nile <command> <contract_identifier> <method> [PARAM_1, PARAM2...]
-```
-
-Where `<command>` is either `call` or `invoke` and `<contract_identifier>` is either our contract address or alias, as defined on `deploy`.
+Very similar to `send`, but for declaring a contract based on its name through an account.
 
 ```sh
-nile invoke my_contract increase_balance 1
+nile declare <private_key_alias> contract --alias my_contract
 
-Invoke transaction was sent.
-Contract address: 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
-Transaction hash: 0x1
+🚀 Declaring contract
+⏳ Successfully sent declaration of contract as 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
+🧾 Transaction hash: 0x7222604b048632326f6a016ccb16fbdea7e926cd9e2354544800667a970aee4
+📦 Registering declaration as my_contract in localhost.declarations.txt
 ```
+
+A few things to notice here:
+
+1. `nile declare <private_key_alias> <contract_name>` looks for an artifact with name `<contract_name>`
+2. This creates or updates a `localhost.declarations.txt` file storing all data related to your declarations
+3. The `--alias` parameter lets you create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
+4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
+
+### `call`
+
+Using `call`, we can perform read operations against our local node or the specified public network. The syntax is:
+
+```sh
+nile call <contract_identifier> <method> [PARAM_1, PARAM2...]
+```
+
+Where `<contract_identifier>` is either our contract address or alias, as defined on `deploy`.
 
 ```sh
 nile call my_contract get_balance
@@ -239,17 +233,6 @@ Please note:
 
 - `localhost` is the default network. Add `--network <network>` to change the network for the script
 
-### `get_declaration` (NRE only)
-
-Return the hash of a declared class. This can be useful in scenarios where a contract class is already declared with an alias prior to running a script.
-
-```python
-def run(nre):
-    predeclared_class = nre.get_declaration("alias")
-```
-
-> Note that this command is only available in the context of scripting in the Nile Runtime Environment.
-
 ### `clean`
 
 Deletes the `artifacts/` directory for a fresh start ❄️
@@ -260,14 +243,6 @@ nile clean
 🚮 Deleting localhost.deployments.txt
 🚮 Deleting artifacts directory
 ✨ Workspace clean, keep going!
-```
-
-### `install`
-
-Install the latest version of the Cairo language and the starknet-devnet local node.
-
-```sh
-nile install
 ```
 
 ### `version`
@@ -391,7 +366,7 @@ def run(nre):
 
 > Please note that the list of accounts includes only those that exist in the local `<network>.accounts.json` file. In a recent release we added a flag to the command, to get predeployed accounts if the network you are connected to is a [starknet-devnet](https://github.com/Shard-Labs/starknet-devnet) instance.
 
-### `get-accounts --predeployed`
+### `get-accounts --predeployed (only starknet-devnet)`
 
 This flag retrieves the predeployed accounts if the network you are connecting to is a [starknet-devnet](https://github.com/Shard-Labs/starknet-devnet) instance.
 
@@ -425,6 +400,18 @@ Retrieves the nonce for the given contract address (usually an account).
 ```sh
 nile get-nonce <contract_address>
 ```
+
+### `get_declaration` (NRE only)
+
+Return the hash of a declared class. This can be useful in scenarios where a contract class is already declared with an alias prior to running a script.
+
+```python
+def run(nre):
+    predeclared_class = nre.get_declaration("alias")
+```
+
+> Note that this command is only available in the context of scripting in the Nile Runtime Environment.
+
 
 ## Short string literals
 
@@ -500,13 +487,15 @@ OpenZeppelin Nile exists thanks to its contributors. There are many ways you can
 
 ## Hacking on Nile
 
-Nile uses tox to manage development tasks, you can get a list of
-available task with `tox -av`.
+Nile uses tox to manage development tasks. Here are some hints to play with the source code:
 
 - Install a development version of the package with `python -m pip install .`
+- Install tox for development tasks with `python -m pip install tox`
+- Get a list of available tasks with `tox -av`
 - Build the package with `tox -e build`
 - Format all files with `tox -e format`
 - Check files formatting with `tox -e lint`
+
 
 ### Testing
 
