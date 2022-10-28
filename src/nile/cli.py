@@ -26,7 +26,7 @@ from nile.utils.get_nonce import get_nonce as get_nonce_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
-NETWORKS = ("localhost", "goerli", "mainnet")
+NETWORKS = ("localhost", "integration", "goerli", "goerli2", "mainnet")
 
 
 def network_option(f):
@@ -43,7 +43,7 @@ def network_option(f):
 def _validate_network(_ctx, _param, value):
     """Normalize network values."""
     # normalize goerli
-    if "goerli" in value or "testnet" in value:
+    if "goerli" == value or "testnet" in value:
         return "goerli"
     # normalize localhost
     if "localhost" in value or "127.0.0.1" in value:

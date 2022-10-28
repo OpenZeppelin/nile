@@ -181,6 +181,8 @@ def test_node_runs_gateway(opts, expected):
     "args",
     [
         ([MOCK_HASH, "--network", "goerli"]),
+        ([MOCK_HASH, "--network", "goerli2"]),
+        ([MOCK_HASH, "--network", "integration"]),
         ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"]),
     ],
 )
