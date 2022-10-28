@@ -74,7 +74,10 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
 @patch("nile.utils.debug.subprocess.check_output")
-def test_debug_feedback_with_message(mock_output, output, expected, caplog):
+@patch("nile.utils.debug.GATEWAYS", return_value="123")
+def test_debug_feedback_with_message(
+    mock_gateway, mock_output, output, expected, caplog
+):
     logging.getLogger().setLevel(logging.INFO)
     mock_output.return_value = output
 
