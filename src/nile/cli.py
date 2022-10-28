@@ -9,10 +9,8 @@ from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
-from nile.core.declare import declare as declare_command
 from nile.core.deploy import deploy as deploy_command
 from nile.core.init import init as init_command
-from nile.core.install import install as install_command
 from nile.core.node import node as node_command
 from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
@@ -70,12 +68,6 @@ def init():
 
 
 @cli.command()
-def install():
-    """Install Cairo."""
-    install_command()
-
-
-@cli.command()
 @click.argument("path", nargs=1)
 @network_option
 async def run(path, network):
@@ -95,12 +87,23 @@ async def deploy(artifact, arguments, network, alias, abi=None):
 
 
 @cli.command()
-@click.argument("artifact", nargs=1)
-@network_option
+@click.argument("signer", nargs=1)
+@click.argument("contract_name", nargs=1)
+@click.option("--max_fee", nargs=1)
 @click.option("--alias")
-def declare(artifact, network, alias):
+@click.option("--overriding_path")
+@network_option
+async def declare(
+    signer, contract_name, network, max_fee=None, alias=None, overriding_path=None
+):
     """Declare StarkNet smart contract."""
-    declare_command(artifact, network, alias)
+    account = await Account(signer, network)
+    await account.declare(
+        contract_name,
+        alias=alias,
+        max_fee=max_fee,
+        overriding_path=overriding_path,
+    )
 
 
 @cli.command()
@@ -117,9 +120,11 @@ async def setup(signer, network):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
+@click.option("--simulate", "query", flag_value="simulate")
+@click.option("--estimate_fee", "query", flag_value="estimate_fee")
 @network_option
-async def send(signer, address_or_alias, method, params, network, max_fee=None):
-    """Invoke a contract's method through an Account. Same usage as nile invoke."""
+async def send(signer, address_or_alias, method, params, network, max_fee=None, query=None):
+    """Invoke a contract's method through an Account."""
     account = await Account(signer, network)
     print(
         "Calling {} on {} with params: {}".format(
@@ -128,24 +133,10 @@ async def send(signer, address_or_alias, method, params, network, max_fee=None):
     )
     # address_or_alias is not normalized first here because
     # Account.send is part of Nile's public API and can accept hex addresses
-    out = await account.send(address_or_alias, method, params, max_fee=max_fee)
-    print(out)
-
-
-@cli.command()
-@click.argument("address_or_alias", nargs=1)
-@click.argument("method", nargs=1)
-@click.argument("params", nargs=-1)
-@click.option("--max_fee", nargs=1)
-@network_option
-def invoke(address_or_alias, method, params, network, max_fee=None):
-    """Invoke functions of StarkNet smart contracts."""
-    if not is_alias(address_or_alias):
-        address_or_alias = normalize_number(address_or_alias)
-
-    out = call_or_invoke_command(
-        address_or_alias, "invoke", method, params, network, max_fee=max_fee
+    out = await account.send(
+        address_or_alias, method, params, max_fee=max_fee, query_type=query
     )
+
     print(out)
 
 

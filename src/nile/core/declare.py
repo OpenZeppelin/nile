@@ -4,6 +4,7 @@ import logging
 from starkware.starknet.cli import starknet_cli
 
 from nile import deployments
+from nile.utils import hex_address
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
@@ -36,11 +37,13 @@ async def declare(
     )
     contract = f"{base_path[0]}/{contract_name}.json"
 
+    max_fee = "0" if max_fee is None else str(max_fee)
+
     command_args = [
         "--contract",
         contract,
         "--sender",
-        hex(sender),
+        hex_address(sender),
         "--max_fee",
         max_fee,
     ]
@@ -57,7 +60,7 @@ async def declare(
 
     class_hash, tx_hash = parse_information(output)
     logging.info(
-        f"⏳ Declaration of {contract_name} successfully sent at {hex(class_hash)}"
+        f"⏳ Successfully sent declaration of {contract_name} as {hex(class_hash)}"
     )
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 

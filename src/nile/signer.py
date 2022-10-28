@@ -3,12 +3,13 @@
 from starkware.crypto.signature.signature import private_to_stark_key, sign
 from starkware.starknet.core.os.transaction_hash.transaction_hash import (
     TransactionHashPrefix,
+    calculate_declare_transaction_hash,
     calculate_transaction_hash_common,
 )
 from starkware.starknet.definitions.general_config import StarknetChainId
 from starkware.starknet.public.abi import get_selector_from_name
 
-TRANSACTION_VERSION = 1
+from nile.common import TRANSACTION_VERSION
 
 
 class Signer:
@@ -23,7 +24,23 @@ class Signer:
         """Sign a message hash."""
         return sign(msg_hash=message_hash, priv_key=self.private_key)
 
-    def sign_transaction(self, sender, calls, nonce, max_fee):
+    def sign_declare(self, sender, contract_class, nonce, max_fee):
+        """Sign a declare transaction."""
+        if isinstance(sender, str):
+            sender = int(sender, 16)
+
+        transaction_hash = get_declare_hash(
+            sender=sender,
+            contract_class=contract_class,
+            max_fee=max_fee,
+            nonce=nonce,
+        )
+
+        return self.sign(message_hash=transaction_hash)
+
+    def sign_transaction(
+        self, sender, calls, nonce, max_fee, version=TRANSACTION_VERSION
+    ):
         """Sign a transaction."""
         call_array, calldata = from_call_to_call_array(calls)
         execute_calldata = [
@@ -42,6 +59,7 @@ class Signer:
             calldata=execute_calldata,
             nonce=nonce,
             max_fee=max_fee,
+            version=version,
         )
 
         sig_r, sig_s = self.sign(message_hash=transaction_hash)
@@ -68,11 +86,23 @@ def from_call_to_call_array(calls):
     return (call_array, calldata)
 
 
-def get_transaction_hash(prefix, account, calldata, nonce, max_fee):
+def get_declare_hash(sender, contract_class, max_fee, nonce):
+    """Compute the hash of a declare transaction."""
+    return calculate_declare_transaction_hash(
+        contract_class=contract_class,
+        chain_id=StarknetChainId.TESTNET.value,
+        sender_address=sender,
+        max_fee=max_fee,
+        version=TRANSACTION_VERSION,
+        nonce=nonce,
+    )
+
+
+def get_transaction_hash(prefix, account, calldata, nonce, max_fee, version):
     """Compute the hash of a transaction."""
     return calculate_transaction_hash_common(
         tx_hash_prefix=prefix,
-        version=TRANSACTION_VERSION,
+        version=version,
         contract_address=account,
         entry_point_selector=0,
         calldata=calldata,

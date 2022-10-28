@@ -25,4 +25,5 @@ async def get_nonce_without_log(contract_address, network):
 
     args = set_args(network)
 
-    return await capture_stdout(starknet_cli.get_nonce(args=args, command_args=command))
+    output = await capture_stdout(starknet_cli.get_nonce(args=args, command_args=command))
+    return int(output)

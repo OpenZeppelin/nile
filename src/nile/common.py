@@ -1,12 +1,17 @@
 """nile common module."""
 import io
 import json
+import logging
 import os
 import re
 import sys
 from types import SimpleNamespace
 
 from starkware.starknet.cli.starknet_cli import NETWORKS
+
+from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
+from starkware.starknet.core.os.class_hash import compute_class_hash
+from starkware.starknet.services.api.contract_class import ContractClass
 
 from nile.utils import normalize_number, str_to_felt
 
@@ -19,6 +24,13 @@ DECLARATIONS_FILENAME = "declarations.txt"
 ACCOUNTS_FILENAME = "accounts.json"
 NODE_FILENAME = "node.json"
 RETRY_AFTER_SECONDS = 30
+TRANSACTION_VERSION = 1
+QUERY_VERSION_BASE = 2**128
+QUERY_VERSION = QUERY_VERSION_BASE + TRANSACTION_VERSION
+UNIVERSAL_DEPLOYER_ADDRESS = (
+    # subject to change
+    "0x1a8e53128903a412d86f33742d7f907f14ee8db566a14592cced70d52f96222"
+)
 
 
 def get_gateway():
@@ -98,7 +110,7 @@ def is_string(param):
 
 
 def is_alias(param):
-    """Identiy param as alias (instead of address)."""
+    """Identify param as alias (instead of address)."""
     return is_string(param)
 
 
@@ -143,3 +155,18 @@ def set_args(network):
     }
     ret_obj = SimpleNamespace(**args)
     return ret_obj
+def get_contract_class(contract_name, overriding_path=None):
+    """Return the contract_class for a given contract name."""
+    base_path = (
+        overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
+    )
+    with open(f"{base_path[0]}/{contract_name}.json", "r") as fp:
+        contract_class = ContractClass.loads(fp.read())
+
+    return contract_class
+
+
+def get_hash(contract_name, overriding_path=None):
+    """Return the class_hash for a given contract name."""
+    contract_class = get_contract_class(contract_name, overriding_path)
+    return compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
