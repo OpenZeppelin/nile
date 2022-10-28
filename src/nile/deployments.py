@@ -28,7 +28,7 @@ def register(address, abi, network, alias):
         fp.write("\n")
 
 
-def unregister(address_or_class_hash, network, alias, abi=None, is_deployment=True):
+def unregister(address_or_class_hash, network, alias, abi=None, is_declaration=False):
     """Unregister deployment or class hash from file."""
     file = (
         f"{network}.{DEPLOYMENTS_FILENAME}"

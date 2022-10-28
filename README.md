@@ -116,14 +116,14 @@ nile deploy contract --alias my_contract [--track, --debug]
 📦 Registering deployment as my_contract in localhost.deployments.txt
 ```
 
-A few things to notice here:
+A few things to note here:
 
 - `nile deploy <contract_name>` looks for an artifact with the same name.
 - This creates or updates the` localhost.deployments.txt` file storing all data related to deployments.
 - The `--alias` parameter creates a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
 - By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
 - By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
-- `--track` and `--debug` flags can be used to chain the `setup` call with `nile status` + the chosen flag. See `status` below for a complete description.
+- `--track` and `--debug` flags can be used to watch the status of the deployment transaction. See `status` below for a complete description.
 
 ### `setup`
 
@@ -147,7 +147,7 @@ A few things to note here:
 - `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias.
 - This creates or updates `localhost.accounts.json` file storing all data related to accounts management.
 - The creates or updates `localhost.deployments.txt` file storing all data related to deployments.
-- `--track` and `--debug` flags can be used to chain the `setup` call with `nile status` + the chosen flag. See `status` below for a complete description.
+- `--track` and `--debug` flags can be used to watch the status of the account deployment transaction. See `status` below for a complete description.
 
 ### `send`
 
@@ -172,7 +172,7 @@ Some things to note:
 - This sends the transaction to the network by default, but you can use the `--estimate_fee` flag to estimate the fee without sending the transaction, or the `--simulate` flag to get a traceback of the simulated execution.
 - `max_fee` defaults to `0`. Add `--max_fee <max_fee>` to set the maximum fee for the transaction.
 - `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction.
-- `--track` and `--debug` flags can be used to chain the `send` call with `nile status` + the chosen flag. See `status` below for a complete description.
+- `--track` and `--debug` flags can be used to watch the status of the transaction. See `status` below for a complete description.
 
 ### `declare`
 
@@ -193,7 +193,7 @@ A few things to notice here:
 - This creates or updates a `localhost.declarations.txt` file storing all data related to your declarations.
 - The `--alias` parameter lets you create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
 - By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
-- `--track` and `--debug` flags can be used to chain the `declare` call with `nile status` + the chosen flag. See `status` below for a complete description.
+- `--track` and `--debug` flags can be used to watch the status of the declaration transaction. See `status` below for a complete description.
 
 ### `call`
 
