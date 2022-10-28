@@ -10,7 +10,7 @@ from nile.common import BUILD_DIRECTORY
 from nile.utils.debug import _abi_to_build_path, _locate_error_lines_with_abis, debug
 
 MOCK_HASH = 1234
-NETWORK = "goerli"
+NETWORK = "localhost"
 ERROR_MESSAGE = "Error at pc=0:1:\nAn ASSERT_EQ instruction failed: 3 != 0."
 DEBUG_ADDRESS = "0x07826b88e404632d9835ab1ec2076c6cf1910e6ecb2ed270647fc211ff55e76f"
 ABI_PATH = "path/to/abis/test_contract.json"

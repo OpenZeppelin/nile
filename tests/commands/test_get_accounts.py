@@ -15,7 +15,7 @@ from nile.utils.get_accounts import (
 )
 from tests.mocks.mock_response import MockResponse
 
-NETWORK = "goerli"
+NETWORK = "localhost"
 GATEWAYS = {"localhost": "http://127.0.0.1:5050/"}
 PUBKEYS = [
     883045738439352841478194533192765345509759306772397516907181243450667673002,

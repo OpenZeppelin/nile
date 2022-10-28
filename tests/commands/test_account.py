@@ -13,7 +13,7 @@ from nile.common import (
 from nile.core.account import Account
 
 KEY = "TEST_KEY"
-NETWORK = "goerli"
+NETWORK = "localhost"
 MOCK_ADDRESS = "0x123"
 MOCK_INDEX = 0
 MAX_FEE = 10
