@@ -44,7 +44,7 @@ def get_installed_plugins(scope="cli") -> Dict:
         package_object = importlib.import_module(package_name)
         plugin_call = getattr(package_object, plugin.name)
         loaded_plugins[plugin.name] = plugin_call
-    return []
+    return loaded_plugins
 
 
 def load_plugins(app) -> Group:

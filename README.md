@@ -479,7 +479,7 @@ In order for this implementation to be functional, it is needed by the plugin de
 
 How to decide if I want to use a plugin or not? Just install / uninstall the plugin dependency from your project :smile:
 
-Finally, you can make plugin entry points available from nre by changing the entrypoint to `[tool.poetry.plugins.nile_plugins.nre]`. Using both cli and nre scopes in nile_plugins allows you to develop powerful plugins which are easily integrated.
+Finally, the developer can make plugin's entry points available from nre by changing the entrypoint to `[tool.poetry.plugins.nile_plugins.nre]`. Using both cli and nre scopes in nile_plugins allows it to develop powerful plugins which are easily integrated.
 
 ## Contribute
 
