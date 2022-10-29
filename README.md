@@ -448,7 +448,7 @@ This implementation takes advantage of the native extensibility features of [cli
 
 In order for this implementation to be functional, it is needed by the plugin developer to follow some development guidelines defined in this simple plugin example extending Nile for a dummy greet extension. In a brief explanation the guidelines are as follows:
 
-1. Define a Python module that implements a click command or group:
+1. Define a Python module that implements a click command or group (a plugin for nile cli):
 
    ```python
    # First, import click dependency
@@ -470,7 +470,7 @@ In order for this implementation to be functional, it is needed by the plugin de
 
    ```sh
    # We need to specify that click commands are Poetry entrypoints of type `nile_plugins`. Do not modify this
-   [tool.poetry.plugins."nile_plugins"]
+   [tool.poetry.plugins.nile_plugins.cli]
    # Here you specify you command name and location <command_name> = <package_method_location>
    "greet" = "nile_greet.main.greet"
    ```
@@ -479,7 +479,7 @@ In order for this implementation to be functional, it is needed by the plugin de
 
 How to decide if I want to use a plugin or not? Just install / uninstall the plugin dependency from your project :smile:
 
-Finally, after the desired plugin is installed, it will also be automatically available through the `nre`. The plugin developer should be aware of this and design the interface accordingly.
+Finally, you can make plugin entry points available from nre by changing the entrypoint to `[tool.poetry.plugins.nile_plugins.nre]`. Using both cli and nre scopes in nile_plugins allows you to develop powerful plugins which are easily integrated.
 
 ## Contribute
 
