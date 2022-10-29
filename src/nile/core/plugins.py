@@ -37,7 +37,6 @@ def get_installed_plugins(scope="cli") -> Dict:
     @returns dictionary with plugin name as key and value with the plugin object.
     """
     discovered_plugins = entry_points(group=f"nile_plugins.{scope}")
-    print(discovered_plugins)
     loaded_plugins = {}
     for plugin in discovered_plugins:
         package_name = plugin.value.rsplit(".", 1)[0]
