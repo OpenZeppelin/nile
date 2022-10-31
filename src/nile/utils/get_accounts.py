@@ -15,7 +15,7 @@ GATEWAYS = get_gateway()
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
-def get_accounts(network):
+async def get_accounts(network):
     """Retrieve deployed accounts."""
     try:
         total_accounts = current_index(network)
@@ -36,14 +36,14 @@ def get_accounts(network):
     for i in range(total_accounts):
         logging.info(f"{i}: {hex_address(addresses[i])}")
 
-        _account = _check_and_return_account(signers[i], pubkeys[i], network)
+        _account = await _check_and_return_account(signers[i], pubkeys[i], network)
         accounts.append(_account)
 
     logging.info("\n🚀 Successfully retrieved deployed accounts")
     return accounts
 
 
-def get_predeployed_accounts(network):
+async def get_predeployed_accounts(network):
     """Retrieve pre-deployed accounts."""
     endpoint = f"{GATEWAYS.get(network)}/predeployed_accounts"
 
@@ -71,7 +71,7 @@ def get_predeployed_accounts(network):
             "index": i,
         }
 
-        _account = _check_and_return_account(
+        _account = await _check_and_return_account(
             normalize_number(_accounts[i]["private_key"]),
             normalize_number(_accounts[i]["public_key"]),
             network,
@@ -84,8 +84,8 @@ def get_predeployed_accounts(network):
     return accounts
 
 
-def _check_and_return_account(signer, pubkey, network, predeployed_info=None):
-    account = Account(signer, network, predeployed_info)
+async def _check_and_return_account(signer, pubkey, network, predeployed_info=None):
+    account = await Account(signer, network, predeployed_info)
     assert (str(pubkey)) == str(
         account.signer.public_key
     ), "Signer pubkey does not match deployed pubkey"

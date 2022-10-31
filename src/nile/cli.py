@@ -243,12 +243,12 @@ async def debug(tx_hash, network, contracts_file):
 @cli.command()
 @network_option
 @click.option("--predeployed/--registered", default=False)
-def get_accounts(network, predeployed):
+async def get_accounts(network, predeployed):
     """Retrieve and manage deployed accounts."""
     if not predeployed:
-        return get_accounts_command(network)
+        return await get_accounts_command(network)
     else:
-        return get_predeployed_accounts_command(network)
+        return await get_predeployed_accounts_command(network)
 
 
 @cli.command()
