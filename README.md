@@ -108,7 +108,7 @@ Creating artifacts/abis/ to store compilation artifacts
 
 > NOTICE: this method doesn't use an account, which will be deprecated very soon as StarkNet makes deployments from accounts mandatory.
 
-> Token for deployments to Alpha MainNet can be set with the `--token` option.
+> Token for deployments to Alpha Mainnet can be set with the `--token` option.
 
 ```sh
 nile deploy contract --alias my_contract
