@@ -154,47 +154,45 @@ async def test_simulate():
         )
 
 
-#@pytest.mark.asyncio
-#@pytest.mark.parametrize("query_type", ["estimate_fee", "simulate"])
-#async def test_execute_query(query_type):
-#    with patch("nile.core.account.get_nonce", new=AsyncMock()) as mock_nonce:
-#        with patch("nile.core.call_or_invoke", new=AsyncMock()) as mock_call:
-#            with patch("nile.core.account.Account.send", new=AsyncMock()):
-#                with patch("nile.core.account.Signer.sign_transaction", new=AsyncMock()) as mock_sign:
-#                    mock_nonce.return_value = 0
-#                    account = await Account(KEY, NETWORK)
-#
-#                    send_args = [account.address, "method", [1, 2, 3]]
-#                    calldata = ["111", "222", "333"]
-#                    sig_r, sig_s = [999, 888]
-#                    return_signature = [calldata, sig_r, sig_s]
-#                    mock_sign.return_value = return_signature
-#
-#
-#                    # Mock sign_transaction
-#                    #account.signer.sign_transaction = MagicMock(return_value=return_signature)
-#
-#                    await account.send(
-#                        account.address, "method", [1, 2, 3], max_fee=MAX_FEE, query_type=query_type
-#                    )
-#
-#                    #mock_sign.assert_called_once_with(
-#                    #    calls=[send_args],
-#                    #    nonce=0,
-#                    #    sender=account.address,
-#                    #    max_fee=MAX_FEE,
-#                    #    version=QUERY_VERSION,
-#                    #)
-#
-#                    # Check query_flag is correctly passed
-#                    mock_call.assert_called_with(
-#                        contract=account,
-#                        max_fee=str(MAX_FEE),
-#                        method="__execute__",
-#                        network=NETWORK,
-#                        params=calldata,
-#                        signature=[str(sig_r), str(sig_s)],
-#                        type="invoke",
-#                        query_flag=query_type,
-#                    )
-#
+@pytest.mark.asyncio
+@pytest.mark.parametrize("query_type", ["estimate_fee", "simulate"])
+async def test_execute_query(query_type):
+    account = await Account(KEY, NETWORK)
+    with patch("nile.core.account.call_or_invoke", new=AsyncMock()) as mock_call:
+        with patch("nile.core.account.Signer.sign_transaction") as mock_sign:
+            send_args = [account.address, "method", [1, 2, 3]]
+            calldata = ["111", "222", "333"]
+            sig_r, sig_s = [999, 888]
+            return_signature = [calldata, sig_r, sig_s]
+
+            mock_sign.return_value = return_signature
+
+            await account.send(
+                account.address, "method", [1, 2, 3], max_fee=MAX_FEE, query_type=query_type
+            )
+
+            expected = {
+                "calls": [send_args],
+                "nonce": 0,
+                "sender": account.address,
+                "max_fee": MAX_FEE,
+                "version": QUERY_VERSION,
+            }
+            account.signer.sign_transaction.assert_called_once_with(
+                **expected
+            )
+
+            # Check query_flag is correctly passed
+            expected = {
+                "contract": account,
+                "max_fee": str(MAX_FEE),
+                "method": "__execute__",
+                "network": NETWORK,
+                "params": calldata,
+                "signature": [str(sig_r), str(sig_s)],
+                "type": "invoke",
+                "query_flag": query_type,
+            }
+            mock_call.assert_called_with(
+                **expected
+            )
