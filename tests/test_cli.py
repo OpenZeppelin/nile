@@ -9,7 +9,7 @@ from pathlib import Path
 from signal import SIGINT
 from threading import Timer
 from time import sleep
-from unittest.mock import patch
+from unittest.mock import MagicMock, Mock, patch
 from urllib.error import URLError
 from urllib.request import urlopen
 
@@ -35,6 +35,14 @@ pytestmark = pytest.mark.end_to_end
 def tmp_working_dir(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     return tmp_path
+
+
+class AsyncMock(Mock):
+    """Return asynchronous mock."""
+
+    async def __call__(self, *args, **kwargs):
+        """Return mocked coroutine."""
+        return super(AsyncMock, self).__call__(*args, **kwargs)
 
 
 def create_process(target, args):
@@ -190,17 +198,13 @@ async def test_node_runs_gateway(opts, expected):
         ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"]),
     ],
 )
-@patch("nile.utils.debug.subprocess")
-async def test_debug(mock_subprocess, args):
+async def test_debug(args):
     # debug will hang without patch
-    mock_subprocess.check_output.return_value = json.dumps({"tx_status": "ACCEPTED"})
+    with patch("nile.utils.debug.capture_stdout", new=AsyncMock()) as mock_capture:
+        mock_capture.return_value = json.dumps({"tx_status": "ACCEPTED"})
 
-    result = await CliRunner().invoke(cli, ["debug", *args])
+        result = await CliRunner().invoke(cli, ["debug", *args])
 
-    # Check status
-    assert result.exit_code == 0
+        # Check status
+        assert result.exit_code == 0
 
-    # Setup and assert expected output
-    expected = ["starknet", "tx_status", "--hash", MOCK_HASH]
-
-    mock_subprocess.check_output.assert_called_once_with(expected)
