@@ -175,7 +175,7 @@ Some things to note:
 
 ### `declare`
 
-> Token for declarations to Alpha MainNet can be set with the `--token` option.
+> Token for declarations to Alpha Mainnet can be set with the `--token` option.
 
 Very similar to `send`, but for declaring a contract based on its name through an account.
 
