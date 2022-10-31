@@ -1,6 +1,6 @@
 """Tests for get-accounts command."""
 import logging
-from unittest.mock import MagicMock, patch
+from unittest.mock import Mock, MagicMock, patch
 
 import pytest
 from requests.exceptions import MissingSchema
@@ -57,12 +57,15 @@ def tmp_working_dir(monkeypatch, tmp_path):
     return tmp_path
 
 
-@pytest.fixture(autouse=True)
-def mock_subprocess():
-    with patch("nile.core.compile.subprocess") as mock_subprocess:
-        yield mock_subprocess
+class AsyncMock(Mock):
+    """Return asynchronous mock."""
+
+    async def __call__(self, *args, **kwargs):
+        """Return mocked coroutine."""
+        return super(AsyncMock, self).__call__(*args, **kwargs)
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "private_keys, public_keys",
     [
@@ -70,13 +73,14 @@ def mock_subprocess():
         ([ALIASES[1], PUBKEYS[1]]),
     ],
 )
-def test__check_and_return_account_with_matching_keys(private_keys, public_keys):
+async def test__check_and_return_account_with_matching_keys(private_keys, public_keys):
     # Check matching public/private keys
-    account = _check_and_return_account(private_keys, public_keys, NETWORK)
+    account = await _check_and_return_account(private_keys, public_keys, NETWORK)
 
     assert type(account) is Account
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "private_keys, public_keys",
     [
@@ -84,16 +88,16 @@ def test__check_and_return_account_with_matching_keys(private_keys, public_keys)
         ([ALIASES[1], PUBKEYS[0]]),
     ],
 )
-def test__check_and_return_account_with_mismatching_keys(private_keys, public_keys):
+async def test__check_and_return_account_with_mismatching_keys(private_keys, public_keys):
     # Check mismatched public/private keys
     with pytest.raises(AssertionError) as err:
-        _check_and_return_account(private_keys, public_keys, NETWORK)
+        await _check_and_return_account(private_keys, public_keys, NETWORK)
 
     assert "Signer pubkey does not match deployed pubkey" in str(err.value)
 
 
-def test_get_accounts_no_activated_accounts_feedback(capsys):
-    get_accounts(NETWORK)
+async def test_get_accounts_no_activated_accounts_feedback(capsys):
+    await get_accounts(NETWORK)
     # This test uses capsys in order to test the print statements (instead of logging)
     captured = capsys.readouterr()
 
@@ -106,45 +110,45 @@ def test_get_accounts_no_activated_accounts_feedback(capsys):
     )
 
 
-@patch("nile.utils.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
-@patch("nile.utils.get_accounts.open", MagicMock())
-@patch("nile.utils.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
-def test_get_accounts_activated_accounts_feedback(caplog):
-    logging.getLogger().setLevel(logging.INFO)
+async def test_get_accounts_activated_accounts_feedback(caplog):
+    with patch("nile.utils.get_accounts.current_index", return_value=len(PUBKEYS)):
+        with patch("nile.utils.get_accounts.open"):
+            with patch("nile.utils.get_accounts.json.load", return_value=MOCK_ACCOUNTS):
+                logging.getLogger().setLevel(logging.INFO)
 
-    # Default argument
-    get_accounts(NETWORK)
+                # Default argument
+                await get_accounts(NETWORK)
 
-    # Check total accounts log
-    assert f"\nTotal registered accounts: {len(PUBKEYS)}\n" in caplog.text
+                # Check total accounts log
+                assert f"\nTotal registered accounts: {len(PUBKEYS)}\n" in caplog.text
 
-    # Check index/address log
-    for i in range(len(PUBKEYS)):
-        assert f"{INDEXES[i]}: {hex_address(ADDRESSES[i])}" in caplog.text
+                # Check index/address log
+                for i in range(len(PUBKEYS)):
+                    assert f"{INDEXES[i]}: {hex_address(ADDRESSES[i])}" in caplog.text
 
-    # Check final success log
-    assert "\n🚀 Successfully retrieved deployed accounts" in caplog.text
+                # Check final success log
+                assert "\n🚀 Successfully retrieved deployed accounts" in caplog.text
 
 
-@patch("nile.utils.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
-@patch("nile.utils.get_accounts.open", MagicMock())
-@patch("nile.utils.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
-def test_get_accounts_with_keys():
+@pytest.mark.asyncio
+async def test_get_accounts_with_keys():
+    with patch("nile.utils.get_accounts.current_index", return_value=len(PUBKEYS)):
+        with patch("nile.utils.get_accounts.open"):
+            with patch("nile.utils.get_accounts.json.load", return_value=MOCK_ACCOUNTS):
+                with patch(
+                    "nile.utils.get_accounts._check_and_return_account", new=AsyncMock()
+                ) as mock_return_account:
+                    result = await get_accounts(NETWORK)
 
-    with patch(
-        "nile.utils.get_accounts._check_and_return_account"
-    ) as mock_return_account:
-        result = get_accounts(NETWORK)
+                    # Check correct args are passed to `_check_and_receive_account`
+                    for i in range(len(PUBKEYS)):
+                        mock_return_account.assert_any_call(ALIASES[i], PUBKEYS[i], NETWORK)
 
-        # Check correct args are passed to `_check_and_receive_account`
-        for i in range(len(PUBKEYS)):
-            mock_return_account.assert_any_call(ALIASES[i], PUBKEYS[i], NETWORK)
+                    # Assert call count equals correct number of accounts
+                    assert mock_return_account.call_count == len(PUBKEYS)
 
-        # Assert call count equals correct number of accounts
-        assert mock_return_account.call_count == len(PUBKEYS)
-
-        # Assert returned accounts array equals correct number of accounts
-        assert len(result) == len(PUBKEYS)
+                    # Assert returned accounts array equals correct number of accounts
+                    assert len(result) == len(PUBKEYS)
 
 
 @patch("nile.common.get_gateway", return_value=GATEWAYS)
