@@ -21,6 +21,7 @@ from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
+    GATEWAYS,
     NODE_FILENAME,
 )
 
@@ -198,5 +199,9 @@ def test_debug(mock_subprocess, args):
 
     # Setup and assert expected output
     expected = ["starknet", "tx_status", "--hash", MOCK_HASH]
+
+    network = args[2]
+    if network in ["goerli2", "integration"]:
+        expected.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
 
     mock_subprocess.check_output.assert_called_once_with(expected)

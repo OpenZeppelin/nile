@@ -41,7 +41,7 @@ def get_gateway():
             networks = {
                 "localhost": "http://127.0.0.1:5050/",
                 "goerli2": "https://alpha4-2.starknet.io",
-                "integration": "https://external.integration.starknet.io"
+                "integration": "https://external.integration.starknet.io",
             }
             f.write(json.dumps(networks, indent=2))
 

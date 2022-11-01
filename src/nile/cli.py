@@ -42,15 +42,15 @@ def network_option(f):
 
 def _validate_network(_ctx, _param, value):
     """Normalize network values."""
+    # check if value is known
+    if value in NETWORKS:
+        return value
     # normalize goerli
     if "testnet" == value:
         return "goerli"
     # normalize localhost
     if "127.0.0.1" == value:
         return "localhost"
-    # check if value is accepted
-    if value in NETWORKS:
-        return value
     # raise if value is invalid
     raise click.BadParameter(f"'{value}'. Use one of {NETWORKS}")
 
