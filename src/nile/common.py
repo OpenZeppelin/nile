@@ -29,7 +29,7 @@ UNIVERSAL_DEPLOYER_ADDRESS = (
 )
 
 
-def get_gateway():
+def get_gateways():
     """Get the StarkNet node details."""
     try:
         with open(NODE_FILENAME, "r") as f:
@@ -45,8 +45,10 @@ def get_gateway():
             }
             f.write(json.dumps(networks, indent=2))
 
+            return networks
 
-GATEWAYS = get_gateway()
+
+GATEWAYS = get_gateways()
 
 
 def get_all_contracts(ext=None, directory=None):

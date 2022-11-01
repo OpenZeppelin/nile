@@ -160,7 +160,7 @@ def test_get_accounts_with_keys(mock_deploy):
         assert len(result) == len(PUBKEYS)
 
 
-@patch("nile.common.get_gateway", return_value=GATEWAYS)
+@patch("nile.common.get_gateways", return_value=GATEWAYS)
 @patch("nile.utils.get_accounts._check_and_return_account")
 @patch("requests.get", return_value=MockResponse(JSON_DATA, 200))
 def test_get_predeployed_accounts(mock_response, mock_return_account, mock_gateways):
@@ -193,7 +193,7 @@ def test_get_predeployed_accounts(mock_response, mock_return_account, mock_gatew
 
 
 @patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
-@patch("nile.common.get_gateway", return_value=GATEWAYS)
+@patch("nile.common.get_gateways", return_value=GATEWAYS)
 @patch("nile.utils.get_accounts._check_and_return_account")
 @patch("requests.get", return_value=MockResponse(JSON_DATA, 200))
 def test_get_predeployed_accounts_logging(
