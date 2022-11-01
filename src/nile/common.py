@@ -38,13 +38,12 @@ def get_gateway():
 
     except FileNotFoundError:
         with open(NODE_FILENAME, "w") as f:
-            f.write(
-                """{
+            networks = {
                 "localhost": "http://127.0.0.1:5050/",
                 "goerli2": "https://alpha4-2.starknet.io",
                 "integration": "https://external.integration.starknet.io"
-            }"""
-            )
+            }
+            f.write(json.dumps(networks, indent=2))
 
 
 GATEWAYS = get_gateway()
