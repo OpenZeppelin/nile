@@ -43,7 +43,7 @@ def network_option(f):
 def _validate_network(_ctx, _param, value):
     """Normalize network values."""
     # normalize goerli
-    if "goerli" == value or "testnet" in value:
+    if "testnet" == value:
         return "goerli"
     # normalize localhost
     if "localhost" in value or "127.0.0.1" in value:
