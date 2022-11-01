@@ -181,7 +181,7 @@ class Account:
         return target_address
 
     def _process_arguments(self, calldata, max_fee, nonce):
-        calldata = [int(x) for x in calldata]
+        calldata = [normalize_number(x) for x in calldata]
 
         if nonce is None:
             nonce = get_nonce(self.address, self.network)

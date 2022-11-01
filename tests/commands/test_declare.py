@@ -18,7 +18,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
 SENDER = "0x1234"
 CONTRACT = "contract"
 SIGNATURE = [123, 321]
-NETWORK = "goerli"
+NETWORK = "localhost"
 ALIAS = "alias"
 PATH = "path"
 MAX_FEE = 432
