@@ -16,7 +16,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
 
 
 CONTRACT = "contract"
-NETWORK = "goerli"
+NETWORK = "localhost"
 ALIAS = "alias"
 ABI = f"{ABIS_DIRECTORY}/{CONTRACT}.json"
 ABI_OVERRIDE = f"{ABIS_DIRECTORY}/override.json"
