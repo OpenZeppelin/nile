@@ -40,7 +40,7 @@ async def send_transactions(signer, account, calls, nonce=None, max_fee=0):
         nonce = await state.state.get_nonce_at(account.contract_address)
 
     # get signature
-    calldata, sig_r, sig_s = signer.sign_transaction(
+    calldata, sig_r, sig_s = signer.sign_invoke_tx(
         account.contract_address, calls, nonce, max_fee, TRANSACTION_VERSION
     )
 

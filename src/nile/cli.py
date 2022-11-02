@@ -9,7 +9,6 @@ from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
-from nile.core.deploy import deploy as deploy_command
 from nile.core.init import init as init_command
 from nile.core.node import node as node_command
 from nile.core.plugins import load_plugins
@@ -76,14 +75,23 @@ def run(path, network):
 
 
 @cli.command()
-@click.argument("artifact", nargs=1)
-@click.argument("arguments", nargs=-1)
-@network_option
+@click.argument("signer", nargs=1)
+@click.argument("contract_name", nargs=1)
+@click.argument("salt", nargs=1)
+@click.argument("params", nargs=-1)
+@click.option("--max_fee", nargs=1)
+@click.option("--unique", is_flag=True)
 @click.option("--alias")
 @click.option("--abi")
-def deploy(artifact, arguments, network, alias, abi=None):
-    """Deploy StarkNet smart contract."""
-    deploy_command(artifact, arguments, network, alias, abi=abi)
+@network_option
+def deploy(
+    signer, contract_name, salt, params, max_fee, unique, network, alias=None, abi=None
+):
+    """Deploy StarkNet smart contract through an Account."""
+    account = Account(signer, network)
+    account.deploy_contract(
+        contract_name, salt, unique, params, alias, max_fee=None, abi=abi
+    )
 
 
 @cli.command()
@@ -96,7 +104,7 @@ def deploy(artifact, arguments, network, alias, abi=None):
 def declare(
     signer, contract_name, network, max_fee=None, alias=None, overriding_path=None
 ):
-    """Declare StarkNet smart contract."""
+    """Declare StarkNet smart contract through an Account."""
     account = Account(signer, network)
     account.declare(
         contract_name,
@@ -174,7 +182,7 @@ def test(contracts):
 @cli.command()
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
-@click.option("--account_contract", is_flag="True")
+@click.option("--account_contract", is_flag=True)
 @click.option("--disable-hint-validation", is_flag=True)
 def compile(contracts, directory, account_contract, disable_hint_validation):
     """

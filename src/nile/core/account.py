@@ -15,7 +15,7 @@ from nile.common import (
 )
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.declare import declare
-from nile.core.deploy import deploy
+from nile.core.deploy import deploy_contract, deprecated_deploy
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
@@ -70,7 +70,7 @@ class Account:
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
 
-        address, _ = deploy(
+        address, _ = deprecated_deploy(
             "Account",
             [self.signer.public_key],
             self.network,
@@ -87,20 +87,14 @@ class Account:
     def declare(
         self, contract_name, max_fee=None, nonce=None, alias=None, overriding_path=None
     ):
-        """Declare a contract through an Account contract."""
-        if nonce is None:
-            nonce = get_nonce(self.address, self.network)
-
-        if max_fee is None:
-            max_fee = 0
-        else:
-            max_fee = int(max_fee)
+        """Declare a contract through an Account."""
+        _, max_fee, nonce = self._process_arguments([], max_fee, nonce)
 
         contract_class = get_contract_class(
             contract_name=contract_name, overriding_path=overriding_path
         )
 
-        sig_r, sig_s = self.signer.sign_declare(
+        sig_r, sig_s = self.signer.sign_declare_tx(
             sender=self.address,
             contract_class=contract_class,
             nonce=nonce,
@@ -117,30 +111,46 @@ class Account:
         )
 
     def deploy_contract(
-        self, class_hash, salt, unique, calldata, max_fee=None, deployer_address=None
+        self,
+        contract_name,
+        salt,
+        unique,
+        calldata,
+        alias,
+        max_fee=None,
+        deployer_address=None,
+        abi=None,
     ):
-        """Deploy a contract through an Account contract."""
-        return self.send(
-            to=deployer_address or UNIVERSAL_DEPLOYER_ADDRESS,
-            method="deployContract",
-            calldata=[class_hash, salt, unique, len(calldata), *calldata],
-            max_fee=max_fee,
+        """Deploy a contract through an Account."""
+        deploy_contract(
+            self,
+            contract_name,
+            salt,
+            unique,
+            calldata,
+            self.network,
+            alias,
+            deployer_address or UNIVERSAL_DEPLOYER_ADDRESS,
+            abi=abi,
         )
 
     def send(
-        self, address_or_alias, method, calldata, max_fee, nonce=None, query_type=None
+        self,
+        address_or_alias,
+        method,
+        calldata,
+        max_fee=None,
+        nonce=None,
+        query_type=None,
     ):
-        """Execute a query or invoke call for a tx going through an Account contract."""
-        # get target address with the right format
+        """Execute a query or invoke call for a tx going through an Account."""
         target_address = self._get_target_address(address_or_alias)
 
-        # process and parse arguments
         calldata, max_fee, nonce = self._process_arguments(calldata, max_fee, nonce)
 
-        # get tx version
         tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
 
-        calldata, sig_r, sig_s = self.signer.sign_transaction(
+        calldata, sig_r, sig_s = self.signer.sign_invoke_tx(
             sender=self.address,
             calls=[[target_address, method, calldata]],
             nonce=nonce,
