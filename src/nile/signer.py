@@ -19,7 +19,11 @@ class Signer:
         """Construct a Signer object. Takes a private key."""
         self.private_key = private_key
         self.public_key = private_to_stark_key(private_key)
-        self.chain_id = StarknetChainId.MAINNET.value if network == "mainnet" else StarknetChainId.MAINNET.value
+        self.chain_id = (
+            StarknetChainId.MAINNET.value
+            if network == "mainnet"
+            else StarknetChainId.MAINNET.value
+        )
 
     def sign(self, message_hash):
         """Sign a message hash."""
@@ -63,7 +67,6 @@ class Signer:
             max_fee=max_fee,
             version=version,
             chain_id=self.chain_id,
-
         )
 
         sig_r, sig_s = self.sign(message_hash=transaction_hash)
