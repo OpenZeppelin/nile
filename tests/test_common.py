@@ -1,5 +1,6 @@
 """Tests for common library."""
 import pytest
+from unittest.mock import MagicMock, patch
 
 from nile.common import (
     capture_stdout,
@@ -57,8 +58,15 @@ def test_prepare_params(args, expected):
     ],
 )
 def test_get_gateway_url(network, expected):
-    url = get_gateway_url(network)
-    assert url == expected
+    if network is "localhost":
+        with patch("nile.common.GATEWAYS") as mock_gateways:
+            mock_gateways.get = MagicMock(return_value=expected)
+            url = get_gateway_url(network)
+            assert url == expected
+
+    else:
+        url = get_gateway_url(network)
+        assert url == expected
 
 
 @pytest.mark.parametrize(
@@ -70,8 +78,15 @@ def test_get_gateway_url(network, expected):
     ],
 )
 def test_get_feeder_url(network, expected):
-    url = get_feeder_url(network)
-    assert url == expected
+    if network is "localhost":
+        with patch("nile.common.GATEWAYS") as mock_gateways:
+            mock_gateways.get = MagicMock(return_value=expected)
+            url = get_feeder_url(network)
+            assert url == expected
+
+    else:
+        url = get_feeder_url(network)
+        assert url == expected
 
 
 @pytest.mark.asyncio
