@@ -1,6 +1,7 @@
 """Tests for common library."""
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from nile.common import (
     capture_stdout,
@@ -58,7 +59,7 @@ def test_prepare_params(args, expected):
     ],
 )
 def test_get_gateway_url(network, expected):
-    if network is "localhost":
+    if network == "localhost":
         with patch("nile.common.GATEWAYS") as mock_gateways:
             mock_gateways.get = MagicMock(return_value=expected)
             url = get_gateway_url(network)
@@ -78,7 +79,7 @@ def test_get_gateway_url(network, expected):
     ],
 )
 def test_get_feeder_url(network, expected):
-    if network is "localhost":
+    if network == "localhost":
         with patch("nile.common.GATEWAYS") as mock_gateways:
             mock_gateways.get = MagicMock(return_value=expected)
             url = get_feeder_url(network)
