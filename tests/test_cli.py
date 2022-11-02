@@ -37,14 +37,6 @@ def tmp_working_dir(monkeypatch, tmp_path):
     return tmp_path
 
 
-class AsyncMock(Mock):
-    """Return asynchronous mock."""
-
-    async def __call__(self, *args, **kwargs):
-        """Return mocked coroutine."""
-        return super(AsyncMock, self).__call__(*args, **kwargs)
-
-
 def create_process(target, args):
     """Spawns another process in Python."""
     p = Process(target=target, args=args)
