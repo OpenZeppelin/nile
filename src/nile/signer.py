@@ -22,7 +22,7 @@ class Signer:
         self.chain_id = (
             StarknetChainId.MAINNET.value
             if network == "mainnet"
-            else StarknetChainId.MAINNET.value
+            else StarknetChainId.TESTNET.value
         )
 
     def sign(self, message_hash):
