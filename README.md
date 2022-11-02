@@ -37,6 +37,13 @@ nile init
 ⛵️ Nile project ready! Try running:
 ```
 
+`nile init` builds the project structure by:
+
+- Creating directories for `contracts` and `tests`.
+- Populating these directories with test modules.
+- Generating a `.env` to store private key aliases.
+- Setting up a `node.json` for initializing a local node.
+
 ## Usage
 
 ### `node`
@@ -129,8 +136,6 @@ A few things to notice here:
 Deploy an Account associated with a given private key.
 
 To avoid accidentally leaking private keys, this command takes an alias instead of the actual private key. This alias is associated with an environmental variable of the same name, whose value is the actual private key.
-
-You can find an example `.env` file in `example.env`. These are private keys only to be used for testing and never in production.
 
 ```sh
 nile setup <private_key_alias>
