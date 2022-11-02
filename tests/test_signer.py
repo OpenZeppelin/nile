@@ -8,6 +8,7 @@ import asyncio
 
 import pytest
 from starkware.starknet.business_logic.transaction.objects import InternalTransaction
+from starkware.starknet.definitions.general_config import StarknetChainId
 from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.testing.starknet import Starknet
@@ -15,7 +16,8 @@ from starkware.starknet.testing.starknet import Starknet
 from nile.common import TRANSACTION_VERSION
 from nile.signer import Signer, from_call_to_call_array
 
-SIGNER = Signer(12345678987654321)
+PRIVATE_KEY = 12345678987654321
+SIGNER = Signer(PRIVATE_KEY)
 
 
 def get_account_definition():
@@ -104,6 +106,18 @@ async def test_execute():
     )
     execution_info = await contract.get_balance().call()
     assert execution_info.result == (3,)
+
+
+@pytest.mark.asyncio
+async def test_chain_id():
+    mainnet = Signer(PRIVATE_KEY, "mainnet")
+    assert mainnet.chain_id == StarknetChainId.MAINNET.value
+
+    testnet = Signer(PRIVATE_KEY, "testnet")
+    assert testnet.chain_id == StarknetChainId.TESTNET.value
+
+    no_network = Signer(PRIVATE_KEY)
+    assert no_network.chain_id == StarknetChainId.TESTNET.value
 
 
 def get_raw_invoke(sender, calls):
