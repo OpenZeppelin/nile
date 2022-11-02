@@ -4,7 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.core.deploy import ABIS_DIRECTORY, BUILD_DIRECTORY, deploy
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
+from nile.core.deploy import deploy
 from nile.utils import hex_address
 
 
@@ -15,7 +16,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
 
 
 CONTRACT = "contract"
-NETWORK = "goerli"
+NETWORK = "localhost"
 ALIAS = "alias"
 ABI = f"{ABIS_DIRECTORY}/{CONTRACT}.json"
 ABI_OVERRIDE = f"{ABIS_DIRECTORY}/override.json"
@@ -32,22 +33,38 @@ TX_HASH = 222
     [
         (
             [CONTRACT, ARGS, NETWORK, ALIAS],  # args
-            [CONTRACT, NETWORK, None],  # expected command
+            {  # expected command
+                "contract_name": CONTRACT,
+                "network": NETWORK,
+                "overriding_path": None,
+            },
             ABI,  # expected ABI
         ),
         (
             [CONTRACT, ARGS, NETWORK, ALIAS, PATH_OVERRIDE],  # args
-            [CONTRACT, NETWORK, PATH_OVERRIDE],  # expected command
+            {  # expected command
+                "contract_name": CONTRACT,
+                "network": NETWORK,
+                "overriding_path": PATH_OVERRIDE,
+            },
             ABI,  # expected ABI
         ),
         (
             [CONTRACT, ARGS, NETWORK, ALIAS, None, ABI_OVERRIDE],  # args
-            [CONTRACT, NETWORK, None],  # expected command
+            {  # expected command
+                "contract_name": CONTRACT,
+                "network": NETWORK,
+                "overriding_path": None,
+            },
             ABI_OVERRIDE,  # expected ABI
         ),
         (
             [CONTRACT, ARGS, NETWORK, ALIAS, PATH_OVERRIDE, ABI_OVERRIDE],  # args
-            [CONTRACT, NETWORK, PATH_OVERRIDE],  # expected command
+            {  # expected command
+                "contract_name": CONTRACT,
+                "network": NETWORK,
+                "overriding_path": PATH_OVERRIDE,
+            },
             ABI_OVERRIDE,  # expected ABI
         ),
     ],
@@ -65,7 +82,7 @@ def test_deploy(
     assert res == (ADDRESS, exp_abi)
 
     # check internals
-    mock_run_cmd.assert_called_once_with(*exp_command, arguments=ARGS)
+    mock_run_cmd.assert_called_once_with(operation="deploy", inputs=ARGS, **exp_command)
     mock_parse.assert_called_once_with(RUN_OUTPUT)
     mock_register.assert_called_once_with(ADDRESS, exp_abi, NETWORK, ALIAS)
 

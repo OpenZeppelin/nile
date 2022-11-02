@@ -29,7 +29,7 @@
     {
         "inputs": [
             {
-                "name": "public_key",
+                "name": "publicKey",
                 "type": "felt"
             }
         ],
