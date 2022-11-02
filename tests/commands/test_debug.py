@@ -2,7 +2,7 @@
 import logging
 import sys
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -10,30 +10,19 @@ from nile.common import BUILD_DIRECTORY
 from nile.utils.debug import _abi_to_build_path, _locate_error_lines_with_abis, debug
 
 MOCK_HASH = 1234
-NETWORK = "goerli"
-ERROR_MESSAGE = "Error at pc=0:1:\nAn ASSERT_EQ instruction failed: 3 != 0."
+NETWORK = "localhost"
 DEBUG_ADDRESS = "0x07826b88e404632d9835ab1ec2076c6cf1910e6ecb2ed270647fc211ff55e76f"
 ABI_PATH = "path/to/abis/test_contract.json"
 ALIAS = "contract_alias"
 MOCK_FILE = 123
-
-
-def mocked_json_message(arg):
-    return {"tx_status": arg, "tx_failure_reason": {"error_message": ERROR_MESSAGE}}
+ACCEPTED_OUT = b'{"tx_status": "ACCEPTED_ON_L2"}'
+REJECTED_OUT = b'{"tx_failure_reason": {"error_message": "E"}, "tx_status": "REJECTED"}'
 
 
 @pytest.fixture(autouse=True)
 def tmp_working_dir(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     return tmp_path
-
-
-class AsyncMock(Mock):
-    """Return asynchronous mock."""
-
-    async def __call__(self, *args, **kwargs):
-        """Return mocked coroutine."""
-        return super(AsyncMock, self).__call__(*args, **kwargs)
 
 
 def test__abi_to_build_path():
@@ -74,11 +63,10 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "args, expected",
+    "output, expected",
     [
-        ("ACCEPTED", "No error in transaction"),
-        ("REJECTED", "The transaction was rejected"),
-        ("REJECTED", ERROR_MESSAGE),
+        (ACCEPTED_OUT, "No error in transaction"),
+        (REJECTED_OUT, "The transaction was rejected"),
     ],
 )
 @pytest.mark.xfail(
@@ -86,10 +74,10 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-@patch("nile.utils.debug.json.loads")
-async def test_debug_feedback_with_message(mock_json, caplog, args, expected):
+@patch("nile.utils.debug.capture_stdout")
+async def test_debug_feedback_with_message(mock_output, output, expected, caplog):
     logging.getLogger().setLevel(logging.INFO)
-    mock_json.return_value = mocked_json_message(args)
+    mock_output.return_value = output
 
     await debug(MOCK_HASH, NETWORK)
 

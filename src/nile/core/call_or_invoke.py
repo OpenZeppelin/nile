@@ -10,9 +10,15 @@ from nile.utils import hex_address
 
 
 async def call_or_invoke(
-    contract, type, method, params, network, signature=None, max_fee=None, query_flag=None
+    contract,
+    type,
+    method,
+    params,
+    network,
+    signature=None,
+    max_fee=None,
+    query_flag=None,
 ):
-
     """
     Call or invoke functions of StarkNet smart contracts.
 

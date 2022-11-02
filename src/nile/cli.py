@@ -123,7 +123,9 @@ async def setup(signer, network):
 @click.option("--simulate", "query", flag_value="simulate")
 @click.option("--estimate_fee", "query", flag_value="estimate_fee")
 @network_option
-async def send(signer, address_or_alias, method, params, network, max_fee=None, query=None):
+async def send(
+    signer, address_or_alias, method, params, network, max_fee=None, query=None
+):
     """Invoke a contract's method through an Account."""
     account = await Account(signer, network)
     print(

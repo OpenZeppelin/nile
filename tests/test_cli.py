@@ -9,7 +9,7 @@ from pathlib import Path
 from signal import SIGINT
 from threading import Timer
 from time import sleep
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 from urllib.error import URLError
 from urllib.request import urlopen
 
@@ -198,13 +198,12 @@ async def test_node_runs_gateway(opts, expected):
         ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"]),
     ],
 )
-async def test_debug(args):
+@patch("nile.utils.debug.capture_stdout")
+async def test_debug(mock_capture, args):
     # debug will hang without patch
-    with patch("nile.utils.debug.capture_stdout", new=AsyncMock()) as mock_capture:
-        mock_capture.return_value = json.dumps({"tx_status": "ACCEPTED"})
+    mock_capture.return_value = json.dumps({"tx_status": "ACCEPTED"})
 
-        result = await CliRunner().invoke(cli, ["debug", *args])
+    result = await CliRunner().invoke(cli, ["debug", *args])
 
-        # Check status
-        assert result.exit_code == 0
-
+    # Check status
+    assert result.exit_code == 0

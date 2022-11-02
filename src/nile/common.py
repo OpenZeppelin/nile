@@ -1,15 +1,13 @@
 """nile common module."""
 import io
 import json
-import logging
 import os
 import re
 import sys
 from types import SimpleNamespace
 
-from starkware.starknet.cli.starknet_cli import NETWORKS
-
 from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
+from starkware.starknet.cli.starknet_cli import NETWORKS
 from starkware.starknet.core.os.class_hash import compute_class_hash
 from starkware.starknet.services.api.contract_class import ContractClass
 
@@ -155,6 +153,8 @@ def set_args(network):
     }
     ret_obj = SimpleNamespace(**args)
     return ret_obj
+
+
 def get_contract_class(contract_name, overriding_path=None):
     """Return the contract_class for a given contract name."""
     base_path = (

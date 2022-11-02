@@ -4,7 +4,6 @@ import logging
 from starkware.starknet.cli import starknet_cli
 
 from nile import deployments
-from nile.utils import hex_address
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
@@ -14,6 +13,7 @@ from nile.common import (
     prepare_params,
     set_args,
 )
+from nile.utils import hex_address
 
 
 async def declare(

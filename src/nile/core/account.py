@@ -149,7 +149,9 @@ class Account(AsyncObject):
         target_address = self._get_target_address(address_or_alias)
 
         # process and parse arguments
-        calldata, max_fee, nonce = await self._process_arguments(calldata, max_fee, nonce)
+        calldata, max_fee, nonce = await self._process_arguments(
+            calldata, max_fee, nonce
+        )
 
         # get tx version
         tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
@@ -175,9 +177,13 @@ class Account(AsyncObject):
 
     async def simulate(self, address_or_alias, method, calldata, max_fee, nonce=None):
         """Simulate a tx going through an Account contract."""
-        return await self.send(address_or_alias, method, calldata, max_fee, nonce, "simulate")
+        return await self.send(
+            address_or_alias, method, calldata, max_fee, nonce, "simulate"
+        )
 
-    async def estimate_fee(self, address_or_alias, method, calldata, max_fee, nonce=None):
+    async def estimate_fee(
+        self, address_or_alias, method, calldata, max_fee, nonce=None
+    ):
         """Estimate fee for a tx going through an Account contract."""
         return await self.send(
             address_or_alias, method, calldata, max_fee, nonce, "estimate_fee"

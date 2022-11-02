@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import time
+
 from starkware.starknet.cli import starknet_cli
 
 from nile.common import (
@@ -12,7 +13,7 @@ from nile.common import (
     DEPLOYMENTS_FILENAME,
     RETRY_AFTER_SECONDS,
     capture_stdout,
-    set_args
+    set_args,
 )
 
 
