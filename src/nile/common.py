@@ -33,6 +33,7 @@ UNIVERSAL_DEPLOYER_ADDRESS = (
 
 def get_gateway():
     """Get the StarkNet node details."""
+
     def _get_gateway():
         with open(NODE_FILENAME, "r") as f:
             gateway = json.load(f)
@@ -45,7 +46,6 @@ def get_gateway():
         with open(NODE_FILENAME, "w") as f:
             f.write('{"localhost": "http://127.0.0.1:5050/"}')
         return _get_gateway()
-
 
 
 GATEWAYS = get_gateway()
