@@ -14,16 +14,11 @@ LIST2 = [1, 2, 3, [4, 5, 6]]
 LIST3 = [1, 2, 3, [4, 5, 6, [7, 8, 9]]]
 
 
-@pytest.mark.only
-@pytest.mark.parametrize(
-    "operation, signature, max_fee, query_flag, mainnet_token",
-    [
-        ("invoke", None, 0, "simulate", None),
-        ("call", None, None, None, None),
-        ("deploy", None, 5, None, "token"),
-        ("declare", None, 3, "estimate_fee", "token2"),
-    ],
-)
+@pytest.mark.parametrize("operation", ["invoke", "call", "deploy", "declare"])
+@pytest.mark.parametrize("signature", [None])
+@pytest.mark.parametrize("max_fee", [0, 5, None])
+@pytest.mark.parametrize("query_flag", ["simulate", "estimate_fee", None])
+@pytest.mark.parametrize("mainnet_token", ["token_test", None])
 @patch("nile.common.subprocess.check_output")
 def test_run_command(
     mock_subprocess, operation, signature, max_fee, query_flag, mainnet_token
