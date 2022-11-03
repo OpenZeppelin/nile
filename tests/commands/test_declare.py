@@ -91,9 +91,7 @@ def test_alias_exists():
     ],
 )
 @patch("nile.core.declare.run_command", return_value=RUN_OUTPUT)
-@patch(
-    "nile.core.declare.parse_information", return_value=[HASH, TX_HASH]
-)
+@patch("nile.core.declare.parse_information", return_value=[HASH, TX_HASH])
 @patch("nile.core.declare.deployments.register_class_hash")
 def test_declare(
     mock_register, mock_parse, mock_run_cmd, caplog, args, exp_command, exp_register
