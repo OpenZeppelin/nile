@@ -3,7 +3,7 @@ import logging
 
 from nile import deployments
 from nile.common import DECLARATIONS_FILENAME, parse_information, run_command
-from nile.utils import hex_address
+from nile.utils import hex_address, hex_class_hash
 
 
 def declare(
@@ -41,7 +41,7 @@ def declare(
     )
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
-    deployments.register_class_hash(class_hash, network, alias)
+    deployments.register_class_hash(hex_class_hash(class_hash), network, alias)
     return class_hash
 
 

@@ -127,12 +127,20 @@ def normalize_number(number):
 def hex_address(number):
     """Return the 64 hexadecimal characters length address."""
     if type(number) == str and number.startswith("0x"):
-        return _pad_hex_to_64(number)
+        return _pad_hex_to(number, 64)
     else:
-        return _pad_hex_to_64(hex(int(number)))
+        return _pad_hex_to(hex(int(number)), 64)
 
 
-def _pad_hex_to_64(hexadecimal):
-    if len(hexadecimal) < 66:
-        missing_zeros = 66 - len(hexadecimal)
+def hex_class_hash(number):
+    """Return the 67 hexadecimal characters length class hash."""
+    if type(number) == str and number.startswith("0x"):
+        return _pad_hex_to(number, 67)
+    else:
+        return _pad_hex_to(hex(int(number)), 67)
+
+
+def _pad_hex_to(hexadecimal, n):
+    if len(hexadecimal) < n + 2:
+        missing_zeros = n + 2 - len(hexadecimal)
         return hexadecimal[:2] + missing_zeros * "0" + hexadecimal[2:]
