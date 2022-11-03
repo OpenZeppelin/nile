@@ -61,7 +61,7 @@ def call_or_invoke(
 
     if type != "call" and output:
         logging.info(output)
-        if not query_flag:
+        if not query_flag and watch_mode:
             transaction_hash = _get_transaction_hash(output)
             return status(normalize_number(transaction_hash), network, watch_mode)
 
