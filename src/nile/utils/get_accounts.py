@@ -5,11 +5,11 @@ import logging
 import requests
 
 from nile.accounts import current_index
-from nile.common import get_gateway
+from nile.common import get_gateways
 from nile.core.account import Account
 from nile.utils import hex_address, normalize_number
 
-GATEWAYS = get_gateway()
+GATEWAYS = get_gateways()
 
 # remove requests info logs coming from urllib3
 logging.getLogger("urllib3").setLevel(logging.WARNING)

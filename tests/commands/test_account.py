@@ -13,8 +13,9 @@ from nile.common import (
 from nile.core.account import Account
 
 KEY = "TEST_KEY"
-NETWORK = "goerli"
+NETWORK = "localhost"
 MOCK_ADDRESS = "0x123"
+MOCK_TARGET_ADDRESS = 0x987
 MOCK_INDEX = 0
 MAX_FEE = 10
 
@@ -25,9 +26,8 @@ def tmp_working_dir(monkeypatch, tmp_path):
     return tmp_path
 
 
-@patch("nile.core.account.Account.deploy")
+@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 def test_account_init(mock_deploy):
-    mock_deploy.return_value = MOCK_ADDRESS, MOCK_INDEX
     account = Account(KEY, NETWORK)
 
     assert account.address == MOCK_ADDRESS
@@ -72,10 +72,12 @@ def test_deploy_accounts_register(mock_register, mock_deploy):
     )
 
 
+@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.core.account.get_contract_class", return_value="ContractClass")
 @patch("nile.core.account.declare")
-def test_declare(mock_declare, mock_get_class):
+def test_declare(mock_declare, mock_get_class, mock_deploy):
     account = Account(KEY, NETWORK)
+
     signature = [999, 888]
     nonce = 4
     max_fee = 1
@@ -117,14 +119,16 @@ def test_declare(mock_declare, mock_get_class):
     )
 
 
+@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
-def test_send_nonce_call(mock_call, mock_nonce):
+@patch(
+    "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
+)
+def test_send_nonce_call(mock_target_address, mock_call, mock_nonce, mock_deploy):
     account = Account(KEY, NETWORK)
 
-    # Instead of creating and populating a tmp .txt file, this uses the
-    # deployed account address (contract_address) as the target
-    account.send(account.address, "method", [1, 2, 3], max_fee=1)
+    account.send(MOCK_TARGET_ADDRESS, "method", [1, 2, 3], max_fee=1)
 
     # 'call_or_invoke' is called once for '__execute__'
     assert mock_call.call_count == 1
@@ -133,7 +137,11 @@ def test_send_nonce_call(mock_call, mock_nonce):
     mock_nonce.assert_called_once_with(account.address, NETWORK)
 
 
-def test_send_sign_transaction_and_execute():
+@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch(
+    "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
+)
+def test_send_sign_transaction_and_execute(mock_target_address, mock_deploy):
     account = Account(KEY, NETWORK)
 
     calldata = ["111", "222", "333"]
@@ -143,7 +151,7 @@ def test_send_sign_transaction_and_execute():
     account.signer.sign_transaction = MagicMock(return_value=return_signature)
 
     with patch("nile.core.account.call_or_invoke") as mock_call:
-        send_args = [account.address, "method", [1, 2, 3]]
+        send_args = [MOCK_TARGET_ADDRESS, "method", [1, 2, 3]]
         nonce = 4
         max_fee = 1
         account.send(*send_args, max_fee, nonce)
@@ -205,7 +213,8 @@ def test_send_defaults(mock_call, mock_nonce):
     )
 
 
-def test_estimate_fee():
+@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+def test_estimate_fee(mock_deploy):
     account = Account(KEY, NETWORK)
     # Mock send
     account.send = MagicMock()
@@ -217,7 +226,8 @@ def test_estimate_fee():
     )
 
 
-def test_simulate():
+@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+def test_simulate(mock_deploy):
     account = Account(KEY, NETWORK)
     # Mock send
     account.send = MagicMock()
@@ -230,12 +240,18 @@ def test_simulate():
 
 
 @pytest.mark.parametrize("query_type", ["estimate_fee", "simulate"])
+@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch(
+    "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
+)
 @patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
-def test_execute_query(mock_call, mock_nonce, query_type):
+def test_execute_query(
+    mock_call, mock_nonce, mock_target_address, mock_deploy, query_type
+):
     account = Account(KEY, NETWORK)
 
-    send_args = [account.address, "method", [1, 2, 3]]
+    send_args = [MOCK_TARGET_ADDRESS, "method", [1, 2, 3]]
     calldata = ["111", "222", "333"]
     sig_r, sig_s = [999, 888]
     return_signature = [calldata, sig_r, sig_s]

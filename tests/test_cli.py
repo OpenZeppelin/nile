@@ -21,6 +21,7 @@ from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
+    GATEWAYS,
     NODE_FILENAME,
 )
 
@@ -181,6 +182,8 @@ def test_node_runs_gateway(opts, expected):
     "args",
     [
         ([MOCK_HASH, "--network", "goerli"]),
+        ([MOCK_HASH, "--network", "goerli2"]),
+        ([MOCK_HASH, "--network", "integration"]),
         ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"]),
     ],
 )
@@ -196,5 +199,9 @@ def test_debug(mock_subprocess, args):
 
     # Setup and assert expected output
     expected = ["starknet", "tx_status", "--hash", MOCK_HASH]
+
+    network = args[2]
+    if network in ["goerli2", "integration"]:
+        expected.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
 
     mock_subprocess.check_output.assert_called_once_with(expected)
