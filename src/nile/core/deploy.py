@@ -63,15 +63,6 @@ def deploy_contract(
     """Deploy StarkNet smart contracts through UDC."""
     logging.info(f"🚀 Deploying {contract_name}")
 
-    class_hash = get_class_hash(contract_name=contract_name)
-
-    output = account.send(
-        deployer_address,
-        method="deployContract",
-        calldata=[class_hash, salt, unique, len(calldata), *calldata],
-        max_fee=max_fee,
-    )
-
     base_path = (
         overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
     )
@@ -83,8 +74,17 @@ def deploy_contract(
         salt = compute_hash_chain(data=[account.address, salt])
         deployer_for_address_generation = deployer_address
 
+    class_hash = get_class_hash(contract_name=contract_name)
+
     address = calculate_contract_address_from_hash(
         salt, class_hash, calldata, deployer_for_address_generation
+    )
+
+    output = account.send(
+        deployer_address,
+        method="deployContract",
+        calldata=[class_hash, salt, unique, len(calldata), *calldata],
+        max_fee=max_fee,
     )
 
     _, tx_hash = parse_information(output)
