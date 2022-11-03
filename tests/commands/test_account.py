@@ -116,6 +116,7 @@ def test_declare(mock_declare, mock_get_class, mock_deploy):
         network=NETWORK,
         alias=alias,
         max_fee=max_fee,
+        mainnet_token=None,
     )
 
 

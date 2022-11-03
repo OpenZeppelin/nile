@@ -85,7 +85,13 @@ class Account:
         return address, index
 
     def declare(
-        self, contract_name, max_fee=None, nonce=None, alias=None, overriding_path=None
+        self,
+        contract_name,
+        max_fee=None,
+        nonce=None,
+        alias=None,
+        overriding_path=None,
+        mainnet_token=None,
     ):
         """Declare a contract through an Account contract."""
         if nonce is None:
@@ -114,6 +120,7 @@ class Account:
             alias=alias,
             network=self.network,
             max_fee=max_fee,
+            mainnet_token=mainnet_token,
         )
 
     def deploy_contract(

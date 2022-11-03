@@ -37,6 +37,7 @@ TX_HASH = 222
                 "contract_name": CONTRACT,
                 "network": NETWORK,
                 "overriding_path": None,
+                "mainnet_token": None,
             },
             ABI,  # expected ABI
         ),
@@ -46,6 +47,7 @@ TX_HASH = 222
                 "contract_name": CONTRACT,
                 "network": NETWORK,
                 "overriding_path": PATH_OVERRIDE,
+                "mainnet_token": None,
             },
             ABI,  # expected ABI
         ),
@@ -55,6 +57,7 @@ TX_HASH = 222
                 "contract_name": CONTRACT,
                 "network": NETWORK,
                 "overriding_path": None,
+                "mainnet_token": None,
             },
             ABI_OVERRIDE,  # expected ABI
         ),
@@ -64,6 +67,7 @@ TX_HASH = 222
                 "contract_name": CONTRACT,
                 "network": NETWORK,
                 "overriding_path": PATH_OVERRIDE,
+                "mainnet_token": None,
             },
             ABI_OVERRIDE,  # expected ABI
         ),

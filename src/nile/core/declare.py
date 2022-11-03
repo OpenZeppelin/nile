@@ -14,6 +14,7 @@ def declare(
     alias=None,
     overriding_path=None,
     max_fee=None,
+    mainnet_token=None,
 ):
     """Declare StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")
@@ -33,6 +34,7 @@ def declare(
         signature=signature,
         max_fee=max_fee,
         overriding_path=overriding_path,
+        mainnet_token=mainnet_token,
     )
 
     class_hash, tx_hash = parse_information(output)
