@@ -33,10 +33,10 @@ class Account:
         """Get or deploy an Account contract for the given private key."""
         try:
             if predeployed_info is None:
-                self.signer = Signer(normalize_number(os.environ[signer]))
+                self.signer = Signer(normalize_number(os.environ[signer]), network)
                 self.alias = signer
             else:
-                self.signer = Signer(signer)
+                self.signer = Signer(signer, network)
                 self.alias = predeployed_info["alias"]
 
             self.network = network
@@ -85,7 +85,13 @@ class Account:
         return address, index
 
     def declare(
-        self, contract_name, max_fee=None, nonce=None, alias=None, overriding_path=None
+        self,
+        contract_name,
+        max_fee=None,
+        nonce=None,
+        alias=None,
+        overriding_path=None,
+        mainnet_token=None,
     ):
         """Declare a contract through an Account contract."""
         if nonce is None:
@@ -114,6 +120,7 @@ class Account:
             alias=alias,
             network=self.network,
             max_fee=max_fee,
+            mainnet_token=mainnet_token,
         )
 
     def deploy_contract(
@@ -128,7 +135,13 @@ class Account:
         )
 
     def send(
-        self, address_or_alias, method, calldata, max_fee, nonce=None, query_type=None
+        self,
+        address_or_alias,
+        method,
+        calldata,
+        max_fee=None,
+        nonce=None,
+        query_type=None,
     ):
         """Execute a query or invoke call for a tx going through an Account contract."""
         # get target address with the right format
@@ -159,11 +172,13 @@ class Account:
             query_flag=query_type,
         )
 
-    def simulate(self, address_or_alias, method, calldata, max_fee, nonce=None):
+    def simulate(self, address_or_alias, method, calldata, max_fee=None, nonce=None):
         """Simulate a tx going through an Account contract."""
         return self.send(address_or_alias, method, calldata, max_fee, nonce, "simulate")
 
-    def estimate_fee(self, address_or_alias, method, calldata, max_fee, nonce=None):
+    def estimate_fee(
+        self, address_or_alias, method, calldata, max_fee=None, nonce=None
+    ):
         """Estimate fee for a tx going through an Account contract."""
         return self.send(
             address_or_alias, method, calldata, max_fee, nonce, "estimate_fee"

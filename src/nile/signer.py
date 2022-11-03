@@ -16,10 +16,15 @@ from nile.common import TRANSACTION_VERSION
 class Signer:
     """Utility for signing transactions for an Account on Starknet."""
 
-    def __init__(self, private_key):
+    def __init__(self, private_key, network="testnet"):
         """Construct a Signer object. Takes a private key."""
         self.private_key = private_key
         self.public_key = private_to_stark_key(private_key)
+        self.chain_id = (
+            StarknetChainId.MAINNET.value
+            if network == "mainnet"
+            else StarknetChainId.TESTNET.value
+        )
 
     def sign(self, message_hash):
         """Sign a message hash."""
@@ -32,7 +37,8 @@ class Signer:
             calldata,
             salt,
             max_fee,
-            nonce
+            nonce,
+            self.chain_id,
         )
 
         return self.sign(message_hash=transaction_hash)
@@ -48,6 +54,7 @@ class Signer:
             contract_class=contract_class,
             max_fee=max_fee,
             nonce=nonce,
+            chain_id=self.chain_id,
         )
 
         return self.sign(message_hash=transaction_hash)
@@ -74,6 +81,7 @@ class Signer:
             nonce=nonce,
             max_fee=max_fee,
             version=version,
+            chain_id=self.chain_id,
         )
 
         sig_r, sig_s = self.sign(message_hash=transaction_hash)
@@ -100,7 +108,7 @@ def from_call_to_call_array(calls):
     return (call_array, calldata)
 
 
-def get_transaction_hash(prefix, account, calldata, nonce, max_fee, version):
+def get_transaction_hash(prefix, account, calldata, nonce, max_fee, version, chain_id):
     """Compute the hash of a transaction."""
     return calculate_transaction_hash_common(
         tx_hash_prefix=prefix,
@@ -109,16 +117,16 @@ def get_transaction_hash(prefix, account, calldata, nonce, max_fee, version):
         entry_point_selector=0,
         calldata=calldata,
         max_fee=max_fee,
-        chain_id=StarknetChainId.TESTNET.value,
+        chain_id=chain_id,
         additional_data=[nonce],
     )
 
 
-def get_declare_hash(sender, contract_class, max_fee, nonce):
+def get_declare_hash(sender, contract_class, max_fee, nonce, chain_id):
     """Compute the hash of a declare transaction."""
     return calculate_declare_transaction_hash(
         contract_class=contract_class,
-        chain_id=StarknetChainId.TESTNET.value,
+        chain_id=chain_id,
         sender_address=sender,
         max_fee=max_fee,
         version=TRANSACTION_VERSION,
@@ -126,7 +134,7 @@ def get_declare_hash(sender, contract_class, max_fee, nonce):
     )
 
 
-def get_deploy_account_hash(contract_address, class_hash, calldata, salt, max_fee, nonce):
+def get_deploy_account_hash(contract_address, class_hash, calldata, salt, max_fee, nonce, chain_id):
     """Compute the hash of a declare transaction."""
     return calculate_deploy_account_transaction_hash(
         version=TRANSACTION_VERSION,
@@ -136,5 +144,5 @@ def get_deploy_account_hash(contract_address, class_hash, calldata, salt, max_fe
         max_fee=max_fee,
         nonce=nonce,
         salt=salt,
-        chain_id=StarknetChainId.TESTNET.value
+        chain_id=chain_id
     )

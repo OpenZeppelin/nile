@@ -29,7 +29,7 @@ UNIVERSAL_DEPLOYER_ADDRESS = (
 )
 
 
-def get_gateway():
+def get_gateways():
     """Get the StarkNet node details."""
     try:
         with open(NODE_FILENAME, "r") as f:
@@ -38,10 +38,17 @@ def get_gateway():
 
     except FileNotFoundError:
         with open(NODE_FILENAME, "w") as f:
-            f.write('{"localhost": "http://127.0.0.1:5050/"}')
+            networks = {
+                "localhost": "http://127.0.0.1:5050/",
+                "goerli2": "https://alpha4-2.starknet.io",
+                "integration": "https://external.integration.starknet.io",
+            }
+            f.write(json.dumps(networks, indent=2))
+
+            return networks
 
 
-GATEWAYS = get_gateway()
+GATEWAYS = get_gateways()
 
 
 def get_all_contracts(ext=None, directory=None):
@@ -70,6 +77,7 @@ def run_command(
     max_fee=None,
     query_flag=None,
     overriding_path=None,
+    mainnet_token=None,
 ):
     """Execute CLI command with given parameters."""
     command = ["starknet", operation]
@@ -93,6 +101,10 @@ def run_command(
     if max_fee is not None:
         command.append("--max_fee")
         command.append(max_fee)
+
+    if mainnet_token is not None:
+        command.append("--token")
+        command.append(mainnet_token)
 
     if query_flag is not None:
         command.append(f"--{query_flag}")

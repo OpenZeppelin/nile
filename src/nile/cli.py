@@ -26,7 +26,7 @@ from nile.utils.get_nonce import get_nonce as get_nonce_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
-NETWORKS = ("localhost", "goerli", "mainnet")
+NETWORKS = ("localhost", "integration", "goerli", "goerli2", "mainnet")
 
 
 def network_option(f):
@@ -40,17 +40,25 @@ def network_option(f):
     )(f)
 
 
+def mainnet_token_option(f):
+    """Configure TOKEN option for the cli."""
+    return click.option(
+        "--token",
+        help="Used for deploying contracts in Alpha Mainnet.",
+    )(f)
+
+
 def _validate_network(_ctx, _param, value):
     """Normalize network values."""
-    # normalize goerli
-    if "goerli" in value or "testnet" in value:
-        return "goerli"
-    # normalize localhost
-    if "localhost" in value or "127.0.0.1" in value:
-        return "localhost"
-    # check if value is accepted
+    # check if value is known
     if value in NETWORKS:
         return value
+    # normalize goerli
+    if "testnet" == value:
+        return "goerli"
+    # normalize localhost
+    if "127.0.0.1" == value:
+        return "localhost"
     # raise if value is invalid
     raise click.BadParameter(f"'{value}'. Use one of {NETWORKS}")
 
@@ -81,9 +89,10 @@ def run(path, network):
 @network_option
 @click.option("--alias")
 @click.option("--abi")
-def deploy(artifact, arguments, network, alias, abi=None):
+@mainnet_token_option
+def deploy(artifact, arguments, network, alias, abi=None, token=None):
     """Deploy StarkNet smart contract."""
-    deploy_command(artifact, arguments, network, alias, abi=abi)
+    deploy_command(artifact, arguments, network, alias, abi=abi, mainnet_token=token)
 
 
 @cli.command()
@@ -92,9 +101,16 @@ def deploy(artifact, arguments, network, alias, abi=None):
 @click.option("--max_fee", nargs=1)
 @click.option("--alias")
 @click.option("--overriding_path")
+@mainnet_token_option
 @network_option
 def declare(
-    signer, contract_name, network, max_fee=None, alias=None, overriding_path=None
+    signer,
+    contract_name,
+    network,
+    max_fee=None,
+    alias=None,
+    overriding_path=None,
+    token=None,
 ):
     """Declare StarkNet smart contract."""
     account = Account(signer, network)
@@ -103,6 +119,7 @@ def declare(
         alias=alias,
         max_fee=max_fee,
         overriding_path=overriding_path,
+        mainnet_token=token,
     )
 
 
@@ -174,9 +191,12 @@ def test(contracts):
 @cli.command()
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
+@click.option("--cairo_path")
 @click.option("--account_contract", is_flag="True")
 @click.option("--disable-hint-validation", is_flag=True)
-def compile(contracts, directory, account_contract, disable_hint_validation):
+def compile(
+    contracts, directory, cairo_path, account_contract, disable_hint_validation
+):
     """
     Compile cairo contracts.
 
@@ -189,7 +209,9 @@ def compile(contracts, directory, account_contract, disable_hint_validation):
     $ compile.py contracts/foo.cairo contracts/bar.cairo
       Compiles foo.cairo and bar.cairo
     """
-    compile_command(contracts, directory, account_contract, disable_hint_validation)
+    compile_command(
+        contracts, directory, cairo_path, account_contract, disable_hint_validation
+    )
 
 
 @cli.command()
