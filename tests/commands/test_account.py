@@ -180,15 +180,54 @@ def test_send_sign_transaction_and_execute(mock_target_address, mock_deploy):
 
 
 @patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch(
+    "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
+)
+@patch("nile.core.account.get_nonce", return_value=0)
+@patch("nile.core.account.call_or_invoke")
+def test_send_defaults(mock_call, mock_nonce, mock_target_address, mock_deploy):
+    account = Account(KEY, NETWORK)
+
+    send_args = [MOCK_TARGET_ADDRESS, "method", [1, 2, 3]]
+    calldata = ["111", "222", "333"]
+    sig_r, sig_s = [999, 888]
+    return_signature = [calldata, sig_r, sig_s]
+
+    # Mock sign_transaction
+    account.signer.sign_transaction = MagicMock(return_value=return_signature)
+
+    account.send(account.address, "method", [1, 2, 3])
+
+    account.signer.sign_transaction.assert_called_once_with(
+        calls=[send_args],
+        nonce=0,
+        sender=account.address,
+        max_fee=0,
+        version=TRANSACTION_VERSION,
+    )
+
+    mock_call.assert_called_with(
+        contract=account,
+        max_fee=str(0),
+        method="__execute__",
+        network=NETWORK,
+        params=calldata,
+        signature=[str(sig_r), str(sig_s)],
+        type="invoke",
+        query_flag=None,
+    )
+
+
+@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 def test_estimate_fee(mock_deploy):
     account = Account(KEY, NETWORK)
     # Mock send
     account.send = MagicMock()
 
-    account.estimate_fee(account.address, "method", [1, 2, 3], max_fee=0)
+    account.estimate_fee(account.address, "method", [1, 2, 3])
 
     account.send.assert_called_once_with(
-        account.address, "method", [1, 2, 3], 0, None, "estimate_fee"
+        account.address, "method", [1, 2, 3], None, None, "estimate_fee"
     )
 
 
@@ -198,10 +237,10 @@ def test_simulate(mock_deploy):
     # Mock send
     account.send = MagicMock()
 
-    account.simulate(account.address, "method", [1, 2, 3], max_fee=0)
+    account.simulate(account.address, "method", [1, 2, 3])
 
     account.send.assert_called_once_with(
-        account.address, "method", [1, 2, 3], 0, None, "simulate"
+        account.address, "method", [1, 2, 3], None, None, "simulate"
     )
 
 

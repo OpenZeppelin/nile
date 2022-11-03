@@ -135,7 +135,13 @@ class Account:
         )
 
     def send(
-        self, address_or_alias, method, calldata, max_fee, nonce=None, query_type=None
+        self,
+        address_or_alias,
+        method,
+        calldata,
+        max_fee=None,
+        nonce=None,
+        query_type=None,
     ):
         """Execute a query or invoke call for a tx going through an Account contract."""
         # get target address with the right format
@@ -166,11 +172,13 @@ class Account:
             query_flag=query_type,
         )
 
-    def simulate(self, address_or_alias, method, calldata, max_fee, nonce=None):
+    def simulate(self, address_or_alias, method, calldata, max_fee=None, nonce=None):
         """Simulate a tx going through an Account contract."""
         return self.send(address_or_alias, method, calldata, max_fee, nonce, "simulate")
 
-    def estimate_fee(self, address_or_alias, method, calldata, max_fee, nonce=None):
+    def estimate_fee(
+        self, address_or_alias, method, calldata, max_fee=None, nonce=None
+    ):
         """Estimate fee for a tx going through an Account contract."""
         return self.send(
             address_or_alias, method, calldata, max_fee, nonce, "estimate_fee"
