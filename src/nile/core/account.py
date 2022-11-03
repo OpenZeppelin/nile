@@ -15,7 +15,7 @@ from nile.common import (
 )
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.declare import declare
-from nile.core.deploy import deploy_contract, deploy
+from nile.core.deploy import deploy, deploy_contract
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
@@ -122,8 +122,9 @@ class Account:
         abi=None,
     ):
         """Deploy a contract through an Account."""
-        deployer_address = normalize_number(deployer_address or UNIVERSAL_DEPLOYER_ADDRESS)
-
+        deployer_address = normalize_number(
+            deployer_address or UNIVERSAL_DEPLOYER_ADDRESS
+        )
 
         deploy_contract(
             self,
@@ -187,10 +188,9 @@ class Account:
         if not is_alias(address_or_alias):
             address_or_alias = normalize_number(address_or_alias)
 
-        target_address, _ = (
-            next(deployments.load(address_or_alias, self.network), None)
-            or (address_or_alias, None)
-        )
+        target_address, _ = next(
+            deployments.load(address_or_alias, self.network), None
+        ) or (address_or_alias, None)
 
         return target_address
 

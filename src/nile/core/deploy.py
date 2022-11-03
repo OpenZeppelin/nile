@@ -17,9 +17,7 @@ from nile.common import (
 from nile.utils import hex_address
 
 
-def deploy(
-    contract_name, arguments, network, alias, overriding_path=None, abi=None
-):
+def deploy(contract_name, arguments, network, alias, overriding_path=None, abi=None):
     """Deploy StarkNet smart contracts (deprecated)."""
     logging.info(f"🚀 Deploying {contract_name}")
     base_path = (

@@ -85,9 +85,7 @@ def run(path, network):
 @click.option("--alias")
 @click.option("--abi")
 @network_option
-def deploy(
-    contract_name, salt, params, max_fee, unique, network, account, alias, abi
-):
+def deploy(contract_name, salt, params, max_fee, unique, network, account, alias, abi):
     """Deploy StarkNet smart contract."""
     if account is not None:
         account = Account(account, network)
