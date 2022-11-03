@@ -31,24 +31,26 @@ UNIVERSAL_DEPLOYER_ADDRESS = (
 )
 
 
-def get_gateway():
+def get_gateways():
     """Get the StarkNet node details."""
-
-    def _get_gateway():
+    try:
         with open(NODE_FILENAME, "r") as f:
             gateway = json.load(f)
             return gateway
 
-    try:
-        return _get_gateway()
-
     except FileNotFoundError:
         with open(NODE_FILENAME, "w") as f:
-            f.write('{"localhost": "http://127.0.0.1:5050/"}')
-        return _get_gateway()
+            networks = {
+                "localhost": "http://127.0.0.1:5050/",
+                "goerli2": "https://alpha4-2.starknet.io",
+                "integration": "https://external.integration.starknet.io",
+            }
+            f.write(json.dumps(networks, indent=2))
+
+            return networks
 
 
-GATEWAYS = get_gateway()
+GATEWAYS = get_gateways()
 
 
 def get_all_contracts(ext=None, directory=None):

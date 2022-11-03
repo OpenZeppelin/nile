@@ -21,8 +21,10 @@ from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
+    GATEWAYS,
     NODE_FILENAME,
 )
+from nile.utils import normalize_number
 
 RESOURCES_DIR = Path(__file__).parent / "resources"
 MOCK_HASH = "0x123"
@@ -182,16 +184,55 @@ async def test_node_runs_gateway(opts, expected):
     assert gateway.get(network) == expected
 
 
+# @pytest.mark.asyncio
+# @pytest.mark.parametrize(
+#    "args",
+#    [
+#        ([MOCK_HASH, "--network", "goerli"]),
+#        ([MOCK_HASH, "--network", "goerli2"]),
+#        ([MOCK_HASH, "--network", "integration"]),
+#        ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"]),
+#    ],
+# )
+# @patch("nile.utils.debug.capture_stdout")
+# @patch("nile.utils.debug.set_args")
+# async def test_debug(mock_set_args, mock_capture, args):
+#    # debug will hang without patch
+#    mock_capture.return_value = json.dumps({"tx_status": "ACCEPTED"})
+#    network = args[2]
+#    if network in ["goerli2", "integration"]:
+#        mock_set_args.return_value = network
+#
+#    result = await CliRunner().invoke(cli, ["debug", *args])
+#
+#    # Check status
+#    assert result.exit_code == 0
+
+# Setup and assert expected output
+# expected = ["starknet", "tx_status", "--hash", MOCK_HASH]
+# mock_debug.assert_called_once()
+
+# network = args[2]
+# if network in ["goerli2", "integration"]:
+#    expected.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
+#
+# mock_subprocess.check_output.assert_called_once_with(expected)
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "args",
     [
         ([MOCK_HASH, "--network", "goerli"]),
+        ([MOCK_HASH, "--network", "goerli2"]),
+        ([MOCK_HASH, "--network", "integration"]),
         ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"]),
     ],
 )
 @patch("nile.utils.debug.capture_stdout")
-async def test_debug(mock_capture, args):
+@patch("nile.utils.debug.set_args")
+@patch("nile.cli.debug_command")
+async def test_debug(mock_debug, mock_set_args, mock_capture, args):
     # debug will hang without patch
     mock_capture.return_value = json.dumps({"tx_status": "ACCEPTED"})
 
@@ -199,3 +240,10 @@ async def test_debug(mock_capture, args):
 
     # Check status
     assert result.exit_code == 0
+
+    network = args[2]
+    contracts_file = args[4] if "--contracts_file" in args else None
+
+    mock_debug.assert_called_once_with(
+        normalize_number(MOCK_HASH), network, contracts_file
+    )
