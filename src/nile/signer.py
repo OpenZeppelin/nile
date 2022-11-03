@@ -4,8 +4,8 @@ from starkware.crypto.signature.signature import private_to_stark_key, sign
 from starkware.starknet.core.os.transaction_hash.transaction_hash import (
     TransactionHashPrefix,
     calculate_declare_transaction_hash,
+    calculate_deploy_account_transaction_hash,
     calculate_transaction_hash_common,
-    calculate_deploy_account_transaction_hash
 )
 from starkware.starknet.definitions.general_config import StarknetChainId
 from starkware.starknet.public.abi import get_selector_from_name
@@ -30,7 +30,10 @@ class Signer:
         """Sign a message hash."""
         return sign(msg_hash=message_hash, priv_key=self.private_key)
 
-    def sign_deployment(self, contract_address, class_hash, calldata, salt, max_fee, nonce):
+    def sign_deployment(
+        self, contract_address, class_hash, calldata, salt, max_fee, nonce
+    ):
+        """Sign a deploy_account transaction."""
         transaction_hash = get_deploy_account_hash(
             contract_address,
             class_hash,
@@ -42,7 +45,6 @@ class Signer:
         )
 
         return self.sign(message_hash=transaction_hash)
-
 
     def sign_declare(self, sender, contract_class, nonce, max_fee):
         """Sign a declare transaction."""
@@ -134,7 +136,9 @@ def get_declare_hash(sender, contract_class, max_fee, nonce, chain_id):
     )
 
 
-def get_deploy_account_hash(contract_address, class_hash, calldata, salt, max_fee, nonce, chain_id):
+def get_deploy_account_hash(
+    contract_address, class_hash, calldata, salt, max_fee, nonce, chain_id
+):
     """Compute the hash of a declare transaction."""
     return calculate_deploy_account_transaction_hash(
         version=TRANSACTION_VERSION,
@@ -144,5 +148,5 @@ def get_deploy_account_hash(contract_address, class_hash, calldata, salt, max_fe
         max_fee=max_fee,
         nonce=nonce,
         salt=salt,
-        chain_id=chain_id
+        chain_id=chain_id,
     )
