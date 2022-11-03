@@ -20,9 +20,9 @@ class NileRuntimeEnvironment:
         for name, object in get_installed_plugins().items():
             setattr(self, name, skip_click_exit(object))
 
-    def compile(self, contracts):
+    def compile(self, contracts, cairo_path=None):
         """Compile a list of contracts."""
-        return compile(contracts)
+        return compile(contracts, cairo_path=cairo_path)
 
     def deploy(
         self,

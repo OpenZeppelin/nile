@@ -15,7 +15,7 @@ from nile.utils.get_accounts import (
 )
 from tests.mocks.mock_response import MockResponse
 
-NETWORK = "goerli"
+NETWORK = "localhost"
 GATEWAYS = {"localhost": "http://127.0.0.1:5050/"}
 PUBKEYS = [
     883045738439352841478194533192765345509759306772397516907181243450667673002,
@@ -24,6 +24,10 @@ PUBKEYS = [
 ADDRESSES = ["333", "444"]
 INDEXES = [0, 1]
 ALIASES = ["TEST_KEY", "TEST_KEY_2"]
+
+
+MOCK_ADDRESS = "0x123"
+MOCK_INDEX = 0
 
 MOCK_ACCOUNTS = {
     PUBKEYS[0]: {
@@ -70,7 +74,10 @@ def mock_subprocess():
         ([ALIASES[1], PUBKEYS[1]]),
     ],
 )
-def test__check_and_return_account_with_matching_keys(private_keys, public_keys):
+@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+def test__check_and_return_account_with_matching_keys(
+    mock_deploy, private_keys, public_keys
+):
     # Check matching public/private keys
     account = _check_and_return_account(private_keys, public_keys, NETWORK)
 
@@ -84,7 +91,10 @@ def test__check_and_return_account_with_matching_keys(private_keys, public_keys)
         ([ALIASES[1], PUBKEYS[0]]),
     ],
 )
-def test__check_and_return_account_with_mismatching_keys(private_keys, public_keys):
+@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+def test__check_and_return_account_with_mismatching_keys(
+    mock_deploy, private_keys, public_keys
+):
     # Check mismatched public/private keys
     with pytest.raises(AssertionError) as err:
         _check_and_return_account(private_keys, public_keys, NETWORK)
@@ -92,7 +102,8 @@ def test__check_and_return_account_with_mismatching_keys(private_keys, public_ke
     assert "Signer pubkey does not match deployed pubkey" in str(err.value)
 
 
-def test_get_accounts_no_activated_accounts_feedback(capsys):
+@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+def test_get_accounts_no_activated_accounts_feedback(mock_deploy, capsys):
     get_accounts(NETWORK)
     # This test uses capsys in order to test the print statements (instead of logging)
     captured = capsys.readouterr()
@@ -106,10 +117,11 @@ def test_get_accounts_no_activated_accounts_feedback(capsys):
     )
 
 
+@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.utils.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
 @patch("nile.utils.get_accounts.open", MagicMock())
 @patch("nile.utils.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
-def test_get_accounts_activated_accounts_feedback(caplog):
+def test_get_accounts_activated_accounts_feedback(mock_deploy, caplog):
     logging.getLogger().setLevel(logging.INFO)
 
     # Default argument
@@ -126,10 +138,11 @@ def test_get_accounts_activated_accounts_feedback(caplog):
     assert "\n🚀 Successfully retrieved deployed accounts" in caplog.text
 
 
+@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.utils.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
 @patch("nile.utils.get_accounts.open", MagicMock())
 @patch("nile.utils.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
-def test_get_accounts_with_keys():
+def test_get_accounts_with_keys(mock_deploy):
 
     with patch(
         "nile.utils.get_accounts._check_and_return_account"
@@ -147,7 +160,7 @@ def test_get_accounts_with_keys():
         assert len(result) == len(PUBKEYS)
 
 
-@patch("nile.common.get_gateway", return_value=GATEWAYS)
+@patch("nile.common.get_gateways", return_value=GATEWAYS)
 @patch("nile.utils.get_accounts._check_and_return_account")
 @patch("requests.get", return_value=MockResponse(JSON_DATA, 200))
 def test_get_predeployed_accounts(mock_response, mock_return_account, mock_gateways):
@@ -179,11 +192,12 @@ def test_get_predeployed_accounts(mock_response, mock_return_account, mock_gatew
     assert len(result) == len(JSON_DATA)
 
 
-@patch("nile.common.get_gateway", return_value=GATEWAYS)
+@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.common.get_gateways", return_value=GATEWAYS)
 @patch("nile.utils.get_accounts._check_and_return_account")
 @patch("requests.get", return_value=MockResponse(JSON_DATA, 200))
 def test_get_predeployed_accounts_logging(
-    mock_response, mock_return_account, mock_gateways, caplog
+    mock_response, mock_return_account, mock_gateways, mock_deploy, caplog
 ):
     # make logs visible to test
     logger = logging.getLogger()

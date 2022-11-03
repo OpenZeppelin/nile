@@ -3,9 +3,9 @@ import logging
 import os
 import subprocess
 
-from nile.common import get_gateway
+from nile.common import get_gateways
 
-GATEWAYS = get_gateway()
+GATEWAYS = get_gateways()
 
 
 def get_nonce(contract_address, network):
