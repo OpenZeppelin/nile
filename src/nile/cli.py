@@ -44,7 +44,7 @@ def mainnet_token_option(f):
     """Configure TOKEN option for the cli."""
     return click.option(
         "--token",
-        help="Used for deploying contracts in Alpha MainNet.",
+        help="Used for deploying contracts in Alpha Mainnet.",
     )(f)
 
 
