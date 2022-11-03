@@ -178,12 +178,16 @@ def test_send_sign_transaction_and_execute(mock_target_address, mock_deploy):
         )
 
 
+@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch(
+    "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
+)
 @patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
-def test_send_defaults(mock_call, mock_nonce):
+def test_send_defaults(mock_call, mock_nonce, mock_target_address, mock_deploy):
     account = Account(KEY, NETWORK)
 
-    send_args = [account.address, "method", [1, 2, 3]]
+    send_args = [MOCK_TARGET_ADDRESS, "method", [1, 2, 3]]
     calldata = ["111", "222", "333"]
     sig_r, sig_s = [999, 888]
     return_signature = [calldata, sig_r, sig_s]
