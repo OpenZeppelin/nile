@@ -4,6 +4,7 @@ from nile.common import is_alias
 from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
+from nile.core.deploy import deploy
 from nile.core.plugins import get_installed_plugins, skip_click_exit
 from nile.utils import normalize_number
 from nile.utils.get_accounts import get_accounts, get_predeployed_accounts
@@ -22,6 +23,14 @@ class NileRuntimeEnvironment:
     def compile(self, contracts, cairo_path=None):
         """Compile a list of contracts."""
         return compile(contracts, cairo_path=cairo_path)
+
+    def deploy(
+        self, contract, arguments=None, alias=None, overriding_path=None, abi=None
+    ):
+        """Deploy a smart contract."""
+        return deploy(
+            contract, arguments, self.network, alias, overriding_path, abi=abi
+        )
 
     def call(self, address_or_alias, method, params=None):
         """Call a view function in a smart contract."""

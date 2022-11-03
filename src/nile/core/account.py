@@ -15,7 +15,7 @@ from nile.common import (
 )
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.declare import declare
-from nile.core.deploy import deploy_contract, deprecated_deploy
+from nile.core.deploy import deploy_contract, deploy
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
@@ -70,7 +70,7 @@ class Account:
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
 
-        address, _ = deprecated_deploy(
+        address, _ = deploy(
             "Account",
             [self.signer.public_key],
             self.network,
@@ -122,6 +122,9 @@ class Account:
         abi=None,
     ):
         """Deploy a contract through an Account."""
+        deployer_address = normalize_number(deployer_address or UNIVERSAL_DEPLOYER_ADDRESS)
+
+
         deploy_contract(
             self,
             contract_name,
@@ -131,6 +134,7 @@ class Account:
             self.network,
             alias,
             deployer_address or UNIVERSAL_DEPLOYER_ADDRESS,
+            max_fee,
             abi=abi,
         )
 
@@ -185,7 +189,7 @@ class Account:
 
         target_address, _ = (
             next(deployments.load(address_or_alias, self.network), None)
-            or address_or_alias
+            or (address_or_alias, None)
         )
 
         return target_address

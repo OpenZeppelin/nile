@@ -9,6 +9,7 @@ from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
+from nile.core.deploy import deploy as deploy_command
 from nile.core.init import init as init_command
 from nile.core.node import node as node_command
 from nile.core.plugins import load_plugins
@@ -75,23 +76,26 @@ def run(path, network):
 
 
 @cli.command()
-@click.argument("signer", nargs=1)
 @click.argument("contract_name", nargs=1)
-@click.argument("salt", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
+@click.option("--salt", nargs=1, default=0)
 @click.option("--unique", is_flag=True)
+@click.option("--account")
 @click.option("--alias")
 @click.option("--abi")
 @network_option
 def deploy(
-    signer, contract_name, salt, params, max_fee, unique, network, alias=None, abi=None
+    contract_name, salt, params, max_fee, unique, network, account, alias, abi
 ):
-    """Deploy StarkNet smart contract through an Account."""
-    account = Account(signer, network)
-    account.deploy_contract(
-        contract_name, salt, unique, params, alias, max_fee=None, abi=abi
-    )
+    """Deploy StarkNet smart contract."""
+    if account is not None:
+        account = Account(account, network)
+        account.deploy_contract(
+            contract_name, salt, unique, params, alias, max_fee=None, abi=abi
+        )
+    else:
+        deploy_command(contract_name, params, network, alias, abi=abi)
 
 
 @cli.command()
@@ -183,7 +187,7 @@ def test(contracts):
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
 @click.option("--cairo_path")
-@click.option("--account_contract", is_flag=True)
+@click.option("--account_contract", is_flag="True")
 @click.option("--disable-hint-validation", is_flag=True)
 def compile(
     contracts, directory, cairo_path, account_contract, disable_hint_validation
