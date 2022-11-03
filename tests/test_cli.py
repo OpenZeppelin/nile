@@ -21,6 +21,7 @@ from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
+    GATEWAYS,
     NODE_FILENAME,
 )
 from nile.utils import normalize_number
@@ -182,31 +183,9 @@ def test_node_runs_gateway(opts, expected):
     "args",
     [
         ([MOCK_HASH, "--network", "goerli"]),
+        ([MOCK_HASH, "--network", "goerli2"]),
+        ([MOCK_HASH, "--network", "integration"]),
         ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"]),
-    ],
-)
-@patch("nile.utils.status.subprocess")
-def test_debug(mock_subprocess, args):
-    # debug will hang without patch
-    mock_subprocess.check_output.return_value = json.dumps(
-        {"tx_status": "ACCEPTED ON L2"}
-    )
-
-    result = CliRunner().invoke(cli, ["debug", *args])
-
-    # Check status
-    assert result.exit_code == 0
-
-    # Setup and assert expected output
-    expected = ["starknet", "tx_status", "--hash", hex(normalize_number(MOCK_HASH))]
-
-    mock_subprocess.check_output.assert_called_once_with(expected)
-
-
-@pytest.mark.parametrize(
-    "args",
-    [
-        ([MOCK_HASH, "--network", "goerli"]),
     ],
 )
 @patch("nile.utils.status.subprocess")
@@ -221,5 +200,10 @@ def test_status(mock_subprocess, args):
 
     # Setup and assert expected output
     expected = ["starknet", "tx_status", "--hash", hex(normalize_number(MOCK_HASH))]
+
+    network = args[2]
+    if network in ["goerli2", "integration"]:
+        expected.append(f"--gateway_url={GATEWAYS.get(network)}")
+        expected.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
 
     mock_subprocess.check_output.assert_called_once_with(expected)

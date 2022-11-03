@@ -25,11 +25,11 @@ QUERY_VERSION_BASE = 2**128
 QUERY_VERSION = QUERY_VERSION_BASE + TRANSACTION_VERSION
 UNIVERSAL_DEPLOYER_ADDRESS = (
     # subject to change
-    "0x1a8e53128903a412d86f33742d7f907f14ee8db566a14592cced70d52f96222"
+    "0x041a78e741e5af2fec34b695679bc6891742439f7afb8484ecd7766661ad02bf"
 )
 
 
-def get_gateway():
+def get_gateways():
     """Get the StarkNet node details."""
     try:
         with open(NODE_FILENAME, "r") as f:
@@ -38,10 +38,17 @@ def get_gateway():
 
     except FileNotFoundError:
         with open(NODE_FILENAME, "w") as f:
-            f.write('{"localhost": "http://127.0.0.1:5050/"}')
+            networks = {
+                "localhost": "http://127.0.0.1:5050/",
+                "goerli2": "https://alpha4-2.starknet.io",
+                "integration": "https://external.integration.starknet.io",
+            }
+            f.write(json.dumps(networks, indent=2))
+
+            return networks
 
 
-GATEWAYS = get_gateway()
+GATEWAYS = get_gateways()
 
 
 def get_all_contracts(ext=None, directory=None):

@@ -33,10 +33,10 @@ class Account:
         """Get or deploy an Account contract for the given private key."""
         try:
             if predeployed_info is None:
-                self.signer = Signer(normalize_number(os.environ[signer]))
+                self.signer = Signer(normalize_number(os.environ[signer]), network)
                 self.alias = signer
             else:
-                self.signer = Signer(signer)
+                self.signer = Signer(signer, network)
                 self.alias = predeployed_info["alias"]
 
             self.network = network
@@ -197,7 +197,7 @@ class Account:
         return target_address
 
     def _process_arguments(self, calldata, max_fee, nonce):
-        calldata = [int(x) for x in calldata]
+        calldata = [normalize_number(x) for x in calldata]
 
         if nonce is None:
             nonce = get_nonce(self.address, self.network)
