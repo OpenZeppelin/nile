@@ -18,9 +18,11 @@ from nile.utils import hex_address
 
 
 def deploy(contract_name, arguments, network, alias, overriding_path=None, abi=None):
-    """(DEPRECATED) Deploy StarkNet smart contracts."""
+    """Deploy StarkNet smart contracts (DEPRECATED)."""
     logging.info(
-        f"🚀 Deploying {contract_name} without Account. This method is deprecated and will be removed soon. Try using the --account command option."
+        f"🚀 Deploying {contract_name} without Account. "
+        + "This method is deprecated and will be removed soon. "
+        + "Try using the --account command option."
     )
     base_path = (
         overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
