@@ -23,7 +23,7 @@ def call_or_invoke(
     @param type: can be either call or invoke.
     @param method: the targeted function.
     @param params: the targeted function arguments.
-    @param network: goerli, mainnet, or predefined networks file.
+    @param network: goerli, goerli2, integration, mainnet, or predefined networks file.
     @param signature: optional signature for invoke transactions.
     @param max_fee: optional max fee for invoke transactions.
     @param query_flag: either simulate or estimate_fee

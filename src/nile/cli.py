@@ -25,7 +25,7 @@ from nile.utils.get_nonce import get_nonce as get_nonce_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 
-NETWORKS = ("localhost", "goerli", "mainnet")
+NETWORKS = ("localhost", "integration", "goerli", "goerli2", "mainnet")
 
 
 def network_option(f):
@@ -41,15 +41,15 @@ def network_option(f):
 
 def _validate_network(_ctx, _param, value):
     """Normalize network values."""
-    # normalize goerli
-    if "goerli" in value or "testnet" in value:
-        return "goerli"
-    # normalize localhost
-    if "localhost" in value or "127.0.0.1" in value:
-        return "localhost"
-    # check if value is accepted
+    # check if value is known
     if value in NETWORKS:
         return value
+    # normalize goerli
+    if "testnet" == value:
+        return "goerli"
+    # normalize localhost
+    if "127.0.0.1" == value:
+        return "localhost"
     # raise if value is invalid
     raise click.BadParameter(f"'{value}'. Use one of {NETWORKS}")
 
@@ -182,9 +182,12 @@ def test(contracts):
 @cli.command()
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
+@click.option("--cairo_path")
 @click.option("--account_contract", is_flag=True)
 @click.option("--disable-hint-validation", is_flag=True)
-def compile(contracts, directory, account_contract, disable_hint_validation):
+def compile(
+    contracts, directory, cairo_path, account_contract, disable_hint_validation
+):
     """
     Compile cairo contracts.
 
@@ -197,7 +200,9 @@ def compile(contracts, directory, account_contract, disable_hint_validation):
     $ compile.py contracts/foo.cairo contracts/bar.cairo
       Compiles foo.cairo and bar.cairo
     """
-    compile_command(contracts, directory, account_contract, disable_hint_validation)
+    compile_command(
+        contracts, directory, cairo_path, account_contract, disable_hint_validation
+    )
 
 
 @cli.command()
