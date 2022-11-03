@@ -109,7 +109,7 @@ Creating artifacts/abis/ to store compilation artifacts
 > NOTICE: this method doesn't use an account, which will be deprecated very soon as StarkNet makes deployments from accounts mandatory.
 
 ```sh
-nile deploy contract --alias my_contract [TRACK/DEBUG]
+nile deploy contract --alias my_contract [--track/--debug]
 
 🚀 Deploying contract
 🌕 artifacts/contract.json successfully deployed to 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
