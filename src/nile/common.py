@@ -121,7 +121,8 @@ def is_alias(param):
 
 def get_gateway_url(network):
     """Return gateway URL for specified network."""
-    if network == "localhost":
+    networks = ["localhost", "goerli2", "integration"]
+    if network in networks:
         return GATEWAYS.get(network)
     else:
         network = "alpha-" + network
@@ -130,7 +131,8 @@ def get_gateway_url(network):
 
 def get_feeder_url(network):
     """Return feeder gateway URL for specified network."""
-    if network == "localhost":
+    networks = ["localhost", "goerli2", "integration"]
+    if network in networks:
         return GATEWAYS.get(network)
     else:
         network = "alpha-" + network
