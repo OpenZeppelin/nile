@@ -84,13 +84,23 @@ def run(path, network):
 @click.option("--account")
 @click.option("--alias")
 @click.option("--abi")
+@click.option("--udc")
 @network_option
-def deploy(contract_name, salt, params, max_fee, unique, network, account, alias, abi):
+def deploy(
+    contract_name, salt, params, max_fee, unique, network, account, alias, abi, udc
+):
     """Deploy StarkNet smart contract."""
     if account is not None:
         account = Account(account, network)
         account.deploy_contract(
-            contract_name, salt, unique, params, alias, max_fee=None, abi=abi
+            contract_name,
+            salt,
+            unique,
+            params,
+            alias,
+            max_fee=None,
+            abi=abi,
+            deployer_address=udc,
         )
     else:
         deploy_command(contract_name, params, network, alias, abi=abi)

@@ -113,23 +113,26 @@ Creating artifacts/abis/ to store compilation artifacts
 
 ### `deploy`
 
-> NOTICE: this method doesn't use an account, which will be deprecated very soon as StarkNet makes deployments from accounts mandatory.
+> NOTICE: Calling this method without the `--account` parameter doesn't use an account, which will be deprecated very soon as StarkNet makes deployments from accounts mandatory.
 
 ```sh
-nile deploy contract --alias my_contract
+nile deploy contract --account setup_account_alias --alias my_contract
 
 🚀 Deploying contract
-🌕 artifacts/contract.json successfully deployed to 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
+⏳ ️Deployment of contract successfully sent at 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
+🧾 Transaction hash: 0x79e596c39cfec555f2d17253d043a0defd64a851a268b68c13811f328baf123
 📦 Registering deployment as my_contract in localhost.deployments.txt
 ```
 
 A few things to notice here:
 
-1. `nile deploy <contract_name>` looks for an artifact with the same name
-2. This created a `localhost.deployments.txt` file storing all data related to my deployment
-3. The `--alias` parameter lets me create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
-4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, `goerli2`, `integration`, and the default `localhost`.
-5. By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
+1. `nile deploy <contract_name>` looks for an artifact with the same name.
+2. This created a `localhost.deployments.txt` file storing all data related to my deployment.
+3. The `--account` parameter deploys using the provided account and the UniversalDeployer contract.
+4. The `--alias` parameter lets you create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
+5. The `--udc` parameter lets you specify the UniversalDeployer address if needed.
+6. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, `goerli2`, `integration`, and the default `localhost`.
+7. By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
 
 ### `setup`
 
