@@ -21,18 +21,17 @@ async def debug(tx_hash, network, contracts_file=None):
     """Use available contracts to help locate the error in a rejected transaction."""
     # Starknet CLI expects hex strings
     command_args = ["--hash", hex(tx_hash)]
-
     args = set_args(network)
-
-    output = await capture_stdout(
-        starknet_cli.tx_status(args=args, command_args=command_args)
-    )
 
     logging.info(
         "⏳ Querying the network to check transaction status and identify contracts..."
     )
 
     while True:
+        output = await capture_stdout(
+            starknet_cli.tx_status(args=args, command_args=command_args)
+        )
+
         receipt = json.loads(output)
         status = receipt["tx_status"]
 
