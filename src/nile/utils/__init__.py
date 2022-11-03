@@ -147,3 +147,4 @@ def _pad_hex_to(hexadecimal, n):
     if len(hexadecimal) < n + 2:
         missing_zeros = n + 2 - len(hexadecimal)
         return hexadecimal[:2] + missing_zeros * "0" + hexadecimal[2:]
+    return hexadecimal

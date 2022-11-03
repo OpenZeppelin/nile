@@ -6,7 +6,7 @@ import pytest
 
 from nile.common import DECLARATIONS_FILENAME
 from nile.core.declare import alias_exists, declare
-from nile.utils import hex_address
+from nile.utils import hex_address, hex_class_hash
 
 
 @pytest.fixture(autouse=True)
@@ -33,7 +33,7 @@ def test_alias_exists():
 
     # when alias exists
     with patch("nile.core.declare.deployments.load_class") as mock_load:
-        mock_load.__iter__.side_effect = HASH
+        mock_load.__iter__.side_effect = hex_class_hash(HASH)
         assert alias_exists(ALIAS, NETWORK) is True
 
 
@@ -50,7 +50,7 @@ def test_alias_exists():
                 "overriding_path": None,
                 "max_fee": "0",
             },
-            [HASH, NETWORK, None],  # expected register
+            [hex_class_hash(HASH), NETWORK, None],  # expected register
         ),
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS],  # args
@@ -62,7 +62,7 @@ def test_alias_exists():
                 "overriding_path": None,
                 "max_fee": "0",
             },
-            [HASH, NETWORK, ALIAS],  # expected register
+            [hex_class_hash(HASH), NETWORK, ALIAS],  # expected register
         ),
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS, PATH],  # args
@@ -74,7 +74,7 @@ def test_alias_exists():
                 "overriding_path": PATH,
                 "max_fee": "0",
             },
-            [HASH, NETWORK, ALIAS],  # expected register
+            [hex_class_hash(HASH), NETWORK, ALIAS],  # expected register
         ),
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS, PATH, MAX_FEE],  # args
@@ -86,12 +86,14 @@ def test_alias_exists():
                 "overriding_path": PATH,
                 "max_fee": str(MAX_FEE),
             },
-            [HASH, NETWORK, ALIAS],  # expected register
+            [hex_class_hash(HASH), NETWORK, ALIAS],  # expected register
         ),
     ],
 )
 @patch("nile.core.declare.run_command", return_value=RUN_OUTPUT)
-@patch("nile.core.declare.parse_information", return_value=[HASH, TX_HASH])
+@patch(
+    "nile.core.declare.parse_information", return_value=[hex_class_hash(HASH), TX_HASH]
+)
 @patch("nile.core.declare.deployments.register_class_hash")
 def test_declare(
     mock_register, mock_parse, mock_run_cmd, caplog, args, exp_command, exp_register
@@ -100,7 +102,7 @@ def test_declare(
 
     # check return value
     res = declare(*args)
-    assert res == HASH
+    assert res == hex_class_hash(HASH)
 
     # check internals
     mock_run_cmd.assert_called_once_with(operation="declare", **exp_command)
@@ -110,7 +112,8 @@ def test_declare(
     # check logs
     assert f"🚀 Declaring {CONTRACT}" in caplog.text
     assert (
-        f"⏳ Successfully sent declaration of {CONTRACT} as {hex(HASH)}" in caplog.text
+        f"⏳ Successfully sent declaration of {CONTRACT} as {hex_class_hash(HASH)}"
+        in caplog.text
     )
     assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
 
