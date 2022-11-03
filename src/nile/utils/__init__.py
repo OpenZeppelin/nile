@@ -16,6 +16,9 @@ ZERO_ADDRESS = 0
 TRUE = 1
 FALSE = 0
 
+ADDRESS_LEN = 64
+CLASS_HASH_LEN = 65
+
 
 _root = Path(__file__).parent.parent
 
@@ -127,17 +130,17 @@ def normalize_number(number):
 def hex_address(number):
     """Return the 64 hexadecimal characters length address."""
     if type(number) == str and number.startswith("0x"):
-        return _pad_hex_to(number, 64)
+        return _pad_hex_to(number, ADDRESS_LEN)
     else:
-        return _pad_hex_to(hex(int(number)), 64)
+        return _pad_hex_to(hex(int(number)), ADDRESS_LEN)
 
 
 def hex_class_hash(number):
-    """Return the 67 hexadecimal characters length class hash."""
+    """Return the 65 hexadecimal characters length class hash."""
     if type(number) == str and number.startswith("0x"):
-        return _pad_hex_to(number, 67)
+        return _pad_hex_to(number, CLASS_HASH_LEN)
     else:
-        return _pad_hex_to(hex(int(number)), 67)
+        return _pad_hex_to(hex(int(number)), CLASS_HASH_LEN)
 
 
 def _pad_hex_to(hexadecimal, n):
