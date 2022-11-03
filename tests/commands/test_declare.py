@@ -92,7 +92,7 @@ def test_alias_exists():
 )
 @patch("nile.core.declare.run_command", return_value=RUN_OUTPUT)
 @patch(
-    "nile.core.declare.parse_information", return_value=[hex_class_hash(HASH), TX_HASH]
+    "nile.core.declare.parse_information", return_value=[HASH, TX_HASH]
 )
 @patch("nile.core.declare.deployments.register_class_hash")
 def test_declare(
