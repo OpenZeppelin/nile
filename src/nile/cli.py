@@ -98,9 +98,9 @@ def deploy(
             unique,
             params,
             alias,
+            deployer_address=udc,
             max_fee=None,
             abi=abi,
-            deployer_address=udc,
         )
     else:
         deploy_command(contract_name, params, network, alias, abi=abi)
@@ -116,7 +116,7 @@ def deploy(
 def declare(
     signer, contract_name, network, max_fee=None, alias=None, overriding_path=None
 ):
-    """Declare StarkNet smart contract through an Account."""
+    """Declare a StarkNet smart contract through an Account."""
     account = Account(signer, network)
     account.declare(
         contract_name,
