@@ -218,7 +218,7 @@ def test_send_defaults(mock_call, mock_nonce, mock_target_address, mock_deploy):
         signature=[str(sig_r), str(sig_s)],
         type="invoke",
         query_flag=None,
-        watch_mode=None
+        watch_mode=None,
     )
 
 
