@@ -141,7 +141,7 @@ Deploy an Account associated with a given private key.
 To avoid accidentally leaking private keys, this command takes an alias instead of the actual private key. This alias is associated with an environmental variable of the same name, whose value is the actual private key.
 
 ```sh
-nile setup <private_key_alias> [TRACK/DEBUG]
+nile setup <private_key_alias> [--track/--debug]
 
 🚀 Deploying Account
 ⏳ ️Deployment of Account successfully sent at 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
@@ -161,7 +161,7 @@ A few things to note here:
 Execute a transaction through the `Account` associated with the private key provided. The syntax is:
 
 ```sh
-nile send [TRACK/DEBUG] <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
+nile send [--track/--debug] <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
 ```
 
 For example:
@@ -271,7 +271,7 @@ nile version
 Prints the current status of a transaction.
 
 ```sh
-nile status <transaction_hash> [CONTRACTS_FILE, NETWORK, TRACK/DEBUG]
+nile status <transaction_hash> [CONTRACTS_FILE, NETWORK, --track/--debug]
 ⏳ Querying the network for transaction status...
 ✅ Transaction status: ACCEPTED ON L1. No error in transaction.
 ```
