@@ -281,7 +281,7 @@ nile status <transaction_hash> [CONTRACTS_FILE, NETWORK, --track/--debug]
 In case of pending transaction states, continue probing the network. Here in the case of a successful transaction.
 
 ```sh
-nile status -t <transaction_hash> [CONTRACTS_FILE, NETWORK, DEBUG]
+nile status -t <transaction_hash> [CONTRACTS_FILE, NETWORK]
 ⏳ Querying the network for transaction status...
 🕒 Transaction status: NOT_RECEIVED. Trying again in a moment...
 🕒 Transaction status: RECEIVED. Trying again in a moment...
@@ -291,7 +291,7 @@ nile status -t <transaction_hash> [CONTRACTS_FILE, NETWORK, DEBUG]
 
 #### `--debug`, `-d` flag
 
-Use locally available contracts to make error messages from rejected transactions more explicit.  
+Use locally available contracts to make error messages from rejected transactions more explicit.
 Note: Implies `--track`.
 
 For example, this transaction returns the very cryptic error message:
