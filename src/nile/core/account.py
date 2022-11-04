@@ -92,6 +92,7 @@ class Account:
         nonce=None,
         alias=None,
         overriding_path=None,
+        mainnet_token=None,
         watch_mode=None,
     ):
         """Declare a contract through an Account contract."""
@@ -121,6 +122,7 @@ class Account:
             alias=alias,
             network=self.network,
             max_fee=max_fee,
+            mainnet_token=mainnet_token,
             watch_mode=watch_mode,
         )
 
@@ -140,8 +142,8 @@ class Account:
         address_or_alias,
         method,
         calldata,
-        max_fee,
         nonce=None,
+        max_fee=None,
         query_type=None,
         watch_mode=None,
     ):
@@ -175,11 +177,13 @@ class Account:
             watch_mode=watch_mode,
         )
 
-    def simulate(self, address_or_alias, method, calldata, max_fee, nonce=None):
+    def simulate(self, address_or_alias, method, calldata, max_fee=None, nonce=None):
         """Simulate a tx going through an Account contract."""
         return self.send(address_or_alias, method, calldata, max_fee, nonce, "simulate")
 
-    def estimate_fee(self, address_or_alias, method, calldata, max_fee, nonce=None):
+    def estimate_fee(
+        self, address_or_alias, method, calldata, max_fee=None, nonce=None
+    ):
         """Estimate fee for a tx going through an Account contract."""
         return self.send(
             address_or_alias, method, calldata, max_fee, nonce, "estimate_fee"

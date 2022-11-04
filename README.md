@@ -115,6 +115,8 @@ Creating artifacts/abis/ to store compilation artifacts
 
 > NOTICE: this method doesn't use an account, which will be deprecated very soon as StarkNet makes deployments from accounts mandatory.
 
+> Token for deployments to Alpha Mainnet can be set with the `--token` option.
+
 ```sh
 nile deploy contract --alias my_contract [--track/--debug]
 
@@ -180,6 +182,8 @@ Some things to note:
 - `--track` and `--debug` flags can be used to watch the status of the transaction. See `status` below for a complete description.
 
 ### `declare`
+
+> Token for declarations to Alpha Mainnet can be set with the `--token` option.
 
 Very similar to `send`, but for declaring a contract based on its name through an account.
 

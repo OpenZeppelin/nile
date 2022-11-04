@@ -20,9 +20,9 @@ class NileRuntimeEnvironment:
         for name, object in get_installed_plugins().items():
             setattr(self, name, skip_click_exit(object))
 
-    def compile(self, contracts):
+    def compile(self, contracts, cairo_path=None):
         """Compile a list of contracts."""
-        return compile(contracts)
+        return compile(contracts, cairo_path=cairo_path)
 
     def deploy(
         self,
@@ -31,6 +31,7 @@ class NileRuntimeEnvironment:
         alias=None,
         overriding_path=None,
         abi=None,
+        mainnet_token=None,
         watch_mode=None,
     ):
         """Deploy a smart contract."""
@@ -41,6 +42,7 @@ class NileRuntimeEnvironment:
             alias=alias,
             overriding_path=overriding_path,
             abi=abi,
+            mainnet_token=mainnet_token,
             watch_mode=watch_mode,
         )
 

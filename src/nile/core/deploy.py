@@ -14,6 +14,7 @@ def deploy(
     alias,
     overriding_path=None,
     abi=None,
+    mainnet_token=None,
     watch_mode=None,
 ):
     """Deploy StarkNet smart contracts."""
@@ -29,6 +30,7 @@ def deploy(
         contract_name=contract_name,
         overriding_path=overriding_path,
         inputs=arguments,
+        mainnet_token=mainnet_token,
     )
 
     address, tx_hash = parse_information(output)

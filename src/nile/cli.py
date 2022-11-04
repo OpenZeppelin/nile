@@ -47,6 +47,14 @@ def watch_option(f):
     return f
 
 
+def mainnet_token_option(f):
+    """Configure TOKEN option for the cli."""
+    return click.option(
+        "--token",
+        help="Used for deploying contracts in Alpha Mainnet.",
+    )(f)
+
+
 def _validate_network(_ctx, _param, value):
     """Normalize network values."""
     # check if value is known
@@ -89,7 +97,8 @@ def run(path, network):
 @click.option("--alias")
 @watch_option
 @click.option("--abi")
-def deploy(artifact, arguments, network, alias, watch_mode, abi=None):
+@mainnet_token_option
+def deploy(artifact, arguments, network, alias, watch_mode, abi=None, token=None):
     """Deploy StarkNet smart contract."""
     deploy_command(
         contract_name=artifact,
@@ -97,6 +106,7 @@ def deploy(artifact, arguments, network, alias, watch_mode, abi=None):
         network=network,
         alias=alias,
         abi=abi,
+        mainnet_token=token,
         watch_mode=watch_mode,
     )
 
@@ -108,15 +118,17 @@ def deploy(artifact, arguments, network, alias, watch_mode, abi=None):
 @click.option("--alias")
 @watch_option
 @click.option("--overriding_path")
+@mainnet_token_option
 @network_option
 def declare(
     signer,
     contract_name,
     network,
-    watch_mode,
     max_fee,
+    watch_mode,
     alias=None,
     overriding_path=None,
+    token=None,
 ):
     """Declare StarkNet smart contract."""
     account = Account(signer, network)
@@ -125,6 +137,7 @@ def declare(
         alias=alias,
         max_fee=max_fee,
         overriding_path=overriding_path,
+        mainnet_token=token,
         watch_mode=watch_mode,
     )
 
@@ -217,9 +230,12 @@ def test(contracts):
 @cli.command()
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
+@click.option("--cairo_path")
 @click.option("--account_contract", is_flag="True")
 @click.option("--disable-hint-validation", is_flag=True)
-def compile(contracts, directory, account_contract, disable_hint_validation):
+def compile(
+    contracts, directory, cairo_path, account_contract, disable_hint_validation
+):
     """
     Compile cairo contracts.
 
@@ -232,7 +248,9 @@ def compile(contracts, directory, account_contract, disable_hint_validation):
     $ compile.py contracts/foo.cairo contracts/bar.cairo
       Compiles foo.cairo and bar.cairo
     """
-    compile_command(contracts, directory, account_contract, disable_hint_validation)
+    compile_command(
+        contracts, directory, cairo_path, account_contract, disable_hint_validation
+    )
 
 
 @cli.command()
