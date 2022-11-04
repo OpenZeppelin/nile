@@ -86,6 +86,12 @@ WARNING: Use these accounts and their keys ONLY for local testing. DO NOT use th
 
 Compile Cairo contracts. Compilation artifacts are written into the `artifacts/` directory.
 
+```txt
+nile compile [PATH_TO_CONTRACT | --directory DIRECTORY] [--disable-hint-validation]
+```
+
+For example:
+
 ```sh
 nile compile # compiles all contracts under contracts/
 nile compile --directory my_contracts # compiles all contracts under my_contracts/
@@ -117,8 +123,12 @@ Creating artifacts/abis/ to store compilation artifacts
 
 > Token for deployments to Alpha Mainnet can be set with the `--token` option.
 
+```txt
+nile deploy <contract> [--alias ALIAS] [--network NETWORK] [--track | --debug]
+```
+
 ```sh
-nile deploy contract --alias my_contract [--track/--debug]
+nile deploy contract --alias my_contract
 
 🚀 Deploying contract
 🌕 artifacts/contract.json successfully deployed to 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
@@ -141,7 +151,7 @@ Deploy an Account associated with a given private key.
 To avoid accidentally leaking private keys, this command takes an alias instead of the actual private key. This alias is associated with an environmental variable of the same name, whose value is the actual private key.
 
 ```sh
-nile setup <private_key_alias> [--track/--debug]
+nile setup <private_key_alias>
 
 🚀 Deploying Account
 ⏳ ️Deployment of Account successfully sent at 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
@@ -161,7 +171,7 @@ A few things to note here:
 Execute a transaction through the `Account` associated with the private key provided. The syntax is:
 
 ```sh
-nile send [--track/--debug] <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
+nile send [--track | --debug] <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
 ```
 
 For example:
@@ -270,10 +280,8 @@ nile version
 
 Prints the current status of a transaction.
 
-```sh
-nile status <transaction_hash> [CONTRACTS_FILE, NETWORK, --track/--debug]
-⏳ Querying the network for transaction status...
-✅ Transaction status: ACCEPTED ON L1. No error in transaction.
+```txt
+nile status <transaction_hash> [--contracts_file FILE] [--network NETWORK] [--track | --debug]
 ```
 
 #### `--track`, `-t` flag
@@ -281,7 +289,7 @@ nile status <transaction_hash> [CONTRACTS_FILE, NETWORK, --track/--debug]
 In case of pending transaction states, continue probing the network. Here in the case of a successful transaction.
 
 ```sh
-nile status -t <transaction_hash> [CONTRACTS_FILE, NETWORK]
+nile status -t <transaction_hash>
 ⏳ Querying the network for transaction status...
 🕒 Transaction status: NOT_RECEIVED. Trying again in a moment...
 🕒 Transaction status: RECEIVED. Trying again in a moment...
@@ -337,7 +345,7 @@ func set_teacher{
     ^************^
 ```
 
-Finally, the command will use the local `network.deployments.txt` files to fetch the available contracts.  
+Finally, the command will use the local `network.deployments.txt` files to fetch the available contracts.
 However, it is also possible to override this by passing a `CONTRACTS_FILE` argument, formatted as:
 
 ```txt
@@ -351,7 +359,7 @@ CONTRACT_ADDRESS2:PATH_TO_COMPILED_CONTRACT2[:ALIAS1].json
 Alias for `nile status --debug`
 
 ```sh
-nile debug <transaction_hash> [CONTRACTS_FILE, NETWORK]
+nile debug <transaction_hash> [--contracts_file FILE] [--network NETWORK]
 ```
 
 ### `get-accounts`
@@ -442,7 +450,6 @@ def run(nre):
 
 > Note that this command is only available in the context of scripting in the Nile Runtime Environment.
 
-
 ## Short string literals
 
 From [cairo-lang docs](https://www.cairo-lang.org/docs/how_cairo_works/consts.html#short-string-literals): A short string is a string whose length is at most 31 characters, and therefore can fit into a single field element.
@@ -525,7 +532,6 @@ Nile uses tox to manage development tasks. Here are some hints to play with the 
 - Build the package with `tox -e build`
 - Format all files with `tox -e format`
 - Check files formatting with `tox -e lint`
-
 
 ### Testing
 
