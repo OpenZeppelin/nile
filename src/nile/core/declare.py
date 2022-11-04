@@ -24,6 +24,7 @@ async def declare(
     alias=None,
     overriding_path=None,
     max_fee=None,
+    mainnet_token=None,
 ):
     """Declare StarkNet smart contracts."""
     logging.info(f"🚀 Declaring {contract_name}")
@@ -51,6 +52,10 @@ async def declare(
     if signature is not None:
         command_args.append("--signature")
         command_args.extend(prepare_params(signature))
+
+    if mainnet_token is not None:
+        command_args.apend("--token")
+        command_args.extend(mainnet_token)
 
     args = set_args(network)
 

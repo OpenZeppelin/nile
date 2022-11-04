@@ -16,7 +16,13 @@ from nile.utils import hex_address
 
 
 async def deploy(
-    contract_name, arguments, network, alias, overriding_path=None, abi=None
+    contract_name,
+    arguments,
+    network,
+    alias,
+    overriding_path=None,
+    abi=None,
+    mainnet_token=None,
 ):
     """Deploy StarkNet smart contracts."""
     logging.info(f"🚀 Deploying {contract_name}")
@@ -32,6 +38,10 @@ async def deploy(
     if arguments:
         command_args.append("--inputs")
         command_args.extend(prepare_params(arguments))
+
+    if mainnet_token:
+        command_args.append("--token")
+        command_args.extend(mainnet_token)
 
     args = set_args(network)
 

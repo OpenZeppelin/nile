@@ -99,7 +99,13 @@ class Account(AsyncObject):
         return address, index
 
     async def declare(
-        self, contract_name, max_fee=None, nonce=None, alias=None, overriding_path=None
+        self,
+        contract_name,
+        max_fee=None,
+        nonce=None,
+        alias=None,
+        overriding_path=None,
+        mainnet_token=None,
     ):
         """Declare a contract through an Account contract."""
         if nonce is None:
@@ -128,6 +134,7 @@ class Account(AsyncObject):
             alias=alias,
             network=self.network,
             max_fee=max_fee,
+            mainnet_token=mainnet_token,
         )
 
     def deploy_contract(
@@ -142,7 +149,13 @@ class Account(AsyncObject):
         )
 
     async def send(
-        self, address_or_alias, method, calldata, max_fee, nonce=None, query_type=None
+        self,
+        address_or_alias,
+        method,
+        calldata,
+        max_fee=None,
+        nonce=None,
+        query_type=None,
     ):
         """Execute a query or invoke call for a tx going through an Account contract."""
         # get target address with the right format
@@ -175,14 +188,16 @@ class Account(AsyncObject):
             query_flag=query_type,
         )
 
-    async def simulate(self, address_or_alias, method, calldata, max_fee, nonce=None):
+    async def simulate(
+        self, address_or_alias, method, calldata, max_fee=None, nonce=None
+    ):
         """Simulate a tx going through an Account contract."""
         return await self.send(
             address_or_alias, method, calldata, max_fee, nonce, "simulate"
         )
 
     async def estimate_fee(
-        self, address_or_alias, method, calldata, max_fee, nonce=None
+        self, address_or_alias, method, calldata, max_fee=None, nonce=None
     ):
         """Estimate fee for a tx going through an Account contract."""
         return await self.send(

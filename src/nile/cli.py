@@ -40,6 +40,14 @@ def network_option(f):
     )(f)
 
 
+def mainnet_token_option(f):
+    """Configure TOKEN option for the cli."""
+    return click.option(
+        "--token",
+        help="Used for deploying contracts in Alpha Mainnet.",
+    )(f)
+
+
 def _validate_network(_ctx, _param, value):
     """Normalize network values."""
     # check if value is known
@@ -81,9 +89,12 @@ async def run(path, network):
 @network_option
 @click.option("--alias")
 @click.option("--abi")
-async def deploy(artifact, arguments, network, alias, abi=None):
+@mainnet_token_option
+async def deploy(artifact, arguments, network, alias, abi=None, token=None):
     """Deploy StarkNet smart contract."""
-    await deploy_command(artifact, arguments, network, alias, abi=abi)
+    await deploy_command(
+        artifact, arguments, network, alias, abi=abi, mainnet_token=token
+    )
 
 
 @cli.command()
@@ -92,9 +103,16 @@ async def deploy(artifact, arguments, network, alias, abi=None):
 @click.option("--max_fee", nargs=1)
 @click.option("--alias")
 @click.option("--overriding_path")
+@mainnet_token_option
 @network_option
 async def declare(
-    signer, contract_name, network, max_fee=None, alias=None, overriding_path=None
+    signer,
+    contract_name,
+    network,
+    max_fee=None,
+    alias=None,
+    overriding_path=None,
+    token=None,
 ):
     """Declare StarkNet smart contract."""
     account = await Account(signer, network)
@@ -103,6 +121,7 @@ async def declare(
         alias=alias,
         max_fee=max_fee,
         overriding_path=overriding_path,
+        mainnet_token=token,
     )
 
 
