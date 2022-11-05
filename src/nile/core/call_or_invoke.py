@@ -1,10 +1,10 @@
 """Command to call or invoke StarkNet smart contracts."""
 import logging
 
-from starkware.starknet.cli.starknet_cli import AbiFormatError, call, invoke
+from starkware.starknet.cli.starknet_cli import AbiFormatError
 
 from nile import deployments
-from nile.common import capture_stdout, prepare_params, set_args
+from nile.common import prepare_params, set_args, call_cli
 from nile.core import account
 from nile.utils import hex_address
 
@@ -66,13 +66,14 @@ async def call_or_invoke(
 
     if type == "call":
         try:
-            return await capture_stdout(call(args=args, command_args=command_args))
+            return await call_cli("call", args, command_args)
         except AbiFormatError as err:
             logging.error(err)
 
     elif type == "invoke":
         try:
-            return await capture_stdout(invoke(args=args, command_args=command_args))
+            return await call_cli("invoke", args, command_args)
+
         except BaseException as err:
             if "max_fee must be bigger than 0." in str(err):
                 logging.error(

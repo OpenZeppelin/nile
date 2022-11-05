@@ -6,13 +6,11 @@ import os
 import re
 import time
 
-from starkware.starknet.cli import starknet_cli
-
 from nile.common import (
     BUILD_DIRECTORY,
     DEPLOYMENTS_FILENAME,
     RETRY_AFTER_SECONDS,
-    capture_stdout,
+    call_cli,
     set_args,
 )
 
@@ -28,9 +26,7 @@ async def debug(tx_hash, network, contracts_file=None):
     )
 
     while True:
-        output = await capture_stdout(
-            starknet_cli.tx_status(args=args, command_args=command_args)
-        )
+        output = await call_cli("tx_status", args, command_args)
 
         receipt = json.loads(output)
         status = receipt["tx_status"]
@@ -76,7 +72,7 @@ async def debug(tx_hash, network, contracts_file=None):
     command_args += ["--contracts", ",".join(contracts), "--error_message"]
     logging.info(f"🧾 Found contracts: {contracts}")
     logging.info("⏳ Querying the network with identified contracts...")
-    output = await starknet_cli.tx_status(args=args, command_args=command_args)
+    output = await call_cli("tx_status", args, command_args)
 
     logging.info(f"🧾 Error message:\n{output.decode()}")
     return output

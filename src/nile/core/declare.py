@@ -1,14 +1,12 @@
 """Command to declare StarkNet smart contracts."""
 import logging
 
-from starkware.starknet.cli import starknet_cli
-
 from nile import deployments
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     DECLARATIONS_FILENAME,
-    capture_stdout,
+    call_cli,
     parse_information,
     prepare_params,
     set_args,
@@ -54,14 +52,12 @@ async def declare(
         command_args.extend(prepare_params(signature))
 
     if mainnet_token is not None:
-        command_args.apend("--token")
+        command_args.append("--token")
         command_args.extend(mainnet_token)
 
     args = set_args(network)
 
-    output = await capture_stdout(
-        starknet_cli.declare(args=args, command_args=command_args)
-    )
+    output = await call_cli("declare", args, command_args)
 
     class_hash, tx_hash = parse_information(output)
     logging.info(

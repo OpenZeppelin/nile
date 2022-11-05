@@ -5,6 +5,7 @@ import os
 import re
 import sys
 from types import SimpleNamespace
+from starkware.starknet.cli import starknet_cli
 
 from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
 from starkware.starknet.cli.starknet_cli import NETWORKS
@@ -179,3 +180,10 @@ def get_hash(contract_name, overriding_path=None):
     """Return the class_hash for a given contract name."""
     contract_class = get_contract_class(contract_name, overriding_path)
     return compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
+
+
+def call_cli(cmd_name, args, command_args):
+    cmd = getattr(starknet_cli, cmd_name)
+    return capture_stdout(
+        cmd(args=args, command_args=command_args)
+    )

@@ -1,13 +1,11 @@
 """Command to deploy StarkNet smart contracts."""
 import logging
 
-from starkware.starknet.cli import starknet_cli
-
 from nile import deployments
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
-    capture_stdout,
+    call_cli,
     parse_information,
     prepare_params,
     set_args,
@@ -45,9 +43,7 @@ async def deploy(
 
     args = set_args(network)
 
-    output = await capture_stdout(
-        starknet_cli.deploy(args=args, command_args=command_args)
-    )
+    output = await call_cli("deploy", args, command_args)
 
     address, tx_hash = parse_information(output)
     logging.info(

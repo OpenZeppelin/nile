@@ -1,9 +1,7 @@
 """Retrieve nonce for a contract."""
 import logging
 
-from starkware.starknet.cli import starknet_cli
-
-from nile.common import capture_stdout, set_args
+from nile.common import call_cli, set_args
 
 
 async def get_nonce(contract_address, network):
@@ -21,11 +19,12 @@ async def get_nonce_without_log(contract_address, network):
     if not str(contract_address).startswith("0x"):
         contract_address = hex(int(contract_address))
 
-    command = ["--contract_address", contract_address]
+    command_args = ["--contract_address", contract_address]
 
     args = set_args(network)
 
-    output = await capture_stdout(
-        starknet_cli.get_nonce(args=args, command_args=command)
-    )
+    #output = await capture_stdout(
+    #    starknet_cli.get_nonce(args=args, command_args=command)
+    #)
+    output = await call_cli("get_nonce", args, command_args)
     return int(output)
