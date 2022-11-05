@@ -1,12 +1,15 @@
 """Command to call or invoke StarkNet smart contracts."""
+import logging
+
+from starkware.starknet.cli.starknet_cli import AbiFormatError, call, invoke
 
 from nile import deployments
-from nile.common import run_command
+from nile.common import capture_stdout, prepare_params, set_args
 from nile.core import account
 from nile.utils import hex_address
 
 
-def call_or_invoke(
+async def call_or_invoke(
     contract,
     type,
     method,
@@ -35,7 +38,7 @@ def call_or_invoke(
         address, abi = next(deployments.load(contract, network))
 
     address = hex_address(address)
-    arguments = [
+    command_args = [
         "--address",
         address,
         "--abi",
@@ -44,12 +47,39 @@ def call_or_invoke(
         method,
     ]
 
-    return run_command(
-        operation=type,
-        network=network,
-        inputs=params,
-        arguments=arguments,
-        signature=signature,
-        max_fee=max_fee,
-        query_flag=query_flag,
-    )
+    if len(params) > 0:
+        command_args.append("--inputs")
+        command_args.extend(prepare_params(params))
+
+    if signature is not None:
+        command_args.append("--signature")
+        command_args.extend(prepare_params(signature))
+
+    if max_fee is not None:
+        command_args.append("--max_fee")
+        command_args.append(max_fee)
+
+    if query_flag is not None:
+        command_args.append(f"--{query_flag}")
+
+    args = set_args(network)
+
+    if type == "call":
+        try:
+            return await capture_stdout(call(args=args, command_args=command_args))
+        except AbiFormatError as err:
+            logging.error(err)
+
+    elif type == "invoke":
+        try:
+            return await capture_stdout(invoke(args=args, command_args=command_args))
+        except BaseException as err:
+            if "max_fee must be bigger than 0." in str(err):
+                logging.error(
+                    """
+                    \n😰 Whoops, looks like max fee is missing. Try with:\n
+                    --max_fee=`MAX_FEE`
+                    """
+                )
+            else:
+                raise err

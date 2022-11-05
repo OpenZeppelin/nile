@@ -48,9 +48,7 @@ class NileRuntimeEnvironment:
         """Call a view function in a smart contract."""
         if not is_alias(address_or_alias):
             address_or_alias = normalize_number(address_or_alias)
-        return str(
-            call_or_invoke(address_or_alias, "call", method, params, self.network)
-        ).split()
+        return call_or_invoke(address_or_alias, "call", method, params, self.network)
 
     def get_deployment(self, address_or_alias):
         """Get a deployment by its identifier (address or alias)."""

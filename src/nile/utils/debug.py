@@ -4,36 +4,37 @@ import json
 import logging
 import os
 import re
-import subprocess
 import time
+
+from starkware.starknet.cli import starknet_cli
 
 from nile.common import (
     BUILD_DIRECTORY,
     DEPLOYMENTS_FILENAME,
-    GATEWAYS,
     RETRY_AFTER_SECONDS,
+    capture_stdout,
+    set_args,
 )
 
 
-def debug(tx_hash, network, contracts_file=None):
+async def debug(tx_hash, network, contracts_file=None):
     """Use available contracts to help locate the error in a rejected transaction."""
     # Starknet CLI expects hex strings
-    command = ["starknet", "tx_status", "--hash", hex(tx_hash)]
-
-    if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-    elif network == "goerli":
-        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
-    else:
-        command.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
+    command_args = ["--hash", hex(tx_hash)]
+    args = set_args(network)
 
     logging.info(
         "⏳ Querying the network to check transaction status and identify contracts..."
     )
 
     while True:
-        receipt = json.loads(subprocess.check_output(command))
+        output = await capture_stdout(
+            starknet_cli.tx_status(args=args, command_args=command_args)
+        )
+
+        receipt = json.loads(output)
         status = receipt["tx_status"]
+
         if status == "REJECTED":
             break
         output = f"Transaction status: {status}"
@@ -72,10 +73,10 @@ def debug(tx_hash, network, contracts_file=None):
         logging.info(error_message)
         return error_message
 
-    command += ["--contracts", ",".join(contracts), "--error_message"]
+    command_args += ["--contracts", ",".join(contracts), "--error_message"]
     logging.info(f"🧾 Found contracts: {contracts}")
     logging.info("⏳ Querying the network with identified contracts...")
-    output = subprocess.check_output(command)
+    output = await starknet_cli.tx_status(args=args, command_args=command_args)
 
     logging.info(f"🧾 Error message:\n{output.decode()}")
     return output

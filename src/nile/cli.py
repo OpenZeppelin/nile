@@ -2,7 +2,7 @@
 """Nile CLI entry point."""
 import logging
 
-import click
+import asyncclick as click
 
 from nile.common import is_alias
 from nile.core.account import Account
@@ -78,9 +78,9 @@ def init():
 @cli.command()
 @click.argument("path", nargs=1)
 @network_option
-def run(path, network):
+async def run(path, network):
     """Run Nile scripts with NileRuntimeEnvironment."""
-    run_command(path, network)
+    await run_command(path, network)
 
 
 @cli.command()
@@ -90,9 +90,11 @@ def run(path, network):
 @click.option("--alias")
 @click.option("--abi")
 @mainnet_token_option
-def deploy(artifact, arguments, network, alias, abi=None, token=None):
+async def deploy(artifact, arguments, network, alias, abi=None, token=None):
     """Deploy StarkNet smart contract."""
-    deploy_command(artifact, arguments, network, alias, abi=abi, mainnet_token=token)
+    await deploy_command(
+        artifact, arguments, network, alias, abi=abi, mainnet_token=token
+    )
 
 
 @cli.command()
@@ -103,7 +105,7 @@ def deploy(artifact, arguments, network, alias, abi=None, token=None):
 @click.option("--overriding_path")
 @mainnet_token_option
 @network_option
-def declare(
+async def declare(
     signer,
     contract_name,
     network,
@@ -113,8 +115,8 @@ def declare(
     token=None,
 ):
     """Declare StarkNet smart contract."""
-    account = Account(signer, network)
-    account.declare(
+    account = await Account(signer, network)
+    await account.declare(
         contract_name,
         alias=alias,
         max_fee=max_fee,
@@ -126,9 +128,9 @@ def declare(
 @cli.command()
 @click.argument("signer", nargs=1)
 @network_option
-def setup(signer, network):
+async def setup(signer, network):
     """Set up an Account contract."""
-    Account(signer, network)
+    await Account(signer, network)
 
 
 @cli.command()
@@ -140,9 +142,11 @@ def setup(signer, network):
 @click.option("--simulate", "query", flag_value="simulate")
 @click.option("--estimate_fee", "query", flag_value="estimate_fee")
 @network_option
-def send(signer, address_or_alias, method, params, network, max_fee=None, query=None):
+async def send(
+    signer, address_or_alias, method, params, network, max_fee=None, query=None
+):
     """Invoke a contract's method through an Account."""
-    account = Account(signer, network)
+    account = await Account(signer, network)
     print(
         "Calling {} on {} with params: {}".format(
             method, address_or_alias, [x for x in params]
@@ -150,7 +154,7 @@ def send(signer, address_or_alias, method, params, network, max_fee=None, query=
     )
     # address_or_alias is not normalized first here because
     # Account.send is part of Nile's public API and can accept hex addresses
-    out = account.send(
+    out = await account.send(
         address_or_alias, method, params, max_fee=max_fee, query_type=query
     )
 
@@ -162,12 +166,15 @@ def send(signer, address_or_alias, method, params, network, max_fee=None, query=
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @network_option
-def call(address_or_alias, method, params, network):
+async def call(address_or_alias, method, params, network):
     """Call functions of StarkNet smart contracts."""
     if not is_alias(address_or_alias):
         address_or_alias = normalize_number(address_or_alias)
-    out = call_or_invoke_command(address_or_alias, "call", method, params, network)
-    print(out)
+    out = await call_or_invoke_command(
+        address_or_alias, "call", method, params, network
+    )
+    logging.info(out)
+    return out
 
 
 @cli.command()
@@ -254,32 +261,32 @@ def version():
 @click.argument("tx_hash", nargs=1)
 @network_option
 @click.option("--contracts_file", nargs=1)
-def debug(tx_hash, network, contracts_file):
+async def debug(tx_hash, network, contracts_file):
     """Locate an error in a transaction using contracts."""
-    debug_command(normalize_number(tx_hash), network, contracts_file)
+    await debug_command(normalize_number(tx_hash), network, contracts_file)
 
 
 @cli.command()
 @network_option
 @click.option("--predeployed/--registered", default=False)
-def get_accounts(network, predeployed):
+async def get_accounts(network, predeployed):
     """Retrieve and manage deployed accounts."""
     if not predeployed:
-        return get_accounts_command(network)
+        return await get_accounts_command(network)
     else:
-        return get_predeployed_accounts_command(network)
+        return await get_predeployed_accounts_command(network)
 
 
 @cli.command()
 @click.argument("contract_address")
 @network_option
-def get_nonce(contract_address, network):
+async def get_nonce(contract_address, network):
     """Retrieve the nonce for a contract."""
-    return get_nonce_command(normalize_number(contract_address), network)
+    return await get_nonce_command(normalize_number(contract_address), network)
 
 
 cli = load_plugins(cli)
 
 
 if __name__ == "__main__":
-    cli()
+    cli(_anyion_backend="asyncio")

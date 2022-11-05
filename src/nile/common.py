@@ -1,11 +1,13 @@
 """nile common module."""
+import io
 import json
-import logging
 import os
 import re
-import subprocess
+import sys
+from types import SimpleNamespace
 
 from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
+from starkware.starknet.cli.starknet_cli import NETWORKS
 from starkware.starknet.core.os.class_hash import compute_class_hash
 from starkware.starknet.services.api.contract_class import ContractClass
 
@@ -67,84 +69,6 @@ def get_all_contracts(ext=None, directory=None):
     return files
 
 
-def run_command(
-    operation,
-    network,
-    contract_name=None,
-    arguments=None,
-    inputs=None,
-    signature=None,
-    max_fee=None,
-    query_flag=None,
-    overriding_path=None,
-    mainnet_token=None,
-):
-    """Execute CLI command with given parameters."""
-    command = ["starknet", operation]
-
-    if contract_name is not None:
-        base_path = (
-            overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
-        )
-        contract = f"{base_path[0]}/{contract_name}.json"
-        command.append("--contract")
-        command.append(contract)
-
-    if inputs is not None:
-        command.append("--inputs")
-        command.extend(prepare_params(inputs))
-
-    if signature is not None:
-        command.append("--signature")
-        command.extend(prepare_params(signature))
-
-    if max_fee is not None:
-        command.append("--max_fee")
-        command.append(max_fee)
-
-    if mainnet_token is not None:
-        command.append("--token")
-        command.append(mainnet_token)
-
-    if query_flag is not None:
-        command.append(f"--{query_flag}")
-
-    if arguments is not None:
-        command.extend(arguments)
-
-    if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-    elif network == "goerli":
-        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
-    else:
-        command.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
-        command.append(f"--gateway_url={GATEWAYS.get(network)}")
-
-    command.append("--no_wallet")
-
-    try:
-        return subprocess.check_output(command).strip().decode("utf-8")
-    except subprocess.CalledProcessError:
-        p = subprocess.Popen(command, stderr=subprocess.PIPE)
-        _, error = p.communicate()
-        err_msg = error.decode()
-
-        if "max_fee must be bigger than 0" in err_msg:
-            logging.error(
-                """
-                \n😰 Whoops, looks like max fee is missing. Try with:\n
-                --max_fee=`MAX_FEE`
-                """
-            )
-        elif "transactions should go through the __execute__ entrypoint." in err_msg:
-            logging.error(
-                "\n\n😰 Whoops, looks like you're not using an account. Try with:\n"
-                "\nnile send [OPTIONS] SIGNER CONTRACT_NAME METHOD [PARAMS]"
-            )
-
-        return ""
-
-
 def parse_information(x):
     """Extract information from deploy/declare command."""
     # address is 64, tx_hash is 64 chars long
@@ -193,6 +117,51 @@ def is_string(param):
 def is_alias(param):
     """Identify param as alias (instead of address)."""
     return is_string(param)
+
+
+def get_gateway_url(network):
+    """Return gateway URL for specified network."""
+    networks = ["localhost", "goerli2", "integration"]
+    if network in networks:
+        return GATEWAYS.get(network)
+    else:
+        network = "alpha-" + network
+        return f"https://{NETWORKS[network]}/gateway"
+
+
+def get_feeder_url(network):
+    """Return feeder gateway URL for specified network."""
+    networks = ["localhost", "goerli2", "integration"]
+    if network in networks:
+        return GATEWAYS.get(network)
+    else:
+        network = "alpha-" + network
+        return f"https://{NETWORKS[network]}/feeder_gateway"
+
+
+async def capture_stdout(func):
+    """Return the stdout during the passed function call."""
+    stdout = sys.stdout
+    sys.stdout = io.StringIO()
+    await func
+    output = sys.stdout.getvalue()
+    sys.stdout = stdout
+    result = output.rstrip()
+    return result
+
+
+def set_args(network):
+    """Set context args for StarkNet CLI call."""
+    args = {
+        "gateway_url": get_gateway_url(network),
+        "feeder_gateway_url": get_feeder_url(network),
+        "wallet": "",
+        "network_id": network,
+        "account_dir": None,
+        "account": None,
+    }
+    ret_obj = SimpleNamespace(**args)
+    return ret_obj
 
 
 def get_contract_class(contract_name, overriding_path=None):

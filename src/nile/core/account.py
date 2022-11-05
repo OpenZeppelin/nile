@@ -26,10 +26,24 @@ except ImportError:
 load_dotenv()
 
 
-class Account:
+class AsyncObject(object):
+    """Base class for Account to allow async initialization."""
+
+    async def __new__(cls, *a, **kw):
+        """Return coroutine (not class so sync __init__ is not invoked)."""
+        instance = super().__new__(cls)
+        await instance.__init__(*a, **kw)
+        return instance
+
+    async def __init__(self):
+        """Support Account async __init__."""
+        pass
+
+
+class Account(AsyncObject):
     """Account contract abstraction."""
 
-    def __init__(self, signer, network, predeployed_info=None):
+    async def __init__(self, signer, network, predeployed_info=None):
         """Get or deploy an Account contract for the given private key."""
         try:
             if predeployed_info is None:
@@ -60,17 +74,17 @@ class Account:
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
-            address, index = self.deploy()
+            address, index = await self.deploy()
             self.address = address
             self.index = index
 
-    def deploy(self):
+    async def deploy(self):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
 
-        address, _ = deploy(
+        address, _ = await deploy(
             "Account",
             [self.signer.public_key],
             self.network,
@@ -84,7 +98,7 @@ class Account:
 
         return address, index
 
-    def declare(
+    async def declare(
         self,
         contract_name,
         max_fee=None,
@@ -95,7 +109,7 @@ class Account:
     ):
         """Declare a contract through an Account contract."""
         if nonce is None:
-            nonce = get_nonce(self.address, self.network)
+            nonce = int(await get_nonce(self.address, self.network))
 
         if max_fee is None:
             max_fee = 0
@@ -113,7 +127,7 @@ class Account:
             max_fee=max_fee,
         )
 
-        return declare(
+        return await declare(
             sender=self.address,
             contract_name=contract_name,
             signature=[sig_r, sig_s],
@@ -134,7 +148,7 @@ class Account:
             max_fee=max_fee,
         )
 
-    def send(
+    async def send(
         self,
         address_or_alias,
         method,
@@ -148,7 +162,9 @@ class Account:
         target_address = self._get_target_address(address_or_alias)
 
         # process and parse arguments
-        calldata, max_fee, nonce = self._process_arguments(calldata, max_fee, nonce)
+        calldata, max_fee, nonce = await self._process_arguments(
+            calldata, max_fee, nonce
+        )
 
         # get tx version
         tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
@@ -161,7 +177,7 @@ class Account:
             version=tx_version,
         )
 
-        return call_or_invoke(
+        return await call_or_invoke(
             contract=self,
             type="invoke",
             method="__execute__",
@@ -172,15 +188,19 @@ class Account:
             query_flag=query_type,
         )
 
-    def simulate(self, address_or_alias, method, calldata, max_fee=None, nonce=None):
+    async def simulate(
+        self, address_or_alias, method, calldata, max_fee=None, nonce=None
+    ):
         """Simulate a tx going through an Account contract."""
-        return self.send(address_or_alias, method, calldata, max_fee, nonce, "simulate")
+        return await self.send(
+            address_or_alias, method, calldata, max_fee, nonce, "simulate"
+        )
 
-    def estimate_fee(
+    async def estimate_fee(
         self, address_or_alias, method, calldata, max_fee=None, nonce=None
     ):
         """Estimate fee for a tx going through an Account contract."""
-        return self.send(
+        return await self.send(
             address_or_alias, method, calldata, max_fee, nonce, "estimate_fee"
         )
 
@@ -195,11 +215,11 @@ class Account:
 
         return target_address
 
-    def _process_arguments(self, calldata, max_fee, nonce):
+    async def _process_arguments(self, calldata, max_fee, nonce):
         calldata = [normalize_number(x) for x in calldata]
 
         if nonce is None:
-            nonce = get_nonce(self.address, self.network)
+            nonce = await get_nonce(self.address, self.network)
 
         if max_fee is None:
             max_fee = 0

@@ -61,6 +61,7 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
         assert f"⚠ Skipping misformatted line #1 in {MOCK_FILE}" in caplog.text
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "output, expected",
     [
@@ -73,14 +74,11 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-@patch("nile.utils.debug.subprocess.check_output")
-@patch("nile.utils.debug.GATEWAYS", return_value="123")
-def test_debug_feedback_with_message(
-    mock_gateway, mock_output, output, expected, caplog
-):
+@patch("nile.utils.debug.capture_stdout")
+async def test_debug_feedback_with_message(mock_output, output, expected, caplog):
     logging.getLogger().setLevel(logging.INFO)
     mock_output.return_value = output
 
-    debug(MOCK_HASH, NETWORK)
+    await debug(MOCK_HASH, NETWORK)
 
     assert expected in caplog.text
