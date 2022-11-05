@@ -1,6 +1,6 @@
 """Tests for deploy command."""
 import logging
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
 
 import pytest
 
@@ -25,7 +25,7 @@ PATH_OVERRIDE = ("artifacts2", ABIS_DIRECTORY)
 ARGS = [1, 2, 3]
 ADDRESS = 999
 TX_HASH = 222
-RUN_OUTPUT = [ADDRESS, TX_HASH]
+CALL_OUTPUT = [ADDRESS, TX_HASH]
 
 
 @pytest.mark.asyncio
@@ -50,24 +50,26 @@ RUN_OUTPUT = [ADDRESS, TX_HASH]
         ),
     ],
 )
-@patch("nile.core.deploy.capture_stdout", return_value=RUN_OUTPUT)
-@patch("nile.core.deploy.parse_information", return_value=RUN_OUTPUT)
+@patch("nile.core.deploy.parse_information", return_value=CALL_OUTPUT)
 @patch("nile.core.deploy.deployments.register")
-async def test_deploy(mock_register, mock_parse, mock_capture, caplog, args, exp_abi):
+async def test_deploy(mock_register, mock_parse, caplog, args, exp_abi):
     logging.getLogger().setLevel(logging.INFO)
 
-    # check return values
-    res = await deploy(*args)
-    assert res == (ADDRESS, exp_abi)
+    with patch("nile.core.deploy.call_cli", new=AsyncMock()) as mock_cli_call:
+        mock_cli_call.return_value = CALL_OUTPUT
 
-    # check internals
-    mock_parse.assert_called_once_with(RUN_OUTPUT)
-    mock_register.assert_called_once_with(ADDRESS, exp_abi, NETWORK, ALIAS)
+        # check return values
+        res = await deploy(*args)
+        assert res == (ADDRESS, exp_abi)
 
-    # check logs
-    assert f"🚀 Deploying {CONTRACT}" in caplog.text
-    assert (
-        f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(ADDRESS)}"
-        in caplog.text
-    )
-    assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
+        # check internals
+        mock_parse.assert_called_once_with(CALL_OUTPUT)
+        mock_register.assert_called_once_with(ADDRESS, exp_abi, NETWORK, ALIAS)
+
+        # check logs
+        assert f"🚀 Deploying {CONTRACT}" in caplog.text
+        assert (
+            f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(ADDRESS)}"
+            in caplog.text
+        )
+        assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
