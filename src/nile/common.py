@@ -7,9 +7,10 @@ import sys
 from types import SimpleNamespace
 
 from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
-from starkware.starknet.cli.starknet_cli import NETWORKS
+from starkware.starknet.cli.starknet_cli import NETWORKS, assert_tx_received
 from starkware.starknet.core.os.class_hash import compute_class_hash
 from starkware.starknet.services.api.contract_class import ContractClass
+from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
 
 from nile.utils import normalize_number, str_to_felt
 
@@ -117,6 +118,16 @@ def is_string(param):
 def is_alias(param):
     """Identify param as alias (instead of address)."""
     return is_string(param)
+
+
+async def get_gateway_response(network, tx, token):
+    """Execute transaction and return response."""
+    gateway_url = get_gateway_url(network)
+    gateway_client = GatewayClient(url=gateway_url)
+    gateway_response = await gateway_client.add_transaction(tx=tx, token=token)
+    assert_tx_received(gateway_response)
+
+    return gateway_response
 
 
 def get_gateway_url(network):

@@ -2,12 +2,17 @@
 import logging
 
 from starkware.starknet.cli import starknet_cli
+from starkware.starknet.services.api.gateway.transaction import DeployAccount
 
 from nile import deployments
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
+    QUERY_VERSION,
+    TRANSACTION_VERSION,
     capture_stdout,
+    get_gateway_response,
+    get_hash,
     parse_information,
     prepare_params,
     set_args,
@@ -50,6 +55,53 @@ async def deploy(
     )
 
     address, tx_hash = parse_information(output)
+    logging.info(
+        f"⏳ ️Deployment of {contract_name} successfully sent at {hex_address(address)}"
+    )
+    logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
+
+    deployments.register(address, register_abi, network, alias)
+    return address, register_abi
+
+
+async def deploy_account(
+    network,
+    salt,
+    calldata,
+    signature,
+    contract_name="Account",
+    max_fee=None,
+    nonce=0,
+    abi=None,
+    overriding_path=None,
+    alias=None,
+    query_type=None,
+):
+    """Deploy StarkNet smart contracts."""
+    logging.info(f"🚀 Deploying {contract_name}")
+
+    tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
+    base_path = (
+        overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
+    )
+    register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
+
+    class_hash = get_hash(contract_name)
+
+    tx = DeployAccount(
+        class_hash=class_hash,
+        constructor_calldata=calldata,
+        contract_address_salt=salt,
+        max_fee=max_fee,
+        nonce=nonce,
+        signature=signature,
+        version=tx_version,
+    )
+
+    response = await get_gateway_response(network, tx)
+    address = response["address"]
+    tx_hash = response["tx_hash"]
+
     logging.info(
         f"⏳ ️Deployment of {contract_name} successfully sent at {hex_address(address)}"
     )

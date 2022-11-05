@@ -3,6 +3,9 @@ import logging
 import os
 
 from dotenv import load_dotenv
+from starkware.starknet.core.os.contract_address.contract_address import (
+    calculate_contract_address_from_hash,
+)
 
 from nile import accounts, deployments
 from nile.common import (
@@ -10,12 +13,13 @@ from nile.common import (
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
     get_contract_class,
+    get_hash,
     is_alias,
     normalize_number,
 )
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.declare import declare
-from nile.core.deploy import deploy
+from nile.core.deploy import deploy_account
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
@@ -78,18 +82,41 @@ class Account(AsyncObject):
             self.address = address
             self.index = index
 
-    async def deploy(self):
+    async def deploy(
+        self,
+        salt=0,
+        max_fee=None,
+        nonce=None,
+        query_type=None,
+    ):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
 
-        address, _ = await deploy(
-            "Account",
-            [self.signer.public_key],
-            self.network,
-            f"account-{index}",
-            overriding_path,
+        class_hash = get_hash("Account")
+        calldata = [self.signer.public_key]
+
+        contract_address = calculate_contract_address_from_hash(
+            salt=salt,
+            class_hash=class_hash,
+            calldata=calldata,
+            deployer_address=0,
+        )
+
+        signature = self.signer.sign_deployment(
+            contract_address, class_hash, calldata, salt, max_fee, nonce
+        )
+
+        address, _ = deploy_account(
+            network=self.network,
+            salt=salt,
+            calldata=calldata,
+            signature=signature,
+            max_fee=max_fee,
+            nonce=nonce,
+            query_type=query_type,
+            overriding_path=overriding_path,
         )
 
         accounts.register(
