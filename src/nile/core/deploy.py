@@ -76,6 +76,7 @@ async def deploy_account(
     overriding_path=None,
     alias=None,
     query_type=None,
+    mainnet_token=None,
 ):
     """Deploy StarkNet smart contracts."""
     logging.info(f"🚀 Deploying {contract_name}")
@@ -98,7 +99,7 @@ async def deploy_account(
         version=tx_version,
     )
 
-    response = await get_gateway_response(network, tx)
+    response = await get_gateway_response(network, tx, mainnet_token)
     address = response["address"]
     tx_hash = response["tx_hash"]
 
