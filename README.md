@@ -171,7 +171,7 @@ A few things to note here:
 Execute a transaction through the `Account` associated with the private key provided. The syntax is:
 
 ```sh
-nile send [--track | --debug] <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
+nile send <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...] [--track | --debug]
 ```
 
 For example:
