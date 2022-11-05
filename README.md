@@ -87,7 +87,7 @@ WARNING: Use these accounts and their keys ONLY for local testing. DO NOT use th
 Compile Cairo contracts. Compilation artifacts are written into the `artifacts/` directory.
 
 ```txt
-nile compile [PATH_TO_CONTRACT | --directory DIRECTORY] [--disable-hint-validation]
+nile compile [PATH_TO_CONTRACT] [--directory DIRECTORY] [--disable-hint-validation]
 ```
 
 For example:
