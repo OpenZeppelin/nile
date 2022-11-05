@@ -1,6 +1,6 @@
 """Tests for declare command."""
 import logging
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -127,7 +127,8 @@ async def test_declare(
         # check logs
         assert f"🚀 Declaring {CONTRACT}" in caplog.text
         assert (
-            f"⏳ Successfully sent declaration of {CONTRACT} as {hex(HASH)}" in caplog.text
+            f"⏳ Successfully sent declaration of {CONTRACT} as {hex(HASH)}"
+            in caplog.text
         )
         assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
 

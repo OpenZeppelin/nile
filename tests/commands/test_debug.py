@@ -2,8 +2,7 @@
 import logging
 import sys
 from pathlib import Path
-from unittest.mock import patch, AsyncMock
-import json
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -16,12 +15,8 @@ DEBUG_ADDRESS = "0x07826b88e404632d9835ab1ec2076c6cf1910e6ecb2ed270647fc211ff55e
 ABI_PATH = "path/to/abis/test_contract.json"
 ALIAS = "contract_alias"
 MOCK_FILE = 123
-ACCEPTED_OUT = b'{"tx_status": "ACCEPTED_ON_L2"}'
-#ACCEPTED_OUT = json.dumps({'tx_status': 'ACCEPTED_ON_L2'})
-#ACCEPTED_OUT = b'{"tx_status": "ACCEPTED_ON_L2"}'
-REJECTED_OUT = json.dumps({'tx_failure_reason': {'error_message': 'E'}, 'tx_status': 'REJECTED'})
-#REJECTED_OUT = json.dumps({'tx_failure_reason': {'error_message': 'E'}, 'tx_status': 'REJECTED'})
-#REJECTED_OUT = b'{"tx_failure_reason": {"error_message": "E"}, "tx_status": "REJECTED"}'
+ACCEPTED_OUT = '{"tx_status": "ACCEPTED_ON_L2"}'
+REJECTED_OUT = '{"tx_failure_reason": {"error_message": "E"}, "tx_status": "REJECTED"}'
 
 
 @pytest.fixture(autouse=True)

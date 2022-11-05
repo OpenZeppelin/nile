@@ -1,6 +1,6 @@
 """Tests for deploy command."""
 import logging
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
