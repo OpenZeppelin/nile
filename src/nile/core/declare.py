@@ -3,13 +3,11 @@ import logging
 
 from nile import deployments
 from nile.common import (
-    ABIS_DIRECTORY,
-    BUILD_DIRECTORY,
     DECLARATIONS_FILENAME,
     call_cli,
     parse_information,
-    prepare_params,
     set_args,
+    set_command_args,
 )
 from nile.utils import hex_address
 
@@ -31,35 +29,22 @@ async def declare(
         file = f"{network}.{DECLARATIONS_FILENAME}"
         raise Exception(f"Alias {alias} already exists in {file}")
 
-    base_path = (
-        overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
-    )
-    contract = f"{base_path[0]}/{contract_name}.json"
-
     max_fee = "0" if max_fee is None else str(max_fee)
 
-    command_args = [
-        "--contract",
-        contract,
-        "--sender",
-        hex_address(sender),
-        "--max_fee",
-        max_fee,
-    ]
-
-    if signature is not None:
-        command_args.append("--signature")
-        command_args.extend(prepare_params(signature))
-
-    if mainnet_token is not None:
-        command_args.append("--token")
-        command_args.extend(mainnet_token)
-
     args = set_args(network)
+    command_args = set_command_args(
+        contract_name=contract_name,
+        signature=signature,
+        max_fee=max_fee,
+        overriding_path=overriding_path,
+        mainnet_token=mainnet_token,
+    )
+
+    command_args += ["--sender", hex_address(sender)]
 
     output = await call_cli("declare", args, command_args)
-
     class_hash, tx_hash = parse_information(output)
+
     logging.info(
         f"⏳ Successfully sent declaration of {contract_name} as {hex(class_hash)}"
     )

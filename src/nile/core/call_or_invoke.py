@@ -4,7 +4,7 @@ import logging
 from starkware.starknet.cli.starknet_cli import AbiFormatError
 
 from nile import deployments
-from nile.common import prepare_params, set_args, call_cli
+from nile.common import call_cli, set_args, set_command_args
 from nile.core import account
 from nile.utils import hex_address
 
@@ -37,32 +37,19 @@ async def call_or_invoke(
     else:
         address, abi = next(deployments.load(contract, network))
 
-    address = hex_address(address)
-    command_args = [
+    args = set_args(network)
+    command_args = set_command_args(
+        inputs=params, signature=signature, max_fee=max_fee, query_flag=query_flag
+    )
+
+    command_args += [
         "--address",
-        address,
+        hex_address(address),
         "--abi",
         abi,
         "--function",
         method,
     ]
-
-    if len(params) > 0:
-        command_args.append("--inputs")
-        command_args.extend(prepare_params(params))
-
-    if signature is not None:
-        command_args.append("--signature")
-        command_args.extend(prepare_params(signature))
-
-    if max_fee is not None:
-        command_args.append("--max_fee")
-        command_args.append(max_fee)
-
-    if query_flag is not None:
-        command_args.append(f"--{query_flag}")
-
-    args = set_args(network)
 
     if type == "call":
         try:
