@@ -2,7 +2,8 @@
 import logging
 import sys
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
+import json
 
 import pytest
 
@@ -16,7 +17,11 @@ ABI_PATH = "path/to/abis/test_contract.json"
 ALIAS = "contract_alias"
 MOCK_FILE = 123
 ACCEPTED_OUT = b'{"tx_status": "ACCEPTED_ON_L2"}'
-REJECTED_OUT = b'{"tx_failure_reason": {"error_message": "E"}, "tx_status": "REJECTED"}'
+#ACCEPTED_OUT = json.dumps({'tx_status': 'ACCEPTED_ON_L2'})
+#ACCEPTED_OUT = b'{"tx_status": "ACCEPTED_ON_L2"}'
+REJECTED_OUT = json.dumps({'tx_failure_reason': {'error_message': 'E'}, 'tx_status': 'REJECTED'})
+#REJECTED_OUT = json.dumps({'tx_failure_reason': {'error_message': 'E'}, 'tx_status': 'REJECTED'})
+#REJECTED_OUT = b'{"tx_failure_reason": {"error_message": "E"}, "tx_status": "REJECTED"}'
 
 
 @pytest.fixture(autouse=True)
@@ -74,11 +79,11 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-@patch("nile.utils.debug.capture_stdout")
-async def test_debug_feedback_with_message(mock_output, output, expected, caplog):
+async def test_debug_feedback_with_message(output, expected, caplog):
     logging.getLogger().setLevel(logging.INFO)
-    mock_output.return_value = output
+    with patch("nile.utils.debug.call_cli", new=AsyncMock()) as mock_cli_call:
+        mock_cli_call.return_value = output
 
-    await debug(MOCK_HASH, NETWORK)
+        await debug(MOCK_HASH, NETWORK)
 
-    assert expected in caplog.text
+        assert expected in caplog.text

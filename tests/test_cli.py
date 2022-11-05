@@ -193,12 +193,12 @@ async def test_node_runs_gateway(opts, expected):
         ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"]),
     ],
 )
-@patch("nile.utils.debug.capture_stdout")
+@patch("nile.utils.debug.call_cli")
 @patch("nile.utils.debug.set_args")
 @patch("nile.cli.debug_command")
-async def test_debug(mock_debug, mock_set_args, mock_capture, args):
+async def test_debug(mock_debug, mock_set_args, mock_cli_call, args):
     # debug will hang without patch
-    mock_capture.return_value = json.dumps({"tx_status": "ACCEPTED"})
+    mock_cli_call.return_value = json.dumps({"tx_status": "ACCEPTED"})
 
     result = await CliRunner().invoke(cli, ["debug", *args])
 
