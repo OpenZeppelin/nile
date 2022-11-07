@@ -193,12 +193,12 @@ def test_send_defaults(mock_call, mock_nonce, mock_target_address, mock_deploy):
     sig_r, sig_s = [999, 888]
     return_signature = [calldata, sig_r, sig_s]
 
-    # Mock sign_transaction
-    account.signer.sign_transaction = MagicMock(return_value=return_signature)
+    # Mock sign_invoke_tx
+    account.signer.sign_invoke_tx = MagicMock(return_value=return_signature)
 
     account.send(account.address, "method", [1, 2, 3])
 
-    account.signer.sign_transaction.assert_called_once_with(
+    account.signer.sign_invoke_tx.assert_called_once_with(
         calls=[send_args],
         nonce=0,
         sender=account.address,
