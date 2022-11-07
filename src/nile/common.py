@@ -12,7 +12,7 @@ from starkware.starknet.cli.starknet_cli import NETWORKS
 from starkware.starknet.core.os.class_hash import compute_class_hash
 from starkware.starknet.services.api.contract_class import ContractClass
 
-from nile.utils import normalize_number, str_to_felt
+from nile.utils import hex_class_hash, normalize_number, str_to_felt
 
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
@@ -224,7 +224,9 @@ def get_contract_class(contract_name, overriding_path=None):
 def get_hash(contract_name, overriding_path=None):
     """Return the class_hash for a given contract name."""
     contract_class = get_contract_class(contract_name, overriding_path)
-    return compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
+    return hex_class_hash(
+        compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
+    )
 
 
 def call_cli(cmd_name, args, command_args):
