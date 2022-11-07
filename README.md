@@ -476,6 +476,7 @@ In order for this implementation to be functional, it is needed by the plugin de
    # We need to specify that click commands are entry points in the group `nile_plugins`
    [tool.poetry.plugins.nile_plugins]
    cli =
+       # <command_name> = <package_method_location>
        "greet" = "nile_greet.main.greet"
    ```
 
