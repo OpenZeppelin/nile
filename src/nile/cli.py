@@ -96,7 +96,17 @@ def run(path, network):
 @mainnet_token_option
 @network_option
 def deploy(
-    contract_name, salt, params, max_fee, unique, account, alias, abi, udc, token, network
+    contract_name,
+    salt,
+    params,
+    max_fee,
+    unique,
+    account,
+    alias,
+    abi,
+    udc,
+    token,
+    network,
 ):
     """Deploy StarkNet smart contract."""
     if account is not None:
@@ -112,7 +122,9 @@ def deploy(
             abi=abi,
         )
     else:
-        deploy_command(contract_name, params, network, alias, abi=abi, mainnet_token=token)
+        deploy_command(
+            contract_name, params, network, alias, abi=abi, mainnet_token=token
+        )
 
 
 @cli.command()
