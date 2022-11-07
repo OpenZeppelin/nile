@@ -491,7 +491,7 @@ In order for this implementation to be functional, the plugin developer must fol
        "greet" = "nile_greet.nre.greet"
    ```
 
-4. Done! For a better understanding of python entry points through setuptools [check this documentation](https://setuptools.pypa.io/en/latest/userguide/entry_point.html#entry-points-for-plugins).
+4. Done! For a better understanding of python entry points through setuptools, [check this documentation](https://setuptools.pypa.io/en/latest/userguide/entry_point.html#entry-points-for-plugins).
 
 How to decide if I want to use a plugin or not? Just install / uninstall the plugin dependency from your project :smile:
 
