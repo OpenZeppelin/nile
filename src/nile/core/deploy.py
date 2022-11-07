@@ -17,7 +17,15 @@ from nile.common import (
 from nile.utils import hex_address
 
 
-def deploy(contract_name, arguments, network, alias, overriding_path=None, abi=None):
+def deploy(
+    contract_name,
+    arguments,
+    network,
+    alias,
+    overriding_path=None,
+    abi=None,
+    mainnet_token=None,
+):
     """Deploy StarkNet smart contracts (DEPRECATED)."""
     logging.info(
         f"🚀 Deploying {contract_name} without Account. "
@@ -35,6 +43,7 @@ def deploy(contract_name, arguments, network, alias, overriding_path=None, abi=N
         contract_name=contract_name,
         overriding_path=overriding_path,
         inputs=arguments,
+        mainnet_token=mainnet_token,
     )
 
     address, tx_hash = parse_information(output)

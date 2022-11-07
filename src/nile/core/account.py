@@ -85,7 +85,13 @@ class Account:
         return address, index
 
     def declare(
-        self, contract_name, max_fee=None, nonce=None, alias=None, overriding_path=None
+        self,
+        contract_name,
+        max_fee=None,
+        nonce=None,
+        alias=None,
+        overriding_path=None,
+        mainnet_token=None,
     ):
         """Declare a contract through an Account."""
         _, max_fee, nonce = self._process_arguments([], max_fee, nonce)
@@ -108,6 +114,7 @@ class Account:
             alias=alias,
             network=self.network,
             max_fee=max_fee,
+            mainnet_token=mainnet_token,
         )
 
     def deploy_contract(
@@ -174,11 +181,13 @@ class Account:
             query_flag=query_type,
         )
 
-    def simulate(self, address_or_alias, method, calldata, max_fee, nonce=None):
+    def simulate(self, address_or_alias, method, calldata, max_fee=None, nonce=None):
         """Simulate a tx going through an Account contract."""
         return self.send(address_or_alias, method, calldata, max_fee, nonce, "simulate")
 
-    def estimate_fee(self, address_or_alias, method, calldata, max_fee, nonce=None):
+    def estimate_fee(
+        self, address_or_alias, method, calldata, max_fee=None, nonce=None
+    ):
         """Estimate fee for a tx going through an Account contract."""
         return self.send(
             address_or_alias, method, calldata, max_fee, nonce, "estimate_fee"
