@@ -464,7 +464,7 @@ In order for this implementation to be functional, the plugin developer must fol
    # Custom parameters can be added as defined in `click`: https://click.palletsprojects.com/en/7.x/options/
    def greet():
        """
-       Plugin cli command that does something.
+       Plugin CLI command that does something.
        """
        # Done! Now implement the custom functionality in the command
        click.echo("Hello Nile!")
