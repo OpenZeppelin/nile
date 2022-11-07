@@ -3,7 +3,7 @@ import logging
 
 from nile import deployments
 from nile.common import DECLARATIONS_FILENAME, parse_information, run_command
-from nile.utils import hex_address
+from nile.utils import hex_address, hex_class_hash
 
 
 def declare(
@@ -38,13 +38,12 @@ def declare(
     )
 
     class_hash, tx_hash = parse_information(output)
-    logging.info(
-        f"⏳ Successfully sent declaration of {contract_name} as {hex(class_hash)}"
-    )
+    padded_hash = hex_class_hash(class_hash)
+    logging.info(f"⏳ Successfully sent declaration of {contract_name} as {padded_hash}")
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
-    deployments.register_class_hash(class_hash, network, alias)
-    return class_hash
+    deployments.register_class_hash(padded_hash, network, alias)
+    return padded_hash
 
 
 def alias_exists(alias, network):
