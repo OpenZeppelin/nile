@@ -445,7 +445,7 @@ Note that if you want to pass the token name as a hex or an int, you need to pro
 
 ## Extending Nile with plugins
 
-Nile has the possibility of extending its CLI and `NileRuntimeEnvironment` functionalities through plugins. For developing plugins you can fork [this example boilerplate](https://github.com/franalgaba/nile-plugin-example)  and implement your desired functionality with the provided instructions.
+Nile has the possibility of extending its CLI and `NileRuntimeEnvironment` functionalities through plugins. For developing plugins you can fork [this example template](https://github.com/franalgaba/nile-plugin-example) and implement your desired functionality with the provided instructions.
 
 ### How it works
 
@@ -476,6 +476,7 @@ In order for this implementation to be functional, it is needed by the plugin de
    # We need to specify that click commands are entry points in the group `nile_plugins`
    [tool.poetry.plugins.nile_plugins]
    cli =
+       # <command_name> = <package_method_location>
        "greet" = "nile_greet.main.greet"
    ```
 
