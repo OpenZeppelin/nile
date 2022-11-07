@@ -494,7 +494,7 @@ In order for this implementation to be functional, it is needed by the plugin de
 
 How to decide if I want to use a plugin or not? Just install / uninstall the plugin dependency from your project :smile:
 
-Using both cli and nre entry points under the nile_plugins group allows it to develop powerful plugins which are easily integrated.
+Using both cli and nre entry points under the nile_plugins group allows the development of powerful plugins which are easily integrated.
 
 ## Contribute
 
