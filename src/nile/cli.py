@@ -93,11 +93,11 @@ def run(path, network):
 @cli.command()
 @click.argument("artifact", nargs=1)
 @click.argument("arguments", nargs=-1)
-@network_option
 @click.option("--alias")
-@watch_option
 @click.option("--abi")
+@network_option
 @mainnet_token_option
+@watch_option
 def deploy(artifact, arguments, network, alias, watch_mode, abi, token):
     """Deploy StarkNet smart contract."""
     deploy_command(
@@ -116,10 +116,10 @@ def deploy(artifact, arguments, network, alias, watch_mode, abi, token):
 @click.argument("contract_name", nargs=1)
 @click.option("--max_fee", nargs=1)
 @click.option("--alias")
-@watch_option
 @click.option("--overriding_path")
-@mainnet_token_option
 @network_option
+@mainnet_token_option
+@watch_option
 def declare(
     signer,
     contract_name,
@@ -157,10 +157,10 @@ def setup(signer, network, watch_mode):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
-@network_option
-@watch_option
 @click.option("--simulate", "query", flag_value="simulate")
 @click.option("--estimate_fee", "query", flag_value="estimate_fee")
+@network_option
+@watch_option
 def send(
     signer,
     address_or_alias,
@@ -291,8 +291,8 @@ def version():
 
 @cli.command()
 @click.argument("tx_hash", nargs=1)
-@network_option
 @click.option("--contracts_file", nargs=1)
+@network_option
 def debug(tx_hash, network, contracts_file):
     """
     Locate an error in a transaction using available contracts.
@@ -304,9 +304,9 @@ def debug(tx_hash, network, contracts_file):
 
 @cli.command()
 @click.argument("tx_hash", nargs=1)
+@click.option("--contracts_file", nargs=1)
 @network_option
 @watch_option
-@click.option("--contracts_file", nargs=1)
 def status(tx_hash, network, watch_mode, contracts_file):
     """
     Get the status of a transaction.
@@ -329,8 +329,8 @@ def status(tx_hash, network, watch_mode, contracts_file):
 
 
 @cli.command()
-@network_option
 @click.option("--predeployed/--registered", default=False)
+@network_option
 def get_accounts(network, predeployed):
     """Retrieve and manage deployed accounts."""
     if not predeployed:
