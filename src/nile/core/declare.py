@@ -48,7 +48,7 @@ def declare(
 
     if watch_mode is not None:
         if status(tx_hash, network, watch_mode).status.is_rejected:
-            deployments.unregister(padded_hash, network, alias, is_declaration=True)
+            deployments.unregister(class_hash, network, alias, is_declaration=True)
             return
 
     return padded_hash
