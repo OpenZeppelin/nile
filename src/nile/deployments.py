@@ -36,9 +36,7 @@ def unregister(address_or_class_hash, network, alias, abi=None, is_declaration=F
         else f"{network}.{DEPLOYMENTS_FILENAME}"
     )
     to_delete = (
-        hex(address_or_class_hash)
-        if is_declaration
-        else hex_address(address_or_class_hash)
+        address_or_class_hash if is_declaration else hex_address(address_or_class_hash)
     )
 
     if abi is not None:
@@ -108,8 +106,6 @@ def register_class_hash(hash, network, alias):
         raise Exception(f"Hash {hash[:6]}...{hash[-6:]} already exists in {file}")
 
     with open(file, "a") as fp:
-        # Save class_hash as hex
-        hash = hex(hash)
         if alias is not None:
             logging.info(f"📦 Registering {alias} in {file}")
         else:
