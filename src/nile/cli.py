@@ -98,7 +98,7 @@ def run(path, network):
 @watch_option
 @click.option("--abi")
 @mainnet_token_option
-def deploy(artifact, arguments, network, alias, watch_mode, abi=None, token=None):
+def deploy(artifact, arguments, network, alias, watch_mode, abi, token):
     """Deploy StarkNet smart contract."""
     deploy_command(
         contract_name=artifact,
@@ -126,9 +126,9 @@ def declare(
     network,
     max_fee,
     watch_mode,
-    alias=None,
-    overriding_path=None,
-    token=None,
+    alias,
+    overriding_path,
+    token,
 ):
     """Declare StarkNet smart contract."""
     account = Account(signer, network)
