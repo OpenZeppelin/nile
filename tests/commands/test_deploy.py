@@ -194,7 +194,8 @@ def test_deploy_contract(
         # check logs
         assert f"🚀 Deploying {CONTRACT}" in caplog.text
         assert (
-            f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(exp_address)}"
+            f"⏳ ️Deployment of {CONTRACT} successfully"
+            + f" sent at {hex_address(exp_address)}"
             in caplog.text
         )
         assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
