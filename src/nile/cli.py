@@ -43,7 +43,7 @@ def network_option(f):
 def watch_option(f):
     """Handle track and debug options for the cli."""
     f = click.option("--track", "-t", "watch_mode", flag_value="track")(f)
-    f = click.option("--debug", "-d", "watch_mode", flag_value="debug")(f)
+    f = click.option("--debug", "-d", "watch_mode", flag_value="debug", default=True)(f)
     return f
 
 
