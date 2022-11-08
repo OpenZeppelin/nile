@@ -129,7 +129,7 @@ nile deploy contract --account setup_account_alias --alias my_contract
 A few things to notice here:
 
 1. `nile deploy <contract_name>` looks for an artifact with the same name.
-2. This created a `localhost.deployments.txt` file storing all data related to my deployment.
+2. This creates a `localhost.deployments.txt` file storing all data related to my deployment.
 3. The `--account` parameter deploys using the provided account and the UniversalDeployer contract.
 4. The `--alias` parameter lets you create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
 5. The `--udc` parameter lets you specify the UniversalDeployer address if needed.
