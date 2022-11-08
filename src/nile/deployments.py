@@ -36,7 +36,9 @@ def unregister(address_or_class_hash, network, alias, abi=None, is_declaration=F
         else f"{network}.{DEPLOYMENTS_FILENAME}"
     )
     to_delete = (
-        hex_class_hash(address_or_class_hash) if is_declaration else hex_address(address_or_class_hash)
+        hex_class_hash(address_or_class_hash)
+        if is_declaration
+        else hex_address(address_or_class_hash)
     )
 
     if abi is not None:
