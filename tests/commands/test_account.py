@@ -9,12 +9,14 @@ from nile.common import (
     BUILD_DIRECTORY,
     QUERY_VERSION,
     TRANSACTION_VERSION,
+    UNIVERSAL_DEPLOYER_ADDRESS,
 )
 from nile.core.account import Account
+from nile.utils import normalize_number
 
 KEY = "TEST_KEY"
 NETWORK = "localhost"
-MOCK_ADDRESS = "0x123"
+MOCK_ADDRESS = 0x123
 MOCK_TARGET_ADDRESS = 0x987
 MOCK_INDEX = 0
 MAX_FEE = 10
@@ -117,6 +119,43 @@ def test_declare(mock_declare, mock_get_class, mock_deploy):
         alias=alias,
         max_fee=max_fee,
         mainnet_token=None,
+    )
+
+
+@pytest.mark.parametrize("deployer_address", [None, 0xDE0])
+@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.deploy.get_class_hash", return_value=0x434343)
+@patch("nile.core.account.deploy_with_udc")
+def test_deploy_contract(
+    mock_deploy_contract, mock_get_class, mock_deploy, deployer_address
+):
+    account = Account(KEY, NETWORK)
+
+    contract_name = "contract"
+    salt = 4
+    unique = True
+    calldata = []
+    alias = "my_contract"
+    max_fee = 1
+
+    account.deploy_contract(
+        contract_name, salt, unique, calldata, alias, max_fee, deployer_address
+    )
+
+    if deployer_address is None:
+        deployer_address = normalize_number(UNIVERSAL_DEPLOYER_ADDRESS)
+
+    # Check values are correctly passed to 'deploy.deploy.deploy_contract'
+    mock_deploy_contract.assert_called_with(
+        account,
+        contract_name,
+        salt,
+        unique,
+        calldata,
+        alias,
+        deployer_address,
+        max_fee,
+        abi=None,
     )
 
 

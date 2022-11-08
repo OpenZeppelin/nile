@@ -113,7 +113,7 @@ Creating artifacts/abis/ to store compilation artifacts
 
 ### `deploy`
 
-> NOTICE: Calling this method without the `--account` parameter doesn't use an account, which will be deprecated very soon as StarkNet makes deployments from accounts mandatory.
+> NOTICE: Calling this method will require an account very soon (using the `--account` param) as StarkNet will make deployments from accounts mandatory.
 
 > Token for deployments to Alpha Mainnet can be set with the `--token` option.
 

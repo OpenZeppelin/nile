@@ -62,7 +62,6 @@ def deploy_contract(
     salt,
     unique,
     calldata,
-    network,
     alias,
     deployer_address,
     max_fee,
@@ -102,5 +101,5 @@ def deploy_contract(
     )
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
-    deployments.register(address, register_abi, network, alias)
+    deployments.register(address, register_abi, account.network, alias)
     return address, register_abi

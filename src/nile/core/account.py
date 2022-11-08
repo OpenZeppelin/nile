@@ -15,7 +15,8 @@ from nile.common import (
 )
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.declare import declare
-from nile.core.deploy import deploy, deploy_contract
+from nile.core.deploy import deploy
+from nile.core.deploy import deploy_contract as deploy_with_udc
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
@@ -63,6 +64,9 @@ class Account:
             address, index = self.deploy()
             self.address = address
             self.index = index
+
+        # Internal address must always be of type int
+        assert type(self.address) == int
 
     def deploy(self):
         """Deploy an Account contract for the given private key."""
@@ -133,15 +137,14 @@ class Account:
             deployer_address or UNIVERSAL_DEPLOYER_ADDRESS
         )
 
-        deploy_contract(
+        deploy_with_udc(
             self,
             contract_name,
             salt,
             unique,
             calldata,
-            self.network,
             alias,
-            deployer_address or UNIVERSAL_DEPLOYER_ADDRESS,
+            deployer_address,
             max_fee,
             abi=abi,
         )

@@ -92,7 +92,7 @@ def run(path, network):
 @click.option("--account")
 @click.option("--alias")
 @click.option("--abi")
-@click.option("--udc")
+@click.option("--udc_address")
 @mainnet_token_option
 @network_option
 def deploy(
@@ -104,7 +104,7 @@ def deploy(
     account,
     alias,
     abi,
-    udc,
+    udc_address,
     token,
     network,
 ):
@@ -117,8 +117,8 @@ def deploy(
             unique,
             params,
             alias,
-            deployer_address=udc,
-            max_fee=None,
+            deployer_address=udc_address,
+            max_fee=max_fee,
             abi=abi,
         )
     else:
