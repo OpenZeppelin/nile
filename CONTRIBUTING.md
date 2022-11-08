@@ -61,7 +61,7 @@ As a contributor, you are expected to fork this repository, work on your own for
 
 ## Design Patterns
 
-We always try to follow best practices and design patterns to make the code readable and maintainable. While most of them are left to be decided by the PR developer and the reviewer, we require following some patterns we enforce ourselves, presented below:
+We always try to follow best practices and design patterns to make the code readable and maintainable. While most of them are left to be decided by the PR developer and the reviewer, we require following some patterns that we enforce ourselves which are presented below:
 
 ### Hex/Int pattern
 
