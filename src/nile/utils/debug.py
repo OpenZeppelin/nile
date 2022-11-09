@@ -11,10 +11,10 @@ def debug_message(error_message, command, network, contracts_file=None):
     """
     Use available contracts to help locate the error in a rejected transaction.
 
-    :param error_message: error message of the transaction receipt.
-    :param command: StarkNet CLI command used to get the transaction receipt.
-    :param network: Network queried
-    :param contracts_file: File to use instead of the one generated automatically
+    @param error_message: error message of the transaction receipt.
+    @param command: StarkNet CLI command used to get the transaction receipt.
+    @param network: Network queried
+    @param contracts_file: File to use instead of the one generated automatically
       from network name.
     """
     addresses = get_addresses_from_string(error_message)
