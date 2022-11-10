@@ -188,19 +188,19 @@ class Account(AsyncObject):
             query_flag=query_type,
         )
 
-    async def simulate(
+    def simulate(
         self, address_or_alias, method, calldata, max_fee=None, nonce=None
     ):
         """Simulate a tx going through an Account contract."""
-        return await self.send(
+        return self.send(
             address_or_alias, method, calldata, max_fee, nonce, "simulate"
         )
 
-    async def estimate_fee(
+    def estimate_fee(
         self, address_or_alias, method, calldata, max_fee=None, nonce=None
     ):
         """Estimate fee for a tx going through an Account contract."""
-        return await self.send(
+        return self.send(
             address_or_alias, method, calldata, max_fee, nonce, "estimate_fee"
         )
 
