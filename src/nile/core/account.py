@@ -109,7 +109,7 @@ class Account(AsyncObject):
     ):
         """Declare a contract through an Account contract."""
         if nonce is None:
-            nonce = int(await get_nonce(self.address, self.network))
+            nonce = await get_nonce(self.address, self.network)
 
         if max_fee is None:
             max_fee = 0
