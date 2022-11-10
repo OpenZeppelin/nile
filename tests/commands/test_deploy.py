@@ -109,25 +109,24 @@ def test_deploy(
     assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
 
 
-@pytest.mark.only
 @pytest.mark.parametrize(
     "args, exp_class_hash, exp_salt, exp_abi",
     [
         (
             [CONTRACT, 0, True, [], ALIAS, 0x424242, 5],  # args
-            0x434343,
+            '0x434343',
             EXP_SALTS[0],
             ABI,
         ),
         (
             [CONTRACT, 1, False, [1], ALIAS, 0x454545, 0],  # args
-            0x464646,
+            '0x464646',
             1,
             ABI,
         ),
         (
             [CONTRACT, 3, True, [1, 2], ALIAS, 0x484848, 0],  # args
-            0x494949,
+            '0x494949',
             EXP_SALTS[1],
             ABI,
         ),
@@ -143,7 +142,7 @@ def test_deploy(
                 None,
                 "TEST_ABI",
             ],  # args
-            0x525252,
+            '0x525252',
             3,
             "TEST_ABI",
         ),
@@ -173,6 +172,8 @@ def test_deploy_contract(
 
     with patch("nile.core.deploy.get_class_hash") as mock_return_account:
         mock_return_account.return_value = exp_class_hash
+
+        exp_class_hash = int(exp_class_hash, 16)
 
         deployer_for_address_generation = deployer_address if unique else 0
         exp_address = calculate_contract_address_from_hash(
