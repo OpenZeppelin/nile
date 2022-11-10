@@ -112,13 +112,7 @@ def run_command(
     if arguments is not None:
         command.extend(arguments)
 
-    if network == "mainnet":
-        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
-    elif network == "goerli":
-        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
-    else:
-        command.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
-        command.append(f"--gateway_url={GATEWAYS.get(network)}")
+    command += get_network_parameter_or_set_env(network)
 
     command.append("--no_wallet")
 
@@ -195,6 +189,21 @@ def is_alias(param):
     return is_string(param)
 
 
+def get_network_parameter_or_set_env(network):
+    """Update environment variables or return network parameter for StarkNet-cli."""
+    extra_param = []
+    if network == "mainnet":
+        os.environ["STARKNET_NETWORK"] = "alpha-mainnet"
+    elif network == "goerli":
+        os.environ["STARKNET_NETWORK"] = "alpha-goerli"
+    else:
+        extra_param = [
+            f"--gateway_url={GATEWAYS.get(network)}",
+            f"--feeder_gateway_url={GATEWAYS.get(network)}",
+        ]
+    return extra_param
+
+
 def get_contract_class(contract_name, overriding_path=None):
     """Return the contract_class for a given contract name."""
     base_path = (
@@ -211,4 +220,11 @@ def get_hash(contract_name, overriding_path=None):
     contract_class = get_contract_class(contract_name, overriding_path)
     return hex_class_hash(
         compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
+    )
+
+
+def get_addresses_from_string(string):
+    """Return a set of integers with identified addresses in a string."""
+    return set(
+        int(address, 16) for address in re.findall("0x[\\da-f]{1,64}", str(string))
     )

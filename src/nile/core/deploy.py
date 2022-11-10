@@ -4,6 +4,7 @@ import logging
 from nile import deployments
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, parse_information, run_command
 from nile.utils import hex_address
+from nile.utils.status import status
 
 
 def deploy(
@@ -14,6 +15,7 @@ def deploy(
     overriding_path=None,
     abi=None,
     mainnet_token=None,
+    watch_mode=None,
 ):
     """Deploy StarkNet smart contracts."""
     logging.info(f"🚀 Deploying {contract_name}")
@@ -38,4 +40,10 @@ def deploy(
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
     deployments.register(address, register_abi, network, alias)
+
+    if watch_mode is not None:
+        if status(tx_hash, network, watch_mode).status.is_rejected:
+            deployments.unregister(address, network, alias, abi=register_abi)
+            return
+
     return address, register_abi
