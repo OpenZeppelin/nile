@@ -114,19 +114,19 @@ def test_deploy(
     [
         (
             [CONTRACT, 0, True, [], ALIAS, 0x424242, 5],  # args
-            '0x434343',
+            "0x434343",
             EXP_SALTS[0],
             ABI,
         ),
         (
             [CONTRACT, 1, False, [1], ALIAS, 0x454545, 0],  # args
-            '0x464646',
+            "0x464646",
             1,
             ABI,
         ),
         (
             [CONTRACT, 3, True, [1, 2], ALIAS, 0x484848, 0],  # args
-            '0x494949',
+            "0x494949",
             EXP_SALTS[1],
             ABI,
         ),
@@ -142,7 +142,7 @@ def test_deploy(
                 None,
                 "TEST_ABI",
             ],  # args
-            '0x525252',
+            "0x525252",
             3,
             "TEST_ABI",
         ),
