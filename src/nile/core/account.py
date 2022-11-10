@@ -112,9 +112,8 @@ class Account(AsyncObject):
         mainnet_token=None,
     ):
         """Declare a contract through an Account contract."""
-        max_fee, nonce = await self._process_arguments(
-            max_fee, nonce
-        )
+        max_fee, nonce = await self._process_arguments(max_fee, nonce)
+
         contract_class = get_contract_class(
             contract_name=contract_name, overriding_path=overriding_path
         )
