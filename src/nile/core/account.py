@@ -41,7 +41,11 @@ class AsyncObject(object):
 
 
 class Account(AsyncObject):
-    """Account contract abstraction."""
+    """
+    Account contract abstraction.
+
+    Remove AsyncObject if Account.deploy decouples from initialization.
+    """
 
     async def __init__(self, signer, network, predeployed_info=None):
         """Get or deploy an Account contract for the given private key."""
@@ -188,13 +192,9 @@ class Account(AsyncObject):
             query_flag=query_type,
         )
 
-    def simulate(
-        self, address_or_alias, method, calldata, max_fee=None, nonce=None
-    ):
+    def simulate(self, address_or_alias, method, calldata, max_fee=None, nonce=None):
         """Simulate a tx going through an Account contract."""
-        return self.send(
-            address_or_alias, method, calldata, max_fee, nonce, "simulate"
-        )
+        return self.send(address_or_alias, method, calldata, max_fee, nonce, "simulate")
 
     def estimate_fee(
         self, address_or_alias, method, calldata, max_fee=None, nonce=None
