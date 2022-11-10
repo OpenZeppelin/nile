@@ -68,7 +68,7 @@ We always try to follow best practices and design patterns to make the code read
 The pattern is defined as follows:
 
 #### Definitions
-- **Internal API** is the set of functions that are not meant to be called directly in scripting, tests, or any other context from users of Nile, but only internally, from other Nile code (including plugins).
+- **Internal API** is the set of functions that are not meant to be called directly in scripting, tests, or any other context from users of Nile, but only internally from other Nile code (including plugins).
 - **Public API** is the complement.
 
 #### Rules
