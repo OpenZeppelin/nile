@@ -112,14 +112,9 @@ class Account(AsyncObject):
         mainnet_token=None,
     ):
         """Declare a contract through an Account contract."""
-        if nonce is None:
-            nonce = await get_nonce(self.address, self.network)
-
-        if max_fee is None:
-            max_fee = 0
-        else:
-            max_fee = int(max_fee)
-
+        max_fee, nonce = await self._process_arguments(
+            max_fee, nonce
+        )
         contract_class = get_contract_class(
             contract_name=contract_name, overriding_path=overriding_path
         )
@@ -166,8 +161,8 @@ class Account(AsyncObject):
         target_address = self._get_target_address(address_or_alias)
 
         # process and parse arguments
-        calldata, max_fee, nonce = await self._process_arguments(
-            calldata, max_fee, nonce
+        max_fee, nonce, calldata = await self._process_arguments(
+            max_fee, nonce, calldata
         )
 
         # get tx version
@@ -215,9 +210,7 @@ class Account(AsyncObject):
 
         return target_address
 
-    async def _process_arguments(self, calldata, max_fee, nonce):
-        calldata = [normalize_number(x) for x in calldata]
-
+    async def _process_arguments(self, max_fee, nonce, calldata=None):
         if nonce is None:
             nonce = await get_nonce(self.address, self.network)
 
@@ -226,4 +219,8 @@ class Account(AsyncObject):
         else:
             max_fee = int(max_fee)
 
-        return calldata, max_fee, nonce
+        if calldata is not None:
+            calldata = [normalize_number(x) for x in calldata]
+            return max_fee, nonce, calldata
+
+        return max_fee, nonce
