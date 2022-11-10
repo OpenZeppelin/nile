@@ -25,7 +25,7 @@ from nile.utils.get_accounts import (
 from nile.utils.get_nonce import get_nonce as get_nonce_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
-logging.getLogger('asyncio').setLevel(logging.WARNING)
+logging.getLogger("asyncio").setLevel(logging.WARNING)
 
 NETWORKS = ("localhost", "integration", "goerli", "goerli2", "mainnet")
 
