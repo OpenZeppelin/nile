@@ -449,7 +449,7 @@ Nile can extend its CLI and `NileRuntimeEnvironment` functionalities through plu
 
 ### How it works
 
-This implementation takes advantage of the native extensibility features of [click](https://click.palletsprojects.com/). By using click and leveraging Python [entry points](https://packaging.python.org/en/latest/specifications/entry-points/), we have a simple manner of handling extensions natively in Python environments through dependencies. The plugin implementation on Nile looks for specific Python entry point constraints for adding commands to either the CLI or NRE.
+This implementation takes advantage of the native extensibility features of [Click](https://click.palletsprojects.com/). By using Click and leveraging Python [entry points](https://packaging.python.org/en/latest/specifications/entry-points/), we have a simple manner of handling extensions natively in Python environments through dependencies. The plugin implementation on Nile looks for specific Python entry point constraints for adding commands to either the CLI or NRE.
 
 In order for this implementation to be functional, the plugin developer must follow some guidelines:
 
