@@ -86,6 +86,12 @@ WARNING: Use these accounts and their keys ONLY for local testing. DO NOT use th
 
 Compile Cairo contracts. Compilation artifacts are written into the `artifacts/` directory.
 
+```txt
+nile compile [PATH_TO_CONTRACT] [--directory DIRECTORY] [--disable-hint-validation]
+```
+
+For example:
+
 ```sh
 nile compile # compiles all contracts under contracts/
 nile compile --directory my_contracts # compiles all contracts under my_contracts/
@@ -117,6 +123,10 @@ Creating artifacts/abis/ to store compilation artifacts
 
 > Token for deployments to Alpha Mainnet can be set with the `--token` option.
 
+```txt
+nile deploy <contract> [--alias ALIAS] [--network NETWORK] [--track | --debug]
+```
+
 ```sh
 nile deploy contract --account setup_account_alias --alias my_contract
 
@@ -126,15 +136,16 @@ nile deploy contract --account setup_account_alias --alias my_contract
 📦 Registering deployment as my_contract in localhost.deployments.txt
 ```
 
-A few things to notice here:
+A few things to note here:
 
 1. `nile deploy <contract_name>` looks for an artifact with the same name.
-2. This creates a `localhost.deployments.txt` file storing all data related to my deployment.
+2. This creates or updates the `localhost.deployments.txt` file storing all data related to deployments.
 3. The `--account` parameter deploys using the provided account and the UniversalDeployer contract.
-4. The `--alias` parameter lets you create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
+4. The `--alias` parameter creates a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
 5. The `--udc_address` parameter lets you specify the UniversalDeployer address if needed.
 6. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, `goerli2`, `integration`, and the default `localhost`.
 7. By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
+8. `--track` and `--debug` flags can be used to watch the status of the deployment transaction. See `status` below for a complete description.
 
 ### `setup`
 
@@ -153,16 +164,17 @@ nile setup <private_key_alias>
 
 A few things to note here:
 
-1. `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias
-2. This creates or updates `localhost.accounts.json` file storing all data related to accounts management
-3. The creates or updates `localhost.deployments.txt` file storing all data related to deployments
+- `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias.
+- This creates or updates `localhost.accounts.json` file storing all data related to accounts management.
+- The creates or updates `localhost.deployments.txt` file storing all data related to deployments.
+- `--track` and `--debug` flags can be used to watch the status of the account deployment transaction. See `status` below for a complete description.
 
 ### `send`
 
 Execute a transaction through the `Account` associated with the private key provided. The syntax is:
 
 ```sh
-nile send <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...]
+nile send <private_key_alias> <contract_identifier> <method> [PARAM_1, PARAM2...] [--track | --debug]
 ```
 
 For example:
@@ -178,8 +190,9 @@ Transaction hash: 0x1c
 Some things to note:
 
 - This sends the transaction to the network by default, but you can use the `--estimate_fee` flag to estimate the fee without sending the transaction, or the `--simulate` flag to get a traceback of the simulated execution.
-- `max_fee` defaults to `0`. Add `--max_fee <max_fee>` to set the maximum fee for the transaction
-- `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction
+- `max_fee` defaults to `0`. Add `--max_fee <max_fee>` to set the maximum fee for the transaction.
+- `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction.
+- `--track` and `--debug` flags can be used to watch the status of the transaction. See `status` below for a complete description.
 
 ### `declare`
 
@@ -198,10 +211,11 @@ nile declare <private_key_alias> contract --alias my_contract
 
 A few things to notice here:
 
-1. `nile declare <private_key_alias> <contract_name>` looks for an artifact with name `<contract_name>`
-2. This creates or updates a `localhost.declarations.txt` file storing all data related to your declarations
-3. The `--alias` parameter lets you create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier
-4. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, `goerli2`, `integration`, and the default `localhost`.
+- `nile declare <private_key_alias> <contract_name>` looks for an artifact with name `<contract_name>`.
+- This creates or updates a `localhost.declarations.txt` file storing all data related to your declarations.
+- The `--alias` parameter lets you create a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
+- By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, `goerli2`, `integration`, and the default `localhost`.
+- `--track` and `--debug` flags can be used to watch the status of the declaration transaction. See `status` below for a complete description.
 
 ### `call`
 
@@ -221,7 +235,7 @@ nile call my_contract get_balance
 
 Please note:
 
-- `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction
+- `network` defaults to the `localhost`. Add `--network <network>` to change the network for the transaction.
 
 ### `run`
 
@@ -265,15 +279,33 @@ Print out the Nile version
 nile version
 ```
 
-### `debug`
+### `status`
 
-Use locally available contracts to make error messages from rejected transactions more explicit.
+Prints the current status of a transaction.
 
-```sh
-nile debug <transaction_hash> [CONTRACTS_FILE, NETWORK]
+```txt
+nile status <transaction_hash> [--contracts_file FILE] [--network NETWORK] [--track | --debug]
 ```
 
-For example, this transaction returns the very cryptic error message:  
+#### `--track`, `-t` flag
+
+In case of pending transaction states, continue probing the network. Here in the case of a successful transaction.
+
+```sh
+nile status -t <transaction_hash>
+⏳ Querying the network for transaction status...
+🕒 Transaction status: NOT_RECEIVED. Trying again in a moment...
+🕒 Transaction status: RECEIVED. Trying again in a moment...
+🕒 Transaction status: PENDING. Trying again in a moment...
+✅ Transaction status: ACCEPTED_ON_L2. No error in transaction.
+```
+
+#### `--debug`, `-d` flag
+
+Use locally available contracts to make error messages from rejected transactions more explicit.
+Note: Implies `--track`.
+
+For example, this transaction returns the very cryptic error message:
 `An ASSERT_EQ instruction failed: 0 != 1.`
 
 ```sh
@@ -293,9 +325,10 @@ Unknown location (pc=0:1369)
 This can be made more explicit with:
 
 ```sh
-nile debug 0x57d2d844923f9fe5ef54ed7084df61f926b9a2a24eb5d7e46c8f6dbcd4baafe
+nile status -d 0x57d2d844923f9fe5ef54ed7084df61f926b9a2a24eb5d7e46c8f6dbcd4baafe
 
-⏳ Querying the network to check transaction status and identify contracts...
+⏳ Querying the network for transaction status...
+❌ Transaction status: REJECTED.
 🧾 Found contracts: ['0x05bf05eece944b360ff0098eb9288e49bd0007e5a9ed80aefcb740e680e67ea4:artifacts/Evaluator.json']
 ⏳ Querying the network with contracts...
 🧾 Error message:
@@ -315,25 +348,21 @@ func set_teacher{
     ^************^
 ```
 
-In case of pending transaction states, the command will offer to continue probing the network unless it
-is terminated prematurely.
-This example also shows how accepted transactions are handled.
-
-```sh
-⏳ Querying the network to check transaction status and identify contracts...
-🕒 Transaction status: NOT_RECEIVED. Trying again in a moment...
-🕒 Transaction status: RECEIVED. Trying again in a moment...
-🕒 Transaction status: PENDING. Trying again in a moment...
-✅ Transaction status: ACCEPTED_ON_L2. No error in transaction.
-```
-
-Finally, the command will use the local `network.deployments.txt` files to fetch the available contracts.  
+Finally, the command will use the local `network.deployments.txt` files to fetch the available contracts.
 However, it is also possible to override this by passing a `CONTRACTS_FILE` argument, formatted as:
 
-```sh
-CONTRACT_ADDRESS1:PATH_TO_COMPILED_CONTRACT1.json
-CONTRACT_ADDRESS2:PATH_TO_COMPILED_CONTRACT2.json
+```txt
+CONTRACT_ADDRESS1:PATH_TO_COMPILED_CONTRACT1[:ALIAS1].json
+CONTRACT_ADDRESS2:PATH_TO_COMPILED_CONTRACT2[:ALIAS1].json
 ...
+```
+
+### `debug`
+
+Alias for `nile status --debug`
+
+```sh
+nile debug <transaction_hash> [--contracts_file FILE] [--network NETWORK]
 ```
 
 ### `get-accounts`
@@ -424,7 +453,6 @@ def run(nre):
 
 > Note that this command is only available in the context of scripting in the Nile Runtime Environment.
 
-
 ## Short string literals
 
 From [cairo-lang docs](https://www.cairo-lang.org/docs/how_cairo_works/consts.html#short-string-literals): A short string is a string whose length is at most 31 characters, and therefore can fit into a single field element.
@@ -452,15 +480,15 @@ Note that if you want to pass the token name as a hex or an int, you need to pro
 
 ## Extending Nile with plugins
 
-Nile has the possibility of extending its CLI and `NileRuntimeEnvironment` functionalities through plugins. For developing plugins for Nile fork [this plugin example](https://github.com/franalgaba/nile-plugin-example) boilerplate and implement your desired functionality with the provided instructions.
+Nile can extend its CLI and `NileRuntimeEnvironment` functionalities through plugins. For developing plugins, you can fork [this example template](https://github.com/franalgaba/nile-plugin-example) and implement your desired functionality with the provided instructions.
 
 ### How it works
 
-This implementation takes advantage of the native extensibility features of [click](https://click.palletsprojects.com/). Using click and leveraging the Python [entrypoints](https://packaging.python.org/en/latest/specifications/entry-points/) we have a simple manner of handling extension natively on Python environments through dependencies. The plugin implementation on Nile looks for specific Python entrypoints constraints for adding commands.
+This implementation takes advantage of the native extensibility features of [Click](https://click.palletsprojects.com/). By using Click and leveraging Python [entry points](https://packaging.python.org/en/latest/specifications/entry-points/), we have a simple manner of handling extensions natively in Python environments through dependencies. The plugin implementation on Nile looks for specific Python entry point constraints for adding commands to either the CLI or NRE.
 
-In order for this implementation to be functional, it is needed by the plugin developer to follow some development guidelines defined in this simple plugin example extending Nile for a dummy greet extension. In a brief explanation the guidelines are as follows:
+In order for this implementation to be functional, the plugin developer must follow some guidelines:
 
-1. Define a Python module that implements a click command or group:
+1. Use Click if the plugin provides a CLI command:
 
    ```python
    # First, import click dependency
@@ -468,30 +496,41 @@ In order for this implementation to be functional, it is needed by the plugin de
 
    # Decorate the method that will be the command name with `click.command`
    @click.command()
-   # You can define custom parameters as defined in `click`: https://click.palletsprojects.com/en/7.x/options/
-   def my_command():
-       # Help message to show with the command
+   # Custom parameters can be added as defined in `click`: https://click.palletsprojects.com/en/7.x/options/
+   def greet():
        """
-       Subcommand plugin that does something.
+       Plugin CLI command that does something.
        """
-       # Done! Now implement your custom functionality in the command
-       click.echo("I'm a plugin overriding a command!")
+       # Done! Now implement the custom functionality in the command
+       click.echo("Hello Nile!")
    ```
 
-2. Define the plugin entrypoint. In this case using Poetry features in the pyproject.toml file:
+2. Define the plugin entry points (in this case by using the Poetry plugins feature in the `pyproject.toml` file):
 
    ```sh
-   # We need to specify that click commands are Poetry entrypoints of type `nile_plugins`. Do not modify this
-   [tool.poetry.plugins."nile_plugins"]
-   # Here you specify you command name and location <command_name> = <package_method_location>
-   "greet" = "nile_greet.main.greet"
+   # We need to specify that Click commands are entry points in the group `nile_plugins`
+   [tool.poetry.plugins.nile_plugins]
+   cli =
+       # <command_name> = <package_method_location>
+       "greet" = "nile_greet.main.greet"
    ```
 
-3. Done!
+3. Optionally specify plugin entry points for `NileRuntimeEnvironment`. This doesn't require implementing a Click command (remove the cli entry points if not needed):
+
+   ```sh
+   [tool.poetry.plugins.nile_plugins]
+   cli =
+       "greet" = "nile_greet.main.greet"
+
+   nre =
+       "greet" = "nile_greet.nre.greet"
+   ```
+
+4. Done! For a better understanding of python entry points through setuptools, [check this documentation](https://setuptools.pypa.io/en/latest/userguide/entry_point.html#entry-points-for-plugins).
 
 How to decide if I want to use a plugin or not? Just install / uninstall the plugin dependency from your project :smile:
 
-Finally, after the desired plugin is installed, it will also be automatically available through the `nre`. The plugin developer should be aware of this and design the interface accordingly.
+Using both cli and nre entry points under the nile_plugins group allows the development of powerful plugins which are easily integrated.
 
 ## Contribute
 
@@ -507,7 +546,6 @@ Nile uses tox to manage development tasks. Here are some hints to play with the 
 - Build the package with `tox -e build`
 - Format all files with `tox -e format`
 - Check files formatting with `tox -e lint`
-
 
 ### Testing
 

@@ -1,9 +1,12 @@
 """Command to call or invoke StarkNet smart contracts."""
+import logging
+import re
 
 from nile import deployments
-from nile.common import run_command
+from nile.common import normalize_number, run_command
 from nile.core import account
 from nile.utils import hex_address
+from nile.utils.status import status
 
 
 def call_or_invoke(
@@ -15,6 +18,7 @@ def call_or_invoke(
     signature=None,
     max_fee=None,
     query_flag=None,
+    watch_mode=None,
 ):
     """
     Call or invoke functions of StarkNet smart contracts.
@@ -26,7 +30,8 @@ def call_or_invoke(
     @param network: goerli, goerli2, integration, mainnet, or predefined networks file.
     @param signature: optional signature for invoke transactions.
     @param max_fee: optional max fee for invoke transactions.
-    @param query_flag: either simulate or estimate_fee
+    @param query_flag: either simulate or estimate_fee.
+    @param watch_mode: either track or debug.
     """
     if isinstance(contract, account.Account):
         address = contract.address
@@ -44,7 +49,7 @@ def call_or_invoke(
         method,
     ]
 
-    return run_command(
+    output = run_command(
         operation=type,
         network=network,
         inputs=params,
@@ -53,3 +58,16 @@ def call_or_invoke(
         max_fee=max_fee,
         query_flag=query_flag,
     )
+
+    if type != "call" and output:
+        logging.info(output)
+        if not query_flag and watch_mode:
+            transaction_hash = _get_transaction_hash(output)
+            return status(normalize_number(transaction_hash), network, watch_mode)
+
+    return output
+
+
+def _get_transaction_hash(string):
+    match = re.search(r"Transaction hash: (0x[\da-f]{1,64})", string)
+    return match.groups()[0] if match else None

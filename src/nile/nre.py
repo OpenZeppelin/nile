@@ -17,7 +17,7 @@ class NileRuntimeEnvironment:
     def __init__(self, network="localhost"):
         """Construct NRE object."""
         self.network = network
-        for name, object in get_installed_plugins().items():
+        for name, object in get_installed_plugins("nre").items():
             setattr(self, name, skip_click_exit(object))
 
     def compile(self, contracts, cairo_path=None):
@@ -32,16 +32,18 @@ class NileRuntimeEnvironment:
         overriding_path=None,
         abi=None,
         mainnet_token=None,
+        watch_mode=None,
     ):
         """Deploy a smart contract."""
         return deploy(
-            contract,
-            arguments,
-            self.network,
-            alias,
-            overriding_path,
+            contract_name=contract,
+            arguments=arguments,
+            network=self.network,
+            alias=alias,
+            overriding_path=overriding_path,
             abi=abi,
             mainnet_token=mainnet_token,
+            watch_mode=watch_mode,
         )
 
     def call(self, address_or_alias, method, params=None):
@@ -64,9 +66,9 @@ class NileRuntimeEnvironment:
             address_or_alias = normalize_number(address_or_alias)
         return next(deployments.load_class(address_or_alias, self.network))
 
-    def get_or_deploy_account(self, signer):
+    def get_or_deploy_account(self, signer, watch_mode=None):
         """Get or deploy an Account contract."""
-        return Account(signer, self.network)
+        return Account(signer=signer, network=self.network, watch_mode=watch_mode)
 
     def get_accounts(self, predeployed=False):
         """Retrieve and manage deployed accounts."""

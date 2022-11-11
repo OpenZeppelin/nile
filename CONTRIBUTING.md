@@ -58,6 +58,27 @@ As a contributor, you are expected to fork this repository, work on your own for
 
     *IMPORTANT* Please pay attention to the maintainer's feedback, since it's a necessary step to keep up with the standards OpenZeppelin Nile attains to.
 
+
+## Design Patterns
+
+We always try to follow best practices and design patterns to make the code readable and maintainable. While most of them are left to be decided by the PR developer and the reviewer, we require following some patterns that we enforce ourselves which are presented below:
+
+### Hex/Int pattern
+
+The pattern is defined as follows:
+
+#### Definitions
+- **Internal API** is the set of functions that are not meant to be called directly in scripting, tests, or any other context from users of Nile, but only internally from other Nile code (including plugins).
+- **Public API** is the complement.
+
+#### Rules
+- Accept and use **only int for Internal API** (for hashes, keys, or addresses).
+- Accept **both hex and int from external input** (config files, starknet cli output, etc.) **or Public API functions**, and convert the input to int before using it internally (use `nile.utils.normalize_number`).
+- Always **return int from Internal or Public API, except when the method explicitly declares the intention to return a hex** (like `nile.utils.hex_class_hash` helper).
+- Convert to **hex before writing to files** (like in address for accounts or class_hash for declares) to keep consistency.
+- Convert to **hex when required for integrations** (like starknet cli subprocess calls), **right before where it is needed**.
+
+
 ## All set
 
 If you have any questions, feel free to post them to github.com/OpenZeppelin/nile/issues.

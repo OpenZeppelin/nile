@@ -7,7 +7,8 @@ from unittest.mock import patch
 import pytest
 
 from nile.common import BUILD_DIRECTORY
-from nile.utils.debug import _abi_to_build_path, _locate_error_lines_with_abis, debug
+from nile.utils.debug import _abi_to_build_path, _locate_error_lines_with_abis
+from nile.utils.status import status
 
 MOCK_HASH = 1234
 NETWORK = "localhost"
@@ -42,7 +43,9 @@ def test__abi_to_build_path():
 def test__locate_error_lines_with_abis_with_and_without_alias(
     mock_path, file, address_set
 ):
-    with patch("nile.utils.debug.open") as mock_open:
+    with patch("nile.utils.debug.open") as mock_open, patch(
+        "os.path.isfile", return_value=True
+    ):
         mock_open.return_value.__enter__.return_value = file
         return_array = _locate_error_lines_with_abis(MOCK_FILE, address_set, mock_path)
         # Values should be pushed into the array (and not return an error)
@@ -54,7 +57,9 @@ def test__locate_error_lines_with_abis_with_and_without_alias(
 def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     logging.getLogger().setLevel(logging.INFO)
 
-    with patch("nile.utils.debug.open") as mock_open:
+    with patch("nile.utils.debug.open") as mock_open, patch(
+        "os.path.isfile", return_value=True
+    ):
         # The DEBUG_ADDRESS alone without ":" is misformatted
         mock_open.return_value.__enter__.return_value = [DEBUG_ADDRESS]
         _locate_error_lines_with_abis(MOCK_FILE, int(DEBUG_ADDRESS, 16), mock_path)
@@ -73,14 +78,14 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-@patch("nile.utils.debug.subprocess.check_output")
-@patch("nile.utils.debug.GATEWAYS", return_value="123")
-def test_debug_feedback_with_message(
+@patch("nile.utils.status.subprocess.check_output")
+@patch("nile.utils.status.get_network_parameter_or_set_env", return_value="123")
+def test_status_feedback_with_message(
     mock_gateway, mock_output, output, expected, caplog
 ):
     logging.getLogger().setLevel(logging.INFO)
     mock_output.return_value = output
 
-    debug(MOCK_HASH, NETWORK)
+    status(MOCK_HASH, NETWORK, "debug")
 
     assert expected in caplog.text
