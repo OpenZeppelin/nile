@@ -65,7 +65,6 @@ class Account:
             self.address = address
             self.index = index
 
-        # Internal address must always be of type int
         assert type(self.address) == int
 
     def deploy(self):
