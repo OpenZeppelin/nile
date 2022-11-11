@@ -470,7 +470,7 @@ In order for this implementation to be functional, the plugin developer must fol
        click.echo("Hello Nile!")
    ```
 
-2. Define the plugin entry points (in this case by using Poetry plugins feature in the pyproject.toml file):
+2. Define the plugin entry points (in this case by using the Poetry plugins feature in the pyproject.toml file):
 
    ```sh
    # We need to specify that click commands are entry points in the group `nile_plugins`
