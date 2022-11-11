@@ -17,7 +17,7 @@ class NileRuntimeEnvironment:
     def __init__(self, network="localhost"):
         """Construct NRE object."""
         self.network = network
-        for name, object in get_installed_plugins().items():
+        for name, object in get_installed_plugins("nre").items():
             setattr(self, name, skip_click_exit(object))
 
     def compile(self, contracts, cairo_path=None):
