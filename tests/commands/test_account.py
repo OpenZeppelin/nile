@@ -145,7 +145,7 @@ def test_deploy_contract(
     if deployer_address is None:
         deployer_address = normalize_number(UNIVERSAL_DEPLOYER_ADDRESS)
 
-    # Check values are correctly passed to 'deploy.deploy.deploy_contract'
+    # Check values are correctly passed to 'deploy_with_udc'
     mock_deploy_contract.assert_called_with(
         account,
         contract_name,
