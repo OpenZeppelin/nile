@@ -473,7 +473,7 @@ In order for this implementation to be functional, the plugin developer must fol
 2. Define the plugin entry points (in this case by using the Poetry plugins feature in the pyproject.toml file):
 
    ```sh
-   # We need to specify that click commands are entry points in the group `nile_plugins`
+   # We need to specify that Click commands are entry points in the group `nile_plugins`
    [tool.poetry.plugins.nile_plugins]
    cli =
        # <command_name> = <package_method_location>
