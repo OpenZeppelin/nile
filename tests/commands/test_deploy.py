@@ -23,6 +23,12 @@ EXP_SALTS = [
     2575391846029882800677169842619299590487820636126802982795520479739126412818,
     2557841322555501036413859939246042028937187876697248667793106475357514195630,
 ]
+EXP_CLASS_HASHES = [
+    "0x434343",
+    "0x464646",
+    "0x494949",
+    "0x525252",
+]
 MOCK_ACC_ADDRESS = 0x123
 MOCK_ACC_INDEX = 0
 CONTRACT = "contract"
@@ -114,19 +120,19 @@ def test_deploy(
     [
         (
             [CONTRACT, 0, True, [], ALIAS, 0x424242, 5],  # args
-            "0x434343",
+            EXP_CLASS_HASHES[0],
             EXP_SALTS[0],
             ABI,
         ),
         (
             [CONTRACT, 1, False, [1], ALIAS, 0x454545, 0],  # args
-            "0x464646",
+            EXP_CLASS_HASHES[1],
             1,
             ABI,
         ),
         (
             [CONTRACT, 3, True, [1, 2], ALIAS, 0x484848, 0],  # args
-            "0x494949",
+            EXP_CLASS_HASHES[2],
             EXP_SALTS[1],
             ABI,
         ),
@@ -140,11 +146,11 @@ def test_deploy(
                 0x515151,
                 0,
                 None,
-                "TEST_ABI",
+                ABI_OVERRIDE,
             ],  # args
-            "0x525252",
+            EXP_CLASS_HASHES[3],
             3,
-            "TEST_ABI",
+            ABI_OVERRIDE,
         ),
     ],
 )
