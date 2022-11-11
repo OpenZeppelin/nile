@@ -453,7 +453,7 @@ This implementation takes advantage of the native extensibility features of [Cli
 
 In order for this implementation to be functional, the plugin developer must follow some guidelines:
 
-1. Use click if the plugin provides a CLI command:
+1. Use Click if the plugin provides a CLI command:
 
    ```python
    # First, import click dependency
