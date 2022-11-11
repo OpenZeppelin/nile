@@ -30,7 +30,7 @@ def deploy(
     logging.info(
         f"🚀 Deploying {contract_name} without Account. "
         + "This method is deprecated and will be removed soon. "
-        + "Try using the --account command option."
+        + "Use the --account option."
     )
     base_path = (
         overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
