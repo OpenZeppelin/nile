@@ -480,7 +480,7 @@ In order for this implementation to be functional, the plugin developer must fol
        "greet" = "nile_greet.main.greet"
    ```
 
-3. Optionally specify plugin entry points for `NileRuntimeEnvironment`. This doesn't require implementing a click command (remove the cli entry points if not needed):
+3. Optionally specify plugin entry points for `NileRuntimeEnvironment`. This doesn't require implementing a Click command (remove the cli entry points if not needed):
 
    ```sh
    [tool.poetry.plugins.nile_plugins]
