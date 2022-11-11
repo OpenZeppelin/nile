@@ -125,8 +125,8 @@ def test_declare(mock_declare, mock_get_class, mock_deploy):
 
 
 @pytest.mark.parametrize("deployer_address", [None, 0xDE0])
-@pytest.mark.parametrize("watch_mode", [None])
-@pytest.mark.parametrize("abi", [None])
+@pytest.mark.parametrize("watch_mode", [None, "debug"])
+@pytest.mark.parametrize("abi", [None, "TEST_ABI"])
 @patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.core.deploy.get_class_hash", return_value=0x434343)
 @patch("nile.core.account.deploy_with_udc")
@@ -143,7 +143,15 @@ def test_deploy_contract(
     max_fee = 1
 
     account.deploy_contract(
-        contract_name, salt, unique, calldata, alias, max_fee, deployer_address
+        contract_name,
+        salt,
+        unique,
+        calldata,
+        alias,
+        max_fee,
+        deployer_address,
+        abi,
+        watch_mode,
     )
 
     if deployer_address is None:
