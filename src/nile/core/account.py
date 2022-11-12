@@ -47,7 +47,9 @@ class AsyncObject(object):
 class Account(AsyncObject):
     """Account contract abstraction."""
 
-    async def __init__(self, signer, network, salt=0, max_fee=None, predeployed_info=None):
+    async def __init__(
+        self, signer, network, salt=0, max_fee=None, predeployed_info=None
+    ):
         """Get or deploy an Account contract for the given private key."""
         try:
             if predeployed_info is None:
@@ -107,7 +109,12 @@ class Account(AsyncObject):
         )
 
         signature = self.signer.sign_deployment(
-            contract_address, class_hash, calldata, salt, max_fee, 0 # nonce starts at 0
+            contract_address,
+            class_hash,
+            calldata,
+            salt,
+            max_fee,
+            0, # nonce starts at 0
         )
 
         address, _ = await deploy_account(
