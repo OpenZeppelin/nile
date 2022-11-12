@@ -75,7 +75,7 @@ async def test_deploy(mock_path, mock_signer, mock_hash, mock_deploy):
         max_fee=0,
         nonce=0,
         query_type=None,
-        overriding_path=overriding_path
+        overriding_path=overriding_path,
     )
 
 
@@ -149,7 +149,9 @@ async def test_declare(mock_declare, mock_get_class, mock_hash, mock_deploy):
 @patch(
     "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
 )
-async def test_send_nonce_call(mock_target_address, mock_call, mock_nonce, mock_hash, mock_deploy):
+async def test_send_nonce_call(
+    mock_target_address, mock_call, mock_nonce, mock_hash, mock_deploy
+):
     account = await Account(KEY, NETWORK)
 
     await account.send(MOCK_TARGET_ADDRESS, "method", [1, 2, 3], max_fee=1)
@@ -167,7 +169,9 @@ async def test_send_nonce_call(mock_target_address, mock_call, mock_nonce, mock_
 @patch(
     "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
 )
-async def test_send_sign_transaction_and_execute(mock_target_address, mock_hash, mock_deploy):
+async def test_send_sign_transaction_and_execute(
+    mock_target_address, mock_hash, mock_deploy
+):
     account = await Account(KEY, NETWORK)
 
     calldata = ["111", "222", "333"]
@@ -212,7 +216,9 @@ async def test_send_sign_transaction_and_execute(mock_target_address, mock_hash,
 )
 @patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
-async def test_send_defaults(mock_call, mock_nonce, mock_target_address, mock_hash, mock_deploy):
+async def test_send_defaults(
+    mock_call, mock_nonce, mock_target_address, mock_hash, mock_deploy
+):
     account = await Account(KEY, NETWORK)
 
     send_args = [MOCK_TARGET_ADDRESS, "method", [1, 2, 3]]

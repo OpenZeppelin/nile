@@ -77,32 +77,82 @@ async def test_deploy(mock_register, mock_parse, mock_capture, caplog, args, exp
     )
     assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
 
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "args, exp_abi",
     [
         (
-            [NETWORK, SALT, ARGS, SIGNATURE, CONTRACT, FEE, NONCE, None, None, ALIAS],  # args
+            [
+                NETWORK,
+                SALT,
+                ARGS,
+                SIGNATURE,
+                CONTRACT,
+                FEE,
+                NONCE,
+                None,
+                None,
+                ALIAS,
+            ],  # args
             ABI,  # expected ABI
         ),
         (
-            [NETWORK, SALT, ARGS, SIGNATURE, CONTRACT, FEE, NONCE, None, PATH_OVERRIDE, ALIAS],  # args
+            [
+                NETWORK,
+                SALT,
+                ARGS,
+                SIGNATURE,
+                CONTRACT,
+                FEE,
+                NONCE,
+                None,
+                PATH_OVERRIDE,
+                ALIAS,
+            ],  # args
             ABI,  # expected ABI
         ),
         (
-            [NETWORK, SALT, ARGS, SIGNATURE, CONTRACT, FEE, NONCE, ABI_OVERRIDE, None, ALIAS],  # args
+            [
+                NETWORK,
+                SALT,
+                ARGS,
+                SIGNATURE,
+                CONTRACT,
+                FEE,
+                NONCE,
+                ABI_OVERRIDE,
+                None,
+                ALIAS,
+            ],  # args
             ABI_OVERRIDE,  # expected ABI
         ),
         (
-            [NETWORK, SALT, ARGS, SIGNATURE, CONTRACT, FEE, NONCE, ABI_OVERRIDE, PATH_OVERRIDE, ALIAS],  # args
+            [
+                NETWORK,
+                SALT,
+                ARGS,
+                SIGNATURE,
+                CONTRACT,
+                FEE,
+                NONCE,
+                ABI_OVERRIDE,
+                PATH_OVERRIDE,
+                ALIAS,
+            ],  # args
             ABI_OVERRIDE,  # expected ABI
         ),
     ],
 )
 @patch("nile.core.deploy.deployments.register")
-@patch("nile.core.deploy.get_gateway_response", return_value={"address": ADDRESS, "tx_hash": TX_HASH})
+@patch(
+    "nile.core.deploy.get_gateway_response",
+    return_value={"address": ADDRESS, "tx_hash": TX_HASH},
+)
 @patch("nile.core.deploy.get_hash", return_value=CLASS_HASH)
-async def test_deploy_account(mock_hash, mock_gateway, mock_register, caplog, args, exp_abi):
+async def test_deploy_account(
+    mock_hash, mock_gateway, mock_register, caplog, args, exp_abi
+):
     logging.getLogger().setLevel(logging.INFO)
 
     # check return values

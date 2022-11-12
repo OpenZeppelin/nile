@@ -97,7 +97,9 @@ class Account(AsyncObject):
         class_hash = get_hash("Account")
         calldata = [self.signer.public_key]
 
-        calldata, max_fee, nonce = await self._process_arguments(calldata, max_fee, nonce)
+        calldata, max_fee, nonce = await self._process_arguments(
+            calldata, max_fee, nonce
+        )
 
         contract_address = calculate_contract_address_from_hash(
             salt=salt,
