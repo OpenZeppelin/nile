@@ -97,10 +97,12 @@ class Account(AsyncObject):
         class_hash = get_hash("Account")
         calldata = [self.signer.public_key]
 
+        calldata, max_fee, nonce = await self._process_arguments(calldata, max_fee, nonce)
+
         contract_address = calculate_contract_address_from_hash(
             salt=salt,
             class_hash=class_hash,
-            calldata=calldata,
+            constructor_calldata=calldata,
             deployer_address=0,
         )
 
@@ -108,7 +110,7 @@ class Account(AsyncObject):
             contract_address, class_hash, calldata, salt, max_fee, nonce
         )
 
-        address, _ = deploy_account(
+        address, _ = await deploy_account(
             network=self.network,
             salt=salt,
             calldata=calldata,
@@ -245,7 +247,9 @@ class Account(AsyncObject):
     async def _process_arguments(self, calldata, max_fee, nonce):
         calldata = [normalize_number(x) for x in calldata]
 
-        if nonce is None:
+        if not hasattr(self, "address"):
+            nonce = 0
+        elif nonce is None:
             nonce = await get_nonce(self.address, self.network)
 
         if max_fee is None:
