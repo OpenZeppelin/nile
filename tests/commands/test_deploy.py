@@ -29,7 +29,6 @@ TX_HASH = 222
 SALT = 555
 SIGNATURE = [111, 333]
 FEE = 666
-NONCE = 34
 RUN_OUTPUT = [ADDRESS, TX_HASH]
 
 
@@ -90,7 +89,6 @@ async def test_deploy(mock_register, mock_parse, mock_capture, caplog, args, exp
                 SIGNATURE,
                 CONTRACT,
                 FEE,
-                NONCE,
                 None,
                 None,
                 ALIAS,
@@ -105,7 +103,6 @@ async def test_deploy(mock_register, mock_parse, mock_capture, caplog, args, exp
                 SIGNATURE,
                 CONTRACT,
                 FEE,
-                NONCE,
                 None,
                 PATH_OVERRIDE,
                 ALIAS,
@@ -120,7 +117,6 @@ async def test_deploy(mock_register, mock_parse, mock_capture, caplog, args, exp
                 SIGNATURE,
                 CONTRACT,
                 FEE,
-                NONCE,
                 ABI_OVERRIDE,
                 None,
                 ALIAS,
@@ -135,7 +131,6 @@ async def test_deploy(mock_register, mock_parse, mock_capture, caplog, args, exp
                 SIGNATURE,
                 CONTRACT,
                 FEE,
-                NONCE,
                 ABI_OVERRIDE,
                 PATH_OVERRIDE,
                 ALIAS,

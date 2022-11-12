@@ -71,7 +71,6 @@ async def deploy_account(
     signature,
     contract_name="Account",
     max_fee=None,
-    nonce=0,
     abi=None,
     overriding_path=None,
     alias=None,
@@ -94,7 +93,7 @@ async def deploy_account(
         constructor_calldata=calldata,
         contract_address_salt=salt,
         max_fee=max_fee,
-        nonce=nonce,
+        nonce=0,
         signature=signature,
         version=tx_version,
     )

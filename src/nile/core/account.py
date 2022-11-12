@@ -47,7 +47,7 @@ class AsyncObject(object):
 class Account(AsyncObject):
     """Account contract abstraction."""
 
-    async def __init__(self, signer, network, predeployed_info=None):
+    async def __init__(self, signer, network, salt=0, max_fee=None, predeployed_info=None):
         """Get or deploy an Account contract for the given private key."""
         try:
             if predeployed_info is None:
@@ -78,7 +78,7 @@ class Account(AsyncObject):
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
-            address, index = await self.deploy()
+            address, index = await self.deploy(salt=salt, max_fee=max_fee)
             self.address = address
             self.index = index
 
@@ -86,7 +86,6 @@ class Account(AsyncObject):
         self,
         salt=0,
         max_fee=None,
-        nonce=None,
         query_type=None,
     ):
         """Deploy an Account contract for the given private key."""
@@ -97,9 +96,8 @@ class Account(AsyncObject):
         class_hash = get_hash("Account")
         calldata = [self.signer.public_key]
 
-        calldata, max_fee, nonce = await self._process_arguments(
-            calldata, max_fee, nonce
-        )
+        if max_fee is None:
+            max_fee = 0
 
         contract_address = calculate_contract_address_from_hash(
             salt=salt,
@@ -109,7 +107,7 @@ class Account(AsyncObject):
         )
 
         signature = self.signer.sign_deployment(
-            contract_address, class_hash, calldata, salt, max_fee, nonce
+            contract_address, class_hash, calldata, salt, max_fee, 0 # nonce starts at 0
         )
 
         address, _ = await deploy_account(
@@ -118,7 +116,6 @@ class Account(AsyncObject):
             calldata=calldata,
             signature=signature,
             max_fee=max_fee,
-            nonce=nonce,
             query_type=query_type,
             overriding_path=overriding_path,
         )

@@ -18,6 +18,7 @@ MOCK_ADDRESS = "0x123"
 MOCK_TARGET_ADDRESS = 0x987
 MOCK_INDEX = 0
 MAX_FEE = 10
+SALT = 444
 SIGNATURE = [111, 222]
 CLASS_HASH = 12345
 
@@ -64,16 +65,15 @@ async def test_deploy(mock_path, mock_signer, mock_hash, mock_deploy):
 
     mock_path.return_value.replace.return_value = test_path
 
-    account = await Account(KEY, NETWORK)
+    account = await Account(KEY, NETWORK, salt=SALT, max_fee=MAX_FEE)
     calldata = [account.signer.public_key]
 
     mock_deploy.assert_called_with(
         network=NETWORK,
-        salt=0,
+        salt=SALT,
         calldata=calldata,
         signature=SIGNATURE,
-        max_fee=0,
-        nonce=0,
+        max_fee=MAX_FEE,
         query_type=None,
         overriding_path=overriding_path,
     )

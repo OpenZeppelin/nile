@@ -127,10 +127,12 @@ async def declare(
 
 @cli.command()
 @click.argument("signer", nargs=1)
+@click.option("--salt", nargs=1)
+@click.option("--max_fee", nargs=1)
 @network_option
-async def setup(signer, network):
+async def setup(signer, network, salt=0, max_fee=None):
     """Set up an Account contract."""
-    await Account(signer, network)
+    await Account(signer, network, salt=salt, max_fee=max_fee)
 
 
 @cli.command()
