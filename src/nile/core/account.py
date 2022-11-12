@@ -47,7 +47,7 @@ class Account(AsyncObject):
     Remove AsyncObject if Account.deploy decouples from initialization.
     """
 
-    async def __init__(self, signer, network, predeployed_info=None):
+    async def __init__(self, signer, network, predeployed_info=None, watch_mode=None):
         """Get or deploy an Account contract for the given private key."""
         try:
             if predeployed_info is None:
@@ -78,11 +78,11 @@ class Account(AsyncObject):
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
-            address, index = await self.deploy()
+            address, index = await self.deploy(watch_mode=watch_mode)
             self.address = address
             self.index = index
 
-    async def deploy(self):
+    async def deploy(self, watch_mode=None):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
@@ -94,6 +94,7 @@ class Account(AsyncObject):
             self.network,
             f"account-{index}",
             overriding_path,
+            watch_mode=watch_mode,
         )
 
         accounts.register(
@@ -110,6 +111,7 @@ class Account(AsyncObject):
         alias=None,
         overriding_path=None,
         mainnet_token=None,
+        watch_mode=None,
     ):
         """Declare a contract through an Account contract."""
         max_fee, nonce = await self._process_arguments(max_fee, nonce)
@@ -133,17 +135,26 @@ class Account(AsyncObject):
             network=self.network,
             max_fee=max_fee,
             mainnet_token=mainnet_token,
+            watch_mode=watch_mode,
         )
 
-    def deploy_contract(
-        self, class_hash, salt, unique, calldata, max_fee=None, deployer_address=None
+    async def deploy_contract(
+        self,
+        class_hash,
+        salt,
+        unique,
+        calldata,
+        max_fee=None,
+        deployer_address=None,
+        watch_mode=None,
     ):
         """Deploy a contract through an Account contract."""
-        return self.send(
+        return await self.send(
             to=deployer_address or UNIVERSAL_DEPLOYER_ADDRESS,
             method="deployContract",
             calldata=[class_hash, salt, unique, len(calldata), *calldata],
             max_fee=max_fee,
+            watch_mode=watch_mode,
         )
 
     async def send(
@@ -151,9 +162,10 @@ class Account(AsyncObject):
         address_or_alias,
         method,
         calldata,
-        max_fee=None,
         nonce=None,
+        max_fee=None,
         query_type=None,
+        watch_mode=None,
     ):
         """Execute a query or invoke call for a tx going through an Account contract."""
         # get target address with the right format
@@ -184,6 +196,7 @@ class Account(AsyncObject):
             signature=[str(sig_r), str(sig_s)],
             max_fee=str(max_fee),
             query_flag=query_type,
+            watch_mode=watch_mode,
         )
 
     def simulate(self, address_or_alias, method, calldata, max_fee=None, nonce=None):

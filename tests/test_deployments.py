@@ -2,7 +2,7 @@
 import pytest
 
 from nile.common import DEPLOYMENTS_FILENAME
-from nile.deployments import register, update_abi
+from nile.deployments import register, unregister, update_abi
 from nile.utils import normalize_number
 
 LOCALHOST = "localhost"
@@ -105,3 +105,46 @@ def test_update_non_existent_identifier():
         raise AssertionError("update expected to fail due to missing deployment")
     except Exception as e:
         assert "does not exist" in str(e)
+
+
+def test_unregister():
+    args_a = {
+        "address": normalize_number(A_ADDR),
+        "abi": A_ABI,
+        "network": LOCALHOST,
+        "alias": f"{A_ALIAS}:{A_ALIAS_ALT}",
+    }
+    args_b = {
+        "address": normalize_number(B_ADDR),
+        "abi": B_ABI,
+        "network": LOCALHOST,
+        "alias": f"{B_ALIAS}",
+    }
+    args_c = {
+        "address": normalize_number(C_ADDR),
+        "abi": C_ABI,
+        "network": LOCALHOST,
+        "alias": None,
+    }
+    register(**args_a)
+    register(**args_b)
+    register(**args_c)
+
+    with open(f"{LOCALHOST}.{DEPLOYMENTS_FILENAME}", "r") as fp:
+        lines = fp.readlines()
+    assert len(lines) == 3
+
+    # unregister uses a different kwarg so this copies and updates the dict
+    # and deletes the unused address kwarg
+    unregister_args = args_b
+    unregister_args["address_or_class_hash"] = unregister_args["address"]
+    del unregister_args["address"]
+
+    unregister(**unregister_args)
+
+    with open(f"{LOCALHOST}.{DEPLOYMENTS_FILENAME}", "r") as fp:
+        lines = fp.readlines()
+    assert len(lines) == 2
+
+    assert lines[0].strip() == f"{A_ADDR}:{A_ABI}:{A_ALIAS}:{A_ALIAS_ALT}"
+    assert lines[1].strip() == f"{C_ADDR}:{C_ABI}"

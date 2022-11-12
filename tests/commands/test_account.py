@@ -57,18 +57,17 @@ async def test_deploy(mock_path, mock_deploy):
 
     account = await Account(KEY, NETWORK)
 
-    expected = [
-        "Account",  # contract
-        [account.signer.public_key],  # arguments
-        NETWORK,  # network
-        f"account-{account.index}",  # alias
+    mock_deploy.assert_called_with(
+        "Account",
+        [account.signer.public_key],
+        NETWORK,
+        f"account-{account.index}",
         (
-            f"{test_path}/artifacts",  # overriding-
-            f"{test_path}/artifacts/abis",  # path
+            f"{test_path}/artifacts",
+            f"{test_path}/artifacts/abis",
         ),
-    ]
-
-    mock_deploy.assert_called_with(*expected)
+        watch_mode=None,
+    )
 
 
 @pytest.mark.asyncio
@@ -128,6 +127,7 @@ async def test_declare(mock_declare, mock_get_class, mock_deploy):
         alias=alias,
         max_fee=max_fee,
         mainnet_token=None,
+        watch_mode=None,
     )
 
 
@@ -168,7 +168,7 @@ async def test_send_sign_transaction_and_execute(mock_target_address, mock_deplo
         send_args = [MOCK_TARGET_ADDRESS, "method", [1, 2, 3]]
         nonce = 4
         max_fee = 1
-        await account.send(*send_args, max_fee, nonce)
+        await account.send(*send_args, max_fee=max_fee, nonce=nonce)
 
         # Check values are correctly passed to 'sign_transaction'
         account.signer.sign_transaction.assert_called_once_with(
@@ -189,6 +189,7 @@ async def test_send_sign_transaction_and_execute(mock_target_address, mock_deplo
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
             query_flag=None,
+            watch_mode=None,
         )
 
 
@@ -229,6 +230,7 @@ async def test_send_defaults(mock_call, mock_nonce, mock_target_address, mock_de
         signature=[str(sig_r), str(sig_s)],
         type="invoke",
         query_flag=None,
+        watch_mode=None,
     )
 
 
@@ -261,7 +263,9 @@ async def test_simulate(mock_deploy):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("query_type", ["estimate_fee", "simulate"])
+@pytest.mark.parametrize(
+    "query_type, watch_mode", [("estimate_fee", "track"), ("simulate", "debug")]
+)
 @patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch(
     "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
@@ -269,7 +273,7 @@ async def test_simulate(mock_deploy):
 @patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
 async def test_execute_query(
-    mock_call, mock_nonce, mock_target_address, mock_deploy, query_type
+    mock_call, mock_nonce, mock_target_address, mock_deploy, query_type, watch_mode
 ):
     account = await Account(KEY, NETWORK)
 
@@ -282,7 +286,12 @@ async def test_execute_query(
     account.signer.sign_transaction = MagicMock(return_value=return_signature)
 
     await account.send(
-        account.address, "method", [1, 2, 3], max_fee=MAX_FEE, query_type=query_type
+        account.address,
+        "method",
+        [1, 2, 3],
+        max_fee=MAX_FEE,
+        query_type=query_type,
+        watch_mode=watch_mode,
     )
 
     account.signer.sign_transaction.assert_called_once_with(
@@ -303,4 +312,5 @@ async def test_execute_query(
         signature=[str(sig_r), str(sig_s)],
         type="invoke",
         query_flag=query_type,
+        watch_mode=watch_mode,
     )

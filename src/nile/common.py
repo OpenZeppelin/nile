@@ -233,3 +233,10 @@ def call_cli(cmd_name, args, command_args):
     """Make call to starknet_cli and return captured stdout."""
     cmd = getattr(starknet_cli, cmd_name)
     return capture_stdout(cmd(args=args, command_args=command_args))
+
+
+def get_addresses_from_string(string):
+    """Return a set of integers with identified addresses in a string."""
+    return set(
+        int(address, 16) for address in re.findall("0x[\\da-f]{1,64}", str(string))
+    )
