@@ -15,21 +15,20 @@ NONCE = 5
     "contract_address, network",
     [("0xffff", "localhost"), ("0xffff", "goerli"), ("0xffff", "mainnet")],
 )
-@patch("nile.utils.get_nonce.get_nonce_without_log")
-async def test_get_nonce(mock_without_log, contract_address, network, caplog):
+async def test_get_nonce(contract_address, network, caplog):
     logging.getLogger().setLevel(logging.INFO)
 
-    mock_without_log.return_value = NONCE
+    with patch("nile.utils.get_nonce.call_cli", new=AsyncMock()) as mock_cli_call:
+        mock_cli_call.return_value = NONCE
+        nonce = await get_nonce(contract_address, network)
+        assert nonce == NONCE
 
-    # Check return value
-    nonce = await get_nonce(contract_address, network)
-    assert nonce == NONCE
+        args = set_args(network)
+        command_args = ["--contract_address", "0xffff"]
+        mock_cli_call.assert_called_once_with("get_nonce", args, command_args)
 
-    # Check internal
-    mock_without_log.assert_called_once_with(contract_address, network)
-
-    # Check log
-    assert f"Current Nonce: {NONCE}" in caplog.text
+        # Check log
+        assert f"Current Nonce: {NONCE}" in caplog.text
 
 
 @pytest.mark.asyncio
