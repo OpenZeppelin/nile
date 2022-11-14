@@ -55,34 +55,28 @@ async def call_or_invoke(
         method,
     ]
 
-    if type == "call":
-        try:
-            return await call_cli("call", args, command_args)
-        except AbiFormatError as err:
+    try:
+        output = await call_cli(type, args, command_args)
+    except (AbiFormatError, BaseException) as err:
+        if "max_fee must be bigger than 0." in str(err):
+            logging.error(
+                """
+                \n😰 Whoops, looks like max fee is missing. Try with:\n
+                --max_fee=`MAX_FEE`
+                """
+            )
+            return
+        else:
             logging.error(err)
+            return
 
-    elif type == "invoke":
-        try:
-            output = await call_cli("invoke", args, command_args)
-        except BaseException as err:
-            if "max_fee must be bigger than 0." in str(err):
-                logging.error(
-                    """
-                    \n😰 Whoops, looks like max fee is missing. Try with:\n
-                    --max_fee=`MAX_FEE`
-                    """
-                )
-            else:
-                raise err
-
+    if type != "call" and output:
+        logging.info(output)
         if not query_flag and watch_mode:
             transaction_hash = _get_transaction_hash(output)
             return await status(normalize_number(transaction_hash), network, watch_mode)
 
-        if query_flag:
-            logging.info(output)
-
-        return output
+    return output
 
 
 def _get_transaction_hash(string):
