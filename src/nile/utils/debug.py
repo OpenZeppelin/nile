@@ -11,9 +11,9 @@ async def debug_message(error_message, tx_hash, network, contracts_file=None):
     """
     Use available contracts to help locate the error in a rejected transaction.
 
-    @param error_message: error message of the transaction receipt.
-    @param tx_hash: hash of the transaction.
-    @param network: Network queried
+    @param error_message: Error message of the transaction receipt.
+    @param tx_hash: Hash of the transaction.
+    @param network: Network queried.
     @param contracts_file: File to use instead of the one generated automatically
       from network name.
     """
