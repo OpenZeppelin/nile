@@ -4,7 +4,7 @@ import logging
 from nile import deployments
 from nile.common import DECLARATIONS_FILENAME, parse_information, prepare_params
 from nile.starknet_cli import execute_call
-from nile.utils import hex_class_hash
+from nile.utils import hex_address, hex_class_hash
 from nile.utils.status import status
 
 
@@ -36,7 +36,7 @@ async def declare(
         max_fee=max_fee,
         overriding_path=overriding_path,
         mainnet_token=mainnet_token,
-        sender=hex_class_hash(sender),
+        sender=hex_address(sender),
     )
 
     class_hash, tx_hash = parse_information(output)
