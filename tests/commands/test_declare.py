@@ -51,7 +51,7 @@ def test_alias_exists():
                 "max_fee": "0",
                 "mainnet_token": None,
             },
-            [hex_class_hash(HASH), NETWORK, None],  # expected register
+            [HASH, NETWORK, None],  # expected register
         ),
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS],  # args
@@ -64,7 +64,7 @@ def test_alias_exists():
                 "max_fee": "0",
                 "mainnet_token": None,
             },
-            [hex_class_hash(HASH), NETWORK, ALIAS],  # expected register
+            [HASH, NETWORK, ALIAS],  # expected register
         ),
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS, PATH],  # args
@@ -77,7 +77,7 @@ def test_alias_exists():
                 "max_fee": "0",
                 "mainnet_token": None,
             },
-            [hex_class_hash(HASH), NETWORK, ALIAS],  # expected register
+            [HASH, NETWORK, ALIAS],  # expected register
         ),
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS, PATH, MAX_FEE],  # args
@@ -90,7 +90,7 @@ def test_alias_exists():
                 "max_fee": str(MAX_FEE),
                 "mainnet_token": None,
             },
-            [hex_class_hash(HASH), NETWORK, ALIAS],  # expected register
+            [HASH, NETWORK, ALIAS],  # expected register
         ),
     ],
 )
