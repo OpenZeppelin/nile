@@ -104,16 +104,20 @@ def register_class_hash(hash, network, alias):
     """Register a new deployment."""
     file = f"{network}.{DECLARATIONS_FILENAME}"
 
+    padded_hash = hex_class_hash(hash)
+
     if class_hash_exists(hash, network):
-        raise Exception(f"Hash {hash[:6]}...{hash[-6:]} already exists in {file}")
+        raise Exception(
+            f"Hash {padded_hash[:6]}...{padded_hash[-6:]} already exists in {file}"
+        )
 
     with open(file, "a") as fp:
         if alias is not None:
             logging.info(f"📦 Registering {alias} in {file}")
         else:
-            logging.info(f"📦 Registering {hash} in {file}")
+            logging.info(f"📦 Registering {padded_hash} in {file}")
 
-        fp.write(f"{hash}")
+        fp.write(f"{padded_hash}")
         if alias is not None:
             fp.write(f":{alias}")
         fp.write("\n")
