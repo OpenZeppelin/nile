@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, DECLARATIONS_FILENAME, set_args
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, DECLARATIONS_FILENAME
 from nile.core.declare import alias_exists, declare
 from nile.utils import hex_address, hex_class_hash
 
@@ -40,62 +40,54 @@ def test_alias_exists():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "args, exp_command, exp_register",
+    "args, cmd_args, exp_register",
     [
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK],  # args
-            [  # expected command
-                "--contract",
-                f"{PATH[0]}/{CONTRACT}.json",
-                "--signature",
-                *SIGNATURE,
-                "--max_fee",
-                "0",
-                "--sender",
-                hex_address(SENDER),
-            ],
+            {  # expected command args
+                "contract_name": CONTRACT,
+                "signature": SIGNATURE,
+                "max_fee": "0",
+                "overriding_path": None,
+                "mainnet_token": None,
+                "sender": hex_address(SENDER),
+            },
             [hex_class_hash(HASH), NETWORK, None],  # expected register
         ),
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS],  # args
-            [  # expected command
-                "--contract",
-                f"{PATH[0]}/{CONTRACT}.json",
-                "--signature",
-                *SIGNATURE,
-                "--max_fee",
-                "0",
-                "--sender",
-                hex_address(SENDER),
-            ],
+            {  # expected command args
+                "contract_name": CONTRACT,
+                "signature": SIGNATURE,
+                "max_fee": "0",
+                "overriding_path": None,
+                "mainnet_token": None,
+                "sender": hex_address(SENDER),
+            },
             [hex_class_hash(HASH), NETWORK, ALIAS],  # expected register
         ),
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS, OVERRIDING_PATH],  # args
-            [  # expected command
-                "--contract",
-                f"{OVERRIDING_PATH[0]}/{CONTRACT}.json",
-                "--signature",
-                *SIGNATURE,
-                "--max_fee",
-                "0",
-                "--sender",
-                hex_address(SENDER),
-            ],
+            {  # expected command args
+                "contract_name": CONTRACT,
+                "signature": SIGNATURE,
+                "max_fee": "0",
+                "overriding_path": OVERRIDING_PATH,
+                "mainnet_token": None,
+                "sender": hex_address(SENDER),
+            },
             [hex_class_hash(HASH), NETWORK, ALIAS],  # expected register
         ),
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS, PATH, MAX_FEE],  # args
-            [  # expected command
-                "--contract",
-                f"{PATH[0]}/{CONTRACT}.json",
-                "--signature",
-                *SIGNATURE,
-                "--max_fee",
-                MAX_FEE,
-                "--sender",
-                hex_address(SENDER),
-            ],
+            {  # expected command args
+                "contract_name": CONTRACT,
+                "signature": SIGNATURE,
+                "max_fee": MAX_FEE,
+                "overriding_path": PATH,
+                "mainnet_token": None,
+                "sender": hex_address(SENDER),
+            },
             [hex_class_hash(HASH), NETWORK, ALIAS],  # expected register
         ),
     ],
@@ -107,20 +99,18 @@ async def test_declare(
     mock_parse,
     caplog,
     args,
-    exp_command,
+    cmd_args,
     exp_register,
 ):
     logging.getLogger().setLevel(logging.INFO)
-    with patch("nile.core.declare.call_cli", new=AsyncMock()) as mock_cli_call:
+    with patch("nile.core.declare.execute_call", new=AsyncMock()) as mock_cli_call:
         mock_cli_call.return_value = CALL_OUTPUT
         # check return value
         res = await declare(*args)
         assert res == hex_class_hash(HASH)
 
         # check internals
-        args = set_args(NETWORK)
-
-        mock_cli_call.assert_called_once_with("declare", args, exp_command)
+        mock_cli_call.assert_called_once_with("declare", NETWORK, **cmd_args)
         mock_parse.assert_called_once_with(CALL_OUTPUT)
         mock_register.assert_called_once_with(*exp_register)
 

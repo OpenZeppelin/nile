@@ -55,7 +55,7 @@ CALL_OUTPUT = [ADDRESS, TX_HASH]
 async def test_deploy(mock_register, mock_parse, caplog, args, exp_abi):
     logging.getLogger().setLevel(logging.INFO)
 
-    with patch("nile.core.deploy.call_cli", new=AsyncMock()) as mock_cli_call:
+    with patch("nile.core.deploy.execute_call", new=AsyncMock()) as mock_cli_call:
         mock_cli_call.return_value = CALL_OUTPUT
 
         # check return values
