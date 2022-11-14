@@ -3,9 +3,9 @@ import logging
 import re
 
 from nile import deployments
-from nile.common import call_cli, set_args, set_command_args
 from nile.core import account
-from nile.utils import hex_address, normalize_number
+from nile.starknet_cli import execute_call
+from nile.utils import normalize_number
 from nile.utils.status import status
 
 
@@ -39,22 +39,18 @@ async def call_or_invoke(
     else:
         address, abi = next(deployments.load(contract, network))
 
-    args = set_args(network)
-    command_args = set_command_args(
-        inputs=params, signature=signature, max_fee=max_fee, query_flag=query_flag
-    )
-
-    command_args += [
-        "--address",
-        hex_address(address),
-        "--abi",
-        abi,
-        "--function",
-        method,
-    ]
-
     try:
-        output = await call_cli(type, args, command_args)
+        output = await execute_call(
+            type,
+            network,
+            inputs=params,
+            signature=signature,
+            max_fee=max_fee,
+            query_flag=query_flag,
+            address=address,
+            abi=abi,
+            method=method,
+        )
     except BaseException as err:
         if "max_fee must be bigger than 0." in str(err):
             logging.error(

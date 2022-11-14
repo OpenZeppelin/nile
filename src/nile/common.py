@@ -1,14 +1,9 @@
 """nile common module."""
-import io
 import json
 import os
 import re
-import sys
-from types import SimpleNamespace
 
 from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
-from starkware.starknet.cli import starknet_cli
-from starkware.starknet.cli.starknet_cli import NETWORKS
 from starkware.starknet.core.os.class_hash import compute_class_hash
 from starkware.starknet.services.api.contract_class import ContractClass
 
@@ -120,96 +115,6 @@ def is_alias(param):
     return is_string(param)
 
 
-def get_gateway_url(network):
-    """Return gateway URL for specified network."""
-    networks = ["localhost", "goerli2", "integration"]
-    if network in networks:
-        return GATEWAYS.get(network)
-    else:
-        network = "alpha-" + network
-        return f"https://{NETWORKS[network]}/gateway"
-
-
-def get_feeder_url(network):
-    """Return feeder gateway URL for specified network."""
-    networks = ["localhost", "goerli2", "integration"]
-    if network in networks:
-        return GATEWAYS.get(network)
-    else:
-        network = "alpha-" + network
-        return f"https://{NETWORKS[network]}/feeder_gateway"
-
-
-async def capture_stdout(func):
-    """Return the stdout during the passed function call."""
-    stdout = sys.stdout
-    sys.stdout = io.StringIO()
-    await func
-    output = sys.stdout.getvalue()
-    sys.stdout = stdout
-    result = output.rstrip()
-    return result
-
-
-def set_args(network):
-    """Set context args for StarkNet CLI call."""
-    args = {
-        "gateway_url": get_gateway_url(network),
-        "feeder_gateway_url": get_feeder_url(network),
-        "wallet": "",
-        "network_id": network,
-        "account_dir": None,
-        "account": None,
-    }
-    ret_obj = SimpleNamespace(**args)
-    return ret_obj
-
-
-def set_command_args(
-    contract_name=None,
-    arguments=None,
-    inputs=None,
-    signature=None,
-    max_fee=None,
-    query_flag=None,
-    overriding_path=None,
-    mainnet_token=None,
-):
-    """Set command args for StarkNet CLI call."""
-    command_args = []
-    if contract_name is not None:
-        base_path = (
-            overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
-        )
-        contract = f"{base_path[0]}/{contract_name}.json"
-        command_args.append("--contract")
-        command_args.append(contract)
-
-    if inputs is not None:
-        command_args.append("--inputs")
-        command_args.extend(prepare_params(inputs))
-
-    if signature is not None:
-        command_args.append("--signature")
-        command_args.extend(prepare_params(signature))
-
-    if max_fee is not None:
-        command_args.append("--max_fee")
-        command_args.append(max_fee)
-
-    if mainnet_token is not None:
-        command_args.append("--token")
-        command_args.append(mainnet_token)
-
-    if query_flag is not None:
-        command_args.append(f"--{query_flag}")
-
-    if arguments is not None:
-        command_args.extend(arguments)
-
-    return command_args
-
-
 def get_contract_class(contract_name, overriding_path=None):
     """Return the contract_class for a given contract name."""
     base_path = (
@@ -227,12 +132,6 @@ def get_hash(contract_name, overriding_path=None):
     return hex_class_hash(
         compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
     )
-
-
-def call_cli(cmd_name, args, command_args):
-    """Make call to starknet_cli and return captured stdout."""
-    cmd = getattr(starknet_cli, cmd_name)
-    return capture_stdout(cmd(args=args, command_args=command_args))
 
 
 def get_addresses_from_string(string):

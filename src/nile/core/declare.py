@@ -2,14 +2,9 @@
 import logging
 
 from nile import deployments
-from nile.common import (
-    DECLARATIONS_FILENAME,
-    call_cli,
-    parse_information,
-    set_args,
-    set_command_args,
-)
-from nile.utils import hex_address, hex_class_hash
+from nile.common import DECLARATIONS_FILENAME, parse_information
+from nile.starknet_cli import execute_call
+from nile.utils import hex_class_hash
 from nile.utils.status import status
 
 
@@ -33,18 +28,17 @@ async def declare(
 
     max_fee = "0" if max_fee is None else str(max_fee)
 
-    args = set_args(network)
-    command_args = set_command_args(
+    output = await execute_call(
+        "declare",
+        network,
         contract_name=contract_name,
         signature=signature,
         max_fee=max_fee,
         overriding_path=overriding_path,
         mainnet_token=mainnet_token,
+        sender=sender,
     )
 
-    command_args += ["--sender", hex_address(sender)]
-
-    output = await call_cli("declare", args, command_args)
     class_hash, tx_hash = parse_information(output)
     padded_hash = hex_class_hash(class_hash)
     logging.info(f"⏳ Successfully sent declaration of {contract_name} as {padded_hash}")

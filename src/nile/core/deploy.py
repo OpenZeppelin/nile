@@ -2,14 +2,8 @@
 import logging
 
 from nile import deployments
-from nile.common import (
-    ABIS_DIRECTORY,
-    BUILD_DIRECTORY,
-    call_cli,
-    parse_information,
-    set_args,
-    set_command_args,
-)
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, parse_information
+from nile.starknet_cli import execute_call
 from nile.utils import hex_address
 from nile.utils.status import status
 
@@ -32,15 +26,14 @@ async def deploy(
     )
     register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
 
-    args = set_args(network)
-    command_args = set_command_args(
+    output = await execute_call(
+        "deploy",
+        network,
         contract_name=contract_name,
         inputs=arguments,
         overriding_path=overriding_path,
         mainnet_token=mainnet_token,
     )
-
-    output = await call_cli("deploy", args, command_args)
     address, tx_hash = parse_information(output)
 
     logging.info(
