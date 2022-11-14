@@ -2,8 +2,6 @@
 import logging
 import re
 
-from starkware.starknet.cli.starknet_cli import AbiFormatError
-
 from nile import deployments
 from nile.common import call_cli, set_args, set_command_args
 from nile.core import account
@@ -57,7 +55,7 @@ async def call_or_invoke(
 
     try:
         output = await call_cli(type, args, command_args)
-    except (AbiFormatError, BaseException) as err:
+    except BaseException as err:
         if "max_fee must be bigger than 0." in str(err):
             logging.error(
                 """
