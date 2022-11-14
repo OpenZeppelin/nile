@@ -1,6 +1,7 @@
 """Tests for deployments file."""
-import pytest
 import logging
+
+import pytest
 
 from nile.common import DECLARATIONS_FILENAME, DEPLOYMENTS_FILENAME
 from nile.deployments import register, register_class_hash, unregister, update_abi
