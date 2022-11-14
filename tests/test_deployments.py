@@ -1,11 +1,13 @@
 """Tests for deployments file."""
 import pytest
 
-from nile.common import DEPLOYMENTS_FILENAME
-from nile.deployments import register, unregister, update_abi
-from nile.utils import normalize_number
+from nile.common import DECLARATIONS_FILENAME, DEPLOYMENTS_FILENAME
+from nile.deployments import register, register_class_hash, unregister, update_abi
+from nile.utils import hex_class_hash, normalize_number
 
 LOCALHOST = "localhost"
+
+CLASS_HASH = 111
 
 A_ADDR = "0x0000000000000000000000000000000000000000000000000000000000000001"
 A_ABI = "artifacts/abis/a.json"
@@ -148,3 +150,31 @@ def test_unregister():
 
     assert lines[0].strip() == f"{A_ADDR}:{A_ABI}:{A_ALIAS}:{A_ALIAS_ALT}"
     assert lines[1].strip() == f"{C_ADDR}:{C_ABI}"
+
+
+def test_register_class_hash():
+    args = {
+        "hash": CLASS_HASH,
+        "network": LOCALHOST,
+        "alias": f"{A_ALIAS}:{A_ALIAS_ALT}",
+    }
+    register_class_hash(**args)
+
+    with open(f"{LOCALHOST}.{DECLARATIONS_FILENAME}", "r") as fp:
+        lines = fp.readlines()
+    assert len(lines) == 1
+
+    assert lines[0].strip() == f"{hex_class_hash(CLASS_HASH)}:{A_ALIAS}:{A_ALIAS_ALT}"
+
+    # try registering the same hash
+    try:
+        register_class_hash(**args)
+        raise AssertionError("register expected to fail due to existing declaration")
+    except Exception as e:
+        assert "Hash 0x0000...00006f already exists" in str(e)
+
+    with open(f"{LOCALHOST}.{DECLARATIONS_FILENAME}", "r") as fp:
+        lines = fp.readlines()
+    assert len(lines) == 1
+
+    assert lines[0].strip() == f"{hex_class_hash(CLASS_HASH)}:{A_ALIAS}:{A_ALIAS_ALT}"

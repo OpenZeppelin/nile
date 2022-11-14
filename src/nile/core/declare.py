@@ -44,7 +44,7 @@ def declare(
     logging.info(f"⏳ Successfully sent declaration of {contract_name} as {padded_hash}")
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
-    deployments.register_class_hash(padded_hash, network, alias)
+    deployments.register_class_hash(class_hash, network, alias)
 
     if watch_mode is not None:
         if status(tx_hash, network, watch_mode).status.is_rejected:
