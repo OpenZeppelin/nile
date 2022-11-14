@@ -22,7 +22,6 @@ from nile.common import (
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
     NODE_FILENAME,
-    set_args,
 )
 from nile.utils import hex_class_hash
 
@@ -195,8 +194,8 @@ async def test_node_runs_gateway(opts, expected):
     ],
 )
 async def test_status(args):
-    with patch("nile.utils.status.call_cli", new=AsyncMock()) as mock_call_cli:
-        mock_call_cli.return_value = json.dumps({"tx_status": "ACCEPTED_ON_L2"})
+    with patch("nile.utils.status.execute_call", new=AsyncMock()) as mock_execute:
+        mock_execute.return_value = json.dumps({"tx_status": "ACCEPTED_ON_L2"})
 
         result = await CliRunner().invoke(cli, ["status", *args])
 
@@ -205,9 +204,6 @@ async def test_status(args):
 
         # Check internals
         network = args[2]
-        args = set_args(network)
-        command_args = ["--hash", hex_class_hash(MOCK_HASH)]
+        command_args = {"hash": hex_class_hash(MOCK_HASH)}
 
-        mock_call_cli.assert_called_once_with(
-            "tx_status", args=args, command_args=command_args
-        )
+        mock_execute.assert_called_once_with("tx_status", network, **command_args)
