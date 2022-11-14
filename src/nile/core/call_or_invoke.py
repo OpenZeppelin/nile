@@ -3,9 +3,10 @@ import logging
 import re
 
 from nile import deployments
+from nile.common import prepare_params
 from nile.core import account
 from nile.starknet_cli import execute_call
-from nile.utils import normalize_number
+from nile.utils import hex_address, normalize_number
 from nile.utils.status import status
 
 
@@ -43,11 +44,11 @@ async def call_or_invoke(
         output = await execute_call(
             type,
             network,
-            inputs=params,
-            signature=signature,
+            inputs=prepare_params(params),
+            signature=prepare_params(signature),
             max_fee=max_fee,
             query_flag=query_flag,
-            address=address,
+            address=hex_address(address),
             abi=abi,
             method=method,
         )

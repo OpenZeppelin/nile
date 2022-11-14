@@ -7,8 +7,20 @@ from types import SimpleNamespace
 from starkware.starknet.cli import starknet_cli
 from starkware.starknet.cli.starknet_cli import NETWORKS
 
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS, prepare_params
-from nile.utils import hex_address, hex_class_hash
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS
+
+ARGS = [
+    "contracts",
+    "contract_address",
+    "inputs",
+    "signature",
+    "address",
+    "abi",
+    "sender",
+    "max_fee",
+    "mainnet_token",
+    "hash",
+]
 
 
 async def execute_call(cmd_name, network, **kwargs):
@@ -47,6 +59,12 @@ def set_args(network):
 def set_command_args(**kwargs):
     """Set command args for StarkNet CLI call."""
     command_args = []
+
+    for arg in ARGS:
+        if kwargs.get(arg):
+            command_args += _add_args(arg, kwargs.get(arg))
+
+    # The rest of the arguments require unique handling
     if kwargs.get("contract_name"):
         base_path = (
             kwargs.get("overriding_path")
@@ -57,49 +75,9 @@ def set_command_args(**kwargs):
         command_args.append("--contract")
         command_args.append(contract)
 
-    if kwargs.get("contracts"):
-        command_args.append("--contracts")
-        command_args.extend(kwargs.get("contracts"))
-
-    if kwargs.get("contract_address"):
-        command_args.append("--contract_address")
-        command_args.append(kwargs.get("contract_address"))
-
-    if kwargs.get("inputs"):
-        command_args.append("--inputs")
-        command_args.extend(prepare_params(kwargs.get("inputs")))
-
-    if kwargs.get("signature"):
-        command_args.append("--signature")
-        command_args.extend(prepare_params(kwargs.get("signature")))
-
-    if kwargs.get("address"):
-        command_args.append("--address")
-        command_args.append(hex_address(kwargs.get("address")))
-
-    if kwargs.get("abi"):
-        command_args.append("--abi")
-        command_args.append(kwargs.get("abi"))
-
     if kwargs.get("method"):
         command_args.append("--function")
         command_args.append(kwargs.get("method"))
-
-    if kwargs.get("sender"):
-        command_args.append("--sender")
-        command_args.append(hex_address(kwargs.get("sender")))
-
-    if kwargs.get("max_fee"):
-        command_args.append("--max_fee")
-        command_args.append(kwargs.get("max_fee"))
-
-    if kwargs.get("mainnet_token"):
-        command_args.append("--token")
-        command_args.append(kwargs.get("mainnet_token"))
-
-    if kwargs.get("hash"):
-        command_args.append("--hash")
-        command_args.append(hex_class_hash(kwargs.get("hash")))
 
     if kwargs.get("query_flag"):
         command_args.append(f"--{kwargs.get('query_flag')}")
@@ -131,3 +109,7 @@ def get_feeder_url(network):
     else:
         network = "alpha-" + network
         return f"https://{NETWORKS[network]}/feeder_gateway"
+
+
+def _add_args(key, value):
+    return [f"--{key}", *value] if type(value) is list else [f"--{key}", value]

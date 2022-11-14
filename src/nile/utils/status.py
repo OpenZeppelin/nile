@@ -6,7 +6,7 @@ import time
 from collections import namedtuple
 from enum import Enum
 
-from nile.common import RETRY_AFTER_SECONDS
+from nile.common import RETRY_AFTER_SECONDS, hex_class_hash
 from nile.starknet_cli import execute_call
 from nile.utils.debug import debug_message
 
@@ -26,7 +26,9 @@ async def status(
     logging.info("⏳ Querying the network for transaction status...")
 
     while True:
-        tx_status = await execute_call("tx_status", network, hash=tx_hash)
+        tx_status = await execute_call(
+            "tx_status", network, hash=hex_class_hash(tx_hash)
+        )
         raw_receipt = json.loads(tx_status)
         receipt = _get_tx_receipt(tx_hash, raw_receipt, watch_mode)
         if receipt is not None:
