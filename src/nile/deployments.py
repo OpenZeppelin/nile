@@ -81,10 +81,9 @@ def update_abi(address_or_alias, abi, network):
             identifiers = aliases
 
         if address_or_alias in identifiers:
-            logging.info(f"📦 Updating deployment {address_or_alias} in {file}")
-
             # Save address as hex
             address = hex_address(address)
+            logging.info(f"📦 Updating {address} in {file}")
             replacement = f"{address}:{abi}"
             if len(aliases) > 0:
                 replacement += ":" + ":".join(str(x) for x in aliases)
