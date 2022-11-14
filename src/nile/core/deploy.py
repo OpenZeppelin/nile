@@ -77,7 +77,7 @@ def deploy_contract(
     abi=None,
     watch_mode=None,
 ):
-    """Deploy StarkNet smart contracts through UDC."""
+    """Deploy StarkNet smart contracts."""
     logging.info(f"🚀 Deploying {contract_name}")
 
     base_path = (

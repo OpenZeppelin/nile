@@ -142,7 +142,7 @@ A few things to note here:
 2. This creates or updates the `localhost.deployments.txt` file storing all data related to deployments.
 3. The `--account` parameter deploys using the provided account and the UniversalDeployer contract.
 4. The `--alias` parameter creates a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
-5. The `--udc_address` parameter lets you specify the UniversalDeployer address if needed.
+5. The `--deployer_address` parameter lets you specify the deployer contract address if needed.
 6. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, `goerli2`, `integration`, and the default `localhost`.
 7. By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
 8. `--track` and `--debug` flags can be used to watch the status of the deployment transaction. See `status` below for a complete description.

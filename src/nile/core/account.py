@@ -16,7 +16,7 @@ from nile.common import (
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.declare import declare
 from nile.core.deploy import deploy
-from nile.core.deploy import deploy_contract as deploy_with_udc
+from nile.core.deploy import deploy_contract as deploy_with_deployer
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
@@ -140,7 +140,7 @@ class Account:
             deployer_address or UNIVERSAL_DEPLOYER_ADDRESS
         )
 
-        deploy_with_udc(
+        deploy_with_deployer(
             self,
             contract_name,
             salt,
