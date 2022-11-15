@@ -91,35 +91,41 @@ def run(path, network):
 
 
 @cli.command()
+@click.argument("signer", nargs=1)
 @click.argument("contract_name", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
 @click.option("--salt", nargs=1, default=0)
 @click.option("--unique", is_flag=True)
-@click.option("--account")
 @click.option("--alias")
 @click.option("--abi")
 @click.option("--deployer_address")
+@click.option(
+    "--ignore_account",
+    is_flag=True,
+    help="Deploy without Account.",
+)
 @mainnet_token_option
 @network_option
 @watch_option
 def deploy(
+    signer,
     contract_name,
     salt,
     params,
     max_fee,
     unique,
-    account,
     alias,
     abi,
     deployer_address,
+    ignore_account,
     token,
     network,
     watch_mode,
 ):
-    """Deploy StarkNet smart contract."""
-    if account is not None:
-        account = Account(account, network)
+    """Deploy a StarkNet smart contract."""
+    if not ignore_account:
+        account = Account(signer, network)
         account.deploy_contract(
             contract_name,
             salt,
