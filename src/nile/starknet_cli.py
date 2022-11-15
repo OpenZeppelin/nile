@@ -1,26 +1,24 @@
 """Call the starknet_cli."""
 
-import re
 import io
+import re
 import sys
 from types import SimpleNamespace
 
 from starkware.starknet.cli import starknet_cli
 from starkware.starknet.cli.starknet_cli import NETWORKS
 
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS, prepare_params
 
 ARGS = [
+    "abi",
+    "address",
     "contracts",
     "contract_address",
-    "inputs",
-    "signature",
-    "address",
-    "abi",
-    "sender",
-    "max_fee",
-    "mainnet_token",
     "hash",
+    "mainnet_token",
+    "max_fee",
+    "sender",
 ]
 
 
@@ -76,6 +74,14 @@ def set_command_args(**kwargs):
         command_args.append("--contract")
         command_args.append(contract)
 
+    if kwargs.get("inputs"):
+        command_args.append("--inputs")
+        command_args.extend(prepare_params(kwargs.get("inputs")))
+
+    if kwargs.get("signature"):
+        command_args.append("--signature")
+        command_args.extend(prepare_params(kwargs.get("signature")))
+
     if kwargs.get("method"):
         command_args.append("--function")
         command_args.append(kwargs.get("method"))
@@ -116,6 +122,6 @@ def _add_args(key, value):
     if type(value) is not list:
         return [f"--{key}", value]
     else:
-        pattern = re.compile(r'\w+')
+        pattern = re.compile(r"\w+")
         flat_list = pattern.findall(str(value))
         return [f"--{key}", *flat_list]
