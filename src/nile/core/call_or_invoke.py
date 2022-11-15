@@ -1,12 +1,14 @@
 """Command to call or invoke StarkNet smart contracts."""
 import logging
+import re
 
-from starkware.starknet.cli.starknet_cli import AbiFormatError, call, invoke
+from starkware.starknet.cli.starknet_cli import AbiFormatError
 
 from nile import deployments
-from nile.common import capture_stdout, prepare_params, set_args
+from nile.common import call_cli, set_args, set_command_args
 from nile.core import account
-from nile.utils import hex_address
+from nile.utils import hex_address, normalize_number
+from nile.utils.status import status
 
 
 async def call_or_invoke(
@@ -18,6 +20,7 @@ async def call_or_invoke(
     signature=None,
     max_fee=None,
     query_flag=None,
+    watch_mode=None,
 ):
     """
     Call or invoke functions of StarkNet smart contracts.
@@ -29,7 +32,8 @@ async def call_or_invoke(
     @param network: goerli, goerli2, integration, mainnet, or predefined networks file.
     @param signature: optional signature for invoke transactions.
     @param max_fee: optional max fee for invoke transactions.
-    @param query_flag: either simulate or estimate_fee
+    @param query_flag: either simulate or estimate_fee.
+    @param watch_mode: either track or debug.
     """
     if isinstance(contract, account.Account):
         address = contract.address
@@ -37,42 +41,29 @@ async def call_or_invoke(
     else:
         address, abi = next(deployments.load(contract, network))
 
-    address = hex_address(address)
-    command_args = [
+    args = set_args(network)
+    command_args = set_command_args(
+        inputs=params, signature=signature, max_fee=max_fee, query_flag=query_flag
+    )
+
+    command_args += [
         "--address",
-        address,
+        hex_address(address),
         "--abi",
         abi,
         "--function",
         method,
     ]
 
-    if len(params) > 0:
-        command_args.append("--inputs")
-        command_args.extend(prepare_params(params))
-
-    if signature is not None:
-        command_args.append("--signature")
-        command_args.extend(prepare_params(signature))
-
-    if max_fee is not None:
-        command_args.append("--max_fee")
-        command_args.append(max_fee)
-
-    if query_flag is not None:
-        command_args.append(f"--{query_flag}")
-
-    args = set_args(network)
-
     if type == "call":
         try:
-            return await capture_stdout(call(args=args, command_args=command_args))
+            return await call_cli("call", args, command_args)
         except AbiFormatError as err:
             logging.error(err)
 
     elif type == "invoke":
         try:
-            return await capture_stdout(invoke(args=args, command_args=command_args))
+            output = await call_cli("invoke", args, command_args)
         except BaseException as err:
             if "max_fee must be bigger than 0." in str(err):
                 logging.error(
@@ -83,3 +74,17 @@ async def call_or_invoke(
                 )
             else:
                 raise err
+
+        if not query_flag and watch_mode:
+            transaction_hash = _get_transaction_hash(output)
+            return await status(normalize_number(transaction_hash), network, watch_mode)
+
+        if query_flag:
+            logging.info(output)
+
+        return output
+
+
+def _get_transaction_hash(string):
+    match = re.search(r"Transaction hash: (0x[\da-f]{1,64})", string)
+    return match.groups()[0] if match else None

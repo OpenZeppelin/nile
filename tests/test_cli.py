@@ -9,7 +9,7 @@ from pathlib import Path
 from signal import SIGINT
 from threading import Timer
 from time import sleep
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 from urllib.error import URLError
 from urllib.request import urlopen
 
@@ -22,8 +22,9 @@ from nile.common import (
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
     NODE_FILENAME,
+    set_args,
 )
-from nile.utils import normalize_number
+from nile.utils import hex_class_hash
 
 RESOURCES_DIR = Path(__file__).parent / "resources"
 MOCK_HASH = "0x123"
@@ -193,21 +194,20 @@ async def test_node_runs_gateway(opts, expected):
         ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"]),
     ],
 )
-@patch("nile.utils.debug.capture_stdout")
-@patch("nile.utils.debug.set_args")
-@patch("nile.cli.debug_command")
-async def test_debug(mock_debug, mock_set_args, mock_capture, args):
-    # debug will hang without patch
-    mock_capture.return_value = json.dumps({"tx_status": "ACCEPTED"})
+async def test_status(args):
+    with patch("nile.utils.status.call_cli", new=AsyncMock()) as mock_call_cli:
+        mock_call_cli.return_value = json.dumps({"tx_status": "ACCEPTED_ON_L2"})
 
-    result = await CliRunner().invoke(cli, ["debug", *args])
+        result = await CliRunner().invoke(cli, ["status", *args])
 
-    # Check status
-    assert result.exit_code == 0
+        # Check status
+        assert result.exit_code == 0
 
-    network = args[2]
-    contracts_file = args[4] if "--contracts_file" in args else None
+        # Check internals
+        network = args[2]
+        args = set_args(network)
+        command_args = ["--hash", hex_class_hash(MOCK_HASH)]
 
-    mock_debug.assert_called_once_with(
-        normalize_number(MOCK_HASH), network, contracts_file
-    )
+        mock_call_cli.assert_called_once_with(
+            "tx_status", args=args, command_args=command_args
+        )

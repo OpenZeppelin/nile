@@ -3,7 +3,7 @@ import logging
 import os
 
 from nile.common import DECLARATIONS_FILENAME, DEPLOYMENTS_FILENAME
-from nile.utils import hex_address, normalize_number
+from nile.utils import hex_address, hex_class_hash, normalize_number
 
 
 def register(address, abi, network, alias):
@@ -26,6 +26,33 @@ def register(address, abi, network, alias):
         if alias is not None:
             fp.write(f":{alias}")
         fp.write("\n")
+
+
+def unregister(address_or_class_hash, network, alias, abi=None, is_declaration=False):
+    """Unregister deployment or class hash from file."""
+    file = (
+        f"{network}.{DECLARATIONS_FILENAME}"
+        if is_declaration
+        else f"{network}.{DEPLOYMENTS_FILENAME}"
+    )
+    to_delete = (
+        hex_class_hash(address_or_class_hash)
+        if is_declaration
+        else hex_address(address_or_class_hash)
+    )
+
+    if abi is not None:
+        to_delete = f"{to_delete}:{abi}"
+
+    if alias:
+        to_delete = f"{to_delete}:{alias}"
+
+    with open(file, "r") as fp:
+        lines = fp.readlines()
+        with open(file, "w") as new_fp:
+            for line in lines:
+                if not line.startswith(to_delete):
+                    new_fp.write(line)
 
 
 def update_abi(address_or_alias, abi, network):
@@ -81,8 +108,6 @@ def register_class_hash(hash, network, alias):
         raise Exception(f"Hash {hash[:6]}...{hash[-6:]} already exists in {file}")
 
     with open(file, "a") as fp:
-        # Save class_hash as hex
-        hash = hex(hash)
         if alias is not None:
             logging.info(f"📦 Registering {alias} in {file}")
         else:

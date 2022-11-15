@@ -1,6 +1,6 @@
 """Tests for get-nonce command."""
 import logging
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -37,13 +37,11 @@ async def test_get_nonce(mock_without_log, contract_address, network, caplog):
     "contract_address",
     ["0x4d2", "1234", 1234],
 )
-@patch("nile.utils.get_nonce.starknet_cli.get_nonce")
-@patch("nile.utils.get_nonce.capture_stdout", return_value=NONCE)
-async def test_get_nonce_without_log_address_formats(
-    mock_capture, mock_sn_get_nonce, contract_address
-):
-    await get_nonce_without_log(contract_address, "goerli")
+async def test_get_nonce_without_log_address_formats(contract_address):
+    with patch("nile.utils.get_nonce.call_cli", new=AsyncMock()) as mock_cli_call:
+        mock_cli_call.return_value = NONCE
+        await get_nonce_without_log(contract_address, "goerli")
 
-    args = set_args("goerli")
-    command = ["--contract_address", "0x4d2"]
-    mock_sn_get_nonce.assert_called_once_with(args=args, command_args=command)
+        args = set_args("goerli")
+        command_args = ["--contract_address", "0x4d2"]
+        mock_cli_call.assert_called_once_with("get_nonce", args, command_args)

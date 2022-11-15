@@ -76,6 +76,7 @@ async def test_deploy(mock_path, mock_signer, mock_hash, mock_deploy):
         max_fee=MAX_FEE,
         query_type=None,
         overriding_path=overriding_path,
+        watch_mode=None,
     )
 
 
@@ -138,6 +139,7 @@ async def test_declare(mock_declare, mock_get_class, mock_hash, mock_deploy):
         alias=alias,
         max_fee=max_fee,
         mainnet_token=None,
+        watch_mode=None,
     )
 
 
@@ -184,7 +186,7 @@ async def test_send_sign_transaction_and_execute(
         send_args = [MOCK_TARGET_ADDRESS, "method", [1, 2, 3]]
         nonce = 4
         max_fee = 1
-        await account.send(*send_args, max_fee, nonce)
+        await account.send(*send_args, max_fee=max_fee, nonce=nonce)
 
         # Check values are correctly passed to 'sign_transaction'
         account.signer.sign_transaction.assert_called_once_with(
@@ -205,6 +207,7 @@ async def test_send_sign_transaction_and_execute(
             signature=[str(sig_r), str(sig_s)],
             type="invoke",
             query_flag=None,
+            watch_mode=None,
         )
 
 
@@ -248,6 +251,7 @@ async def test_send_defaults(
         signature=[str(sig_r), str(sig_s)],
         type="invoke",
         query_flag=None,
+        watch_mode=None,
     )
 
 
@@ -283,6 +287,7 @@ async def test_simulate(mock_hash, mock_deploy):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("query_type", ["estimate_fee", "simulate"])
+@pytest.mark.parametrize("watch_mode", ["track", "debug"])
 @patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.core.account.get_hash", return_value=CLASS_HASH)
 @patch(
@@ -291,7 +296,7 @@ async def test_simulate(mock_hash, mock_deploy):
 @patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
 async def test_execute_query(
-    mock_call, mock_nonce, mock_target_address, mock_hash, mock_deploy, query_type
+    mock_call, mock_nonce, mock_target_address, mock_hash, mock_deploy, watch_mode, query_type
 ):
     account = await Account(KEY, NETWORK)
 
@@ -304,7 +309,12 @@ async def test_execute_query(
     account.signer.sign_transaction = MagicMock(return_value=return_signature)
 
     await account.send(
-        account.address, "method", [1, 2, 3], max_fee=MAX_FEE, query_type=query_type
+        account.address,
+        "method",
+        [1, 2, 3],
+        max_fee=MAX_FEE,
+        query_type=query_type,
+        watch_mode=watch_mode,
     )
 
     account.signer.sign_transaction.assert_called_once_with(
@@ -325,4 +335,5 @@ async def test_execute_query(
         signature=[str(sig_r), str(sig_s)],
         type="invoke",
         query_flag=query_type,
+        watch_mode=watch_mode,
     )

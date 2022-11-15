@@ -10,14 +10,15 @@ from nile.common import (
     BUILD_DIRECTORY,
     QUERY_VERSION,
     TRANSACTION_VERSION,
-    capture_stdout,
     get_gateway_response,
     get_hash,
+    call_cli,
     parse_information,
-    prepare_params,
     set_args,
+    set_command_args,
 )
 from nile.utils import hex_address
+from nile.utils.status import status
 
 
 async def deploy(
@@ -28,6 +29,7 @@ async def deploy(
     overriding_path=None,
     abi=None,
     mainnet_token=None,
+    watch_mode=None,
 ):
     """Deploy StarkNet smart contracts."""
     logging.info(f"🚀 Deploying {contract_name}")
@@ -37,30 +39,30 @@ async def deploy(
     )
     register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
 
-    contract = f"{base_path[0]}/{contract_name}.json"
-    command_args = ["--contract", contract]
-
-    if arguments:
-        command_args.append("--inputs")
-        command_args.extend(prepare_params(arguments))
-
-    if mainnet_token:
-        command_args.append("--token")
-        command_args.extend(mainnet_token)
-
     args = set_args(network)
-
-    output = await capture_stdout(
-        starknet_cli.deploy(args=args, command_args=command_args)
+    command_args = set_command_args(
+        contract_name=contract_name,
+        inputs=arguments,
+        overriding_path=overriding_path,
+        mainnet_token=mainnet_token,
     )
 
+    output = await call_cli("deploy", args, command_args)
     address, tx_hash = parse_information(output)
+
     logging.info(
         f"⏳ ️Deployment of {contract_name} successfully sent at {hex_address(address)}"
     )
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
     deployments.register(address, register_abi, network, alias)
+
+    if watch_mode is not None:
+        tx_status = await status(tx_hash, network, watch_mode)
+        if tx_status.status.is_rejected:
+            deployments.unregister(address, network, alias, abi=register_abi)
+            return
+
     return address, register_abi
 
 
@@ -76,6 +78,7 @@ async def deploy_account(
     alias=None,
     query_type=None,
     mainnet_token=None,
+    watch_mode=None,
 ):
     """Deploy StarkNet smart contracts."""
     logging.info(f"🚀 Deploying {contract_name}")
@@ -108,4 +111,11 @@ async def deploy_account(
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
     deployments.register(address, register_abi, network, alias)
+
+    if watch_mode is not None:
+        tx_status = await status(tx_hash, network, watch_mode)
+        if tx_status.status.is_rejected:
+            deployments.unregister(address, network, alias, abi=register_abi)
+            return
+
     return address, register_abi

@@ -45,10 +45,14 @@ class AsyncObject(object):
 
 
 class Account(AsyncObject):
-    """Account contract abstraction."""
+    """
+    Account contract abstraction.
+
+    Remove AsyncObject if Account.deploy decouples from initialization.
+    """
 
     async def __init__(
-        self, signer, network, salt=0, max_fee=None, predeployed_info=None
+        self, signer, network, salt=0, max_fee=None, predeployed_info=None, watch_mode=None
     ):
         """Get or deploy an Account contract for the given private key."""
         try:
@@ -80,7 +84,7 @@ class Account(AsyncObject):
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
-            address, index = await self.deploy(salt=salt, max_fee=max_fee)
+            address, index = await self.deploy(salt=salt, max_fee=max_fee, watch_mode=watch_mode)
             self.address = address
             self.index = index
 
@@ -89,6 +93,7 @@ class Account(AsyncObject):
         salt=0,
         max_fee=None,
         query_type=None,
+        watch_mode=None
     ):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
@@ -141,15 +146,10 @@ class Account(AsyncObject):
         alias=None,
         overriding_path=None,
         mainnet_token=None,
+        watch_mode=None,
     ):
         """Declare a contract through an Account contract."""
-        if nonce is None:
-            nonce = int(await get_nonce(self.address, self.network))
-
-        if max_fee is None:
-            max_fee = 0
-        else:
-            max_fee = int(max_fee)
+        max_fee, nonce = await self._process_arguments(max_fee, nonce)
 
         contract_class = get_contract_class(
             contract_name=contract_name, overriding_path=overriding_path
@@ -170,17 +170,26 @@ class Account(AsyncObject):
             network=self.network,
             max_fee=max_fee,
             mainnet_token=mainnet_token,
+            watch_mode=watch_mode,
         )
 
-    def deploy_contract(
-        self, class_hash, salt, unique, calldata, max_fee=None, deployer_address=None
+    async def deploy_contract(
+        self,
+        class_hash,
+        salt,
+        unique,
+        calldata,
+        max_fee=None,
+        deployer_address=None,
+        watch_mode=None,
     ):
         """Deploy a contract through an Account contract."""
-        return self.send(
+        return await self.send(
             to=deployer_address or UNIVERSAL_DEPLOYER_ADDRESS,
             method="deployContract",
             calldata=[class_hash, salt, unique, len(calldata), *calldata],
             max_fee=max_fee,
+            watch_mode=watch_mode,
         )
 
     async def send(
@@ -188,17 +197,18 @@ class Account(AsyncObject):
         address_or_alias,
         method,
         calldata,
-        max_fee=None,
         nonce=None,
+        max_fee=None,
         query_type=None,
+        watch_mode=None,
     ):
         """Execute a query or invoke call for a tx going through an Account contract."""
         # get target address with the right format
         target_address = self._get_target_address(address_or_alias)
 
         # process and parse arguments
-        calldata, max_fee, nonce = await self._process_arguments(
-            calldata, max_fee, nonce
+        max_fee, nonce, calldata = await self._process_arguments(
+            max_fee, nonce, calldata
         )
 
         # get tx version
@@ -221,21 +231,18 @@ class Account(AsyncObject):
             signature=[str(sig_r), str(sig_s)],
             max_fee=str(max_fee),
             query_flag=query_type,
+            watch_mode=watch_mode,
         )
 
-    async def simulate(
-        self, address_or_alias, method, calldata, max_fee=None, nonce=None
-    ):
+    def simulate(self, address_or_alias, method, calldata, max_fee=None, nonce=None):
         """Simulate a tx going through an Account contract."""
-        return await self.send(
-            address_or_alias, method, calldata, max_fee, nonce, "simulate"
-        )
+        return self.send(address_or_alias, method, calldata, max_fee, nonce, "simulate")
 
-    async def estimate_fee(
+    def estimate_fee(
         self, address_or_alias, method, calldata, max_fee=None, nonce=None
     ):
         """Estimate fee for a tx going through an Account contract."""
-        return await self.send(
+        return self.send(
             address_or_alias, method, calldata, max_fee, nonce, "estimate_fee"
         )
 
@@ -250,7 +257,7 @@ class Account(AsyncObject):
 
         return target_address
 
-    async def _process_arguments(self, calldata, max_fee, nonce):
+    async def _process_arguments(self, max_fee, nonce, calldata=None):
         calldata = [normalize_number(x) for x in calldata]
 
         if not hasattr(self, "address"):
@@ -263,4 +270,8 @@ class Account(AsyncObject):
         else:
             max_fee = int(max_fee)
 
-        return calldata, max_fee, nonce
+        if calldata is not None:
+            calldata = [normalize_number(x) for x in calldata]
+            return max_fee, nonce, calldata
+
+        return max_fee, nonce

@@ -7,12 +7,13 @@ import sys
 from types import SimpleNamespace
 
 from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
+from starkware.starknet.cli import starknet_cli
 from starkware.starknet.cli.starknet_cli import NETWORKS, assert_tx_received
 from starkware.starknet.core.os.class_hash import compute_class_hash
 from starkware.starknet.services.api.contract_class import ContractClass
 from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
 
-from nile.utils import normalize_number, str_to_felt
+from nile.utils import hex_class_hash, normalize_number, str_to_felt
 
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
@@ -175,6 +176,51 @@ def set_args(network):
     return ret_obj
 
 
+def set_command_args(
+    contract_name=None,
+    arguments=None,
+    inputs=None,
+    signature=None,
+    max_fee=None,
+    query_flag=None,
+    overriding_path=None,
+    mainnet_token=None,
+):
+    """Set command args for StarkNet CLI call."""
+    command_args = []
+    if contract_name is not None:
+        base_path = (
+            overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
+        )
+        contract = f"{base_path[0]}/{contract_name}.json"
+        command_args.append("--contract")
+        command_args.append(contract)
+
+    if inputs is not None:
+        command_args.append("--inputs")
+        command_args.extend(prepare_params(inputs))
+
+    if signature is not None:
+        command_args.append("--signature")
+        command_args.extend(prepare_params(signature))
+
+    if max_fee is not None:
+        command_args.append("--max_fee")
+        command_args.append(max_fee)
+
+    if mainnet_token is not None:
+        command_args.append("--token")
+        command_args.append(mainnet_token)
+
+    if query_flag is not None:
+        command_args.append(f"--{query_flag}")
+
+    if arguments is not None:
+        command_args.extend(arguments)
+
+    return command_args
+
+
 def get_contract_class(contract_name, overriding_path=None):
     """Return the contract_class for a given contract name."""
     base_path = (
@@ -189,4 +235,19 @@ def get_contract_class(contract_name, overriding_path=None):
 def get_hash(contract_name, overriding_path=None):
     """Return the class_hash for a given contract name."""
     contract_class = get_contract_class(contract_name, overriding_path)
-    return compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
+    return hex_class_hash(
+        compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
+    )
+
+
+def call_cli(cmd_name, args, command_args):
+    """Make call to starknet_cli and return captured stdout."""
+    cmd = getattr(starknet_cli, cmd_name)
+    return capture_stdout(cmd(args=args, command_args=command_args))
+
+
+def get_addresses_from_string(string):
+    """Return a set of integers with identified addresses in a string."""
+    return set(
+        int(address, 16) for address in re.findall("0x[\\da-f]{1,64}", str(string))
+    )
