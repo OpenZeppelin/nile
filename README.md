@@ -506,21 +506,19 @@ In order for this implementation to be functional, the plugin developer must fol
 
    ```sh
    # We need to specify that Click commands are entry points in the group `nile_plugins`
-   [tool.poetry.plugins.nile_plugins]
-   cli =
-       # <command_name> = <package_method_location>
-       "greet" = "nile_greet.main.greet"
+   [tool.poetry.plugins."nile_plugins.cli"]
+   # <command_name> = <package_method_location>
+   "greet" = "nile_greet.main.greet"
    ```
 
 3. Optionally specify plugin entry points for `NileRuntimeEnvironment`. This doesn't require implementing a Click command (remove the cli entry points if not needed):
 
    ```sh
-   [tool.poetry.plugins.nile_plugins]
-   cli =
-       "greet" = "nile_greet.main.greet"
+   [tool.poetry.plugins."nile_plugins.cli"]
+   "greet" = "nile_greet.main.greet"
 
-   nre =
-       "greet" = "nile_greet.nre.greet"
+   [tool.poetry.plugins."nile_plugins.nre"]
+   "greet" = "nile_greet.nre.greet"
    ```
 
 4. Done! For a better understanding of python entry points through setuptools, [check this documentation](https://setuptools.pypa.io/en/latest/userguide/entry_point.html#entry-points-for-plugins).
