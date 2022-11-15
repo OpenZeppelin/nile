@@ -25,7 +25,7 @@ ARGS = [
 
 async def execute_call(cmd_name, network, **kwargs):
     """Build and execute call to starknet_cli."""
-    args = set_args(network)
+    args = set_context(network)
     command_args = set_command_args(**kwargs)
     cmd = getattr(starknet_cli, cmd_name)
     return await capture_stdout(cmd(args=args, command_args=command_args))

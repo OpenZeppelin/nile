@@ -9,7 +9,7 @@ from nile.starknet_cli import (
     capture_stdout,
     get_feeder_url,
     get_gateway_url,
-    set_args,
+    set_context,
     set_command_args,
 )
 
@@ -29,8 +29,8 @@ STDOUT_2 = "SDTOUT_2"
         ("mainnet", "https://alpha-mainnet.starknet.io/"),
     ],
 )
-def test_set_args(network, url):
-    args = set_args(network)
+def test_set_context(network, url):
+    args = set_context(network)
     _dict = {
         "gateway_url": url + "gateway",
         "feeder_gateway_url": url + "feeder_gateway",
