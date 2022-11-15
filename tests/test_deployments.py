@@ -98,9 +98,9 @@ def test_update_deployment(address_or_alias, abi, expected_lines, caplog):
     update_abi(address_or_alias, abi, LOCALHOST)
 
     identifier = address_or_alias
-    if type(address_or_alias) == int:
+    if type(address_or_alias) is int:
         identifier = hex_address(address_or_alias)
-    assert f"Updating {identifier} in {LOCALHOST}.{DEPLOYMENTS_FILENAME}"
+    assert f"Updating {identifier} in {LOCALHOST}.{DEPLOYMENTS_FILENAME}" in caplog.text
 
     with open(f"{LOCALHOST}.{DEPLOYMENTS_FILENAME}", "r") as fp:
         lines = fp.readlines()
