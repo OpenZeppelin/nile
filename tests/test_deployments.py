@@ -1,9 +1,11 @@
 """Tests for deployments file."""
+import logging
+
 import pytest
 
 from nile.common import DECLARATIONS_FILENAME, DEPLOYMENTS_FILENAME
 from nile.deployments import register, register_class_hash, unregister, update_abi
-from nile.utils import hex_class_hash, normalize_number
+from nile.utils import hex_address, hex_class_hash, normalize_number
 
 LOCALHOST = "localhost"
 
@@ -81,7 +83,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
         ),
     ],
 )
-def test_update_deployment(address_or_alias, abi, expected_lines):
+def test_update_deployment(address_or_alias, abi, expected_lines, caplog):
     register(normalize_number(A_ADDR), A_ABI, LOCALHOST, f"{A_ALIAS}:{A_ALIAS_ALT}")
     register(normalize_number(B_ADDR), B_ABI, LOCALHOST, B_ALIAS)
     register(normalize_number(C_ADDR), C_ABI, LOCALHOST, None)
@@ -90,7 +92,15 @@ def test_update_deployment(address_or_alias, abi, expected_lines):
         lines = fp.readlines()
     assert len(lines) == 3
 
+    # make logs visible to test
+    logging.getLogger().setLevel(logging.INFO)
+
     update_abi(address_or_alias, abi, LOCALHOST)
+
+    identifier = address_or_alias
+    if type(address_or_alias) == int:
+        identifier = hex_address(address_or_alias)
+    assert f"Updating {identifier} in {LOCALHOST}.{DEPLOYMENTS_FILENAME}"
 
     with open(f"{LOCALHOST}.{DEPLOYMENTS_FILENAME}", "r") as fp:
         lines = fp.readlines()
