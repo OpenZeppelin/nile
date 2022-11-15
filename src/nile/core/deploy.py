@@ -6,7 +6,6 @@ from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     parse_information,
-    prepare_params,
 )
 from nile.starknet_cli import execute_call
 from nile.utils import hex_address
@@ -35,7 +34,7 @@ async def deploy(
         "deploy",
         network,
         contract_name=contract_name,
-        inputs=prepare_params(arguments),
+        inputs=arguments,
         overriding_path=overriding_path,
         mainnet_token=mainnet_token,
     )

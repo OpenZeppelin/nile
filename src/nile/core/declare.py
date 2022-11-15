@@ -2,7 +2,7 @@
 import logging
 
 from nile import deployments
-from nile.common import DECLARATIONS_FILENAME, parse_information, prepare_params
+from nile.common import DECLARATIONS_FILENAME, parse_information
 from nile.starknet_cli import execute_call
 from nile.utils import hex_address, hex_class_hash
 from nile.utils.status import status
@@ -32,7 +32,7 @@ async def declare(
         "declare",
         network,
         contract_name=contract_name,
-        signature=prepare_params(signature),
+        signature=signature,
         max_fee=max_fee,
         overriding_path=overriding_path,
         mainnet_token=mainnet_token,
