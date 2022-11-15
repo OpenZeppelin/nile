@@ -119,16 +119,18 @@ Creating artifacts/abis/ to store compilation artifacts
 
 ### `deploy`
 
-> NOTICE: Calling this method will require an account very soon (using the `--account` param) as StarkNet will make deployments from accounts mandatory.
+> NOTICE: Calling this method with `--ignore_account` is discouraged and will be removed soon, as StarkNet will make deployments from accounts mandatory.
 
 > Token for deployments to Alpha Mainnet can be set with the `--token` option.
 
 ```txt
-nile deploy <contract> [--alias ALIAS] [--network NETWORK] [--track | --debug]
+nile deploy <private_key_alias> <contract> [--alias ALIAS] [--network NETWORK] [--track | --debug]
 ```
 
+For example:
+
 ```sh
-nile deploy contract --account setup_account_alias --alias my_contract
+nile deploy setup_account_alias contract --alias my_contract
 
 🚀 Deploying contract
 ⏳ ️Deployment of contract successfully sent at 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
@@ -140,7 +142,7 @@ A few things to note here:
 
 1. `nile deploy <contract_name>` looks for an artifact with the same name.
 2. This creates or updates the `localhost.deployments.txt` file storing all data related to deployments.
-3. The `--account` parameter deploys using the provided account and the UniversalDeployer contract.
+3. The `--ignore_account` flag deploys without using the account (DEPRECATED).
 4. The `--alias` parameter creates a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
 5. The `--deployer_address` parameter lets you specify the deployer contract address if needed.
 6. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, `goerli2`, `integration`, and the default `localhost`.
