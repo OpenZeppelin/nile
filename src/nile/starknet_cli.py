@@ -5,7 +5,8 @@ import sys
 from types import SimpleNamespace
 
 from starkware.starknet.cli import starknet_cli
-from starkware.starknet.cli.starknet_cli import NETWORKS
+from starkware.starknet.cli.starknet_cli import NETWORKS, assert_tx_received
+from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
 
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS
 
@@ -30,6 +31,15 @@ async def execute_call(cmd_name, network, **kwargs):
     cmd = getattr(starknet_cli, cmd_name)
     return await capture_stdout(cmd(args=args, command_args=command_args))
 
+
+async def get_gateway_response(network, tx, token):
+    """Execute transaction and return response."""
+    gateway_url = get_gateway_url(network)
+    gateway_client = GatewayClient(url=gateway_url)
+    gateway_response = await gateway_client.add_transaction(tx=tx, token=token)
+    assert_tx_received(gateway_response)
+
+    return gateway_response
 
 async def capture_stdout(func):
     """Return the stdout during the passed function call."""

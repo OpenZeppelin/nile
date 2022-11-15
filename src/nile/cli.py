@@ -148,16 +148,10 @@ async def declare(
 @click.option("--salt", nargs=1)
 @click.option("--max_fee", nargs=1)
 @network_option
-<<<<<<< HEAD
-async def setup(signer, network, salt=0, max_fee=None):
-    """Set up an Account contract."""
-    await Account(signer, network, salt=salt, max_fee=max_fee)
-=======
 @watch_option
-async def setup(signer, network, watch_mode):
+async def setup(signer, network, salt, max_fee, watch_mode):
     """Set up an Account contract."""
-    await Account(signer, network, watch_mode=watch_mode)
->>>>>>> replace-subprocess
+    await Account(signer, network, salt, max_fee, watch_mode=watch_mode)
 
 
 @cli.command()

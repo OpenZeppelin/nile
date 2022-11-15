@@ -1,7 +1,6 @@
 """Command to deploy StarkNet smart contracts."""
 import logging
 
-from starkware.starknet.cli import starknet_cli
 from starkware.starknet.services.api.gateway.transaction import DeployAccount
 
 from nile import deployments
@@ -10,12 +9,11 @@ from nile.common import (
     BUILD_DIRECTORY,
     QUERY_VERSION,
     TRANSACTION_VERSION,
-    get_gateway_response,
     get_hash,
     parse_information,
     prepare_params,
 )
-from nile.starknet_cli import execute_call
+from nile.starknet_cli import execute_call, get_gateway_response
 from nile.utils import hex_address
 from nile.utils.status import status
 

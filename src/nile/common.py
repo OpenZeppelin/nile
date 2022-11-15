@@ -4,10 +4,8 @@ import os
 import re
 
 from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
-from starkware.starknet.cli.starknet_cli import NETWORKS, assert_tx_received
 from starkware.starknet.core.os.class_hash import compute_class_hash
 from starkware.starknet.services.api.contract_class import ContractClass
-from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
 
 from nile.utils import hex_class_hash, normalize_number, str_to_felt
 

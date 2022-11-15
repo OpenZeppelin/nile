@@ -91,7 +91,7 @@ class Account(AsyncObject):
     async def deploy(
         self,
         salt=0,
-        max_fee=None,
+        max_fee=0,
         query_type=None,
         watch_mode=None
     ):
@@ -100,11 +100,11 @@ class Account(AsyncObject):
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
 
+        salt = normalize_number(salt)
         class_hash = get_hash("Account")
+        max_fee = normalize_number(max_fee)
         calldata = [self.signer.public_key]
 
-        if max_fee is None:
-            max_fee = 0
 
         contract_address = calculate_contract_address_from_hash(
             salt=salt,
@@ -130,6 +130,7 @@ class Account(AsyncObject):
             max_fee=max_fee,
             query_type=query_type,
             overriding_path=overriding_path,
+            watch_mode=watch_mode,
         )
 
         accounts.register(
