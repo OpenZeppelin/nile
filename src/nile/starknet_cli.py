@@ -42,7 +42,7 @@ async def capture_stdout(func):
     return result
 
 
-def set_args(network):
+def set_context(network):
     """Set context args for StarkNet CLI call."""
     args = {
         "gateway_url": get_gateway_url(network),

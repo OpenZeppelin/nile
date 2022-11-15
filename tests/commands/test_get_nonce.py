@@ -23,8 +23,7 @@ async def test_get_nonce(contract_address, network, caplog):
         nonce = await get_nonce(contract_address, network)
         assert nonce == NONCE
 
-        # args = set_args(network)
-        command_args = {"contract_address": "0xffff"}
+        command_args = {"contract_address": contract_address}
         mock_cli_call.assert_called_once_with("get_nonce", network, **command_args)
 
         # Check log
