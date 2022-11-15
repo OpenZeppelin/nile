@@ -94,17 +94,19 @@ def run(path, network):
 @click.argument("artifact", nargs=1)
 @click.argument("arguments", nargs=-1)
 @click.option("--alias")
+@click.option("--overriding_path")
 @click.option("--abi")
 @network_option
 @mainnet_token_option
 @watch_option
-def deploy(artifact, arguments, network, alias, watch_mode, abi, token):
+def deploy(artifact, arguments, network, alias, watch_mode, overriding_path=None, abi=None, token=None):
     """Deploy StarkNet smart contract."""
     deploy_command(
         contract_name=artifact,
         arguments=arguments,
         network=network,
         alias=alias,
+        overriding_path=overriding_path,
         abi=abi,
         mainnet_token=token,
         watch_mode=watch_mode,
@@ -231,10 +233,11 @@ def test(contracts):
 @click.argument("contracts", nargs=-1)
 @click.option("--directory")
 @click.option("--cairo_path")
+@click.option("--output")
 @click.option("--account_contract", is_flag="True")
 @click.option("--disable-hint-validation", is_flag=True)
 def compile(
-    contracts, directory, cairo_path, account_contract, disable_hint_validation
+    contracts, directory, cairo_path, output, account_contract, disable_hint_validation
 ):
     """
     Compile cairo contracts.
@@ -249,7 +252,7 @@ def compile(
       Compiles foo.cairo and bar.cairo
     """
     compile_command(
-        contracts, directory, cairo_path, account_contract, disable_hint_validation
+        contracts, directory, cairo_path, output, account_contract, disable_hint_validation
     )
 
 

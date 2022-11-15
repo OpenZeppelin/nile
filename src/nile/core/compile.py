@@ -15,6 +15,7 @@ def compile(
     contracts,
     directory=None,
     cairo_path=None,
+    output=None,
     account_contract=False,
     disable_hint_validation=False,
 ):
@@ -22,10 +23,11 @@ def compile(
     # to do: automatically support subdirectories
 
     contracts_directory = directory if directory else CONTRACTS_DIRECTORY
+    abis_directory = f"{output}/abis" if output else ABIS_DIRECTORY
 
-    if not os.path.exists(ABIS_DIRECTORY):
-        logging.info(f"📁 Creating {ABIS_DIRECTORY} to store compilation artifacts")
-        os.makedirs(ABIS_DIRECTORY, exist_ok=True)
+    if not os.path.exists(abis_directory):
+        logging.info(f"📁 Creating {abis_directory} to store compilation artifacts")
+        os.makedirs(abis_directory, exist_ok=True)
 
     all_contracts = contracts
 
@@ -40,6 +42,7 @@ def compile(
             contract,
             contracts_directory,
             cairo_path,
+            output,
             account_contract,
             disable_hint_validation,
         )
@@ -63,6 +66,7 @@ def _compile_contract(
     path,
     directory=None,
     cairo_path=None,
+    output=None,
     account_contract=False,
     disable_hint_validation=False,
 ):
@@ -71,12 +75,14 @@ def _compile_contract(
     logging.info(f"🔨 Compiling {path}")
     contracts_directory = directory if directory else CONTRACTS_DIRECTORY
     cairo_path = cairo_path if cairo_path else contracts_directory
+    build_directory = output if output else BUILD_DIRECTORY
+    abis_directory = f"{output}/abis" if output else ABIS_DIRECTORY
 
     cmd = f"""
     starknet-compile {path} \
         --cairo_path={cairo_path}
-        --output {BUILD_DIRECTORY}/{filename}.json \
-        --abi {ABIS_DIRECTORY}/{filename}.json
+        --output {build_directory}/{filename}.json \
+        --abi {abis_directory}/{filename}.json
     """
 
     if account_contract or filename.endswith("Account"):
