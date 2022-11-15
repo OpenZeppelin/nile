@@ -2,11 +2,7 @@
 import logging
 
 from nile import deployments
-from nile.common import (
-    ABIS_DIRECTORY,
-    BUILD_DIRECTORY,
-    parse_information,
-)
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, parse_information
 from nile.starknet_cli import execute_call
 from nile.utils import hex_address
 from nile.utils.status import status
