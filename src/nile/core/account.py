@@ -52,7 +52,13 @@ class Account(AsyncObject):
     """
 
     async def __init__(
-        self, signer, network, salt=0, max_fee=None, predeployed_info=None, watch_mode=None
+        self,
+        signer,
+        network,
+        salt=0,
+        max_fee=None,
+        predeployed_info=None,
+        watch_mode=None,
     ):
         """Get or deploy an Account contract for the given private key."""
         try:
@@ -84,17 +90,13 @@ class Account(AsyncObject):
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
-            address, index = await self.deploy(salt=salt, max_fee=max_fee, watch_mode=watch_mode)
+            address, index = await self.deploy(
+                salt=salt, max_fee=max_fee, watch_mode=watch_mode
+            )
             self.address = address
             self.index = index
 
-    async def deploy(
-        self,
-        salt=0,
-        max_fee=0,
-        query_type=None,
-        watch_mode=None
-    ):
+    async def deploy(self, salt=0, max_fee=0, query_type=None, watch_mode=None):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
@@ -104,7 +106,6 @@ class Account(AsyncObject):
         class_hash = get_hash("Account")
         max_fee = normalize_number(max_fee)
         calldata = [self.signer.public_key]
-
 
         contract_address = calculate_contract_address_from_hash(
             salt=salt,
@@ -119,7 +120,7 @@ class Account(AsyncObject):
             calldata,
             salt,
             max_fee,
-            0, # nonce starts at 0
+            0,  # nonce starts at 0
         )
 
         address, _ = await deploy_account(

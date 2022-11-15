@@ -32,6 +32,7 @@ SIGNATURE = [111, 333]
 FEE = 666
 CALL_OUTPUT = [ADDRESS, TX_HASH]
 
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "args, cmd_args, exp_abi",

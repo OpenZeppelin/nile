@@ -41,6 +41,7 @@ async def get_gateway_response(network, tx, token):
 
     return gateway_response
 
+
 async def capture_stdout(func):
     """Return the stdout during the passed function call."""
     stdout = sys.stdout

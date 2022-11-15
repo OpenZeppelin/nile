@@ -296,7 +296,13 @@ async def test_simulate(mock_hash, mock_deploy):
 @patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
 async def test_execute_query(
-    mock_call, mock_nonce, mock_target_address, mock_hash, mock_deploy, watch_mode, query_type
+    mock_call,
+    mock_nonce,
+    mock_target_address,
+    mock_hash,
+    mock_deploy,
+    watch_mode,
+    query_type,
 ):
     account = await Account(KEY, NETWORK)
 
