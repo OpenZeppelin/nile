@@ -128,7 +128,6 @@ def test_get_feeder_url(network, expected):
             mock_gateways.get = MagicMock(return_value=expected)
             url = get_feeder_url(network)
             assert url == expected
-
     else:
         url = get_feeder_url(network)
         assert url == expected
