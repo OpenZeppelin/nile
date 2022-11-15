@@ -58,15 +58,15 @@ async def test_deploy(mock_path, mock_deploy):
     account = await Account(KEY, NETWORK)
 
     mock_deploy.assert_called_with(
-        "Account",                          # contract
-        [account.signer.public_key],        # arguments
-        NETWORK,                            # network
-        f"account-{account.index}",         # index
-        (                                   # overriding path
+        "Account",
+        [account.signer.public_key],
+        NETWORK,
+        f"account-{account.index}",
+        (
             f"{test_path}/artifacts",
             f"{test_path}/artifacts/abis",
         ),
-        watch_mode=None,                    # watch mode
+        watch_mode=None,
     )
 
 
