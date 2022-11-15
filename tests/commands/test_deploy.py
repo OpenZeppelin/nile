@@ -30,29 +30,53 @@ CALL_OUTPUT = [ADDRESS, TX_HASH]
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "args, exp_abi",
+    "args, cmd_args, exp_abi",
     [
         (
             [CONTRACT, ARGS, NETWORK, ALIAS],  # args
+            {
+                "contract_name": CONTRACT,
+                "inputs": ["1", "2", "3"],
+                "overriding_path": None,
+                "mainnet_token": None,
+            },
             ABI,  # expected ABI
         ),
         (
             [CONTRACT, ARGS, NETWORK, ALIAS, PATH_OVERRIDE],  # args
+            {
+                "contract_name": CONTRACT,
+                "inputs": ["1", "2", "3"],
+                "overriding_path": PATH_OVERRIDE,
+                "mainnet_token": None,
+            },
             ABI,  # expected ABI
         ),
         (
             [CONTRACT, ARGS, NETWORK, ALIAS, None, ABI_OVERRIDE],  # args
+            {
+                "contract_name": CONTRACT,
+                "inputs": ["1", "2", "3"],
+                "overriding_path": None,
+                "mainnet_token": None,
+            },
             ABI_OVERRIDE,  # expected ABI
         ),
         (
             [CONTRACT, ARGS, NETWORK, ALIAS, PATH_OVERRIDE, ABI_OVERRIDE],  # args
+            {
+                "contract_name": CONTRACT,
+                "inputs": ["1", "2", "3"],
+                "overriding_path": PATH_OVERRIDE,
+                "mainnet_token": None,
+            },
             ABI_OVERRIDE,  # expected ABI
         ),
     ],
 )
 @patch("nile.core.deploy.parse_information", return_value=CALL_OUTPUT)
 @patch("nile.core.deploy.deployments.register")
-async def test_deploy(mock_register, mock_parse, caplog, args, exp_abi):
+async def test_deploy(mock_register, mock_parse, caplog, args, cmd_args, exp_abi):
     logging.getLogger().setLevel(logging.INFO)
 
     with patch("nile.core.deploy.execute_call", new=AsyncMock()) as mock_cli_call:
@@ -65,6 +89,7 @@ async def test_deploy(mock_register, mock_parse, caplog, args, exp_abi):
         # check internals
         mock_parse.assert_called_once_with(CALL_OUTPUT)
         mock_register.assert_called_once_with(ADDRESS, exp_abi, NETWORK, ALIAS)
+        mock_cli_call.assert_called_once_with("deploy", NETWORK, **cmd_args)
 
         # check logs
         assert f"🚀 Deploying {CONTRACT}" in caplog.text
