@@ -1,7 +1,7 @@
 """Retrieve nonce for a contract."""
 import logging
 
-from nile.common import call_cli, set_args
+from nile.starknet_cli import execute_call
 
 
 async def get_nonce(contract_address, network):
@@ -19,8 +19,5 @@ async def get_nonce_without_log(contract_address, network):
     if not str(contract_address).startswith("0x"):
         contract_address = hex(int(contract_address))
 
-    command_args = ["--contract_address", contract_address]
-    args = set_args(network)
-
-    output = await call_cli("get_nonce", args, command_args)
+    output = await execute_call("get_nonce", network, contract_address=contract_address)
     return int(output)

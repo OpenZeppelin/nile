@@ -3,22 +3,17 @@
 import logging
 import os
 
-from nile.common import (
-    BUILD_DIRECTORY,
-    DEPLOYMENTS_FILENAME,
-    call_cli,
-    get_addresses_from_string,
-    set_args,
-)
+from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME, get_addresses_from_string
+from nile.starknet_cli import execute_call
 
 
-async def debug_message(error_message, command, network, contracts_file=None):
+async def debug_message(error_message, tx_hash, network, contracts_file=None):
     """
     Use available contracts to help locate the error in a rejected transaction.
 
-    @param error_message: error message of the transaction receipt.
-    @param command: StarkNet CLI command used to get the transaction receipt.
-    @param network: Network queried
+    @param error_message: Error message of the transaction receipt.
+    @param tx_hash: Hash of the transaction.
+    @param network: Network queried.
     @param contracts_file: File to use instead of the one generated automatically
       from network name.
     """
@@ -43,9 +38,13 @@ async def debug_message(error_message, command, network, contracts_file=None):
     logging.info(f"🧾 Found contracts: {contracts}")
     logging.info("⏳ Querying the network with identified contracts...")
 
-    args = set_args(network)
-    command_args = command + ["--contracts", ",".join(contracts), "--error_message"]
-    return await call_cli("tx_status", args, command_args)
+    return await execute_call(
+        "tx_status",
+        network,
+        hash=tx_hash,
+        contracts=",".join(contracts),
+        error_message=True,
+    )
 
 
 def _get_contracts_data(contracts_file, network, addresses):
