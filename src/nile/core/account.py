@@ -163,7 +163,7 @@ class Account:
         query_type=None,
         watch_mode=None,
     ):
-        """Execute a query or invoke call for a tx going through an Account."""
+        """Execute or simulate an Account transaction."""
         target_address = self._get_target_address(address_or_alias)
 
         calldata, max_fee, nonce = self._process_arguments(calldata, max_fee, nonce)
