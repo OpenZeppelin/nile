@@ -1,5 +1,6 @@
 """Call the starknet_cli."""
 
+import re
 import io
 import sys
 from types import SimpleNamespace
@@ -112,4 +113,9 @@ def get_feeder_url(network):
 
 
 def _add_args(key, value):
-    return [f"--{key}", *value] if type(value) is list else [f"--{key}", value]
+    if type(value) is not list:
+        return [f"--{key}", value]
+    else:
+        pattern = re.compile(r'\w+')
+        flat_list = pattern.findall(str(value))
+        return [f"--{key}", *flat_list]

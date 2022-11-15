@@ -54,6 +54,7 @@ def test_set_context(network, url):
     [
         (["k", "v1"], ["--k", "v1"]),
         (["k", ["v1", "v2"]], ["--k", "v1", "v2"]),
+        (["k", ["v1", "v2", ["v3", ["v4"]]]], ["--k", "v1", "v2", "v3", "v4"]),
     ],
 )
 def test__add_args(args, expected):
