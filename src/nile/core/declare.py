@@ -26,7 +26,7 @@ async def declare(
         file = f"{network}.{DECLARATIONS_FILENAME}"
         raise Exception(f"Alias {alias} already exists in {file}")
 
-    max_fee = "0" if max_fee is None else int(max_fee)
+    max_fee = 0 if max_fee is None else int(max_fee)
 
     output = await execute_call(
         "declare",
