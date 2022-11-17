@@ -2,7 +2,7 @@
 """Nile CLI entry point."""
 import logging
 
-import click
+import asyncclick as click
 
 from nile.common import is_alias
 from nile.core.account import Account
@@ -25,6 +25,7 @@ from nile.utils.get_nonce import get_nonce as get_nonce_command
 from nile.utils.status import status as status_command
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
+logging.getLogger("asyncio").setLevel(logging.WARNING)
 
 NETWORKS = ("localhost", "integration", "goerli", "goerli2", "mainnet")
 
@@ -85,9 +86,9 @@ def init():
 @cli.command()
 @click.argument("path", nargs=1)
 @network_option
-def run(path, network):
+async def run(path, network):
     """Run Nile scripts with NileRuntimeEnvironment."""
-    run_command(path, network)
+    await run_command(path, network)
 
 
 @cli.command()
@@ -98,13 +99,13 @@ def run(path, network):
 @network_option
 @mainnet_token_option
 @watch_option
-def deploy(artifact, arguments, network, alias, watch_mode, abi, token):
+async def deploy(artifact, arguments, network, alias, abi, token, watch_mode):
     """Deploy StarkNet smart contract."""
-    deploy_command(
-        contract_name=artifact,
-        arguments=arguments,
-        network=network,
-        alias=alias,
+    await deploy_command(
+        artifact,
+        arguments,
+        network,
+        alias,
         abi=abi,
         mainnet_token=token,
         watch_mode=watch_mode,
@@ -120,7 +121,7 @@ def deploy(artifact, arguments, network, alias, watch_mode, abi, token):
 @network_option
 @mainnet_token_option
 @watch_option
-def declare(
+async def declare(
     signer,
     contract_name,
     network,
@@ -131,8 +132,8 @@ def declare(
     token,
 ):
     """Declare StarkNet smart contract."""
-    account = Account(signer, network)
-    account.declare(
+    account = await Account(signer, network)
+    await account.declare(
         contract_name,
         alias=alias,
         max_fee=max_fee,
@@ -146,9 +147,9 @@ def declare(
 @click.argument("signer", nargs=1)
 @network_option
 @watch_option
-def setup(signer, network, watch_mode):
+async def setup(signer, network, watch_mode):
     """Set up an Account contract."""
-    Account(signer, network, watch_mode=watch_mode)
+    await Account(signer, network, watch_mode=watch_mode)
 
 
 @cli.command()
@@ -161,7 +162,7 @@ def setup(signer, network, watch_mode):
 @click.option("--estimate_fee", "query", flag_value="estimate_fee")
 @network_option
 @watch_option
-def send(
+async def send(
     signer,
     address_or_alias,
     method,
@@ -172,7 +173,7 @@ def send(
     watch_mode,
 ):
     """Invoke a contract's method through an Account."""
-    account = Account(signer, network)
+    account = await Account(signer, network)
     print(
         "Calling {} on {} with params: {}".format(
             method, address_or_alias, [x for x in params]
@@ -180,7 +181,7 @@ def send(
     )
     # address_or_alias is not normalized first here because
     # Account.send is part of Nile's public API and can accept hex addresses
-    account.send(
+    await account.send(
         address_or_alias,
         method,
         params,
@@ -195,18 +196,15 @@ def send(
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @network_option
-def call(address_or_alias, method, params, network):
+async def call(address_or_alias, method, params, network):
     """Call functions of StarkNet smart contracts."""
     if not is_alias(address_or_alias):
         address_or_alias = normalize_number(address_or_alias)
-    out = call_or_invoke_command(
-        contract=address_or_alias,
-        type="call",
-        method=method,
-        params=params,
-        network=network,
+    out = await call_or_invoke_command(
+        address_or_alias, "call", method, params, network
     )
-    print(out)
+    logging.info(out)
+    return out
 
 
 @cli.command()
@@ -293,13 +291,13 @@ def version():
 @click.argument("tx_hash", nargs=1)
 @click.option("--contracts_file", nargs=1)
 @network_option
-def debug(tx_hash, network, contracts_file):
+async def debug(tx_hash, network, contracts_file):
     """
     Locate an error in a transaction using available contracts.
 
     Alias for `nile status --debug`.
     """
-    status_command(normalize_number(tx_hash), network, "debug", contracts_file)
+    await status_command(normalize_number(tx_hash), network, "debug", contracts_file)
 
 
 @cli.command()
@@ -307,7 +305,7 @@ def debug(tx_hash, network, contracts_file):
 @click.option("--contracts_file", nargs=1)
 @network_option
 @watch_option
-def status(tx_hash, network, watch_mode, contracts_file):
+async def status(tx_hash, network, watch_mode, contracts_file):
     """
     Get the status of a transaction.
 
@@ -320,7 +318,7 @@ def status(tx_hash, network, watch_mode, contracts_file):
     $ nile status --debug transaction_hash
       Same as `status --track` then locate errors if rejected using local artifacts
     """
-    status_command(
+    await status_command(
         normalize_number(tx_hash),
         network,
         watch_mode=watch_mode,
@@ -331,24 +329,24 @@ def status(tx_hash, network, watch_mode, contracts_file):
 @cli.command()
 @click.option("--predeployed/--registered", default=False)
 @network_option
-def get_accounts(network, predeployed):
+async def get_accounts(network, predeployed):
     """Retrieve and manage deployed accounts."""
     if not predeployed:
-        return get_accounts_command(network)
+        return await get_accounts_command(network)
     else:
-        return get_predeployed_accounts_command(network)
+        return await get_predeployed_accounts_command(network)
 
 
 @cli.command()
 @click.argument("contract_address")
 @network_option
-def get_nonce(contract_address, network):
+async def get_nonce(contract_address, network):
     """Retrieve the nonce for a contract."""
-    return get_nonce_command(normalize_number(contract_address), network)
+    return await get_nonce_command(normalize_number(contract_address), network)
 
 
 cli = load_plugins(cli)
 
 
 if __name__ == "__main__":
-    cli()
+    cli(_anyion_backend="asyncio")

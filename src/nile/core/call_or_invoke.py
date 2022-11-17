@@ -3,13 +3,13 @@ import logging
 import re
 
 from nile import deployments
-from nile.common import normalize_number, run_command
 from nile.core import account
-from nile.utils import hex_address
+from nile.starknet_cli import execute_call
+from nile.utils import hex_address, normalize_number
 from nile.utils.status import status
 
 
-def call_or_invoke(
+async def call_or_invoke(
     contract,
     type,
     method,
@@ -39,31 +39,36 @@ def call_or_invoke(
     else:
         address, abi = next(deployments.load(contract, network))
 
-    address = hex_address(address)
-    arguments = [
-        "--address",
-        address,
-        "--abi",
-        abi,
-        "--function",
-        method,
-    ]
-
-    output = run_command(
-        operation=type,
-        network=network,
-        inputs=params,
-        arguments=arguments,
-        signature=signature,
-        max_fee=max_fee,
-        query_flag=query_flag,
-    )
+    try:
+        output = await execute_call(
+            type,
+            network,
+            inputs=params,
+            signature=signature,
+            max_fee=max_fee,
+            query_flag=query_flag,
+            address=hex_address(address),
+            abi=abi,
+            method=method,
+        )
+    except BaseException as err:
+        if "max_fee must be bigger than 0." in str(err):
+            logging.error(
+                """
+                \n😰 Whoops, looks like max fee is missing. Try with:\n
+                --max_fee=`MAX_FEE`
+                """
+            )
+            return
+        else:
+            logging.error(err)
+            return
 
     if type != "call" and output:
         logging.info(output)
         if not query_flag and watch_mode:
             transaction_hash = _get_transaction_hash(output)
-            return status(normalize_number(transaction_hash), network, watch_mode)
+            return await status(normalize_number(transaction_hash), network, watch_mode)
 
     return output
 
