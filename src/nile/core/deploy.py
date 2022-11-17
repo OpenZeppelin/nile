@@ -95,8 +95,7 @@ async def deploy_contract(
         salt = compute_hash_chain(data=[account.address, salt])
         deployer_for_address_generation = deployer_address
 
-    # This needs to be fixed following the Hex/Int Pattern
-    class_hash = int(get_class_hash(contract_name=contract_name), 16)
+    class_hash = get_class_hash(contract_name=contract_name)
 
     address = calculate_contract_address_from_hash(
         salt, class_hash, calldata, deployer_for_address_generation

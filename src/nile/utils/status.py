@@ -6,8 +6,9 @@ import time
 from collections import namedtuple
 from enum import Enum
 
-from nile.common import RETRY_AFTER_SECONDS, hex_class_hash
+from nile.common import RETRY_AFTER_SECONDS
 from nile.starknet_cli import execute_call
+from nile.utils import hex_class_hash
 from nile.utils.debug import debug_message
 
 TransactionStatus = namedtuple(

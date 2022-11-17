@@ -24,10 +24,10 @@ EXP_SALTS = [
     2557841322555501036413859939246042028937187876697248667793106475357514195630,
 ]
 EXP_CLASS_HASHES = [
-    "0x434343",
-    "0x464646",
-    "0x494949",
-    "0x525252",
+    0x434343,
+    0x464646,
+    0x494949,
+    0x525252,
 ]
 MOCK_ACC_ADDRESS = 0x123
 MOCK_ACC_INDEX = 0
@@ -180,8 +180,6 @@ async def test_deploy_contract(
 
     with patch("nile.core.deploy.get_class_hash") as mock_return_account:
         mock_return_account.return_value = exp_class_hash
-
-        exp_class_hash = int(exp_class_hash, 16)
 
         deployer_for_address_generation = deployer_address if unique else 0
         exp_address = calculate_contract_address_from_hash(
