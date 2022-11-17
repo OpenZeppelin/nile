@@ -90,15 +90,17 @@ async def deploy_contract(
     if salt is None:
         salt = 0
 
+    _salt = salt
+
     if unique:
         # Match UDC address generation
-        salt = compute_hash_chain(data=[account.address, salt])
+        _salt = compute_hash_chain(data=[account.address, salt])
         deployer_for_address_generation = deployer_address
 
     class_hash = get_class_hash(contract_name=contract_name)
 
     address = calculate_contract_address_from_hash(
-        salt, class_hash, calldata, deployer_for_address_generation
+        _salt, class_hash, calldata, deployer_for_address_generation
     )
 
     output = await account.send(
