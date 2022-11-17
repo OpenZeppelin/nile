@@ -14,11 +14,12 @@ from nile.common import (
     parse_information,
     run_command,
 )
+from nile.starknet_cli import execute_call
 from nile.utils import hex_address
 from nile.utils.status import status
 
 
-def deploy(
+async def deploy(
     contract_name,
     arguments,
     network,
@@ -39,16 +40,16 @@ def deploy(
     )
     register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
 
-    output = run_command(
-        operation="deploy",
-        network=network,
+    output = await execute_call(
+        "deploy",
+        network,
         contract_name=contract_name,
-        overriding_path=overriding_path,
         inputs=arguments,
+        overriding_path=overriding_path,
         mainnet_token=mainnet_token,
     )
-
     address, tx_hash = parse_information(output)
+
     logging.info(
         f"⏳ ️Deployment of {contract_name} successfully sent at {hex_address(address)}"
     )
@@ -57,14 +58,15 @@ def deploy(
     deployments.register(address, register_abi, network, alias)
 
     if watch_mode is not None:
-        if status(tx_hash, network, watch_mode).status.is_rejected:
+        tx_status = await status(tx_hash, network, watch_mode)
+        if tx_status.status.is_rejected:
             deployments.unregister(address, network, alias, abi=register_abi)
             return
 
     return address, register_abi
 
 
-def deploy_contract(
+async def deploy_contract(
     account,
     contract_name,
     salt,
@@ -98,7 +100,7 @@ def deploy_contract(
         salt, class_hash, calldata, deployer_for_address_generation
     )
 
-    output = account.send(
+    output = await account.send(
         deployer_address,
         method="deployContract",
         calldata=[class_hash, salt, unique, len(calldata), *calldata],
@@ -114,7 +116,8 @@ def deploy_contract(
     deployments.register(address, register_abi, account.network, alias)
 
     if watch_mode is not None:
-        if status(tx_hash, account.network, watch_mode).status.is_rejected:
+        tx_status = await status(tx_hash, account.network, watch_mode)
+        if tx_status.status.is_rejected:
             deployments.unregister(address, account.network, alias, abi=register_abi)
             return
 

@@ -75,7 +75,7 @@ The pattern is defined as follows:
 - Accept and use **only int for Internal API** (for hashes, keys, or addresses).
 - Accept **both hex and int from external input** (config files, starknet cli output, etc.) **or Public API functions**, and convert the input to int before using it internally (use `nile.utils.normalize_number`).
 - Always **return int from Internal or Public API, except when the method explicitly declares the intention to return a hex** (like `nile.utils.hex_class_hash` helper).
-- Convert to **hex before writing to files** (like in address for accounts or class_hash for declares) to keep consistency.
+- Convert to **hex before logging into files or CLI** (like in address for accounts or class_hash for declares) to keep consistency.
 - Convert to **hex when required for integrations** (like starknet cli subprocess calls), **right before where it is needed**.
 
 

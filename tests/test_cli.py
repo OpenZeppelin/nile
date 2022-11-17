@@ -9,22 +9,21 @@ from pathlib import Path
 from signal import SIGINT
 from threading import Timer
 from time import sleep
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 from urllib.error import URLError
 from urllib.request import urlopen
 
 import pytest
-from click.testing import CliRunner
+from asyncclick.testing import CliRunner
 
 from nile.cli import cli
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     CONTRACTS_DIRECTORY,
-    GATEWAYS,
     NODE_FILENAME,
 )
-from nile.utils import normalize_number
+from nile.utils import hex_class_hash
 
 RESOURCES_DIR = Path(__file__).parent / "resources"
 MOCK_HASH = "0x123"
@@ -45,11 +44,11 @@ def create_process(target, args):
     return p
 
 
-def start_node(seconds, node_args):
+async def start_node(seconds, node_args):
     """Start node with host and port specified in node_args and life in seconds."""
     # Timed kill command with SIGINT to close Node process
     Timer(seconds, lambda: kill(getpid(), SIGINT)).start()
-    CliRunner().invoke(cli, ["node", *node_args])
+    await CliRunner().invoke(cli, ["node", *node_args])
 
 
 def check_node(p, seconds, gateway_url):
@@ -65,13 +64,15 @@ def check_node(p, seconds, gateway_url):
             continue
 
 
-def test_clean():
+@pytest.mark.asyncio
+async def test_clean():
     # The implementation is already thoroughly covered by unit tests, so here
     # we just check whether the command completes successfully.
-    result = CliRunner().invoke(cli, ["clean"])
+    result = await CliRunner().invoke(cli, ["clean"])
     assert result.exit_code == 0
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "args, expected",
     [
@@ -85,7 +86,7 @@ def test_clean():
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-def test_compile(args, expected):
+async def test_compile(args, expected):
     contract_source = RESOURCES_DIR / "contracts" / "contract.cairo"
 
     target_dir = Path(CONTRACTS_DIRECTORY)
@@ -100,20 +101,21 @@ def test_compile(args, expected):
     assert not abi_dir.exists()
     assert not build_dir.exists()
 
-    result = CliRunner().invoke(cli, ["compile", *args])
+    result = await CliRunner().invoke(cli, ["compile", *args])
     assert result.exit_code == 0
 
     assert {f.name for f in abi_dir.glob("*.json")} == expected
     assert {f.name for f in build_dir.glob("*.json")} == expected
 
 
+@pytest.mark.asyncio
 @pytest.mark.xfail(
     sys.version_info >= (3, 10),
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
 @patch("nile.core.node.subprocess")
-def test_node_forwards_args(mock_subprocess):
+async def test_node_forwards_args(mock_subprocess):
     args = [
         "--host",
         "localhost",
@@ -123,13 +125,14 @@ def test_node_forwards_args(mock_subprocess):
         "1234",
     ]
 
-    result = CliRunner().invoke(cli, ["node", *args])
+    result = await CliRunner().invoke(cli, ["node", *args])
     assert result.exit_code == 0
 
     expected = ["starknet-devnet", *args]
     mock_subprocess.check_call.assert_called_once_with(expected)
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "opts, expected",
     [
@@ -143,7 +146,7 @@ def test_node_forwards_args(mock_subprocess):
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-def test_node_runs_gateway(opts, expected):
+async def test_node_runs_gateway(opts, expected):
     # Node life
     seconds = 15
 
@@ -164,7 +167,8 @@ def test_node_runs_gateway(opts, expected):
 
     # Spawn process to start StarkNet local network with specified port
     # i.e. $ nile node --host localhost --port 5001
-    p = create_process(target=start_node, args=(seconds, args))
+    init_node = await start_node(seconds, args)
+    p = create_process(target=init_node, args=(seconds, args))
     p.start()
 
     # Check node heartbeat and assert that it is running
@@ -179,6 +183,7 @@ def test_node_runs_gateway(opts, expected):
     assert gateway.get(network) == expected
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "args",
     [
@@ -188,22 +193,17 @@ def test_node_runs_gateway(opts, expected):
         ([MOCK_HASH, "--network", "mainnet", "--contracts_file", "example.txt"]),
     ],
 )
-@patch("nile.utils.status.subprocess")
-def test_status(mock_subprocess, args):
-    mock_subprocess.check_output.return_value = json.dumps(
-        {"tx_status": "ACCEPTED ON L2"}
-    )
-    result = CliRunner().invoke(cli, ["status", *args])
+async def test_status(args):
+    with patch("nile.utils.status.execute_call", new=AsyncMock()) as mock_execute:
+        mock_execute.return_value = json.dumps({"tx_status": "ACCEPTED_ON_L2"})
 
-    # Check status
-    assert result.exit_code == 0
+        result = await CliRunner().invoke(cli, ["status", *args])
 
-    # Setup and assert expected output
-    expected = ["starknet", "tx_status", "--hash", hex(normalize_number(MOCK_HASH))]
+        # Check status
+        assert result.exit_code == 0
 
-    network = args[2]
-    if network in ["goerli2", "integration"]:
-        expected.append(f"--gateway_url={GATEWAYS.get(network)}")
-        expected.append(f"--feeder_gateway_url={GATEWAYS.get(network)}")
+        # Check internals
+        network = args[2]
+        command_args = {"hash": hex_class_hash(MOCK_HASH)}
 
-    mock_subprocess.check_output.assert_called_once_with(expected)
+        mock_execute.assert_called_once_with("tx_status", network, **command_args)

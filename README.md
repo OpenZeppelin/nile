@@ -241,13 +241,13 @@ Please note:
 
 ### `run`
 
-Execute a script in the context of Nile. The script must implement a `run(nre)` function to receive a `NileRuntimeEnvironment` object exposing Nile's scripting API.
+Execute a script in the context of Nile. The script must implement an asynchronous `run(nre)` function to receive a `NileRuntimeEnvironment` object exposing Nile's scripting API.
 
 ```python
 # path/to/script.py
 
-def run(nre):
-    address, abi = nre.deploy("contract", alias="my_contract")
+async def run(nre):
+    address, abi = await nre.deploy("contract", alias="my_contract")
     print(abi, address)
 ```
 
@@ -373,7 +373,7 @@ Retrieves a list of ready-to-use accounts which allows for easy scripting integr
 
 1. store private keys in a `.env`
 
-    ```
+    ```txt
     PRIVATE_KEY_ALIAS_1=286426666527820764590699050992975838532
     PRIVATE_KEY_ALIAS_2=263637040172279991633704324379452721903
     PRIVATE_KEY_ALIAS_3=325047780196174231475632140485641889884
@@ -393,18 +393,18 @@ Retrieves a list of ready-to-use accounts which allows for easy scripting integr
 Next, write a script and call `get-accounts` to retrieve and use the deployed accounts.
 
 ```python
-def run(nre):
+async def run(nre):
 
     # fetch the list of deployed accounts
-    accounts = nre.get_accounts()
+    accounts = await nre.get_accounts()
 
     # then
-    accounts[0].send(...)
+    await accounts[0].send(...)
 
     # or
     alice, bob, *_ = accounts
-    alice.send(...)
-    bob.send(...)
+    await alice.send(...)
+    await bob.send(...)
 ```
 
 > Please note that the list of accounts includes only those that exist in the local `<network>.accounts.json` file. In a recent release we added a flag to the command, to get predeployed accounts if the network you are connected to is a [starknet-devnet](https://github.com/Shard-Labs/starknet-devnet) instance.
@@ -422,18 +422,18 @@ nile get-accounts --predeployed
 Or from the nile runtime environment for scripting:
 
 ```python
-def run(nre):
+async def run(nre):
 
     # fetch the list of pre-deployed accounts from devnet
-    accounts = nre.get_accounts(predeployed=True)
+    accounts = await nre.get_accounts(predeployed=True)
 
     # then
-    accounts[0].send(...)
+    await accounts[0].send(...)
 
     # or
     alice, bob, *_ = accounts
-    alice.send(...)
-    bob.send(...)
+    await alice.send(...)
+    await bob.send(...)
 ```
 
 ### `get-nonce`
@@ -449,8 +449,8 @@ nile get-nonce <contract_address>
 Return the hash of a declared class. This can be useful in scenarios where a contract class is already declared with an alias prior to running a script.
 
 ```python
-def run(nre):
-    predeclared_class = nre.get_declaration("alias")
+async def run(nre):
+    predeclared_class = await nre.get_declaration("alias")
 ```
 
 > Note that this command is only available in the context of scripting in the Nile Runtime Environment.
@@ -511,21 +511,19 @@ In order for this implementation to be functional, the plugin developer must fol
 
    ```sh
    # We need to specify that Click commands are entry points in the group `nile_plugins`
-   [tool.poetry.plugins.nile_plugins]
-   cli =
-       # <command_name> = <package_method_location>
-       "greet" = "nile_greet.main.greet"
+   [tool.poetry.plugins."nile_plugins.cli"]
+   # <command_name> = <package_method_location>
+   "greet" = "nile_greet.main.greet"
    ```
 
 3. Optionally specify plugin entry points for `NileRuntimeEnvironment`. This doesn't require implementing a Click command (remove the cli entry points if not needed):
 
    ```sh
-   [tool.poetry.plugins.nile_plugins]
-   cli =
-       "greet" = "nile_greet.main.greet"
+   [tool.poetry.plugins."nile_plugins.cli"]
+   "greet" = "nile_greet.main.greet"
 
-   nre =
-       "greet" = "nile_greet.nre.greet"
+   [tool.poetry.plugins."nile_plugins.nre"]
+   "greet" = "nile_greet.nre.greet"
    ```
 
 4. Done! For a better understanding of python entry points through setuptools, [check this documentation](https://setuptools.pypa.io/en/latest/userguide/entry_point.html#entry-points-for-plugins).

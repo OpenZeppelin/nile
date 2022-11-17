@@ -1,6 +1,6 @@
 """Tests for deploy command."""
 import logging
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from starkware.starknet.core.os.contract_address.contract_address import (
@@ -38,20 +38,21 @@ ABI = f"{ABIS_DIRECTORY}/{CONTRACT}.json"
 ABI_OVERRIDE = f"{ABIS_DIRECTORY}/override.json"
 BASE_PATH = (BUILD_DIRECTORY, ABIS_DIRECTORY)
 PATH_OVERRIDE = ("artifacts2", ABIS_DIRECTORY)
-RUN_OUTPUT = b"output"
 ARGS = [1, 2, 3]
 ADDRESS = 999
 TX_HASH = 222
+CALL_OUTPUT = [ADDRESS, TX_HASH]
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "args, exp_command, exp_abi",
+    "args, cmd_args, exp_abi",
     [
         (
             [CONTRACT, ARGS, NETWORK, ALIAS],  # args
-            {  # expected command
+            {
                 "contract_name": CONTRACT,
-                "network": NETWORK,
+                "inputs": ARGS,
                 "overriding_path": None,
                 "mainnet_token": None,
             },
@@ -59,9 +60,9 @@ TX_HASH = 222
         ),
         (
             [CONTRACT, ARGS, NETWORK, ALIAS, PATH_OVERRIDE],  # args
-            {  # expected command
+            {
                 "contract_name": CONTRACT,
-                "network": NETWORK,
+                "inputs": ARGS,
                 "overriding_path": PATH_OVERRIDE,
                 "mainnet_token": None,
             },
@@ -69,9 +70,9 @@ TX_HASH = 222
         ),
         (
             [CONTRACT, ARGS, NETWORK, ALIAS, None, ABI_OVERRIDE],  # args
-            {  # expected command
+            {
                 "contract_name": CONTRACT,
-                "network": NETWORK,
+                "inputs": ARGS,
                 "overriding_path": None,
                 "mainnet_token": None,
             },
@@ -79,9 +80,9 @@ TX_HASH = 222
         ),
         (
             [CONTRACT, ARGS, NETWORK, ALIAS, PATH_OVERRIDE, ABI_OVERRIDE],  # args
-            {  # expected command
+            {
                 "contract_name": CONTRACT,
-                "network": NETWORK,
+                "inputs": ARGS,
                 "overriding_path": PATH_OVERRIDE,
                 "mainnet_token": None,
             },
@@ -89,32 +90,33 @@ TX_HASH = 222
         ),
     ],
 )
-@patch("nile.core.deploy.run_command", return_value=RUN_OUTPUT)
-@patch("nile.core.deploy.parse_information", return_value=[ADDRESS, TX_HASH])
+@patch("nile.core.deploy.parse_information", return_value=CALL_OUTPUT)
 @patch("nile.core.deploy.deployments.register")
-def test_deploy(
-    mock_register, mock_parse, mock_run_cmd, caplog, args, exp_command, exp_abi
-):
+async def test_deploy(mock_register, mock_parse, caplog, args, cmd_args, exp_abi):
     logging.getLogger().setLevel(logging.INFO)
 
-    # check return values
-    res = deploy(*args)
-    assert res == (ADDRESS, exp_abi)
+    with patch("nile.core.deploy.execute_call", new=AsyncMock()) as mock_cli_call:
+        mock_cli_call.return_value = CALL_OUTPUT
 
-    # check internals
-    mock_run_cmd.assert_called_once_with(operation="deploy", inputs=ARGS, **exp_command)
-    mock_parse.assert_called_once_with(RUN_OUTPUT)
-    mock_register.assert_called_once_with(ADDRESS, exp_abi, NETWORK, ALIAS)
+        # check return values
+        res = await deploy(*args)
+        assert res == (ADDRESS, exp_abi)
 
-    # check logs
-    assert f"🚀 Deploying {CONTRACT}" in caplog.text
-    assert (
-        f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(ADDRESS)}"
-        in caplog.text
-    )
-    assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
+        # check internals
+        mock_parse.assert_called_once_with(CALL_OUTPUT)
+        mock_register.assert_called_once_with(ADDRESS, exp_abi, NETWORK, ALIAS)
+        mock_cli_call.assert_called_once_with("deploy", NETWORK, **cmd_args)
+
+        # check logs
+        assert f"🚀 Deploying {CONTRACT}" in caplog.text
+        assert (
+            f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(ADDRESS)}"
+            in caplog.text
+        )
+        assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "args, exp_class_hash, exp_salt, exp_abi",
     [
@@ -158,7 +160,7 @@ def test_deploy(
 @patch("nile.core.account.Account.send", return_value=RUN_OUTPUT)
 @patch("nile.core.deploy.parse_information", return_value=[ADDRESS, TX_HASH])
 @patch("nile.core.deploy.deployments.register")
-def test_deploy_contract(
+async def test_deploy_contract(
     mock_register,
     mock_parse,
     mock_send,

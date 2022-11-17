@@ -2,12 +2,12 @@
 
 import json
 import logging
-import subprocess
 import time
 from collections import namedtuple
 from enum import Enum
 
-from nile.common import RETRY_AFTER_SECONDS, get_network_parameter_or_set_env
+from nile.common import RETRY_AFTER_SECONDS, hex_class_hash
+from nile.starknet_cli import execute_call
 from nile.utils.debug import debug_message
 
 TransactionStatus = namedtuple(
@@ -15,25 +15,33 @@ TransactionStatus = namedtuple(
 )
 
 
-def status(tx_hash, network, watch_mode=None, contracts_file=None) -> TransactionStatus:
+async def status(
+    tx_hash, network, watch_mode=None, contracts_file=None
+) -> TransactionStatus:
     """Fetch a transaction status.
 
     Optionally track until resolved (accepted on L2 or rejected) and/or
     use available artifacts to help locate the error. Debug implies track.
     """
-    command = ["starknet", "tx_status", "--hash", hex(tx_hash)]
-    command += get_network_parameter_or_set_env(network)
-
     logging.info("⏳ Querying the network for transaction status...")
 
-    receipt = _get_tx_receipt(tx_hash, command, watch_mode)
+    while True:
+        tx_status = await execute_call(
+            "tx_status", network, hash=hex_class_hash(tx_hash)
+        )
+        raw_receipt = json.loads(tx_status)
+        receipt = _get_tx_receipt(tx_hash, raw_receipt, watch_mode)
+        if receipt is not None:
+            break
 
     if not receipt.status.is_rejected:
         return TransactionStatus(tx_hash, receipt.status, None)
 
     error_message = receipt.receipt["tx_failure_reason"]["error_message"]
     if watch_mode == "debug":
-        error_message = debug_message(error_message, command, network, contracts_file)
+        error_message = await debug_message(
+            error_message, tx_hash, network, contracts_file
+        )
 
     logging.info(f"🧾 Error message:\n{error_message}")
 
@@ -43,31 +51,27 @@ def status(tx_hash, network, watch_mode=None, contracts_file=None) -> Transactio
 _TransactionReceipt = namedtuple("TransactionReceipt", ["tx_hash", "status", "receipt"])
 
 
-def _get_tx_receipt(tx_hash, command, watch_mode) -> _TransactionReceipt:
-    while True:
-        raw_receipt = json.loads(subprocess.check_output(command))
-        receipt = _TransactionReceipt(
-            tx_hash, TxStatus.from_receipt(raw_receipt), raw_receipt
-        )
+def _get_tx_receipt(tx_hash, raw_receipt, watch_mode) -> _TransactionReceipt:
+    receipt = _TransactionReceipt(
+        tx_hash, TxStatus.from_receipt(raw_receipt), raw_receipt
+    )
 
-        if receipt.status.is_rejected:
-            logging.info(f"❌ Transaction status: {receipt.status}")
-            return receipt
+    if receipt.status.is_rejected:
+        logging.info(f"❌ Transaction status: {receipt.status}")
+        return receipt
 
-        log_output = f"Transaction status: {receipt.status}"
+    log_output = f"Transaction status: {receipt.status}"
 
-        if receipt.status.is_accepted:
-            logging.info(f"✅ {log_output}. No error in transaction.")
-            return receipt
+    if receipt.status.is_accepted:
+        logging.info(f"✅ {log_output}. No error in transaction.")
+        return receipt
 
-        if watch_mode is None:
-            logging.info(f"🕒 {log_output}.")
-            return receipt
+    if watch_mode is None:
+        logging.info(f"🕒 {log_output}.")
+        return receipt
 
-        logging.info(
-            f"🕒 {log_output}. Trying again in {RETRY_AFTER_SECONDS} seconds..."
-        )
-        time.sleep(RETRY_AFTER_SECONDS)
+    logging.info(f"🕒 {log_output}. Trying again in {RETRY_AFTER_SECONDS} seconds...")
+    time.sleep(RETRY_AFTER_SECONDS)
 
 
 class TxStatus(Enum):
