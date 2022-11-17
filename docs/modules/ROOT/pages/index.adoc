@@ -1,3 +1,5 @@
+:pyenv: link:https://github.com/OpenZeppelin/cairo-contracts/blob/release-v0.4.0b/src/openzeppelin/access/ownable/library.cairo[pyenv]
+
 = Overview
 
 Nile is a CLI tool to develop or interact with Starknet projects written in Cairo. It consists of different components for developing, compiling, testing, and deploying your smart contracts and dApps, providing a CLI for executing tasks, and a Runtime Environment (NRE) for scripting.
@@ -6,4 +8,52 @@ The package is designed to be extensible and very customizable by using plugins.
 
 You can get a list of plugins extending Nile functionality from the xref:plugins.adoc[Plugins] section.
 
-== Get Started
+== Requirements
+
+=== Supported Python versions
+
+Some Nile dependencies have specific python version requirements, therefore we recommend using a python version manager like {pyenv}, and virtual environments to avoid conflicts.
+
+Current supported Python versions are >=3.8 and <3.10.
+
+== Installation
+
+Create a folder for your project and cd into it:
+
+[,sh]
+----
+mkdir myproject && cd myproject
+----
+
+Create a virtualenv and activate it:
+
+[,sh]
+----
+python3 -m venv env
+source env/bin/activate
+----
+
+Install Nile:
+
+[,sh]
+----
+(env): pip install cairo-nile
+----
+
+Use Nile to quickly set up your development environment:
+
+[,sh]
+----
+(env): nile init
+🗄 Creating project directory tree
+⛵️ Nile project ready! Try running:
+
+nile compile
+----
+
+`nile init` builds the project structure by:
+
+- Creating directories for contracts and tests.
+- Populating these directories with test modules.
+- Generating a .env to store private key aliases.
+- Setting up a node.json for initializing a local node.
