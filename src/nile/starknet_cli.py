@@ -8,7 +8,6 @@ from types import SimpleNamespace
 from starkware.starknet.cli import starknet_cli
 from starkware.starknet.cli.starknet_cli import NETWORKS, assert_tx_received
 from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
-from starkware.starknet.cli.starknet_cli import NETWORKS
 
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS, prepare_params
 

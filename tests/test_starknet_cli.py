@@ -66,12 +66,18 @@ def test__add_args(args, expected):
     "args, expected",
     [
         (
-            {"inputs": INPUTS, "address": ADDRESS},
-            ["--inputs", "1", "2", "--address", ADDRESS],
+            {"address": ADDRESS, "inputs": INPUTS},
+            ["--address", ADDRESS, "--inputs", "1", "2"],
         ),
         (
             {"inputs": INPUTS, "contract_name": CONTRACT_NAME},
-            ["--inputs", "1", "2", "--contract", f"artifacts/{CONTRACT_NAME}.json"],
+            [
+                "--contract",
+                f"artifacts/{CONTRACT_NAME}.json",
+                "--inputs",
+                "1",
+                "2",
+            ],
         ),
         (
             {"method": "METHOD", "query_flag": "simulate"},

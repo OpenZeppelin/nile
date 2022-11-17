@@ -29,6 +29,7 @@ async def test_get_nonce(contract_address, network, caplog):
         # Check log
         assert f"Current Nonce: {NONCE}" in caplog.text
 
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "contract_address",

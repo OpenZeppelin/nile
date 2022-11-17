@@ -96,7 +96,7 @@ class Account(AsyncObject):
             self.address = address
             self.index = index
 
-    async def deploy(self, salt=0, max_fee=0, query_type=None, watch_mode=None):
+    async def deploy(self, salt=0, max_fee=None, query_type=None, watch_mode=None):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
@@ -104,7 +104,7 @@ class Account(AsyncObject):
 
         salt = normalize_number(salt)
         class_hash = get_hash("Account")
-        max_fee = normalize_number(max_fee)
+        max_fee = 0 if max_fee is None else normalize_number(max_fee)
         calldata = [self.signer.public_key]
 
         contract_address = calculate_contract_address_from_hash(
