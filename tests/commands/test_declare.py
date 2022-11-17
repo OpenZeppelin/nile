@@ -47,7 +47,7 @@ def test_alias_exists():
             {  # expected command args
                 "contract_name": CONTRACT,
                 "signature": SIGNATURE,
-                "max_fee": "0",
+                "max_fee": 0,
                 "overriding_path": None,
                 "mainnet_token": None,
                 "sender": hex_address(SENDER),
@@ -59,7 +59,7 @@ def test_alias_exists():
             {  # expected command args
                 "contract_name": CONTRACT,
                 "signature": SIGNATURE,
-                "max_fee": "0",
+                "max_fee": 0,
                 "overriding_path": None,
                 "mainnet_token": None,
                 "sender": hex_address(SENDER),
@@ -71,7 +71,7 @@ def test_alias_exists():
             {  # expected command args
                 "contract_name": CONTRACT,
                 "signature": SIGNATURE,
-                "max_fee": "0",
+                "max_fee": 0,
                 "overriding_path": OVERRIDING_PATH,
                 "mainnet_token": None,
                 "sender": hex_address(SENDER),

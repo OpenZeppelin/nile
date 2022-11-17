@@ -193,8 +193,8 @@ class Account(AsyncObject):
             method="__execute__",
             params=calldata,
             network=self.network,
-            signature=[str(sig_r), str(sig_s)],
-            max_fee=str(max_fee),
+            signature=[sig_r, sig_s],
+            max_fee=max_fee,
             query_flag=query_type,
             watch_mode=watch_mode,
         )

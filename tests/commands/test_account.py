@@ -158,7 +158,7 @@ async def test_send_nonce_call(mock_target_address, mock_call, mock_nonce, mock_
 async def test_send_sign_transaction_and_execute(mock_target_address, mock_deploy):
     account = await Account(KEY, NETWORK)
 
-    calldata = ["111", "222", "333"]
+    calldata = [111, 222, 333]
     sig_r, sig_s = [999, 888]
     return_signature = [calldata, sig_r, sig_s]
 
@@ -182,11 +182,11 @@ async def test_send_sign_transaction_and_execute(mock_target_address, mock_deplo
         # Check values are correctly passed to '__execute__'
         mock_call.assert_called_with(
             contract=account,
-            max_fee=str(max_fee),
+            max_fee=max_fee,
             method="__execute__",
             network=NETWORK,
             params=calldata,
-            signature=[str(sig_r), str(sig_s)],
+            signature=[sig_r, sig_s],
             type="invoke",
             query_flag=None,
             watch_mode=None,
@@ -204,7 +204,7 @@ async def test_send_defaults(mock_call, mock_nonce, mock_target_address, mock_de
     account = await Account(KEY, NETWORK)
 
     send_args = [MOCK_TARGET_ADDRESS, "method", [1, 2, 3]]
-    calldata = ["111", "222", "333"]
+    calldata = [111, 222, 333]
     sig_r, sig_s = [999, 888]
     return_signature = [calldata, sig_r, sig_s]
 
@@ -223,11 +223,11 @@ async def test_send_defaults(mock_call, mock_nonce, mock_target_address, mock_de
 
     mock_call.assert_called_with(
         contract=account,
-        max_fee=str(0),
+        max_fee=0,
         method="__execute__",
         network=NETWORK,
         params=calldata,
-        signature=[str(sig_r), str(sig_s)],
+        signature=[sig_r, sig_s],
         type="invoke",
         query_flag=None,
         watch_mode=None,
@@ -278,7 +278,7 @@ async def test_execute_query(
     account = await Account(KEY, NETWORK)
 
     send_args = [MOCK_TARGET_ADDRESS, "method", [1, 2, 3]]
-    calldata = ["111", "222", "333"]
+    calldata = [111, 222, 333]
     sig_r, sig_s = [999, 888]
     return_signature = [calldata, sig_r, sig_s]
 
@@ -305,11 +305,11 @@ async def test_execute_query(
     # Check query_flag is correctly passed
     mock_call.assert_called_with(
         contract=account,
-        max_fee=str(MAX_FEE),
+        max_fee=MAX_FEE,
         method="__execute__",
         network=NETWORK,
         params=calldata,
-        signature=[str(sig_r), str(sig_s)],
+        signature=[sig_r, sig_s],
         type="invoke",
         query_flag=query_type,
         watch_mode=watch_mode,
