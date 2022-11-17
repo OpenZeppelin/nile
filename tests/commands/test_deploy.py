@@ -193,7 +193,7 @@ async def test_deploy_contract(
         mock_send.assert_called_once_with(
             deployer_address,
             method="deployContract",
-            calldata=[exp_class_hash, exp_salt, unique, len(calldata), *calldata],
+            calldata=[exp_class_hash, salt, unique, len(calldata), *calldata],
             max_fee=max_fee,
         )
         mock_register.assert_called_once_with(exp_address, exp_abi, NETWORK, ALIAS)
