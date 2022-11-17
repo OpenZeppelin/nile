@@ -87,6 +87,9 @@ async def deploy_contract(
     register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
     deployer_for_address_generation = 0
 
+    if salt is None:
+        salt = 0
+
     if unique:
         # Match UDC address generation
         salt = compute_hash_chain(data=[account.address, salt])

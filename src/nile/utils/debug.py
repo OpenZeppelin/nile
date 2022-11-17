@@ -3,7 +3,12 @@
 import logging
 import os
 
-from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME, get_addresses_from_string
+from nile.common import (
+    BUILD_DIRECTORY,
+    DEPLOYMENTS_FILENAME,
+    get_addresses_from_string,
+    hex_class_hash,
+)
 from nile.starknet_cli import execute_call
 
 
@@ -41,7 +46,7 @@ async def debug_message(error_message, tx_hash, network, contracts_file=None):
     return await execute_call(
         "tx_status",
         network,
-        hash=tx_hash,
+        hash=hex_class_hash(tx_hash),
         contracts=",".join(contracts),
         error_message=True,
     )
