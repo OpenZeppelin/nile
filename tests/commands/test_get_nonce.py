@@ -23,13 +23,11 @@ async def test_get_nonce(contract_address, network, caplog):
         nonce = await get_nonce(contract_address, network)
         assert nonce == NONCE
 
-        # args = set_args(network)
-        command_args = {"contract_address": "0xffff"}
+        command_args = {"contract_address": contract_address}
         mock_cli_call.assert_called_once_with("get_nonce", network, **command_args)
 
         # Check log
         assert f"Current Nonce: {NONCE}" in caplog.text
-
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
@@ -41,6 +39,5 @@ async def test_get_nonce_without_log_address_formats(contract_address):
         mock_cli_call.return_value = NONCE
         await get_nonce_without_log(contract_address, NETWORK)
 
-        # args = set_args("goerli")
         command_args = {"contract_address": "0x4d2"}
         mock_cli_call.assert_called_once_with("get_nonce", NETWORK, **command_args)

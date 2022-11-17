@@ -22,7 +22,7 @@ NETWORK = "localhost"
 ALIAS = "alias"
 PATH = (BUILD_DIRECTORY, ABIS_DIRECTORY)
 OVERRIDING_PATH = ("new_path", ABIS_DIRECTORY)
-MAX_FEE = "432"
+MAX_FEE = 432
 CALL_OUTPUT = b"output"
 HASH = 111
 TX_HASH = 222
@@ -47,36 +47,36 @@ def test_alias_exists():
             {  # expected command args
                 "contract_name": CONTRACT,
                 "signature": SIGNATURE,
-                "max_fee": "0",
+                "max_fee": 0,
                 "overriding_path": None,
                 "mainnet_token": None,
                 "sender": hex_address(SENDER),
             },
-            [hex_class_hash(HASH), NETWORK, None],  # expected register
+            [HASH, NETWORK, None],  # expected register
         ),
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS],  # args
             {  # expected command args
                 "contract_name": CONTRACT,
                 "signature": SIGNATURE,
-                "max_fee": "0",
+                "max_fee": 0,
                 "overriding_path": None,
                 "mainnet_token": None,
                 "sender": hex_address(SENDER),
             },
-            [hex_class_hash(HASH), NETWORK, ALIAS],  # expected register
+            [HASH, NETWORK, ALIAS],  # expected register
         ),
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS, OVERRIDING_PATH],  # args
             {  # expected command args
                 "contract_name": CONTRACT,
                 "signature": SIGNATURE,
-                "max_fee": "0",
+                "max_fee": 0,
                 "overriding_path": OVERRIDING_PATH,
                 "mainnet_token": None,
                 "sender": hex_address(SENDER),
             },
-            [hex_class_hash(HASH), NETWORK, ALIAS],  # expected register
+            [HASH, NETWORK, ALIAS],  # expected register
         ),
         (
             [SENDER, CONTRACT, SIGNATURE, NETWORK, ALIAS, PATH, MAX_FEE],  # args
@@ -88,7 +88,7 @@ def test_alias_exists():
                 "mainnet_token": None,
                 "sender": hex_address(SENDER),
             },
-            [hex_class_hash(HASH), NETWORK, ALIAS],  # expected register
+            [HASH, NETWORK, ALIAS],  # expected register
         ),
     ],
 )

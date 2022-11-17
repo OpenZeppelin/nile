@@ -2,7 +2,7 @@
 import logging
 
 from nile import deployments
-from nile.common import DECLARATIONS_FILENAME, parse_information, prepare_params
+from nile.common import DECLARATIONS_FILENAME, parse_information
 from nile.starknet_cli import execute_call
 from nile.utils import hex_address, hex_class_hash
 from nile.utils.status import status
@@ -26,13 +26,13 @@ async def declare(
         file = f"{network}.{DECLARATIONS_FILENAME}"
         raise Exception(f"Alias {alias} already exists in {file}")
 
-    max_fee = "0" if max_fee is None else str(max_fee)
+    max_fee = 0 if max_fee is None else int(max_fee)
 
     output = await execute_call(
         "declare",
         network,
         contract_name=contract_name,
-        signature=prepare_params(signature),
+        signature=signature,
         max_fee=max_fee,
         overriding_path=overriding_path,
         mainnet_token=mainnet_token,
@@ -44,7 +44,7 @@ async def declare(
     logging.info(f"⏳ Successfully sent declaration of {contract_name} as {padded_hash}")
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
-    deployments.register_class_hash(padded_hash, network, alias)
+    deployments.register_class_hash(class_hash, network, alias)
 
     if watch_mode is not None:
         tx_status = await status(tx_hash, network, watch_mode)

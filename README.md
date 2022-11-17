@@ -477,15 +477,15 @@ Note that if you want to pass the token name as a hex or an int, you need to pro
 
 ## Extending Nile with plugins
 
-Nile has the possibility of extending its CLI and `NileRuntimeEnvironment` functionalities through plugins. For developing plugins for Nile fork [this plugin example](https://github.com/franalgaba/nile-plugin-example) boilerplate and implement your desired functionality with the provided instructions.
+Nile can extend its CLI and `NileRuntimeEnvironment` functionalities through plugins. For developing plugins, you can fork [this example template](https://github.com/franalgaba/nile-plugin-example) and implement your desired functionality with the provided instructions.
 
 ### How it works
 
-This implementation takes advantage of the native extensibility features of [click](https://click.palletsprojects.com/). Using click and leveraging the Python [entrypoints](https://packaging.python.org/en/latest/specifications/entry-points/) we have a simple manner of handling extension natively on Python environments through dependencies. The plugin implementation on Nile looks for specific Python entrypoints constraints for adding commands.
+This implementation takes advantage of the native extensibility features of [Click](https://click.palletsprojects.com/). By using Click and leveraging Python [entry points](https://packaging.python.org/en/latest/specifications/entry-points/), we have a simple manner of handling extensions natively in Python environments through dependencies. The plugin implementation on Nile looks for specific Python entry point constraints for adding commands to either the CLI or NRE.
 
-In order for this implementation to be functional, it is needed by the plugin developer to follow some development guidelines defined in this simple plugin example extending Nile for a dummy greet extension. In a brief explanation the guidelines are as follows:
+In order for this implementation to be functional, the plugin developer must follow some guidelines:
 
-1. Define a Python module that implements a click command or group:
+1. Use Click if the plugin provides a CLI command:
 
    ```python
    # First, import click dependency
@@ -493,30 +493,39 @@ In order for this implementation to be functional, it is needed by the plugin de
 
    # Decorate the method that will be the command name with `click.command`
    @click.command()
-   # You can define custom parameters as defined in `click`: https://click.palletsprojects.com/en/7.x/options/
-   def my_command():
-       # Help message to show with the command
+   # Custom parameters can be added as defined in `click`: https://click.palletsprojects.com/en/7.x/options/
+   def greet():
        """
-       Subcommand plugin that does something.
+       Plugin CLI command that does something.
        """
-       # Done! Now implement your custom functionality in the command
-       click.echo("I'm a plugin overriding a command!")
+       # Done! Now implement the custom functionality in the command
+       click.echo("Hello Nile!")
    ```
 
-2. Define the plugin entrypoint. In this case using Poetry features in the pyproject.toml file:
+2. Define the plugin entry points (in this case by using the Poetry plugins feature in the `pyproject.toml` file):
 
    ```sh
-   # We need to specify that click commands are Poetry entrypoints of type `nile_plugins`. Do not modify this
-   [tool.poetry.plugins."nile_plugins"]
-   # Here you specify you command name and location <command_name> = <package_method_location>
+   # We need to specify that Click commands are entry points in the group `nile_plugins`
+   [tool.poetry.plugins."nile_plugins.cli"]
+   # <command_name> = <package_method_location>
    "greet" = "nile_greet.main.greet"
    ```
 
-3. Done!
+3. Optionally specify plugin entry points for `NileRuntimeEnvironment`. This doesn't require implementing a Click command (remove the cli entry points if not needed):
+
+   ```sh
+   [tool.poetry.plugins."nile_plugins.cli"]
+   "greet" = "nile_greet.main.greet"
+
+   [tool.poetry.plugins."nile_plugins.nre"]
+   "greet" = "nile_greet.nre.greet"
+   ```
+
+4. Done! For a better understanding of python entry points through setuptools, [check this documentation](https://setuptools.pypa.io/en/latest/userguide/entry_point.html#entry-points-for-plugins).
 
 How to decide if I want to use a plugin or not? Just install / uninstall the plugin dependency from your project :smile:
 
-Finally, after the desired plugin is installed, it will also be automatically available through the `nre`. The plugin developer should be aware of this and design the interface accordingly.
+Using both cli and nre entry points under the nile_plugins group allows the development of powerful plugins which are easily integrated.
 
 ## Contribute
 

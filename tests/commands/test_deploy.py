@@ -26,12 +26,12 @@ CLASS_HASH = 1231
 ARGS = [1, 2, 3]
 ADDRESS = 999
 TX_HASH = 222
+CALL_OUTPUT = [ADDRESS, TX_HASH]
 
 SALT = 555
 SIGNATURE = [111, 333]
 FEE = 666
 CALL_OUTPUT = [ADDRESS, TX_HASH]
-
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
@@ -41,7 +41,7 @@ CALL_OUTPUT = [ADDRESS, TX_HASH]
             [CONTRACT, ARGS, NETWORK, ALIAS],  # args
             {
                 "contract_name": CONTRACT,
-                "inputs": ["1", "2", "3"],
+                "inputs": ARGS,
                 "overriding_path": None,
                 "mainnet_token": None,
             },
@@ -51,7 +51,7 @@ CALL_OUTPUT = [ADDRESS, TX_HASH]
             [CONTRACT, ARGS, NETWORK, ALIAS, PATH_OVERRIDE],  # args
             {
                 "contract_name": CONTRACT,
-                "inputs": ["1", "2", "3"],
+                "inputs": ARGS,
                 "overriding_path": PATH_OVERRIDE,
                 "mainnet_token": None,
             },
@@ -61,7 +61,7 @@ CALL_OUTPUT = [ADDRESS, TX_HASH]
             [CONTRACT, ARGS, NETWORK, ALIAS, None, ABI_OVERRIDE],  # args
             {
                 "contract_name": CONTRACT,
-                "inputs": ["1", "2", "3"],
+                "inputs": ARGS,
                 "overriding_path": None,
                 "mainnet_token": None,
             },
@@ -71,7 +71,7 @@ CALL_OUTPUT = [ADDRESS, TX_HASH]
             [CONTRACT, ARGS, NETWORK, ALIAS, PATH_OVERRIDE, ABI_OVERRIDE],  # args
             {
                 "contract_name": CONTRACT,
-                "inputs": ["1", "2", "3"],
+                "inputs": ARGS,
                 "overriding_path": PATH_OVERRIDE,
                 "mainnet_token": None,
             },

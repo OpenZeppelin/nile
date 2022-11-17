@@ -1,32 +1,31 @@
 """Call the starknet_cli."""
 
 import io
+import re
 import sys
 from types import SimpleNamespace
 
 from starkware.starknet.cli import starknet_cli
 from starkware.starknet.cli.starknet_cli import NETWORKS, assert_tx_received
 from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
+from starkware.starknet.cli.starknet_cli import NETWORKS
 
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS, prepare_params
 
 ARGS = [
+    "abi",
+    "address",
     "contracts",
     "contract_address",
-    "inputs",
-    "signature",
-    "address",
-    "abi",
-    "sender",
-    "max_fee",
-    "mainnet_token",
     "hash",
+    "mainnet_token",
+    "sender",
 ]
 
 
 async def execute_call(cmd_name, network, **kwargs):
     """Build and execute call to starknet_cli."""
-    args = set_args(network)
+    args = set_context(network)
     command_args = set_command_args(**kwargs)
     cmd = getattr(starknet_cli, cmd_name)
     return await capture_stdout(cmd(args=args, command_args=command_args))
@@ -53,7 +52,7 @@ async def capture_stdout(func):
     return result
 
 
-def set_args(network):
+def set_context(network):
     """Set context args for StarkNet CLI call."""
     args = {
         "gateway_url": get_gateway_url(network),
@@ -85,6 +84,18 @@ def set_command_args(**kwargs):
         contract = f"{base_path[0]}/{kwargs.get('contract_name')}.json"
         command_args.append("--contract")
         command_args.append(contract)
+
+    if kwargs.get("inputs"):
+        command_args.append("--inputs")
+        command_args.extend(prepare_params(kwargs.get("inputs")))
+
+    if kwargs.get("signature"):
+        command_args.append("--signature")
+        command_args.extend(prepare_params(kwargs.get("signature")))
+
+    if kwargs.get("max_fee"):
+        command_args.append("--max_fee")
+        command_args.extend(prepare_params(kwargs.get("max_fee")))
 
     if kwargs.get("method"):
         command_args.append("--function")
@@ -123,4 +134,9 @@ def get_feeder_url(network):
 
 
 def _add_args(key, value):
-    return [f"--{key}", *value] if type(value) is list else [f"--{key}", value]
+    if type(value) is not list:
+        return [f"--{key}", value]
+    else:
+        pattern = re.compile(r"\w+")
+        flat_list = pattern.findall(str(value))
+        return [f"--{key}", *flat_list]
