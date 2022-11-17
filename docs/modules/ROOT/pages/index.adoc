@@ -57,3 +57,17 @@ nile compile
 - Populating these directories with test modules.
 - Generating a .env to store private key aliases.
 - Setting up a node.json for initializing a local node.
+
+This is the final structure:
+
+[,sh]
+----
+├── contracts
+│   └── contract.cairo
+├── test
+│   └── test_contract.py
+├── .env
+├── .gitignore
+├── Makefile
+└── node.json
+----
