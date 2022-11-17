@@ -1,1 +1,2 @@
 * xref:index.adoc[Overview]
+* xref:plugins.adoc[Plugins]
