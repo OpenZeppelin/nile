@@ -2,10 +2,11 @@
 """Nile CLI entry point."""
 import logging
 
+import os
 import asyncclick as click
 
 from nile.common import is_alias
-from nile.core.account import Account
+from nile.core.account import Account, get_counterfactual_address
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
@@ -16,13 +17,14 @@ from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.version import version as version_command
-from nile.utils import normalize_number
+from nile.utils import normalize_number, hex_address
 from nile.utils.get_accounts import get_accounts as get_accounts_command
 from nile.utils.get_accounts import (
     get_predeployed_accounts as get_predeployed_accounts_command,
 )
 from nile.utils.get_nonce import get_nonce as get_nonce_command
 from nile.utils.status import status as status_command
+from nile.signer import Signer
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 logging.getLogger("asyncio").setLevel(logging.WARNING)
@@ -156,6 +158,16 @@ async def setup(signer, network, salt, max_fee, watch_mode):
 
 @cli.command()
 @click.argument("signer", nargs=1)
+@click.option("--salt", nargs=1, default=None)
+async def conterfactual_address(signer, salt):
+    """Precompute the address of an Account contract."""
+    _signer = Signer(normalize_number(os.environ[signer]))
+    address = hex_address(get_counterfactual_address(salt, calldata=[_signer.public_key]))
+    logging.info(address)
+
+
+@cli.command()
+@click.argument("signer", nargs=1)
 @click.argument("address_or_alias", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
@@ -206,7 +218,6 @@ async def call(address_or_alias, method, params, network):
         address_or_alias, "call", method, params, network
     )
     logging.info(out)
-    return out
 
 
 @cli.command()
@@ -334,9 +345,9 @@ async def status(tx_hash, network, watch_mode, contracts_file):
 async def get_accounts(network, predeployed):
     """Retrieve and manage deployed accounts."""
     if not predeployed:
-        return await get_accounts_command(network)
+        await get_accounts_command(network)
     else:
-        return await get_predeployed_accounts_command(network)
+        await get_predeployed_accounts_command(network)
 
 
 @cli.command()
@@ -344,7 +355,7 @@ async def get_accounts(network, predeployed):
 @network_option
 async def get_nonce(contract_address, network):
     """Retrieve the nonce for a contract."""
-    return await get_nonce_command(normalize_number(contract_address), network)
+    await get_nonce_command(normalize_number(contract_address), network)
 
 
 cli = load_plugins(cli)

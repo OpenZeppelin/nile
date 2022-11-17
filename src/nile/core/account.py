@@ -103,16 +103,11 @@ class Account(AsyncObject):
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
 
         salt = normalize_number(salt)
-        class_hash = get_hash("Account")
+        class_hash = get_account_hash("Account")
         max_fee = 0 if max_fee is None else normalize_number(max_fee)
         calldata = [self.signer.public_key]
 
-        contract_address = calculate_contract_address_from_hash(
-            salt=salt,
-            class_hash=class_hash,
-            constructor_calldata=calldata,
-            deployer_address=0,
-        )
+        contract_address = get_counterfactual_address(salt, calldata)
 
         signature = self.signer.sign_deployment(
             contract_address,
@@ -254,7 +249,7 @@ class Account(AsyncObject):
 
         target_address, _ = (
             next(deployments.load(address_or_alias, self.network), None)
-            or address_or_alias
+            or (address_or_alias, None)
         )
 
         return target_address
@@ -269,3 +264,18 @@ class Account(AsyncObject):
             calldata = [normalize_number(x) for x in calldata]
 
         return max_fee, nonce, calldata
+
+def get_account_hash(contract="Account"):
+    pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
+    overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
+    return get_hash(contract, overriding_path=overriding_path)
+
+def get_counterfactual_address(salt=None, calldata=[], contract="Account"):
+    class_hash = get_account_hash(contract)
+    salt = 0 if salt is None else int(salt)
+    return calculate_contract_address_from_hash(
+        salt=salt,
+        class_hash=int(class_hash, 16),
+        constructor_calldata=calldata,
+        deployer_address=0,
+    )

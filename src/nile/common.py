@@ -9,6 +9,7 @@ from starkware.starknet.services.api.contract_class import ContractClass
 
 from nile.utils import hex_class_hash, normalize_number, str_to_felt
 
+pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
 TEMP_DIRECTORY = ".temp"
@@ -21,6 +22,8 @@ RETRY_AFTER_SECONDS = 30
 TRANSACTION_VERSION = 1
 QUERY_VERSION_BASE = 2**128
 QUERY_VERSION = QUERY_VERSION_BASE + TRANSACTION_VERSION
+ETH_ABI = f"{pt}/artifacts/abis/ERC20.json"
+ETH_ADDRESS = "0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7"
 UNIVERSAL_DEPLOYER_ADDRESS = (
     # subject to change
     "0x041a78e741e5af2fec34b695679bc6891742439f7afb8484ecd7766661ad02bf"

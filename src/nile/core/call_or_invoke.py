@@ -15,6 +15,7 @@ async def call_or_invoke(
     method,
     params,
     network,
+    abi=None,
     signature=None,
     max_fee=None,
     query_flag=None,
@@ -36,8 +37,10 @@ async def call_or_invoke(
     if isinstance(contract, account.Account):
         address = contract.address
         abi = contract.abi_path
-    else:
+    elif abi is None:
         address, abi = next(deployments.load(contract, network))
+    else:
+        address = contract
 
     try:
         output = await execute_call(
