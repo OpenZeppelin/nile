@@ -12,7 +12,6 @@ from nile.common import (
     BUILD_DIRECTORY,
     get_class_hash,
     parse_information,
-    run_command,
 )
 from nile.starknet_cli import execute_call
 from nile.utils import hex_address

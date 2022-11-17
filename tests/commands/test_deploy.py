@@ -157,7 +157,7 @@ async def test_deploy(mock_register, mock_parse, caplog, args, cmd_args, exp_abi
     ],
 )
 @patch("nile.core.account.deploy", return_value=(MOCK_ACC_ADDRESS, MOCK_ACC_INDEX))
-@patch("nile.core.account.Account.send", return_value=RUN_OUTPUT)
+@patch("nile.core.account.Account.send", return_value=CALL_OUTPUT)
 @patch("nile.core.deploy.parse_information", return_value=[ADDRESS, TX_HASH])
 @patch("nile.core.deploy.deployments.register")
 async def test_deploy_contract(
@@ -171,7 +171,7 @@ async def test_deploy_contract(
     exp_salt,
     exp_abi,
 ):
-    account = Account("TEST_KEY", NETWORK)
+    account = await Account("TEST_KEY", NETWORK)
 
     logging.getLogger().setLevel(logging.INFO)
 
@@ -188,7 +188,7 @@ async def test_deploy_contract(
             exp_salt, exp_class_hash, calldata, deployer_for_address_generation
         )
         # check return values
-        res = deploy_contract(account, *args)
+        res = await deploy_contract(account, *args)
         assert res == (exp_address, exp_abi)
 
         # check internals
