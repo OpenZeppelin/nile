@@ -130,7 +130,7 @@ nile deploy <private_key_alias> <contract> [--alias ALIAS] [--network NETWORK] [
 For example:
 
 ```sh
-nile deploy setup_account_alias contract --alias my_contract
+nile deploy <private_key_alias> contract --alias my_contract
 
 🚀 Deploying contract
 ⏳ ️Deployment of contract successfully sent at 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
