@@ -453,7 +453,7 @@ async def run(nre):
 Retrieves the Ether balance for a given contract address.
 
 ```sh
-nile get-balance <contract_address> [--network]
+nile get-balance <contract_address> [--network NETWORK]
 ```
 
 ### `get-nonce`
