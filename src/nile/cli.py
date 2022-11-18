@@ -92,24 +92,62 @@ async def run(path, network):
 
 
 @cli.command()
-@click.argument("artifact", nargs=1)
-@click.argument("arguments", nargs=-1)
+@click.argument("signer", nargs=1)
+@click.argument("contract_name", nargs=1)
+@click.argument("params", nargs=-1)
+@click.option("--max_fee", nargs=1)
+@click.option("--salt", nargs=1, default=0)
+@click.option("--unique", is_flag=True)
 @click.option("--alias")
 @click.option("--abi")
-@network_option
+@click.option("--deployer_address")
+@click.option(
+    "--ignore_account",
+    is_flag=True,
+    help="Deploy without Account.",
+)
 @mainnet_token_option
+@network_option
 @watch_option
-async def deploy(artifact, arguments, network, alias, abi, token, watch_mode):
-    """Deploy StarkNet smart contract."""
-    await deploy_command(
-        artifact,
-        arguments,
-        network,
-        alias,
-        abi=abi,
-        mainnet_token=token,
-        watch_mode=watch_mode,
-    )
+async def deploy(
+    signer,
+    contract_name,
+    salt,
+    params,
+    max_fee,
+    unique,
+    alias,
+    abi,
+    deployer_address,
+    ignore_account,
+    token,
+    network,
+    watch_mode,
+):
+    """Deploy a StarkNet smart contract."""
+    if not ignore_account:
+        account = await Account(signer, network)
+        await account.deploy_contract(
+            contract_name,
+            salt,
+            unique,
+            params,
+            alias,
+            deployer_address=deployer_address,
+            max_fee=max_fee,
+            abi=abi,
+            watch_mode=watch_mode,
+        )
+    else:
+        await deploy_command(
+            contract_name,
+            params,
+            network,
+            alias,
+            abi=abi,
+            mainnet_token=token,
+            watch_mode=watch_mode,
+        )
 
 
 @cli.command()
@@ -131,7 +169,7 @@ async def declare(
     overriding_path,
     token,
 ):
-    """Declare StarkNet smart contract."""
+    """Declare a StarkNet smart contract through an Account."""
     account = await Account(signer, network)
     await account.declare(
         contract_name,

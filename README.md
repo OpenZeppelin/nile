@@ -119,30 +119,35 @@ Creating artifacts/abis/ to store compilation artifacts
 
 ### `deploy`
 
-> NOTICE: this method doesn't use an account, which will be deprecated very soon as StarkNet makes deployments from accounts mandatory.
+> NOTICE: Calling this method with `--ignore_account` is discouraged and will be removed soon, as StarkNet will make deployments from accounts mandatory.
 
 > Token for deployments to Alpha Mainnet can be set with the `--token` option.
 
 ```txt
-nile deploy <contract> [--alias ALIAS] [--network NETWORK] [--track | --debug]
+nile deploy <private_key_alias> <contract> [--alias ALIAS] [--network NETWORK] [--track | --debug]
 ```
 
+For example:
+
 ```sh
-nile deploy contract --alias my_contract
+nile deploy <private_key_alias> contract --alias my_contract
 
 🚀 Deploying contract
-🌕 artifacts/contract.json successfully deployed to 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
+⏳ ️Deployment of contract successfully sent at 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
+🧾 Transaction hash: 0x79e596c39cfec555f2d17253d043a0defd64a851a268b68c13811f328baf123
 📦 Registering deployment as my_contract in localhost.deployments.txt
 ```
 
 A few things to note here:
 
-- `nile deploy <contract_name>` looks for an artifact with the same name.
-- This creates or updates the `localhost.deployments.txt` file storing all data related to deployments.
-- The `--alias` parameter creates a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
-- By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
-- By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
-- `--track` and `--debug` flags can be used to watch the status of the deployment transaction. See `status` below for a complete description.
+1. `nile deploy <contract_name>` looks for an artifact with the same name.
+2. This creates or updates the `localhost.deployments.txt` file storing all data related to deployments.
+3. The `--ignore_account` flag deploys without using the account (DEPRECATED).
+4. The `--alias` parameter creates a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
+5. The `--deployer_address` parameter lets you specify the deployer contract address if needed.
+6. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, `goerli2`, `integration`, and the default `localhost`.
+7. By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
+8. `--track` and `--debug` flags can be used to watch the status of the deployment transaction. See `status` below for a complete description.
 
 ### `setup`
 

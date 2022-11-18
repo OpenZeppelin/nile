@@ -34,7 +34,7 @@ class Signer:
         if isinstance(sender, str):
             sender = int(sender, 16)
 
-        transaction_hash = get_declare_hash(
+        transaction_hash = get_declare_tx_hash(
             sender=sender,
             contract_class=contract_class,
             max_fee=max_fee,
@@ -44,10 +44,8 @@ class Signer:
 
         return self.sign(message_hash=transaction_hash)
 
-    def sign_transaction(
-        self, sender, calls, nonce, max_fee, version=TRANSACTION_VERSION
-    ):
-        """Sign a transaction."""
+    def sign_invoke(self, sender, calls, nonce, max_fee, version=TRANSACTION_VERSION):
+        """Sign an invoke transaction."""
         call_array, calldata = from_call_to_call_array(calls)
         execute_calldata = [
             len(call_array),
@@ -93,7 +91,7 @@ def from_call_to_call_array(calls):
     return (call_array, calldata)
 
 
-def get_declare_hash(sender, contract_class, max_fee, nonce, chain_id):
+def get_declare_tx_hash(sender, contract_class, max_fee, nonce, chain_id):
     """Compute the hash of a declare transaction."""
     return calculate_declare_transaction_hash(
         contract_class=contract_class,
