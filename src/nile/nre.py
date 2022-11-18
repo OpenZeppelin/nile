@@ -1,13 +1,14 @@
 """nile runtime environment."""
 from nile import deployments
-from nile.common import ETH_ABI, ETH_ADDRESS, is_alias
+from nile.common import is_alias
 from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
 from nile.core.deploy import deploy
 from nile.core.plugins import get_installed_plugins, skip_click_exit
-from nile.utils import from_uint, normalize_number
+from nile.utils import normalize_number
 from nile.utils.get_accounts import get_accounts, get_predeployed_accounts
+from nile.utils.get_balance import get_balance
 from nile.utils.get_nonce import get_nonce
 
 
@@ -81,9 +82,6 @@ class NileRuntimeEnvironment:
         """Retrieve the nonce for a contract."""
         return get_nonce(contract_address, self.network)
 
-    async def get_balance(self, account):
+    def get_balance(self, account):
         """Get the Ether balance of an address."""
-        output = await self.call(ETH_ADDRESS, "balanceOf", [account], abi=ETH_ABI)
-        low, high = output.split()
-        res = from_uint([int(low, 16), int(high, 16)])
-        return res
+        return get_balance(account, self.network)

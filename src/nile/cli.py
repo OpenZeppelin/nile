@@ -23,6 +23,7 @@ from nile.utils.get_accounts import get_accounts as get_accounts_command
 from nile.utils.get_accounts import (
     get_predeployed_accounts as get_predeployed_accounts_command,
 )
+from nile.utils.get_balance import get_balance as get_balance_command
 from nile.utils.get_nonce import get_nonce as get_nonce_command
 from nile.utils.status import status as status_command
 
@@ -350,6 +351,17 @@ async def get_accounts(network, predeployed):
         await get_accounts_command(network)
     else:
         await get_predeployed_accounts_command(network)
+
+
+@cli.command()
+@click.argument("contract_address")
+@network_option
+async def get_balance(contract_address, network):
+    """Retrieve the Ether balance for a given contract."""
+    balance = await get_balance_command(
+        normalize_number(contract_address), network=network
+    )
+    logging.info(f"💰 {contract_address} Ether balance is: {balance}")
 
 
 @cli.command()
