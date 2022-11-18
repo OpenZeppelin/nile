@@ -139,7 +139,7 @@ def get_declare_hash(sender, contract_class, max_fee, nonce, chain_id):
 def get_deploy_account_hash(
     contract_address, class_hash, calldata, salt, max_fee, nonce, chain_id
 ):
-    """Compute the hash of a declare transaction."""
+    """Compute the hash of an account deployment transaction."""
     return calculate_deploy_account_transaction_hash(
         version=TRANSACTION_VERSION,
         contract_address=contract_address,
