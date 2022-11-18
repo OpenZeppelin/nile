@@ -1,5 +1,5 @@
 * xref:index.adoc[Overview]
-* xref:index.adoc[Quick Start]
+* xref:quickstart.adoc[Quick Start]
 
 * Guides
 ** xref:testing.adoc[Testing]
@@ -7,7 +7,7 @@
 ** xref:strings.adoc[Short String Literals]
 
 * xref:commands.adoc[CLI Reference]
-* xref:commands.adoc[NRE and Scripting]
+* xref:nre.adoc[NRE and Scripting]
 // ** xref:node.adoc[node]
 // ** xref:node.adoc[compile]
 // ** xref:node.adoc[setup]
