@@ -20,6 +20,7 @@ from nile.common import (
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.declare import declare
 from nile.core.deploy import deploy_account
+from nile.core.deploy import deploy_contract as deploy_with_deployer
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
@@ -98,6 +99,8 @@ class Account(AsyncObject):
                 self.address = address
                 self.index = index
 
+        assert type(self.address) == int
+
     async def deploy(self, salt=None, max_fee=None, query_type=None, watch_mode=None):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
@@ -117,7 +120,7 @@ class Account(AsyncObject):
             calldata,
             salt,
             max_fee,
-            0,  # nonce starts at 0
+            0, # nonce starts at 0
         )
 
         output = await deploy_account(
@@ -148,7 +151,7 @@ class Account(AsyncObject):
         mainnet_token=None,
         watch_mode=None,
     ):
-        """Declare a contract through an Account contract."""
+        """Declare a contract through an Account."""
         max_fee, nonce, _ = await self._process_arguments(max_fee, nonce)
 
         contract_class = get_contract_class(
@@ -175,20 +178,31 @@ class Account(AsyncObject):
 
     async def deploy_contract(
         self,
-        class_hash,
+        contract_name,
         salt,
         unique,
         calldata,
+        alias,
         max_fee=None,
         deployer_address=None,
+        abi=None,
         watch_mode=None,
     ):
-        """Deploy a contract through an Account contract."""
-        return await self.send(
-            to=deployer_address or UNIVERSAL_DEPLOYER_ADDRESS,
-            method="deployContract",
-            calldata=[class_hash, salt, unique, len(calldata), *calldata],
-            max_fee=max_fee,
+        """Deploy a contract through an Account."""
+        deployer_address = normalize_number(
+            deployer_address or UNIVERSAL_DEPLOYER_ADDRESS
+        )
+
+        await deploy_with_deployer(
+            self,
+            contract_name,
+            salt,
+            unique,
+            calldata,
+            alias,
+            deployer_address,
+            max_fee,
+            abi=abi,
             watch_mode=watch_mode,
         )
 
@@ -202,8 +216,7 @@ class Account(AsyncObject):
         query_type=None,
         watch_mode=None,
     ):
-        """Execute a query or invoke call for a tx going through an Account contract."""
-        # get target address with the right format
+        """Execute or simulate an Account transaction."""
         target_address = self._get_target_address(address_or_alias)
 
         # process and parse arguments
@@ -211,10 +224,9 @@ class Account(AsyncObject):
             max_fee, nonce, calldata
         )
 
-        # get tx version
         tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
 
-        calldata, sig_r, sig_s = self.signer.sign_transaction(
+        calldata, sig_r, sig_s = self.signer.sign_invoke(
             sender=self.address,
             calls=[[target_address, method, calldata]],
             nonce=nonce,

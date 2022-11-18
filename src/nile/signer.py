@@ -61,10 +61,8 @@ class Signer:
 
         return self.sign(message_hash=transaction_hash)
 
-    def sign_transaction(
-        self, sender, calls, nonce, max_fee, version=TRANSACTION_VERSION
-    ):
-        """Sign a transaction."""
+    def sign_invoke(self, sender, calls, nonce, max_fee, version=TRANSACTION_VERSION):
+        """Sign an invoke transaction."""
         call_array, calldata = from_call_to_call_array(calls)
         execute_calldata = [
             len(call_array),
