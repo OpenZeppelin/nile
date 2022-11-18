@@ -29,7 +29,7 @@ class Signer:
         """Sign a message hash."""
         return sign(msg_hash=message_hash, priv_key=self.private_key)
 
-    def sign_declare_tx(self, sender, contract_class, nonce, max_fee):
+    def sign_declare(self, sender, contract_class, nonce, max_fee):
         """Sign a declare transaction."""
         if isinstance(sender, str):
             sender = int(sender, 16)
@@ -44,9 +44,7 @@ class Signer:
 
         return self.sign(message_hash=transaction_hash)
 
-    def sign_invoke_tx(
-        self, sender, calls, nonce, max_fee, version=TRANSACTION_VERSION
-    ):
+    def sign_invoke(self, sender, calls, nonce, max_fee, version=TRANSACTION_VERSION):
         """Sign an invoke transaction."""
         call_array, calldata = from_call_to_call_array(calls)
         execute_calldata = [

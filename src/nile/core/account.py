@@ -123,7 +123,7 @@ class Account(AsyncObject):
             contract_name=contract_name, overriding_path=overriding_path
         )
 
-        sig_r, sig_s = self.signer.sign_declare_tx(
+        sig_r, sig_s = self.signer.sign_declare(
             sender=self.address,
             contract_class=contract_class,
             nonce=nonce,
@@ -191,7 +191,7 @@ class Account(AsyncObject):
 
         tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
 
-        calldata, sig_r, sig_s = self.signer.sign_invoke_tx(
+        calldata, sig_r, sig_s = self.signer.sign_invoke(
             sender=self.address,
             calls=[[target_address, method, calldata]],
             nonce=nonce,

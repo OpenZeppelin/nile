@@ -97,7 +97,7 @@ async def test_declare(mock_declare, mock_get_class, mock_deploy):
     alias = "my_contract"
     overriding_path = (BUILD_DIRECTORY, ABIS_DIRECTORY)
 
-    account.signer.sign_declare_tx = MagicMock(return_value=signature)
+    account.signer.sign_declare = MagicMock(return_value=signature)
 
     await account.declare(
         contract_name,
@@ -112,8 +112,8 @@ async def test_declare(mock_declare, mock_get_class, mock_deploy):
         contract_name=contract_name, overriding_path=overriding_path
     )
 
-    # Check values are correctly passed to 'sign_declare_tx'
-    account.signer.sign_declare_tx.assert_called_once_with(
+    # Check values are correctly passed to 'sign_declare'
+    account.signer.sign_declare.assert_called_once_with(
         sender=account.address,
         contract_class="ContractClass",
         nonce=nonce,
@@ -206,14 +206,14 @@ async def test_send_nonce_call(mock_target_address, mock_call, mock_nonce, mock_
 @patch(
     "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
 )
-async def test_send_sign_invoke_tx_and_execute(mock_target_address, mock_deploy):
+async def test_send_sign_invoke_and_execute(mock_target_address, mock_deploy):
     account = await Account(KEY, NETWORK)
 
     calldata = [111, 222, 333]
     sig_r, sig_s = [999, 888]
     return_signature = [calldata, sig_r, sig_s]
 
-    account.signer.sign_invoke_tx = MagicMock(return_value=return_signature)
+    account.signer.sign_invoke = MagicMock(return_value=return_signature)
 
     with patch("nile.core.account.call_or_invoke") as mock_call:
         send_args = [MOCK_TARGET_ADDRESS, "method", [1, 2, 3]]
@@ -221,8 +221,8 @@ async def test_send_sign_invoke_tx_and_execute(mock_target_address, mock_deploy)
         max_fee = 1
         await account.send(*send_args, max_fee=max_fee, nonce=nonce)
 
-        # Check values are correctly passed to 'sign_invoke_tx'
-        account.signer.sign_invoke_tx.assert_called_once_with(
+        # Check values are correctly passed to 'sign_invoke'
+        account.signer.sign_invoke.assert_called_once_with(
             calls=[send_args],
             nonce=nonce,
             sender=account.address,
@@ -259,12 +259,12 @@ async def test_send_defaults(mock_call, mock_nonce, mock_target_address, mock_de
     sig_r, sig_s = [999, 888]
     return_signature = [calldata, sig_r, sig_s]
 
-    # Mock sign_invoke_tx
-    account.signer.sign_invoke_tx = MagicMock(return_value=return_signature)
+    # Mock sign_invoke
+    account.signer.sign_invoke = MagicMock(return_value=return_signature)
 
     await account.send(account.address, "method", [1, 2, 3])
 
-    account.signer.sign_invoke_tx.assert_called_once_with(
+    account.signer.sign_invoke.assert_called_once_with(
         calls=[send_args],
         nonce=0,
         sender=account.address,
@@ -333,8 +333,8 @@ async def test_execute_query(
     sig_r, sig_s = [999, 888]
     return_signature = [calldata, sig_r, sig_s]
 
-    # Mock sign_invoke_tx
-    account.signer.sign_invoke_tx = MagicMock(return_value=return_signature)
+    # Mock sign_invoke
+    account.signer.sign_invoke = MagicMock(return_value=return_signature)
 
     await account.send(
         account.address,
@@ -345,7 +345,7 @@ async def test_execute_query(
         watch_mode=watch_mode,
     )
 
-    account.signer.sign_invoke_tx.assert_called_once_with(
+    account.signer.sign_invoke.assert_called_once_with(
         calls=[send_args],
         nonce=0,
         sender=account.address,
