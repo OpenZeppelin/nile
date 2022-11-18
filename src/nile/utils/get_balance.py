@@ -7,7 +7,12 @@ from nile.utils import from_uint
 async def get_balance(account, network):
     """Get the Ether balance of an address."""
     output = await call_or_invoke(
-        ETH_TOKEN_ADDRESS, "call", "balanceOf", [account], abi=ETH_TOKEN_ABI, network=network
+        ETH_TOKEN_ADDRESS,
+        "call",
+        "balanceOf",
+        [account],
+        abi=ETH_TOKEN_ABI,
+        network=network,
     )
     low, high = output.split()
     return from_uint([int(low, 16), int(high, 16)])
