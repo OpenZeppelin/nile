@@ -199,9 +199,10 @@ async def test_send_sign_transaction_and_execute(
 
         # Check values are correctly passed to '__execute__'
         mock_call.assert_called_with(
-            contract=account,
+            contract=account.address,
             max_fee=max_fee,
             method="__execute__",
+            abi=account.abi_path,
             network=NETWORK,
             params=calldata,
             signature=[sig_r, sig_s],
@@ -243,9 +244,10 @@ async def test_send_defaults(
     )
 
     mock_call.assert_called_with(
-        contract=account,
+        contract=account.address,
         max_fee=0,
         method="__execute__",
+        abi=account.abi_path,
         network=NETWORK,
         params=calldata,
         signature=[sig_r, sig_s],
@@ -333,8 +335,9 @@ async def test_execute_query(
 
     # Check query_flag is correctly passed
     mock_call.assert_called_with(
-        contract=account,
+        contract=account.address,
         max_fee=MAX_FEE,
+        abi=account.abi_path,
         method="__execute__",
         network=NETWORK,
         params=calldata,
