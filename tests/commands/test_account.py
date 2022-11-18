@@ -20,7 +20,7 @@ MOCK_INDEX = 0
 MAX_FEE = 10
 SALT = 444
 SIGNATURE = [111, 222]
-CLASS_HASH = 12345
+CLASS_HASH = "0x12345"
 
 
 @pytest.fixture(autouse=True)
@@ -53,7 +53,7 @@ async def test_account_init_bad_key(caplog):
 
 @pytest.mark.asyncio
 @patch("nile.core.account.deploy_account", return_value=(1, 2))
-@patch("nile.core.account.get_hash", return_value=CLASS_HASH)
+@patch("nile.common.get_hash", return_value=CLASS_HASH)
 @patch("nile.core.account.Signer.sign_deployment", return_value=SIGNATURE)
 @patch("nile.core.account.os.path.dirname")
 async def test_deploy(mock_path, mock_signer, mock_hash, mock_deploy):

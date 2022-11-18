@@ -9,7 +9,7 @@ from nile.common import (
     BUILD_DIRECTORY,
     QUERY_VERSION,
     TRANSACTION_VERSION,
-    get_hash,
+    get_account_hash,
     parse_information,
 )
 from nile.starknet_cli import execute_call, get_gateway_response
@@ -84,7 +84,7 @@ async def deploy_account(
     )
     register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
 
-    class_hash = get_hash(contract_name)
+    class_hash = get_account_hash(contract_name)
 
     tx = DeployAccount(
         class_hash=class_hash,
@@ -97,13 +97,14 @@ async def deploy_account(
     )
 
     response = await get_gateway_response(network, tx, mainnet_token)
+
     address = response["address"]
-    tx_hash = response["tx_hash"]
+    tx_hash = response["transaction_hash"]
 
     logging.info(
         f"⏳ ️Deployment of {contract_name} successfully sent at {hex_address(address)}"
     )
-    logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
+    logging.info(f"🧾 Transaction hash: {tx_hash}")
 
     deployments.register(address, register_abi, network, alias)
 

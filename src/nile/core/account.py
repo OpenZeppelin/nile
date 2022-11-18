@@ -14,6 +14,7 @@ from nile.common import (
     UNIVERSAL_DEPLOYER_ADDRESS,
     get_contract_class,
     get_hash,
+    get_account_hash,
     is_alias,
     normalize_number,
 )
@@ -90,11 +91,13 @@ class Account(AsyncObject):
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
-            address, index = await self.deploy(
+            output = await self.deploy(
                 salt=salt, max_fee=max_fee, watch_mode=watch_mode
             )
-            self.address = address
-            self.index = index
+            if output is not None:
+                address, index = output
+                self.address = address
+                self.index = index
 
     async def deploy(self, salt=0, max_fee=None, query_type=None, watch_mode=None):
         """Deploy an Account contract for the given private key."""
@@ -102,14 +105,14 @@ class Account(AsyncObject):
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
 
-        salt = normalize_number(salt)
         class_hash = get_account_hash("Account")
+        salt = 0 if salt is None else normalize_number(salt)
         max_fee = 0 if max_fee is None else normalize_number(max_fee)
         calldata = [self.signer.public_key]
 
         contract_address = get_counterfactual_address(salt, calldata)
 
-        signature = self.signer.sign_deployment(
+        [sig_r, sig_s] = self.signer.sign_deployment(
             contract_address,
             class_hash,
             calldata,
@@ -118,22 +121,23 @@ class Account(AsyncObject):
             0,  # nonce starts at 0
         )
 
-        address, _ = await deploy_account(
+        output = await deploy_account(
             network=self.network,
             salt=salt,
             calldata=calldata,
-            signature=signature,
+            signature=[sig_r, sig_s],
             max_fee=max_fee,
             query_type=query_type,
             overriding_path=overriding_path,
             watch_mode=watch_mode,
         )
 
-        accounts.register(
-            self.signer.public_key, address, index, self.alias, self.network
-        )
-
-        return address, index
+        if output is not None:
+            address, _ = output
+            accounts.register(
+                self.signer.public_key, address, index, self.alias, self.network
+            )
+            return address, index
 
     async def declare(
         self,
@@ -265,17 +269,12 @@ class Account(AsyncObject):
 
         return max_fee, nonce, calldata
 
-def get_account_hash(contract="Account"):
-    pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
-    overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
-    return get_hash(contract, overriding_path=overriding_path)
-
 def get_counterfactual_address(salt=None, calldata=[], contract="Account"):
     class_hash = get_account_hash(contract)
     salt = 0 if salt is None else int(salt)
     return calculate_contract_address_from_hash(
         salt=salt,
-        class_hash=int(class_hash, 16),
+        class_hash=class_hash,
         constructor_calldata=calldata,
         deployer_address=0,
     )
