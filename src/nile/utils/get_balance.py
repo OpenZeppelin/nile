@@ -14,5 +14,5 @@ async def get_balance(account, network):
         abi=ETH_TOKEN_ABI,
         network=network,
     )
-    low, high = output.split()
-    return from_uint([int(low, 16), int(high, 16)])
+    low, high = [int(felt) for felt in output.split()]
+    return from_uint([low, high])

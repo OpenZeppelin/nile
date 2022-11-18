@@ -223,9 +223,10 @@ class Account(AsyncObject):
         )
 
         return await call_or_invoke(
-            contract=self,
+            contract=self.address,
             type="invoke",
             method="__execute__",
+            abi=self.abi_path,
             params=calldata,
             network=self.network,
             signature=[sig_r, sig_s],
