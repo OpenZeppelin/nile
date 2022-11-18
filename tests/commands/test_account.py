@@ -149,7 +149,7 @@ async def test_declare(mock_declare, mock_get_class, mock_hash, mock_deploy):
 @pytest.mark.parametrize("deployer_address", [None, 0xDE0])
 @pytest.mark.parametrize("watch_mode", [None, "debug"])
 @pytest.mark.parametrize("abi", [None, "TEST_ABI"])
-@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.core.deploy.get_class_hash", return_value=0x434343)
 @patch("nile.core.account.deploy_with_deployer")
 async def test_deploy_contract(
