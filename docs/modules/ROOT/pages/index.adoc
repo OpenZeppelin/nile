@@ -6,7 +6,7 @@ Nile is a CLI tool to develop or interact with Starknet projects written in Cair
 
 The package is designed to be extensible and very customizable by using plugins. This guide will take you through the installation of our recommended setup, but as we expect a lot of functionality coming from plugins, you are free to customize it.
 
-You can get a list of plugins extending Nile functionality from the xref:plugins.adoc[Plugins] section.
+TIP: You can get a list of plugins extending Nile functionality from the xref:plugins.adoc[Plugins] section.
 
 == Requirements
 
@@ -14,7 +14,7 @@ You can get a list of plugins extending Nile functionality from the xref:plugins
 
 Some Nile dependencies have specific python version requirements, therefore we recommend using a python version manager like {pyenv}, and virtual environments to avoid conflicts.
 
-Current supported Python versions are >=3.8 and <3.10.
+IMPORTANT: Current supported Python versions are >=3.8 and <3.10.
 
 == Installation
 
