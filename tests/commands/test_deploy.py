@@ -171,7 +171,7 @@ async def test_deploy(mock_register, mock_parse, caplog, args, cmd_args, exp_abi
     "nile.core.deploy.get_gateway_response",
     return_value={"address": ADDRESS, "transaction_hash": TX_HASH},
 )
-@patch("nile.core.deploy.get_account_hash", return_value=CLASS_HASH)
+@patch("nile.core.deploy.get_account_class_hash", return_value=CLASS_HASH)
 async def test_deploy_account(
     mock_hash, mock_gateway, mock_register, caplog, args, exp_abi
 ):

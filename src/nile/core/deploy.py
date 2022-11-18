@@ -9,7 +9,7 @@ from nile.common import (
     BUILD_DIRECTORY,
     QUERY_VERSION,
     TRANSACTION_VERSION,
-    get_account_hash,
+    get_account_class_hash,
     parse_information,
 )
 from nile.starknet_cli import execute_call, get_gateway_response
@@ -84,7 +84,7 @@ async def deploy_account(
     )
     register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
 
-    class_hash = get_account_hash(contract_name)
+    class_hash = get_account_class_hash(contract_name)
 
     tx = DeployAccount(
         class_hash=class_hash,

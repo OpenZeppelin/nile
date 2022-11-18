@@ -22,8 +22,8 @@ RETRY_AFTER_SECONDS = 30
 TRANSACTION_VERSION = 1
 QUERY_VERSION_BASE = 2**128
 QUERY_VERSION = QUERY_VERSION_BASE + TRANSACTION_VERSION
-ETH_ABI = f"{pt}/artifacts/abis/ERC20.json"
-ETH_ADDRESS = "0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7"
+ETH_TOKEN_ABI = f"{pt}/artifacts/abis/ERC20.json"
+ETH_TOKEN_ADDRESS = "0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7"
 UNIVERSAL_DEPLOYER_ADDRESS = (
     # subject to change
     "0x041a78e741e5af2fec34b695679bc6891742439f7afb8484ecd7766661ad02bf"
@@ -129,19 +129,17 @@ def get_contract_class(contract_name, overriding_path=None):
     return contract_class
 
 
-def get_hash(contract_name, overriding_path=None):
+def get_class_hash(contract_name, overriding_path=None):
     """Return the class_hash for a given contract name."""
     contract_class = get_contract_class(contract_name, overriding_path)
-    return hex_class_hash(
-        compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
-    )
+    return compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
 
 
-def get_account_hash(contract="Account"):
+def get_account_class_hash(contract="Account"):
     """Return the class_hash of an Account contract."""
     pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
     overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
-    return int(get_hash(contract, overriding_path=overriding_path), 16)
+    return get_class_hash(contract, overriding_path=overriding_path)
 
 
 def get_addresses_from_string(string):

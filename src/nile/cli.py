@@ -160,7 +160,7 @@ async def setup(signer, network, salt, max_fee, watch_mode):
 @cli.command()
 @click.argument("signer", nargs=1)
 @click.option("--salt", nargs=1, default=None)
-async def counterfactual_address(signer, salt):
+def counterfactual_address(signer, salt):
     """Precompute the address of an Account contract."""
     _signer = Signer(normalize_number(os.environ[signer]))
     address = hex_address(

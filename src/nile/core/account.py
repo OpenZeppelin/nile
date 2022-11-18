@@ -12,7 +12,7 @@ from nile.common import (
     QUERY_VERSION,
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
-    get_account_hash,
+    get_account_class_hash,
     get_contract_class,
     is_alias,
     normalize_number,
@@ -98,13 +98,13 @@ class Account(AsyncObject):
                 self.address = address
                 self.index = index
 
-    async def deploy(self, salt=0, max_fee=None, query_type=None, watch_mode=None):
+    async def deploy(self, salt=None, max_fee=None, query_type=None, watch_mode=None):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
 
-        class_hash = get_account_hash("Account")
+        class_hash = get_account_class_hash("Account")
         salt = 0 if salt is None else normalize_number(salt)
         max_fee = 0 if max_fee is None else normalize_number(max_fee)
         calldata = [self.signer.public_key]
@@ -270,7 +270,7 @@ class Account(AsyncObject):
 
 def get_counterfactual_address(salt=None, calldata=None, contract="Account"):
     """Precompute a contract's address for a given class, salt, and calldata."""
-    class_hash = get_account_hash(contract)
+    class_hash = get_account_class_hash(contract)
     salt = 0 if salt is None else int(salt)
     calldata = [] if calldata is None else calldata
     return calculate_contract_address_from_hash(
