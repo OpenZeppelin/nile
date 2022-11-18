@@ -7,7 +7,7 @@ from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
 from starkware.starknet.core.os.class_hash import compute_class_hash
 from starkware.starknet.services.api.contract_class import ContractClass
 
-from nile.utils import hex_class_hash, normalize_number, str_to_felt
+from nile.utils import normalize_number, str_to_felt
 
 pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
 CONTRACTS_DIRECTORY = "contracts"
