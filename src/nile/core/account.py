@@ -120,7 +120,7 @@ class Account(AsyncObject):
             calldata,
             salt,
             max_fee,
-            0, # nonce starts at 0
+            0,  # nonce starts at 0
         )
 
         output = await deploy_account(

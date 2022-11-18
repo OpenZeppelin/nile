@@ -1,16 +1,13 @@
 """Command to deploy StarkNet smart contracts."""
 import logging
 
-from starkware.starknet.services.api.gateway.transaction import DeployAccount
 from starkware.cairo.common.hash_chain import compute_hash_chain
 from starkware.starknet.core.os.contract_address.contract_address import (
     calculate_contract_address_from_hash,
 )
+from starkware.starknet.services.api.gateway.transaction import DeployAccount
 
 from nile import deployments
-from nile.utils import hex_address
-from nile.utils.status import status
-from nile.starknet_cli import execute_call, get_gateway_response
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
@@ -20,6 +17,9 @@ from nile.common import (
     get_class_hash,
     parse_information,
 )
+from nile.starknet_cli import execute_call, get_gateway_response
+from nile.utils import hex_address
+from nile.utils.status import status
 
 
 async def deploy(
@@ -67,6 +67,7 @@ async def deploy(
             return
 
     return address, register_abi
+
 
 async def deploy_contract(
     account,
@@ -128,6 +129,7 @@ async def deploy_contract(
             return
 
     return address, register_abi
+
 
 async def deploy_account(
     network,

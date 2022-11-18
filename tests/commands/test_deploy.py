@@ -9,7 +9,7 @@ from starkware.starknet.core.os.contract_address.contract_address import (
 
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
 from nile.core.account import Account
-from nile.core.deploy import deploy, deploy_account
+from nile.core.deploy import deploy, deploy_account, deploy_contract
 from nile.utils import hex_address
 
 
@@ -210,6 +210,7 @@ async def test_deploy_contract(
             in caplog.text
         )
         assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(

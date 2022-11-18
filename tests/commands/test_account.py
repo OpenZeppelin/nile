@@ -222,7 +222,9 @@ async def test_send_nonce_call(
 @patch(
     "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
 )
-async def test_send_sign_invoke_and_execute(mock_target_address, mock_hash, mock_deploy):
+async def test_send_sign_invoke_and_execute(
+    mock_target_address, mock_hash, mock_deploy
+):
     account = await Account(KEY, NETWORK)
 
     calldata = [111, 222, 333]
