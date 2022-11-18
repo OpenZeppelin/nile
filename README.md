@@ -454,6 +454,10 @@ Retrieves the Ether balance for a given contract address.
 
 ```sh
 nile get-balance <contract_address> [--network NETWORK]
+
+nile get-balance 0x053edde5384e39bad137d3c4130c708fb96ee28a4c80bf28049c486d3f36992e
+🕵️  0x053ed...6992e balance is:
+💰 4444.555501003 gwei
 ```
 
 ### `get-nonce`

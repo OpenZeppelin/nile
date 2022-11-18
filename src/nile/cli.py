@@ -18,7 +18,7 @@ from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.version import version as version_command
 from nile.signer import Signer
-from nile.utils import hex_address, normalize_number
+from nile.utils import hex_address, normalize_number, shorten_address
 from nile.utils.get_accounts import get_accounts as get_accounts_command
 from nile.utils.get_accounts import (
     get_predeployed_accounts as get_predeployed_accounts_command,
@@ -361,7 +361,13 @@ async def get_balance(contract_address, network):
     balance = await get_balance_command(
         normalize_number(contract_address), network=network
     )
-    logging.info(f"💰 {contract_address} Ether balance is: {balance}")
+    logging.info(f"🕵️  {shorten_address(contract_address)} balance is:")
+    if balance < 10**6:
+        logging.info(f"🪙  {balance} wei")
+    elif balance < 10**15:
+        logging.info(f"💰 {balance / 10 ** 9} gwei")
+    else:
+        logging.info(f"🤑 {balance / 10 ** 18} ether")
 
 
 @cli.command()
