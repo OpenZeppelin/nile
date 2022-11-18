@@ -272,7 +272,7 @@ def get_counterfactual_address(salt=None, calldata=None, contract="Account"):
     """Precompute a contract's address for a given class, salt, and calldata."""
     class_hash = get_account_hash(contract)
     salt = 0 if salt is None else int(salt)
-    salt = [] if calldata is None else calldata
+    calldata = [] if calldata is None else calldata
     return calculate_contract_address_from_hash(
         salt=salt,
         class_hash=class_hash,
