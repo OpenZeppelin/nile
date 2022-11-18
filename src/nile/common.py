@@ -136,11 +136,13 @@ def get_hash(contract_name, overriding_path=None):
         compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
     )
 
+
 def get_account_hash(contract="Account"):
     """Return the class_hash of an Account contract."""
     pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
     overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
     return int(get_hash(contract, overriding_path=overriding_path), 16)
+
 
 def get_addresses_from_string(string):
     """Return a set of integers with identified addresses in a string."""

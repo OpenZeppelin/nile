@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """Nile CLI entry point."""
 import logging
-
 import os
+
 import asyncclick as click
 
 from nile.common import is_alias
@@ -17,14 +17,14 @@ from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.version import version as version_command
-from nile.utils import normalize_number, hex_address
+from nile.signer import Signer
+from nile.utils import hex_address, normalize_number
 from nile.utils.get_accounts import get_accounts as get_accounts_command
 from nile.utils.get_accounts import (
     get_predeployed_accounts as get_predeployed_accounts_command,
 )
 from nile.utils.get_nonce import get_nonce as get_nonce_command
 from nile.utils.status import status as status_command
-from nile.signer import Signer
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 logging.getLogger("asyncio").setLevel(logging.WARNING)
@@ -162,7 +162,9 @@ async def setup(signer, network, salt, max_fee, watch_mode):
 async def conterfactual_address(signer, salt):
     """Precompute the address of an Account contract."""
     _signer = Signer(normalize_number(os.environ[signer]))
-    address = hex_address(get_counterfactual_address(salt, calldata=[_signer.public_key]))
+    address = hex_address(
+        get_counterfactual_address(salt, calldata=[_signer.public_key])
+    )
     logging.info(address)
 
 
