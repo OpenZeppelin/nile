@@ -160,7 +160,9 @@ async def test_deploy(mock_register, mock_parse, caplog, args, cmd_args, exp_abi
         ),
     ],
 )
-@patch("nile.core.account.deploy_account", return_value=(MOCK_ACC_ADDRESS, MOCK_ACC_INDEX))
+@patch(
+    "nile.core.account.deploy_account", return_value=(MOCK_ACC_ADDRESS, MOCK_ACC_INDEX)
+)
 @patch("nile.core.account.Account.send", return_value=CALL_OUTPUT)
 @patch("nile.core.deploy.parse_information", return_value=[ADDRESS, TX_HASH])
 @patch("nile.core.deploy.deployments.register")
