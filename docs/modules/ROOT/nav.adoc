@@ -4,7 +4,7 @@
 * Guides
 ** xref:testing.adoc[Testing]
 ** xref:declare_account.adoc[Declare OZ Account in Devnet]
-** xref:strings.adoc[Short String Literals]
+** xref:strings.adoc[Short string literals]
 
 * xref:commands.adoc[CLI Reference]
 * xref:nre.adoc[NRE and Scripting]
@@ -26,7 +26,7 @@
 
 * Plugins
 ** xref:create_plugin.adoc[Extending Nile]
-** xref:plugins.adoc[Community plugins]
+** xref:plugins.adoc[Useful Plugins]
 
 
 

@@ -1,1 +1,25 @@
-= Community plugins
+= Relevant Plugins
+
+This is a list of relevant plugins providing extra functionality to Nile.
+
+TIP: If you are a plugin developer and your project is not listed, reach out to us!
+
+== OpenZeppelin plugins
+
+Subset of plugins developed by OpenZeppelin.
+
+=== openzeppelin-nile-upgrades
+
+Plugin for Nile to deploy and manage upgradeable contracts on StarkNet.
+
+== Community plugins
+
+Subset of plugins developed by community members.
+
+=== nile-coverage
+
+Nile plugin adding coverage reports for Cairo Smart Contracts (from Pytest test suite).
+
+=== nile-verifier-plugin
+
+Plugin for Nile to verify contracts on starkscan.co.

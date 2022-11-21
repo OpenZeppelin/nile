@@ -10,6 +10,18 @@ TIP: You can get a list of plugins extending Nile functionality from the xref:pl
 
 == Requirements
 
+=== GMP for fastecdsa
+
+Before installing Cairo on your machine, you need to install `gmp`:
+
+[,bash]
+----
+sudo apt install -y libgmp3-dev # linux
+brew install gmp # mac
+----
+
+TIP: If you have any trouble installing gmp on your Apple M1 computer, https://github.com/OpenZeppelin/nile/issues/22[here's a list of potential solutions].
+
 === Supported Python versions
 
 Some Nile dependencies have specific python version requirements, therefore we recommend using a python version manager like {pyenv}, and virtual environments to avoid conflicts.
