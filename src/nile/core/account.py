@@ -100,7 +100,7 @@ class Account(AsyncObject):
                 self.index = index
 
         # we should replace this with static type checks
-        if hasattr(self, 'address'):
+        if hasattr(self, "address"):
             assert type(self.address) == int
 
     async def deploy(self, salt=None, max_fee=None, query_type=None, watch_mode=None):
