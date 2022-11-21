@@ -25,7 +25,7 @@
 // ** xref:node.adoc[version]
 
 * Plugins
-** xref:create_plugin.adoc[Create a plugin]
+** xref:create_plugin.adoc[Extending Nile]
 ** xref:plugins.adoc[Community plugins]
 
 

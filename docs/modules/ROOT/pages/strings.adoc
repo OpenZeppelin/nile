@@ -2,23 +2,29 @@
 
 = Short String Literals
 
-From {cairo-lang} docs: *A short string is a string whose length is at most 31 characters, and therefore can fit into a single field element*.
+From {cairo-lang} docs:
 
-In Nile, arguments to contract calls (calldata) that are neither int nor hex, are treated as short strings and converted automatically to the corresponding felt representation. Because of this, you can run the following from the CLI:
+*A short string is a string whose length is at most 31 characters, and therefore can fit into a single field element*.
+
+In Nile, arguments to contract calls (calldata) that are neither int nor hex, are treated as short strings and converted automatically to the corresponding felt representation.
+
+Because of this, you can run the following from the CLI:
 
 [,sh]
 ----
 nile deploy MyToken 'MyToken name' 'MyToken symbol' ...
 ----
 
-And this is equivalent to passing the felt representation directly like this:
+Which is equivalent to passing the felt representation directly like this:
 
 [,sh]
 ----
 nile deploy MyToken 0x4d79546f6b656e206e616d65 0x4d79546f6b656e2073796d626f6c ...
 ----
 
-NOTE: If you want to pass the token name as a hex or an int, you need to provide the felt representation directly because these values are not interpreted as short strings. You can open a python terminal, import and use the   `str_to_felt` util.
+[NOTE]
+====
+If you want to pass the token name as a hex or an int, you need to provide the felt representation directly because these values are not interpreted as short strings. You can open a python terminal, import and use the   `str_to_felt` util.
 
 [,sh]
 ----
@@ -27,3 +33,4 @@ NOTE: If you want to pass the token name as a hex or an int, you need to provide
 >>> str_to_felt('any string')
 460107418789485453340263
 ----
+====
