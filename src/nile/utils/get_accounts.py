@@ -85,7 +85,7 @@ async def get_predeployed_accounts(network):
 
 
 async def _check_and_return_account(signer, pubkey, network, predeployed_info=None):
-    account = await Account(signer, network, predeployed_info)
+    account = await Account(signer, network, predeployed_info=predeployed_info)
     assert (str(pubkey)) == str(
         account.signer.public_key
     ), "Signer pubkey does not match deployed pubkey"

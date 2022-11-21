@@ -156,7 +156,7 @@ Deploy an Account associated with a given private key.
 To avoid accidentally leaking private keys, this command takes an alias instead of the actual private key. This alias is associated with an environmental variable of the same name, whose value is the actual private key.
 
 ```sh
-nile setup <private_key_alias>
+nile setup <private_key_alias> [--salt SALT] [--max_fee MAX_FEE] [--network NETWORK]
 
 🚀 Deploying Account
 ⏳ ️Deployment of Account successfully sent at 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
@@ -166,10 +166,27 @@ nile setup <private_key_alias>
 
 A few things to note here:
 
+- This is a counterfactual deployment, meaning the deployed account pays for its own deployment. You can use [`nile counterfactual-address`](#counterfactual-address) to predict the account address and send the necessary funds beforehand.
 - `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias.
-- This creates or updates `localhost.accounts.json` file storing all data related to accounts management.
+- This creates or updates `localhost.accounts.json` file storing all data related to account management.
 - The creates or updates `localhost.deployments.txt` file storing all data related to deployments.
 - `--track` and `--debug` flags can be used to watch the status of the account deployment transaction. See `status` below for a complete description.
+
+### `counterfactual-address`
+
+Precompute the deployment address of an Account contract, for a given signer and salt. If not provided, `salt` defaults to `0`.
+
+```sh
+nile counterfactual-address <private_key_alias> [--salt SALT]
+```
+
+For example:
+
+```sh
+nile counterfactual-address <private_key_alias> --salt 123
+
+0x00193c9bf3f66f556b40f0e95dffdd07db2cd6b10552a75048b71550049d1246
+```
 
 ### `send`
 
@@ -434,6 +451,18 @@ async def run(nre):
     alice, bob, *_ = accounts
     await alice.send(...)
     await bob.send(...)
+```
+
+### `get-balance`
+
+Retrieves the Ether balance for a given contract address.
+
+```sh
+nile get-balance <contract_address> [--network NETWORK]
+
+nile get-balance 0x053edde5384e39bad137d3c4130c708fb96ee28a4c80bf28049c486d3f36992e
+🕵️  0x053ed...6992e balance is:
+💰 4444.555501003 gwei
 ```
 
 ### `get-nonce`

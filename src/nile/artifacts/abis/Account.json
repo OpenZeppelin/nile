@@ -139,6 +139,25 @@
     {
         "inputs": [
             {
+                "name": "class_hash",
+                "type": "felt"
+            },
+            {
+                "name": "salt",
+                "type": "felt"
+            },
+            {
+                "name": "publicKey",
+                "type": "felt"
+            }
+        ],
+        "name": "__validate_deploy__",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "name": "call_array_len",
                 "type": "felt"
             },

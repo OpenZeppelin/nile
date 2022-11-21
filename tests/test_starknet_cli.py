@@ -1,13 +1,15 @@
 """Tests for starknet_cli module."""
 from types import SimpleNamespace
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from starkware.starkware_utils.error_handling import StarkErrorCode
 
 from nile.starknet_cli import (
     _add_args,
     capture_stdout,
     get_feeder_url,
+    get_gateway_response,
     get_gateway_url,
     set_command_args,
     set_context,
@@ -19,6 +21,9 @@ CONTRACT_NAME = "contract"
 ADDRESS = "0x1234"
 STDOUT_1 = "SDTOUT_1"
 STDOUT_2 = "SDTOUT_2"
+
+TX_RECEIVED = dict({"code": StarkErrorCode.TRANSACTION_RECEIVED.name, "result": "test"})
+TX_FAILED = dict({"code": "test"})
 
 
 @pytest.mark.parametrize(
@@ -131,6 +136,39 @@ def test_get_feeder_url(network, expected):
     else:
         url = get_feeder_url(network)
         assert url == expected
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "success, tx_response",
+    [
+        (False, TX_FAILED),
+        (True, TX_RECEIVED),
+    ],
+)
+@patch("nile.core.deploy.DeployAccount")
+async def test_get_gateway_response(mock_tx, success, tx_response):
+    with patch(
+        "nile.starknet_cli.GatewayClient.add_transaction", new=AsyncMock()
+    ) as mock_client:
+        mock_client.return_value = tx_response
+        args = dict({"network": NETWORK, "tx": mock_tx, "token": None})
+
+        if success:
+            # success
+            res = await get_gateway_response(**args)
+            assert res == tx_response
+
+        else:
+            mock_client.return_value = tx_response
+
+            with pytest.raises(BaseException) as err:
+                await get_gateway_response(**args)
+            assert "Failed to send transaction. Response: {'code': 'test'}." in str(
+                err.value
+            )
+
+        mock_client.assert_called_once_with(tx=mock_tx, token=None)
 
 
 @pytest.mark.asyncio

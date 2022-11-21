@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 """Nile CLI entry point."""
 import logging
+import os
 
 import asyncclick as click
 
 from nile.common import is_alias
-from nile.core.account import Account
+from nile.core.account import Account, get_counterfactual_address
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
@@ -16,11 +17,13 @@ from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.version import version as version_command
-from nile.utils import normalize_number
+from nile.signer import Signer
+from nile.utils import hex_address, normalize_number, shorten_address
 from nile.utils.get_accounts import get_accounts as get_accounts_command
 from nile.utils.get_accounts import (
     get_predeployed_accounts as get_predeployed_accounts_command,
 )
+from nile.utils.get_balance import get_balance as get_balance_command
 from nile.utils.get_nonce import get_nonce as get_nonce_command
 from nile.utils.status import status as status_command
 
@@ -183,11 +186,25 @@ async def declare(
 
 @cli.command()
 @click.argument("signer", nargs=1)
+@click.option("--salt", nargs=1)
+@click.option("--max_fee", nargs=1)
 @network_option
 @watch_option
-async def setup(signer, network, watch_mode):
+async def setup(signer, network, salt, max_fee, watch_mode):
     """Set up an Account contract."""
-    await Account(signer, network, watch_mode=watch_mode)
+    await Account(signer, network, salt, max_fee, watch_mode=watch_mode)
+
+
+@cli.command()
+@click.argument("signer", nargs=1)
+@click.option("--salt", nargs=1, default=None)
+def counterfactual_address(signer, salt):
+    """Precompute the address of an Account contract."""
+    _signer = Signer(normalize_number(os.environ[signer]))
+    address = hex_address(
+        get_counterfactual_address(salt, calldata=[_signer.public_key])
+    )
+    logging.info(address)
 
 
 @cli.command()
@@ -242,7 +259,6 @@ async def call(address_or_alias, method, params, network):
         address_or_alias, "call", method, params, network
     )
     logging.info(out)
-    return out
 
 
 @cli.command()
@@ -370,9 +386,26 @@ async def status(tx_hash, network, watch_mode, contracts_file):
 async def get_accounts(network, predeployed):
     """Retrieve and manage deployed accounts."""
     if not predeployed:
-        return await get_accounts_command(network)
+        await get_accounts_command(network)
     else:
-        return await get_predeployed_accounts_command(network)
+        await get_predeployed_accounts_command(network)
+
+
+@cli.command()
+@click.argument("contract_address")
+@network_option
+async def get_balance(contract_address, network):
+    """Retrieve the Ether balance for a given contract."""
+    balance = await get_balance_command(
+        normalize_number(contract_address), network=network
+    )
+    logging.info(f"🕵️  {shorten_address(contract_address)} balance is:")
+    if balance < 10**6:
+        logging.info(f"🪙  {balance} wei")
+    elif balance < 10**15:
+        logging.info(f"💰 {balance / 10 ** 9} gwei")
+    else:
+        logging.info(f"🤑 {balance / 10 ** 18} ether")
 
 
 @cli.command()
@@ -380,7 +413,7 @@ async def get_accounts(network, predeployed):
 @network_option
 async def get_nonce(contract_address, network):
     """Retrieve the nonce for a contract."""
-    return await get_nonce_command(normalize_number(contract_address), network)
+    await get_nonce_command(normalize_number(contract_address), network)
 
 
 cli = load_plugins(cli)

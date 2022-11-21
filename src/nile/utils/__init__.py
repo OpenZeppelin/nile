@@ -1,6 +1,6 @@
 """Utilities for Nile scripting."""
-
 import math
+import re
 from pathlib import Path
 
 try:
@@ -117,6 +117,13 @@ def assert_event_emitted(tx_exec_info, from_address, name, data):
         )
         in tx_exec_info.raw_events
     )
+
+
+def shorten_address(address):
+    """Shorten an address."""
+    result = re.search(r"^(0x[a-fA-F0-9]{5})[a-fA-F0-9]+([a-fA-F0-9]{5})$", address)
+    match = result.groups()
+    return f"{match[0]}...{match[1]}"
 
 
 def normalize_number(number):

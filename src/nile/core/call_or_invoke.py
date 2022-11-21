@@ -3,7 +3,7 @@ import logging
 import re
 
 from nile import deployments
-from nile.core import account
+from nile.common import is_alias
 from nile.starknet_cli import execute_call
 from nile.utils import hex_address, normalize_number
 from nile.utils.status import status
@@ -15,6 +15,7 @@ async def call_or_invoke(
     method,
     params,
     network,
+    abi=None,
     signature=None,
     max_fee=None,
     query_flag=None,
@@ -23,7 +24,7 @@ async def call_or_invoke(
     """
     Call or invoke functions of StarkNet smart contracts.
 
-    @param contract: can be an address, an alias, or an Account instance.
+    @param contract: can be an address or an alias.
     @param type: can be either call or invoke.
     @param method: the targeted function.
     @param params: the targeted function arguments.
@@ -33,11 +34,10 @@ async def call_or_invoke(
     @param query_flag: either simulate or estimate_fee.
     @param watch_mode: either track or debug.
     """
-    if isinstance(contract, account.Account):
-        address = contract.address
-        abi = contract.abi_path
-    else:
+    if abi is None or is_alias(contract):
         address, abi = next(deployments.load(contract, network))
+    else:
+        address = contract
 
     try:
         output = await execute_call(

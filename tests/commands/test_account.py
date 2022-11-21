@@ -20,6 +20,9 @@ MOCK_ADDRESS = 0x123
 MOCK_TARGET_ADDRESS = 0x987
 MOCK_INDEX = 0
 MAX_FEE = 10
+SALT = 444
+SIGNATURE = [111, 222]
+CLASS_HASH = 12345
 
 
 @pytest.fixture(autouse=True)
@@ -51,31 +54,39 @@ async def test_account_init_bad_key(caplog):
 
 
 @pytest.mark.asyncio
-@patch("nile.core.account.deploy", return_value=(1, 2))
+@patch("nile.core.account.deploy_account", return_value=(1, 2))
+@patch("nile.common.get_class_hash", return_value=CLASS_HASH)
+@patch("nile.core.account.Signer.sign_deployment", return_value=SIGNATURE)
 @patch("nile.core.account.os.path.dirname")
-async def test_deploy(mock_path, mock_deploy):
+async def test_deploy(mock_path, mock_signer, mock_hash, mock_deploy):
     test_path = "/overriding_path"
+    overriding_path = (
+        f"{test_path}/artifacts",
+        f"{test_path}/artifacts/abis",
+    )
+
     mock_path.return_value.replace.return_value = test_path
 
-    account = await Account(KEY, NETWORK)
+    account = await Account(KEY, NETWORK, salt=SALT, max_fee=MAX_FEE)
+    calldata = [account.signer.public_key]
 
     mock_deploy.assert_called_with(
-        "Account",
-        [account.signer.public_key],
-        NETWORK,
-        f"account-{account.index}",
-        (
-            f"{test_path}/artifacts",
-            f"{test_path}/artifacts/abis",
-        ),
+        network=NETWORK,
+        salt=SALT,
+        calldata=calldata,
+        signature=SIGNATURE,
+        max_fee=MAX_FEE,
+        query_type=None,
+        overriding_path=overriding_path,
         watch_mode=None,
     )
 
 
 @pytest.mark.asyncio
-@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.get_account_class_hash", return_value=CLASS_HASH)
 @patch("nile.core.account.accounts.register")
-async def test_deploy_accounts_register(mock_register, mock_deploy):
+async def test_deploy_accounts_register(mock_register, mock_hash, mock_deploy):
     account = await Account(KEY, NETWORK)
 
     mock_register.assert_called_once_with(
@@ -84,10 +95,11 @@ async def test_deploy_accounts_register(mock_register, mock_deploy):
 
 
 @pytest.mark.asyncio
-@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.get_account_class_hash", return_value=CLASS_HASH)
 @patch("nile.core.account.get_contract_class", return_value="ContractClass")
 @patch("nile.core.account.declare")
-async def test_declare(mock_declare, mock_get_class, mock_deploy):
+async def test_declare(mock_declare, mock_get_class, mock_hash, mock_deploy):
     account = await Account(KEY, NETWORK)
 
     signature = [999, 888]
@@ -137,7 +149,7 @@ async def test_declare(mock_declare, mock_get_class, mock_deploy):
 @pytest.mark.parametrize("deployer_address", [None, 0xDE0])
 @pytest.mark.parametrize("watch_mode", [None, "debug"])
 @pytest.mark.parametrize("abi", [None, "TEST_ABI"])
-@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.core.deploy.get_class_hash", return_value=0x434343)
 @patch("nile.core.account.deploy_with_deployer")
 async def test_deploy_contract(
@@ -183,13 +195,16 @@ async def test_deploy_contract(
 
 
 @pytest.mark.asyncio
-@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.get_account_class_hash", return_value=CLASS_HASH)
 @patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
 @patch(
     "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
 )
-async def test_send_nonce_call(mock_target_address, mock_call, mock_nonce, mock_deploy):
+async def test_send_nonce_call(
+    mock_target_address, mock_call, mock_nonce, mock_hash, mock_deploy
+):
     account = await Account(KEY, NETWORK)
 
     await account.send(MOCK_TARGET_ADDRESS, "method", [1, 2, 3], max_fee=1)
@@ -202,15 +217,18 @@ async def test_send_nonce_call(mock_target_address, mock_call, mock_nonce, mock_
 
 
 @pytest.mark.asyncio
-@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.get_account_class_hash", return_value=CLASS_HASH)
 @patch(
     "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
 )
-async def test_send_sign_invoke_and_execute(mock_target_address, mock_deploy):
+async def test_send_sign_invoke_and_execute(
+    mock_target_address, mock_hash, mock_deploy
+):
     account = await Account(KEY, NETWORK)
 
     calldata = [111, 222, 333]
-    sig_r, sig_s = [999, 888]
+    sig_r, sig_s = SIGNATURE
     return_signature = [calldata, sig_r, sig_s]
 
     account.signer.sign_invoke = MagicMock(return_value=return_signature)
@@ -232,9 +250,10 @@ async def test_send_sign_invoke_and_execute(mock_target_address, mock_deploy):
 
         # Check values are correctly passed to '__execute__'
         mock_call.assert_called_with(
-            contract=account,
+            contract=account.address,
             max_fee=max_fee,
             method="__execute__",
+            abi=account.abi_path,
             network=NETWORK,
             params=calldata,
             signature=[sig_r, sig_s],
@@ -245,18 +264,21 @@ async def test_send_sign_invoke_and_execute(mock_target_address, mock_deploy):
 
 
 @pytest.mark.asyncio
-@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.get_account_class_hash", return_value=CLASS_HASH)
 @patch(
     "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
 )
 @patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
-async def test_send_defaults(mock_call, mock_nonce, mock_target_address, mock_deploy):
+async def test_send_defaults(
+    mock_call, mock_nonce, mock_target_address, mock_hash, mock_deploy
+):
     account = await Account(KEY, NETWORK)
 
     send_args = [MOCK_TARGET_ADDRESS, "method", [1, 2, 3]]
     calldata = [111, 222, 333]
-    sig_r, sig_s = [999, 888]
+    sig_r, sig_s = SIGNATURE
     return_signature = [calldata, sig_r, sig_s]
 
     # Mock sign_invoke
@@ -273,9 +295,10 @@ async def test_send_defaults(mock_call, mock_nonce, mock_target_address, mock_de
     )
 
     mock_call.assert_called_with(
-        contract=account,
+        contract=account.address,
         max_fee=0,
         method="__execute__",
+        abi=account.abi_path,
         network=NETWORK,
         params=calldata,
         signature=[sig_r, sig_s],
@@ -286,8 +309,9 @@ async def test_send_defaults(mock_call, mock_nonce, mock_target_address, mock_de
 
 
 @pytest.mark.asyncio
-@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
-async def test_estimate_fee(mock_deploy):
+@patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.get_account_class_hash", return_value=CLASS_HASH)
+async def test_estimate_fee(mock_hash, mock_deploy):
     account = await Account(KEY, NETWORK)
     # Mock send
     account.send = AsyncMock()
@@ -300,8 +324,9 @@ async def test_estimate_fee(mock_deploy):
 
 
 @pytest.mark.asyncio
-@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
-async def test_simulate(mock_deploy):
+@patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.get_account_class_hash", return_value=CLASS_HASH)
+async def test_simulate(mock_hash, mock_deploy):
     account = await Account(KEY, NETWORK)
     # Mock send
     account.send = AsyncMock()
@@ -314,23 +339,29 @@ async def test_simulate(mock_deploy):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "query_type, watch_mode", [("estimate_fee", "track"), ("simulate", "debug")]
-)
-@patch("nile.core.account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@pytest.mark.parametrize("query_type", ["estimate_fee", "simulate"])
+@pytest.mark.parametrize("watch_mode", ["track", "debug"])
+@patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.get_account_class_hash", return_value=CLASS_HASH)
 @patch(
     "nile.core.account.Account._get_target_address", return_value=MOCK_TARGET_ADDRESS
 )
 @patch("nile.core.account.get_nonce", return_value=0)
 @patch("nile.core.account.call_or_invoke")
 async def test_execute_query(
-    mock_call, mock_nonce, mock_target_address, mock_deploy, query_type, watch_mode
+    mock_call,
+    mock_nonce,
+    mock_target_address,
+    mock_hash,
+    mock_deploy,
+    watch_mode,
+    query_type,
 ):
     account = await Account(KEY, NETWORK)
 
     send_args = [MOCK_TARGET_ADDRESS, "method", [1, 2, 3]]
     calldata = [111, 222, 333]
-    sig_r, sig_s = [999, 888]
+    sig_r, sig_s = SIGNATURE
     return_signature = [calldata, sig_r, sig_s]
 
     # Mock sign_invoke
@@ -355,8 +386,9 @@ async def test_execute_query(
 
     # Check query_flag is correctly passed
     mock_call.assert_called_with(
-        contract=account,
+        contract=account.address,
         max_fee=MAX_FEE,
+        abi=account.abi_path,
         method="__execute__",
         network=NETWORK,
         params=calldata,

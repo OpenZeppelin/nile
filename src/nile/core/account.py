@@ -3,19 +3,23 @@ import logging
 import os
 
 from dotenv import load_dotenv
+from starkware.starknet.core.os.contract_address.contract_address import (
+    calculate_contract_address_from_hash,
+)
 
 from nile import accounts, deployments
 from nile.common import (
     QUERY_VERSION,
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
+    get_account_class_hash,
     get_contract_class,
     is_alias,
     normalize_number,
 )
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.declare import declare
-from nile.core.deploy import deploy
+from nile.core.deploy import deploy_account
 from nile.core.deploy import deploy_contract as deploy_with_deployer
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
@@ -48,7 +52,15 @@ class Account(AsyncObject):
     Remove AsyncObject if Account.deploy decouples from initialization.
     """
 
-    async def __init__(self, signer, network, predeployed_info=None, watch_mode=None):
+    async def __init__(
+        self,
+        signer,
+        network,
+        salt=0,
+        max_fee=None,
+        predeployed_info=None,
+        watch_mode=None,
+    ):
         """Get or deploy an Account contract for the given private key."""
         try:
             if predeployed_info is None:
@@ -79,32 +91,57 @@ class Account(AsyncObject):
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
-            address, index = await self.deploy(watch_mode=watch_mode)
-            self.address = address
-            self.index = index
+            output = await self.deploy(
+                salt=salt, max_fee=max_fee, watch_mode=watch_mode
+            )
+            if output is not None:
+                address, index = output
+                self.address = address
+                self.index = index
 
-        assert type(self.address) == int
+        # we should replace this with static type checks
+        if hasattr(self, "address"):
+            assert type(self.address) == int
 
-    async def deploy(self, watch_mode=None):
+    async def deploy(self, salt=None, max_fee=None, query_type=None, watch_mode=None):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
         pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
         overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
 
-        address, _ = await deploy(
-            "Account",
-            [self.signer.public_key],
-            self.network,
-            f"account-{index}",
-            overriding_path,
+        class_hash = get_account_class_hash("Account")
+        salt = 0 if salt is None else normalize_number(salt)
+        max_fee = 0 if max_fee is None else normalize_number(max_fee)
+        calldata = [self.signer.public_key]
+
+        contract_address = get_counterfactual_address(salt, calldata)
+
+        [sig_r, sig_s] = self.signer.sign_deployment(
+            contract_address,
+            class_hash,
+            calldata,
+            salt,
+            max_fee,
+            0,  # nonce starts at 0
+        )
+
+        output = await deploy_account(
+            network=self.network,
+            salt=salt,
+            calldata=calldata,
+            signature=[sig_r, sig_s],
+            max_fee=max_fee,
+            query_type=query_type,
+            overriding_path=overriding_path,
             watch_mode=watch_mode,
         )
 
-        accounts.register(
-            self.signer.public_key, address, index, self.alias, self.network
-        )
-
-        return address, index
+        if output is not None:
+            address, _ = output
+            accounts.register(
+                self.signer.public_key, address, index, self.alias, self.network
+            )
+            return address, index
 
     async def declare(
         self,
@@ -200,9 +237,10 @@ class Account(AsyncObject):
         )
 
         return await call_or_invoke(
-            contract=self,
+            contract=self.address,
             type="invoke",
             method="__execute__",
+            abi=self.abi_path,
             params=calldata,
             network=self.network,
             signature=[sig_r, sig_s],
@@ -243,3 +281,16 @@ class Account(AsyncObject):
             calldata = [normalize_number(x) for x in calldata]
 
         return max_fee, nonce, calldata
+
+
+def get_counterfactual_address(salt=None, calldata=None, contract="Account"):
+    """Precompute a contract's address for a given class, salt, and calldata."""
+    class_hash = get_account_class_hash(contract)
+    salt = 0 if salt is None else int(salt)
+    calldata = [] if calldata is None else calldata
+    return calculate_contract_address_from_hash(
+        salt=salt,
+        class_hash=class_hash,
+        constructor_calldata=calldata,
+        deployer_address=0,
+    )
