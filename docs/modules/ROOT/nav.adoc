@@ -3,7 +3,7 @@
 
 * Guides
 ** xref:testing.adoc[Testing]
-** xref:deploy_an_account.adoc[Deploy an account]
+** xref:declare_account.adoc[Declare OZ Account in Devnet]
 ** xref:strings.adoc[Short String Literals]
 
 * xref:commands.adoc[CLI Reference]
