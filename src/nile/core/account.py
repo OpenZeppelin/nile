@@ -99,7 +99,9 @@ class Account(AsyncObject):
                 self.address = address
                 self.index = index
 
-        assert type(self.address) == int
+        # we should replace this with static type checks
+        if hasattr(self, 'address'):
+            assert type(self.address) == int
 
     async def deploy(self, salt=None, max_fee=None, query_type=None, watch_mode=None):
         """Deploy an Account contract for the given private key."""
