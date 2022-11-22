@@ -101,7 +101,7 @@ NOTE: Keep in mind that different salts compute to different addresses, even wit
 +
 [IMPORTANT]
 ====
-In Starknet, only contracts that have been previously declared, can be deployed. {oz-account} is declared soon after every release in testnets and mainnet, but local devnet needs a declaration for every instance, because the contract is not declared by default. For declaring you need an account, so to solve this egg-chicken problem, you need to declare OZ Account in devnet using predeployed accounts through scripts.
+In StarkNet, only contracts that have been previously declared, can be deployed. {oz-account} is declared soon after every release in testnets and mainnet, but local devnet needs a declaration for every instance, because the contract is not declared by default. For declaring you need an account, so to solve this egg-chicken problem, you need to declare OZ Account in devnet using predeployed accounts through scripts.
 
 Check xref:declare_account.adoc[Declare OZ Account in Devnet] guide.
 ====

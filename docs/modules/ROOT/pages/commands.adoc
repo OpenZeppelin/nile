@@ -70,7 +70,7 @@ nile compile contracts/NewAccountType.cairo --account_contract # compiles accoun
 
 Specify which directories the compiler must use to resolve imports from Cairo. 
 
-TIP: Check {imports} from Starknet documentation.
+TIP: Check {imports} from StarkNet documentation.
 
 ==== *--disable-hint-validation*
 

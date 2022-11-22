@@ -1,4 +1,4 @@
-:starknet-testing: link:https://github.com/starkware-libs/cairo-lang/tree/master/src/starkware/starknet/testing[Starknet Testing]
+:starknet-testing: link:https://github.com/starkware-libs/cairo-lang/tree/master/src/starkware/starknet/testing[StarkNet Testing]
 
 = Testing with Nile
 
@@ -27,7 +27,7 @@ CONTRACT_FILE = os.path.join("contracts", "contract.cairo")
 @pytest.mark.asyncio
 async def test_increase_balance():
     """Test increase_balance method."""
-    # Create a new Starknet class that simulates the StarkNet
+    # Create a new StarkNet class that simulates the StarkNet
     # system.
     starknet = await Starknet.empty()
 
