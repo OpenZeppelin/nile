@@ -1,0 +1,44 @@
+= Useful Script Examples
+:sectnums:
+Here you can find some potentially useful script examples.
+
+[#declare_account]
+== Declare Account
+
+Useful if you need to deploy an account in devnet, for previous declariation:
+
+[,python]
+----
+# script.py
+async def run(nre):
+  accounts = await nre.get_accounts(predeployed=True)
+  declarer_account = accounts[0]
+  print(await declarer_account.declare("Account"))
+----
+
+NOTE: This script assumes there is an Account artifact in your project. You can add the contract to the contracts folder, and compile with `nile compile` to get the artifact.
+
+== Transfer funds from predeployed devnet account
+
+Useful for funding addresses in devnet:
+
+[,python]
+----
+from nile.common import ETH_TOKEN_ADDRESS
+
+async def run(nre):
+    accounts = await nre.get_accounts(predeployed=True)
+    account = accounts[0]
+
+    # define the recipient address
+    recipient = "0x053edde5384e39bad137d3c4130c708fb96ee28a4c80bf28049c486d3f369"
+
+    # define the amount to transfer (uint256 format)
+    amount = [2 * 10 ** 18, 0]
+
+    print(f"Transferring {amount} to {recipient} from {hex(account.address)}")
+
+    # send the transfer transaction
+    output = await account.send(ETH_TOKEN_ADDRESS, "transfer", [recipient, *amount])
+    print(output)
+----

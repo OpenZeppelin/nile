@@ -3,13 +3,13 @@
 
 * Guides
 ** xref:testing.adoc[Testing with Nile]
-** xref:declare_account.adoc[Declare OZ Account in Devnet]
 ** xref:strings.adoc[Short string literals]
 
 * xref:commands.adoc[CLI Reference]
 
 * xref:nre.adoc[NRE and Scripting]
 ** xref:api.adoc[API Reference]
+** xref:scripts.adoc[Useful Script Examples]
 
 // ** xref:node.adoc[node]
 // ** xref:node.adoc[compile]

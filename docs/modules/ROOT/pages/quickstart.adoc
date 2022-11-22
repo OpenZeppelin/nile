@@ -85,7 +85,7 @@ CAUTION: Don't use this Private Key in production environments!
 [,sh]
 ----
 (env): nile counterfactual-address ACCOUNT_1 --salt 123
-0x00193c9bf3f66f556b40f0e95dffdd07db2cd6b10552a75048b71550049d1246
+0x057792c44b1e9e349ee549ed018f7225f927bd2b01b6277a1cb94da5fb9421ed
 ----
 +
 NOTE: Keep in mind that different salts compute to different addresses, even with the same Private Key.
@@ -103,7 +103,7 @@ NOTE: Keep in mind that different salts compute to different addresses, even wit
 ====
 In StarkNet, only contracts that have been previously declared, can be deployed. {oz-account} is declared soon after every release in testnets and mainnet, but local devnet needs a declaration for every instance, because the contract is not declared by default. For declaring you need an account, so to solve this egg-chicken problem, you need to declare OZ Account in devnet using predeployed accounts through scripts.
 
-Check xref:declare_account.adoc[Declare OZ Account in Devnet] guide.
+Check xref:scripts.adoc#declare_account[Declare Account] guide.
 ====
 
 == Deploying a contract
