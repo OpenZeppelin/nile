@@ -1,1 +1,1 @@
-= Declare OZ Account in starknet-devnet
+= Declare OZ Account in Devnet
