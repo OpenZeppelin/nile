@@ -4,7 +4,9 @@
 
 From {cairo-lang} docs:
 
-*A short string is a string whose length is at most 31 characters, and therefore can fit into a single field element*.
+"A short string is a string whose length is at most 31 characters, and therefore can fit into a single field element".
+
+== Nile integration
 
 In Nile, arguments to contract calls (calldata) that are neither int nor hex, are treated as short strings and converted automatically to the corresponding felt representation.
 

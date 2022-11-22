@@ -7,7 +7,9 @@
 ** xref:strings.adoc[Short string literals]
 
 * xref:commands.adoc[CLI Reference]
+
 * xref:nre.adoc[NRE and Scripting]
+** xref:api.adoc[API Reference]
 
 // ** xref:node.adoc[node]
 // ** xref:node.adoc[compile]

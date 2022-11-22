@@ -1,1 +1,30 @@
 = NRE and Scripting
+
+Nile provides a Runtime Environment for scripting that you can use for multiple tasks. The Script is any python file implementing an asynchronous `run(nre)` function to receive a NileRuntimeEnvironment object exposing Nile's scripting API.
+
+== Running a script
+
+. Create a file named *test_script.py* in the root directory of your project.
++
+[,python]
+----
+async def run(nre):
+    accounts = await nre.get_accounts(predeployed=True)
+    print("First Account", accounts[0])
+----
++
+. Run a devnet node with `nile node`
++
+[,sh]
+----
+(env): nile node
+----
++
+. Run the script by running nile run `"path/to/script.py"`
++
+[,sh]
+----
+(env): nile run test_script.py
+----
+
+NOTE: For a full reference of NRE exposed members check the xref:api.adoc[API Reference] section.
