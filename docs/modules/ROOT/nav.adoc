@@ -2,7 +2,7 @@
 * xref:quickstart.adoc[Quick Start]
 
 * Guides
-** xref:testing.adoc[Testing]
+** xref:testing.adoc[Testing with Nile]
 ** xref:declare_account.adoc[Declare OZ Account in Devnet]
 ** xref:strings.adoc[Short string literals]
 
