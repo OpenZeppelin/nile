@@ -3,7 +3,7 @@ import json
 import logging
 import subprocess
 
-from nile.common import NODE_FILENAME
+from nile.common import NODE_FILENAME, OTHER_NETWORKS
 
 
 def node(host="127.0.0.1", port=5050, seed=None, lite_mode=False):
@@ -16,10 +16,10 @@ def node(host="127.0.0.1", port=5050, seed=None, lite_mode=False):
         else:
             network = host
         gateway_url = f"http://{host}:{port}/"
-        gateway = {network: gateway_url}
+        gateways = {network: gateway_url, **OTHER_NETWORKS}
 
         with open(file, "w+") as f:
-            json.dump(gateway, f)
+            json.dump(gateways, f, indent=2)
 
         command = ["starknet-devnet", "--host", host, "--port", str(port)]
 

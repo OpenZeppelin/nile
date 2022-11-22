@@ -1,7 +1,13 @@
 """Tests for common library."""
 import pytest
 
-from nile.common import parse_information, prepare_params, stringify
+from nile.common import (
+    OTHER_NETWORKS,
+    get_gateways,
+    parse_information,
+    prepare_params,
+    stringify,
+)
 
 NETWORK = "goerli"
 ARGS = ["1", "2", "3"]
@@ -10,6 +16,12 @@ LIST2 = [1, 2, 3, [4, 5, 6]]
 LIST3 = [1, 2, 3, [4, 5, 6, [7, 8, 9]]]
 STDOUT_1 = "SDTOUT_1"
 STDOUT_2 = "SDTOUT_2"
+
+
+@pytest.fixture(autouse=True)
+def tmp_working_dir(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    return tmp_path
 
 
 @pytest.mark.parametrize(
@@ -48,3 +60,10 @@ def test_parse_information():
 
     _a, _b = parse_information(target)
     assert _a, _b == (a, b)
+
+
+def test_get_gateways():
+    gateways = get_gateways()
+    expected = {"localhost": "http://127.0.0.1:5050/", **OTHER_NETWORKS}
+
+    assert gateways == expected
