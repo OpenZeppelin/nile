@@ -21,12 +21,12 @@ PUBKEYS = [
     883045738439352841478194533192765345509759306772397516907181243450667673002,
     661519931401775515888740911132355225260405929679788917190706536765421826262,
 ]
-ADDRESSES = ["333", "444"]
+ADDRESSES = [333, 333]
 INDEXES = [0, 1]
 ALIASES = ["TEST_KEY", "TEST_KEY_2"]
 
 
-MOCK_ADDRESS = "0x123"
+MOCK_ADDRESS = 0x123
 MOCK_INDEX = 0
 
 MOCK_ACCOUNTS = {
@@ -61,12 +61,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
     return tmp_path
 
 
-@pytest.fixture(autouse=True)
-def mock_subprocess():
-    with patch("nile.core.compile.subprocess") as mock_subprocess:
-        yield mock_subprocess
-
-
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "private_keys, public_keys",
     [
@@ -75,15 +70,16 @@ def mock_subprocess():
     ],
 )
 @patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
-def test__check_and_return_account_with_matching_keys(
+async def test__check_and_return_account_with_matching_keys(
     mock_deploy, private_keys, public_keys
 ):
     # Check matching public/private keys
-    account = _check_and_return_account(private_keys, public_keys, NETWORK)
+    account = await _check_and_return_account(private_keys, public_keys, NETWORK)
 
     assert type(account) is Account
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "private_keys, public_keys",
     [
@@ -92,19 +88,20 @@ def test__check_and_return_account_with_matching_keys(
     ],
 )
 @patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
-def test__check_and_return_account_with_mismatching_keys(
+async def test__check_and_return_account_with_mismatching_keys(
     mock_deploy, private_keys, public_keys
 ):
     # Check mismatched public/private keys
     with pytest.raises(AssertionError) as err:
-        _check_and_return_account(private_keys, public_keys, NETWORK)
+        await _check_and_return_account(private_keys, public_keys, NETWORK)
 
     assert "Signer pubkey does not match deployed pubkey" in str(err.value)
 
 
+@pytest.mark.asyncio
 @patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
-def test_get_accounts_no_activated_accounts_feedback(mock_deploy, capsys):
-    get_accounts(NETWORK)
+async def test_get_accounts_no_activated_accounts_feedback(mock_deploy, capsys):
+    await get_accounts(NETWORK)
     # This test uses capsys in order to test the print statements (instead of logging)
     captured = capsys.readouterr()
 
@@ -117,15 +114,16 @@ def test_get_accounts_no_activated_accounts_feedback(mock_deploy, capsys):
     )
 
 
+@pytest.mark.asyncio
 @patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.utils.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
 @patch("nile.utils.get_accounts.open", MagicMock())
 @patch("nile.utils.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
-def test_get_accounts_activated_accounts_feedback(mock_deploy, caplog):
+async def test_get_accounts_activated_accounts_feedback(mock_deploy, caplog):
     logging.getLogger().setLevel(logging.INFO)
 
     # Default argument
-    get_accounts(NETWORK)
+    await get_accounts(NETWORK)
 
     # Check total accounts log
     assert f"\nTotal registered accounts: {len(PUBKEYS)}\n" in caplog.text
@@ -138,16 +136,16 @@ def test_get_accounts_activated_accounts_feedback(mock_deploy, caplog):
     assert "\n🚀 Successfully retrieved deployed accounts" in caplog.text
 
 
+@pytest.mark.asyncio
 @patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.utils.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
 @patch("nile.utils.get_accounts.open", MagicMock())
 @patch("nile.utils.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
-def test_get_accounts_with_keys(mock_deploy):
-
+async def test_get_accounts_with_keys(mock_deploy):
     with patch(
         "nile.utils.get_accounts._check_and_return_account"
     ) as mock_return_account:
-        result = get_accounts(NETWORK)
+        result = await get_accounts(NETWORK)
 
         # Check correct args are passed to `_check_and_receive_account`
         for i in range(len(PUBKEYS)):
@@ -160,11 +158,14 @@ def test_get_accounts_with_keys(mock_deploy):
         assert len(result) == len(PUBKEYS)
 
 
+@pytest.mark.asyncio
 @patch("nile.common.get_gateways", return_value=GATEWAYS)
 @patch("nile.utils.get_accounts._check_and_return_account")
 @patch("requests.get", return_value=MockResponse(JSON_DATA, 200))
-def test_get_predeployed_accounts(mock_response, mock_return_account, mock_gateways):
-    result = get_predeployed_accounts("localhost")
+async def test_get_predeployed_accounts(
+    mock_response, mock_return_account, mock_gateways
+):
+    result = await get_predeployed_accounts("localhost")
 
     # Assert the correct endpoint is used
     mock_response.assert_called_once_with(
@@ -192,18 +193,19 @@ def test_get_predeployed_accounts(mock_response, mock_return_account, mock_gatew
     assert len(result) == len(JSON_DATA)
 
 
+@pytest.mark.asyncio
 @patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.common.get_gateways", return_value=GATEWAYS)
 @patch("nile.utils.get_accounts._check_and_return_account")
 @patch("requests.get", return_value=MockResponse(JSON_DATA, 200))
-def test_get_predeployed_accounts_logging(
+async def test_get_predeployed_accounts_logging(
     mock_response, mock_return_account, mock_gateways, mock_deploy, caplog
 ):
     # make logs visible to test
     logger = logging.getLogger()
 
     logger.setLevel(logging.INFO)
-    get_predeployed_accounts("localhost")
+    await get_predeployed_accounts("localhost")
 
     assert "🚀 Successfully retrieved pre-deployed accounts" in caplog.text
 
@@ -212,13 +214,13 @@ def test_get_predeployed_accounts_logging(
 
     # test missing schema first
     mock_response.side_effect = MissingSchema
-    get_predeployed_accounts("localhost")
+    await get_predeployed_accounts("localhost")
 
     assert "❌ Failed to retrieve gateway from provided network" in caplog.text
 
     # test generic exceptions
     mock_response.side_effect = Exception
-    get_predeployed_accounts("localhost")
+    await get_predeployed_accounts("localhost")
 
     assert "❌ Error querying the account from the gateway" in caplog.text
     assert "Check you are connected to a starknet-devnet implementation" in caplog.text

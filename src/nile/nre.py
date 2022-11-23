@@ -8,6 +8,7 @@ from nile.core.deploy import deploy
 from nile.core.plugins import get_installed_plugins, skip_click_exit
 from nile.utils import normalize_number
 from nile.utils.get_accounts import get_accounts, get_predeployed_accounts
+from nile.utils.get_balance import get_balance
 from nile.utils.get_nonce import get_nonce
 
 
@@ -46,13 +47,13 @@ class NileRuntimeEnvironment:
             watch_mode=watch_mode,
         )
 
-    def call(self, address_or_alias, method, params=None):
+    def call(self, address_or_alias, method, params=None, abi=None):
         """Call a view function in a smart contract."""
         if not is_alias(address_or_alias):
             address_or_alias = normalize_number(address_or_alias)
-        return str(
-            call_or_invoke(address_or_alias, "call", method, params, self.network)
-        ).split()
+        return call_or_invoke(
+            address_or_alias, "call", method, params, self.network, abi=abi
+        )
 
     def get_deployment(self, address_or_alias):
         """Get a deployment by its identifier (address or alias)."""
@@ -80,3 +81,7 @@ class NileRuntimeEnvironment:
     def get_nonce(self, contract_address):
         """Retrieve the nonce for a contract."""
         return get_nonce(contract_address, self.network)
+
+    def get_balance(self, account):
+        """Get the Ether balance of an address."""
+        return get_balance(account, self.network)

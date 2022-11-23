@@ -119,30 +119,35 @@ Creating artifacts/abis/ to store compilation artifacts
 
 ### `deploy`
 
-> NOTICE: this method doesn't use an account, which will be deprecated very soon as StarkNet makes deployments from accounts mandatory.
+> NOTICE: Calling this method with `--ignore_account` is discouraged and will be removed soon, as StarkNet will make deployments from accounts mandatory.
 
 > Token for deployments to Alpha Mainnet can be set with the `--token` option.
 
 ```txt
-nile deploy <contract> [--alias ALIAS] [--network NETWORK] [--track | --debug]
+nile deploy <private_key_alias> <contract> [--alias ALIAS] [--network NETWORK] [--track | --debug]
 ```
 
+For example:
+
 ```sh
-nile deploy contract --alias my_contract
+nile deploy <private_key_alias> contract --alias my_contract
 
 🚀 Deploying contract
-🌕 artifacts/contract.json successfully deployed to 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
+⏳ ️Deployment of contract successfully sent at 0x07ec10eb0758f7b1bc5aed0d5b4d30db0ab3c087eba85d60858be46c1a5e4680
+🧾 Transaction hash: 0x79e596c39cfec555f2d17253d043a0defd64a851a268b68c13811f328baf123
 📦 Registering deployment as my_contract in localhost.deployments.txt
 ```
 
 A few things to note here:
 
-- `nile deploy <contract_name>` looks for an artifact with the same name.
-- This creates or updates the `localhost.deployments.txt` file storing all data related to deployments.
-- The `--alias` parameter creates a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
-- By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, and the default `localhost`.
-- By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
-- `--track` and `--debug` flags can be used to watch the status of the deployment transaction. See `status` below for a complete description.
+1. `nile deploy <contract_name>` looks for an artifact with the same name.
+2. This creates or updates the `localhost.deployments.txt` file storing all data related to deployments.
+3. The `--ignore_account` flag deploys without using the account (DEPRECATED).
+4. The `--alias` parameter creates a unique identifier for future interactions, if no alias is set then the contract's address can be used as identifier.
+5. The `--deployer_address` parameter lets you specify the deployer contract address if needed.
+6. By default Nile works on local, but you can use the `--network` parameter to interact with `mainnet`, `goerli`, `goerli2`, `integration`, and the default `localhost`.
+7. By default, the ABI corresponding to the contract will be registered with the deployment. To register a different ABI file, use the `--abi` parameter.
+8. `--track` and `--debug` flags can be used to watch the status of the deployment transaction. See `status` below for a complete description.
 
 ### `setup`
 
@@ -151,7 +156,7 @@ Deploy an Account associated with a given private key.
 To avoid accidentally leaking private keys, this command takes an alias instead of the actual private key. This alias is associated with an environmental variable of the same name, whose value is the actual private key.
 
 ```sh
-nile setup <private_key_alias>
+nile setup <private_key_alias> [--salt SALT] [--max_fee MAX_FEE] [--network NETWORK]
 
 🚀 Deploying Account
 ⏳ ️Deployment of Account successfully sent at 0x07db6b52c8ab888183277bc6411c400136fe566c0eebfb96fffa559b2e60e794
@@ -161,10 +166,27 @@ nile setup <private_key_alias>
 
 A few things to note here:
 
+- This is a counterfactual deployment, meaning the deployed account pays for its own deployment. You can use [`nile counterfactual-address`](#counterfactual-address) to predict the account address and send the necessary funds beforehand.
 - `nile setup <private_key_alias>` looks for an environment variable with the name of the private key alias.
-- This creates or updates `localhost.accounts.json` file storing all data related to accounts management.
+- This creates or updates `localhost.accounts.json` file storing all data related to account management.
 - The creates or updates `localhost.deployments.txt` file storing all data related to deployments.
 - `--track` and `--debug` flags can be used to watch the status of the account deployment transaction. See `status` below for a complete description.
+
+### `counterfactual-address`
+
+Precompute the deployment address of an Account contract, for a given signer and salt. If not provided, `salt` defaults to `0`.
+
+```sh
+nile counterfactual-address <private_key_alias> [--salt SALT]
+```
+
+For example:
+
+```sh
+nile counterfactual-address <private_key_alias> --salt 123
+
+0x00193c9bf3f66f556b40f0e95dffdd07db2cd6b10552a75048b71550049d1246
+```
 
 ### `send`
 
@@ -236,13 +258,13 @@ Please note:
 
 ### `run`
 
-Execute a script in the context of Nile. The script must implement a `run(nre)` function to receive a `NileRuntimeEnvironment` object exposing Nile's scripting API.
+Execute a script in the context of Nile. The script must implement an asynchronous `run(nre)` function to receive a `NileRuntimeEnvironment` object exposing Nile's scripting API.
 
 ```python
 # path/to/script.py
 
-def run(nre):
-    address, abi = nre.deploy("contract", alias="my_contract")
+async def run(nre):
+    address, abi = await nre.deploy("contract", alias="my_contract")
     print(abi, address)
 ```
 
@@ -368,7 +390,7 @@ Retrieves a list of ready-to-use accounts which allows for easy scripting integr
 
 1. store private keys in a `.env`
 
-    ```
+    ```txt
     PRIVATE_KEY_ALIAS_1=286426666527820764590699050992975838532
     PRIVATE_KEY_ALIAS_2=263637040172279991633704324379452721903
     PRIVATE_KEY_ALIAS_3=325047780196174231475632140485641889884
@@ -388,18 +410,18 @@ Retrieves a list of ready-to-use accounts which allows for easy scripting integr
 Next, write a script and call `get-accounts` to retrieve and use the deployed accounts.
 
 ```python
-def run(nre):
+async def run(nre):
 
     # fetch the list of deployed accounts
-    accounts = nre.get_accounts()
+    accounts = await nre.get_accounts()
 
     # then
-    accounts[0].send(...)
+    await accounts[0].send(...)
 
     # or
     alice, bob, *_ = accounts
-    alice.send(...)
-    bob.send(...)
+    await alice.send(...)
+    await bob.send(...)
 ```
 
 > Please note that the list of accounts includes only those that exist in the local `<network>.accounts.json` file. In a recent release we added a flag to the command, to get predeployed accounts if the network you are connected to is a [starknet-devnet](https://github.com/Shard-Labs/starknet-devnet) instance.
@@ -417,18 +439,30 @@ nile get-accounts --predeployed
 Or from the nile runtime environment for scripting:
 
 ```python
-def run(nre):
+async def run(nre):
 
     # fetch the list of pre-deployed accounts from devnet
-    accounts = nre.get_accounts(predeployed=True)
+    accounts = await nre.get_accounts(predeployed=True)
 
     # then
-    accounts[0].send(...)
+    await accounts[0].send(...)
 
     # or
     alice, bob, *_ = accounts
-    alice.send(...)
-    bob.send(...)
+    await alice.send(...)
+    await bob.send(...)
+```
+
+### `get-balance`
+
+Retrieves the Ether balance for a given contract address.
+
+```sh
+nile get-balance <contract_address> [--network NETWORK]
+
+nile get-balance 0x053edde5384e39bad137d3c4130c708fb96ee28a4c80bf28049c486d3f36992e
+🕵️  0x053ed...6992e balance is:
+💰 4444.555501003 gwei
 ```
 
 ### `get-nonce`
@@ -444,8 +478,8 @@ nile get-nonce <contract_address>
 Return the hash of a declared class. This can be useful in scenarios where a contract class is already declared with an alias prior to running a script.
 
 ```python
-def run(nre):
-    predeclared_class = nre.get_declaration("alias")
+async def run(nre):
+    predeclared_class = await nre.get_declaration("alias")
 ```
 
 > Note that this command is only available in the context of scripting in the Nile Runtime Environment.
