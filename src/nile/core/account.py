@@ -96,7 +96,7 @@ class Account(AsyncObject):
             )
             if output is not None:
                 address, index = output
-                self.address = address
+                self.address = normalize_number(address)
                 self.index = index
 
         # we should replace this with static type checks
