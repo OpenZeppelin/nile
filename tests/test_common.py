@@ -18,12 +18,6 @@ STDOUT_1 = "SDTOUT_1"
 STDOUT_2 = "SDTOUT_2"
 
 
-@pytest.fixture(autouse=True)
-def tmp_working_dir(monkeypatch, tmp_path):
-    monkeypatch.chdir(tmp_path)
-    return tmp_path
-
-
 @pytest.mark.parametrize(
     "args, expected",
     [
