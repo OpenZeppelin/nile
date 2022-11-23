@@ -21,7 +21,7 @@ python3 -m venv env
 source env/bin/activate
 ----
 
-NOTE: Review xref:index.adoc#requirements[Requirements]
+IMPORTANT: Review xref:index.adoc#requirements[Requirements]
 
 Install Nile:
 
