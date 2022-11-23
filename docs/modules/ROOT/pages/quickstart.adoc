@@ -66,7 +66,7 @@ Use `nile compile` to compile contracts under the *contracts/* folder by default
 ✅ Done
 ----
 
-TIP: For a full reference of nile command options, check the xref:commands.adoc[CLI Refenrece] section.
+TIP: For a full reference of nile command options, check the xref:commands.adoc[CLI Reference] section.
 
 == Deploying an account
 
