@@ -94,7 +94,7 @@ def set_command_args(**kwargs):
 
     if kwargs.get("max_fee"):
         command_args.append("--max_fee")
-        command_args.extend(prepare_params(kwargs.get("max_fee")))
+        command_args.append(str(kwargs.get("max_fee")))
 
     if kwargs.get("method"):
         command_args.append("--function")
