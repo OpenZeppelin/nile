@@ -3,90 +3,96 @@
 :imports: link:https://starknet.io/docs/how_cairo_works/imports.html?highlight=cairo%20path#import-search-paths[Import search paths]
 :status: link:#status[status]
 
-= CLI Reference
+== CLI Reference
 
 Here you can find a full reference of the core commands Nile provides by default.
 
-== node
+[.contract-index]
+.Core Commands
+--
+* xref:#node[`++node++`]
+* xref:#compile[`++compile++`]
+* xref:#setup[`++setup++`]
+* xref:#declare[`++declare++`]
+* xref:#deploy[`++deploy++`]
+* xref:#call[`++call++`]
+* xref:#send[`++send++`]
+* xref:#status[`++status++`]
+* xref:#debug[`++debug++`]
+* xref:#get-accounts[`++status++`]
+* xref:#get-nonce[`++get-nonce++`]
+* xref:#run[`++run++`]
+* xref:#clean[`++clean++`]
+* xref:#init[`++init++`]
+* xref:#version[`++version++`]
+--
 
-Run a local {starknet-devnet} node:
+[.contract-item]
+[[node]]
+==== `[.contract-item-name]#++nile node++#`
 
-[,sh]
-----
-nile node [--host HOST] [--port PORT] [--seed SEED] [--lite_mode]
-----
+Run a local {starknet-devnet} node.
 
-=== Options
+===== Options
 
-==== *--host*
-
-Specify the address to listen at. Defaults to 127.0.0.1 (use the address the program outputs on start).
-
-==== *--port*
-
+- _--host_
++
+Specify the address to listen at. 
++
+Defaults to 127.0.0.1 (use the address the program outputs on start).
+- _--port_
++
 Specify the port to listen at. Defaults to 5050.
-
-==== *--seed*
-
+- _--seed_
++
 Specify the seed for randomness of accounts to be deployed.
-
-==== *--lite-mode*
-
+- _--lite-mode_
++
 Applies all lite-mode optimizations by disabling features such as block hash and deploy hash calculation.
 
-== compile
+[.contract-item]
+[[compile]]
+==== `[.contract-item-name]#++nile compile [PATH_TO_CONTRACT]++#`
 
 Compile Cairo contracts.
 
 Compilation artifacts are written into the *artifacts/* directory.
 
-[,sh]
-----
-nile compile [PATH_TO_CONTRACT] ...
-----
+===== Arguments
 
-=== Arguments
-
-==== *PATH_TO_CONTRACT*
-
+- _PATH_TO_CONTRACT_
++
 Specify the path to a contract for compiling.
 
-=== Options
+===== Options
 
-==== *--directory*
-
+- _--directory_
++
 Specify a directory to compile contracts from.
-
-==== *--account_contract*
-
+- _--account_contract_
++
 As of {cairo-lang} v0.8.0, account contracts must be compiled with the `--account_contract` flag. Nile automatically inserts the flag if the contract's name ends with Account. i.e. *Account.cairo*, *EthAccount.cairo*. Otherwise, the flag must be included by the user.
-
++
 [,sh]
 ----
 nile compile contracts/NewAccountType.cairo --account_contract # compiles account contract
 ----
-
-==== *--cairo_path*
-
-Specify which directories the compiler must use to resolve imports from Cairo. 
-
+- _--cairo_path_
++
+Specify which directories the compiler must use to resolve imports from Cairo.
++
 TIP: Check {imports} from StarkNet documentation.
-
-==== *--disable-hint-validation*
-
+- _--disable-hint-validation_
++
 Compile allowing unwhitelisted hints.
 
-
-== setup
+[.contract-item]
+[[setup]]
+==== `[.contract-item-name]#++nile setup <PRIVATE_KEY_ALIAS>++#`
 
 Deploy an Account associated with a given private key.
 
-To avoid accidentally leaking private keys, this command takes an alias instead of the actual private key. This alias is associated with an environmental variable of the same name, whose value is the actual private key.
-
-[,sh]
-----
-nile setup <PRIVATE_KEY_ALIAS>
-----
+IMPORTANT: To avoid accidentally leaking private keys, this command takes an alias instead of the actual private key. This alias is associated with an environmental variable of the same name, whose value is the actual private key.
 
 [NOTE]
 ====
@@ -94,65 +100,60 @@ nile setup <PRIVATE_KEY_ALIAS>
 - This creates or updates *localhost.deployments.txt* file storing all data related to deployments.
 ====
 
-=== Arguments
+===== Arguments
 
-==== *PRIVATE_KEY_ALIAS*
-
+- _PRIVATE_KEY_ALIAS_
++
 Specify the private key that will own the account to be deployed. Looks for an environment variable with the name of the private key alias.
 
-=== Options
+===== Options
 
-==== *--network*
-
-Select network, one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet'). Default to localhost.
-
-==== *--debug* and *--track*
-
+- _--network_
++
+Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet'). 
++
+Default to localhost.
+- _--debug_ and _--track_
++
 Watch the status of the account deployment transaction. See the {status} command for a complete description.
 
-== declare
+[.contract-item]
+[[declare]]
+==== `[.contract-item-name]#++nile declare  <PRIVATE_KEY_ALIAS> <CONTRACT_NAME>++#`
 
 Declare a contract through an Account.
 
-[,sh]
-----
-nile declare <PRIVATE_KEY_ALIAS> <CONTRACT_NAME> [--network NETWORK]
-----
-
 [NOTE]
 ====
 - This creates or updates *localhost.accounts.json* file storing all data related to accounts management.
 - This creates or updates *localhost.deployments.txt* file storing all data related to deployments.
 ====
 
-=== Arguments
+===== Arguments
 
-==== *PRIVATE_KEY_ALIAS*
-
+- _PRIVATE_KEY_ALIAS_
++
 Specify the alias representing the account to be used.
-
-==== *CONTRACT_NAME*
-
+- _CONTRACT_NAME_
++
 Specify the name of the contract artifact to be deployed.
 
-=== Options
+===== Options
 
-==== *--network*
-
-Select network, one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet'). Default to localhost.
-
-==== *--max_fee*
-
+- _--network_
++
+Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
++
+Default to localhost.
+- _--max_fee_
++
 Specify the max fee you are willing to pay for the transaction.
-
-==== *--overriding_path*
-
+- _--overriding_path_
++
 Override the directory path for artifacts discovery.
-
-==== *--token*
-
+- _--token_
++
 Used for deploying contracts to Alpha Mainnet.
-
-==== *--debug* and *--track*
-
+- _--debug_ and _--track_
++
 Watch the status of the account deployment transaction. See the {status} command for a complete description.

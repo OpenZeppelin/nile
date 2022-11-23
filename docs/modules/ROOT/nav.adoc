@@ -11,22 +11,6 @@
 ** xref:api.adoc[API Reference]
 ** xref:scripts.adoc[Useful Script Examples]
 
-// ** xref:node.adoc[node]
-// ** xref:node.adoc[compile]
-// ** xref:node.adoc[setup]
-// ** xref:node.adoc[declare]
-// ** xref:node.adoc[deploy]
-// ** xref:node.adoc[call]
-// ** xref:node.adoc[send]
-// ** xref:node.adoc[status]
-// ** xref:node.adoc[debug]
-// ** xref:node.adoc[get-accounts]
-// ** xref:node.adoc[get-nonce]
-// ** xref:node.adoc[run]
-// ** xref:node.adoc[clean]
-// ** xref:node.adoc[init]
-// ** xref:node.adoc[version]
-
 * Plugins
 ** xref:create_plugin.adoc[Extending Nile]
 ** xref:plugins.adoc[Useful Plugins]
