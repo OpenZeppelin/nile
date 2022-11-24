@@ -43,7 +43,7 @@ nile compile
 
 == Testing
 
-`nile init` creates a sample Cairo contract and tests for you. Check *contracts/contract.cairo* and *tests/test_contract.py* for the source code.
+`nile init` creates a sample Cairo contract and test for you. Check *contracts/contract.cairo* and *tests/test_contract.py* for the source code.
 
 Run `pytest` to run the test suite against the Smart Contracts:
 
