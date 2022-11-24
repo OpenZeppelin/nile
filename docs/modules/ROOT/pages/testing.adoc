@@ -102,4 +102,4 @@ TOTAL                           8       0  100.00%
 +
 . Done!
 
-TIP: With nile-coverage you can easily integrate with tools like link:https://codecov.io[Codecov]. Check the link:https://github.com/ericnordelo/nile-coverage/blob/main/README.md[plugin documentation] for a reference to the options.
+TIP: With nile-coverage, you can easily integrate with tools like link:https://codecov.io[Codecov]. Check the link:https://github.com/ericnordelo/nile-coverage/blob/main/README.md[plugin documentation] for a reference to the options.
