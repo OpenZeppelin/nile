@@ -80,7 +80,7 @@ ACCOUNT_1 = 0x1234
 +
 CAUTION: Don't use this Private Key in production environments!
 +
-. Use `nile counterfactual-address` to precompute the deployment address of the Account contract, for the given signer.
+. Use `nile counterfactual-address` to precompute the deployment address of the Account contract for the given signer.
 +
 [,sh]
 ----
