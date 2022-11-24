@@ -2,7 +2,7 @@
 
 = Quick Start
 
-We will explore the basics of creating a Nile project with a sample contract, test it locally, deploy an account and the contract to a devnet node, and send transactions through the account to the contract.
+We will explore the basics of creating a Nile project by using a sample contract. We will test it locally, deploy an account and the contract to a devnet node, and send transactions through the account to the contract.
 
 == Installation
 
