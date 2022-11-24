@@ -71,8 +71,8 @@ def test__add_args(args, expected):
     "args, expected",
     [
         (
-            {"address": ADDRESS, "inputs": INPUTS},
-            ["--address", ADDRESS, "--inputs", "1", "2"],
+            {"address": ADDRESS, "inputs": INPUTS, "max_fee": "324652"},
+            ["--address", ADDRESS, "--inputs", "1", "2", "--max_fee", "324652"],
         ),
         (
             {"inputs": INPUTS, "contract_name": CONTRACT_NAME},
