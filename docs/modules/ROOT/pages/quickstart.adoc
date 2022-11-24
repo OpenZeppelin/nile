@@ -90,7 +90,7 @@ CAUTION: Don't use this Private Key in production environments!
 +
 NOTE: Keep in mind that different salts compute to different addresses, even with the same Private Key.
 +
-. In production, you will need to fund this address with Ether to pay for the deployment fees. In testnets will be mandatory soon. There are multiple bridges and faucets like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
+. In production, you will need to fund this address with Ether to pay for the deployment fees. This will be mandatory in testnets soon. There are multiple bridges and faucets like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
 +
 . After funding the precomputed address, deploy the account using `nile setup`.
 +
