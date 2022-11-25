@@ -17,7 +17,6 @@ Here you can find a full reference of the functions provided by the NileRuntimeE
 
 --
 
-
 [.contract-item]
 [[compile]]
 ==== `[.contract-item-name]#++compile++#++(contracts, cairo_path=None) → None++`
@@ -98,3 +97,120 @@ Override for the abi if necessary.
 - _output_
 +
 The output from the underlaying starknet cli call.
+
+[.contract-item]
+[[get_deployment]]
+==== `[.contract-item-name]#++get_deployment++#++(address_or_alias) → (address, abi)++`
+
+Get a deployment by its identifier.
+
+===== Arguments
+
+- _address_or_alias_
++
+The contract identifier.
+
+===== Return values
+
+- _address_
++
+The registered contract address.
+
+- _abi_
++
+The registered contract abi.
+
+[.contract-item]
+[[get_declaration]]
+==== `[.contract-item-name]#++get_declaration++#++(address_or_alias) → class_hash++`
+
+Get a declared class by its identifier.
+
+WARNING: DEPRECATED. Will be replaced soon.
+
+===== Arguments
+
+- _address_or_alias_
++
+The contract identifier.
+
+===== Return values
+
+- _class_hash_
++
+The declared contract class hash.
+
+[.contract-item]
+[[get_or_deploy_account]]
+==== `[.contract-item-name]#++get_or_deploy_account++#++(signer, watch_mode=None) → account++`
+
+Get or deploy an Account contract.
+
+===== Arguments
+
+- _signer_
++
+The alias representing the private key associated.
+- _watch_mode_
++
+Either None, track or debug. Block the execution to query the status of the deployment transaction if needed.
+
+===== Return values
+
+- _account_
++
+The account matching the signer.
+
+[.contract-item]
+[[get_accounts]]
+==== `[.contract-item-name]#++get_accounts++#++(predeployed=False) → accounts++`
+
+Retrieve and manage deployed accounts.
+
+===== Arguments
+
+- _predeployed_
++
+Get predeployed accounts from a starknet-devnet node.
+
+===== Return values
+
+- _accounts_
++
+The registered accounts.
+
+[.contract-item]
+[[get_nonce]]
+==== `[.contract-item-name]#++get_nonce++#++(contract_address) → current_nonce++`
+
+Retrieve the nonce for a contract.
+
+===== Arguments
+
+- _contract_address_
++
+The address of the contract to query.
+
+===== Return values
+
+- _current_nonce_
++
+The nonce of the contract.
+
+[.contract-item]
+[[get_balance]]
+==== `[.contract-item-name]#++get_balance++#++(contract_address) → balance++`
+
+Get the Ether balance of an address.
+
+===== Arguments
+
+- _contract_address_
++
+The address of the contract to query.
+
+===== Return values
+
+- _balance_
++
+The balance of the contract.
