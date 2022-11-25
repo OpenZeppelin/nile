@@ -159,3 +159,55 @@ Used for deploying contracts to Alpha Mainnet.
 - _--debug_ and _--track_
 +
 Watch the status of the account deployment transaction. See the {status} command for a complete description.
+
+[.contract-item]
+[[deploy]]
+==== `[.contract-item-name]#++nile deploy++#`
+
+[.contract-item]
+[[call]]
+==== `[.contract-item-name]#++nile call++#`
+
+[.contract-item]
+[[send]]
+==== `[.contract-item-name]#++nile send++#`
+
+[.contract-item]
+[[counterfactual-address]]
+==== `[.contract-item-name]#++nile counterfactual-address++#`
+
+[.contract-item]
+[[status]]
+==== `[.contract-item-name]#++nile status++#`
+
+[.contract-item]
+[[debug]]
+==== `[.contract-item-name]#++nile debug++#`
+
+[.contract-item]
+[[get-accounts]]
+==== `[.contract-item-name]#++nile get-accounts++#`
+
+[.contract-item]
+[[get-nonce]]
+==== `[.contract-item-name]#++nile get-nonce++#`
+
+[.contract-item]
+[[get-balance]]
+==== `[.contract-item-name]#++nile get-balance++#`
+
+[.contract-item]
+[[run]]
+==== `[.contract-item-name]#++nile run++#`
+
+[.contract-item]
+[[clean]]
+==== `[.contract-item-name]#++nile clean++#`
+
+[.contract-item]
+[[init]]
+==== `[.contract-item-name]#++nile init++#`
+
+[.contract-item]
+[[version]]
+==== `[.contract-item-name]#++nile version++#`
