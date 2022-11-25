@@ -16,7 +16,7 @@ async def run(nre):
   print(await declarer_account.declare("Account"))
 ----
 
-NOTE: This script assumes there is an Account artifact in your project. You can add the contract to the contracts folder, and compile with `nile compile` to get the artifact.
+NOTE: This script assumes there is an link:https://github.com/OpenZeppelin/nile/tree/main/src/nile/artifacts[Account artifact] in your project. You can add the contract to the contracts folder, and compile with `nile compile` to get the artifact.
 
 == Transfer funds from predeployed devnet account
 
