@@ -38,15 +38,20 @@ def get_gateways():
     """Get the StarkNet node details."""
     try:
         with open(NODE_FILENAME, "r") as f:
-            gateway = json.load(f)
-            return gateway
+            gateways = json.load(f)
+            return gateways
 
     except FileNotFoundError:
-        with open(NODE_FILENAME, "w") as f:
-            gateways = {"localhost": "http://127.0.0.1:5050/", **DEFAULT_GATEWAYS}
-            f.write(json.dumps(gateways, indent=2))
+        gateways = create_node_json()
+        return gateways
 
-            return gateways
+
+def create_node_json(network="localhost", gateway_url="http://127.0.0.1:5050/"):
+    """Create node.json and return gateways."""
+    with open(NODE_FILENAME, "w") as f:
+        gateways = {network: gateway_url, **DEFAULT_GATEWAYS}
+        f.write(json.dumps(gateways, indent=2))
+        return gateways
 
 
 GATEWAYS = get_gateways()
