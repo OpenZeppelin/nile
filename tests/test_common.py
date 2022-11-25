@@ -2,7 +2,7 @@
 import pytest
 
 from nile.common import (
-    OTHER_NETWORKS,
+    DEFAULT_GATEWAYS,
     get_gateways,
     parse_information,
     prepare_params,
@@ -58,6 +58,6 @@ def test_parse_information():
 
 def test_get_gateways():
     gateways = get_gateways()
-    expected = {"localhost": "http://127.0.0.1:5050/", **OTHER_NETWORKS}
+    expected = {"localhost": "http://127.0.0.1:5050/", **DEFAULT_GATEWAYS}
 
     assert gateways == expected

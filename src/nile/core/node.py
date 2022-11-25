@@ -3,7 +3,7 @@ import json
 import logging
 import subprocess
 
-from nile.common import NODE_FILENAME, OTHER_NETWORKS
+from nile.common import NODE_FILENAME, DEFAULT_GATEWAYS
 
 
 def node(host="127.0.0.1", port=5050, seed=None, lite_mode=False):
@@ -16,7 +16,7 @@ def node(host="127.0.0.1", port=5050, seed=None, lite_mode=False):
         else:
             network = host
         gateway_url = f"http://{host}:{port}/"
-        gateways = {network: gateway_url, **OTHER_NETWORKS}
+        gateways = {network: gateway_url, **DEFAULT_GATEWAYS}
 
         with open(file, "w+") as f:
             json.dump(gateways, f, indent=2)

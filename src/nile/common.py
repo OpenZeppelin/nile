@@ -28,7 +28,7 @@ UNIVERSAL_DEPLOYER_ADDRESS = (
     # subject to change
     "0x041a78e741e5af2fec34b695679bc6891742439f7afb8484ecd7766661ad02bf"
 )
-OTHER_NETWORKS = {
+DEFAULT_GATEWAYS = {
     "goerli2": "https://alpha4-2.starknet.io",
     "integration": "https://external.integration.starknet.io",
 }
@@ -43,10 +43,10 @@ def get_gateways():
 
     except FileNotFoundError:
         with open(NODE_FILENAME, "w") as f:
-            networks = {"localhost": "http://127.0.0.1:5050/", **OTHER_NETWORKS}
-            f.write(json.dumps(networks, indent=2))
+            gateways = {"localhost": "http://127.0.0.1:5050/", **DEFAULT_GATEWAYS}
+            f.write(json.dumps(gateways, indent=2))
 
-            return networks
+            return gateways
 
 
 GATEWAYS = get_gateways()
