@@ -98,8 +98,8 @@ IMPORTANT: To avoid accidentally leaking private keys, this command takes an ali
 
 [NOTE]
 ====
-- This creates or updates *localhost.accounts.json* file storing all data related to accounts management.
-- This creates or updates *localhost.deployments.txt* file storing all data related to deployments.
+. This creates or updates *localhost.accounts.json* file storing all data related to accounts management.
+. This creates or updates *localhost.deployments.txt* file storing all data related to deployments.
 ====
 
 ===== Arguments
@@ -125,12 +125,6 @@ Watch the status of the account deployment transaction. See the {status} command
 
 Declare a contract through an Account.
 
-[NOTE]
-====
-- This creates or updates *localhost.accounts.json* file storing all data related to accounts management.
-- This creates or updates *localhost.deployments.txt* file storing all data related to deployments.
-====
-
 ===== Arguments
 
 - _PRIVATE_KEY_ALIAS_
@@ -138,7 +132,7 @@ Declare a contract through an Account.
 Specify the alias representing the account to be used.
 - _CONTRACT_NAME_
 +
-Specify the name of the contract artifact to be deployed.
+Specify the name of the contract artifact to be declared.
 
 ===== Options
 
@@ -155,59 +149,280 @@ Specify the max fee you are willing to pay for the transaction.
 Override the directory path for artifacts discovery.
 - _--token_
 +
-Used for deploying contracts to Alpha Mainnet.
+Used for declaring contracts to Alpha Mainnet.
 - _--debug_ and _--track_
 +
 Watch the status of the account deployment transaction. See the {status} command for a complete description.
 
 [.contract-item]
 [[deploy]]
-==== `[.contract-item-name]#++nile deploy++#`
+==== `[.contract-item-name]#++nile deploy <PRIVATE_KEY_ALIAS> <CONTRACT>++#`
+
+Deploy a contract through an Account.
+
+[NOTE]
+====
+. This creates or updates *localhost.deployments.txt* file storing all data related to deployments.
+====
+
+===== Arguments
+
+- _PRIVATE_KEY_ALIAS_
++
+Specify the alias representing the account to be used.
+- _CONTRACT_
++
+Specify the name of the contract artifact to be deployed.
+
+===== Options
+
+- _--network_
++
+Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
++
+Default to localhost.
+- _--max_fee_
++
+Specify the max fee you are willing to pay for the transaction.
+- _--salt_
++
+Set the base salt for address generation.
+- _--unique_
++
+Specify that the account address should be taken into account for target address generation.
+- _--abi_
++
+Override artifact abi to be registered. Useful for proxies.
+- _--deployer_address_
++
+Specify the deployer contract if needed.
+- _--ignore_account_
++
+Deploy without using an account (DEPRECATED).
+- _--token_
++
+Used for deploying contracts to Alpha Mainnet.
+- _--debug_ and _--track_
++
+Watch the status of the account deployment transaction. See the {status} command for a complete description.
+
 
 [.contract-item]
 [[call]]
-==== `[.contract-item-name]#++nile call++#`
+==== `[.contract-item-name]#++nile call <CONTRACT_ID> <METHOD>++#`
+
+Perform reading operations against a network.
+
+===== Arguments
+
+- _CONTRACT_ID_
++
+Specify the contract to call (either alias or address).
+- _METHOD_
++
+Specify the method to call.
+
+===== Options
+
+- _--network_
++
+Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
++
+Default to localhost.
 
 [.contract-item]
 [[send]]
-==== `[.contract-item-name]#++nile send++#`
+==== `[.contract-item-name]#++nile send <PRIVATE_KEY_ALIAS> <CONTRACT_ID> <METHOD>++#`
+
+Execute a transaction through an Account.
+
+===== Arguments
+
+- _PRIVATE_KEY_ALIAS_
++
+Specify the alias representing the account to be used.
+- _CONTRACT_ID_
++
+Specify the contract to call (either alias or address).
+- _METHOD_
++
+Specify the method to execute.
+
+===== Options
+
+- _--network_
++
+Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
++
+Default to localhost.
+- _--max_fee_
++
+Specify the max fee you are willing to pay for the transaction.
+- _--simulate_ and _--estimate_fee_
++
+Flags for querying the network without executing the transaction.
+- _--debug_ and _--track_
++
+Watch the status of the account deployment transaction. See the {status} command for a complete description.
+
 
 [.contract-item]
 [[counterfactual-address]]
-==== `[.contract-item-name]#++nile counterfactual-address++#`
+==== `[.contract-item-name]#++nile counterfactual-address <PRIVATE_KEY_ALIAS>++#`
+
+Precompute the deployment address of an Account contract.
+
+===== Arguments
+
+- _PRIVATE_KEY_ALIAS_
++
+Specify the alias representing the private key to be used.
+
+===== Options
+
+- _--salt_
++
+Specify the salt for the address generation.
++
+Default to 0.
 
 [.contract-item]
 [[status]]
-==== `[.contract-item-name]#++nile status++#`
+==== `[.contract-item-name]#++nile status <TX_HASH>++#`
+
+Query the current status of a transaction.
+
+===== Arguments
+
+- _TX_HASH_
++
+Specify the hash of the transaction to query.
+
+===== Options
+
+- _--network_
++
+Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
++
+Default to localhost.
+- _--track_
++
+Continue probing the network in case of pending transaction states.
+- _--debug_
++
+Use locally available contracts to make error messages from rejected transactions more explicit.
++
+Implies `--track`.
+- _--contracts_file_
++
+Override the deployments file to query the contract artifacts from.
++
+Default to *<NETWORK>.deployments.txt*.
 
 [.contract-item]
 [[debug]]
-==== `[.contract-item-name]#++nile debug++#`
+==== `[.contract-item-name]#++nile debug <TX_HASH>++#`
+
+Alias for `nile status --debug`.
 
 [.contract-item]
 [[get-accounts]]
 ==== `[.contract-item-name]#++nile get-accounts++#`
 
+Retrieve a list of ready-to-use accounts which allows for easy scripting integration.
+
+[NOTE]
+====
+The list of accounts includes only those that exist in the local *<NETWORK>.accounts.json* file. In a recent release we added a flag to the command, to get predeployed accounts if the network you are connected to is a starknet-devnet instance.
+
+Sending transactions through predeployed accounts can be done through scripting, but the current CLI version doesn't allow using these accounts for `nile send`.
+====
+
+===== Options
+
+- _--network_
++
+Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
++
+Default to localhost.
+- _--predeployed_
++
+Query a devnet node for predeployed accounts.
+
 [.contract-item]
 [[get-nonce]]
-==== `[.contract-item-name]#++nile get-nonce++#`
+==== `[.contract-item-name]#++nile get-nonce <ADDRESS>++#`
+
+Retrieve the nonce for a contract (usually an account).
+
+===== Arguments
+
+- _ADDRESS_
++
+Specify the address of the contract to query.
+
+===== Options
+
+- _--network_
++
+Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
++
+Default to localhost.
 
 [.contract-item]
 [[get-balance]]
-==== `[.contract-item-name]#++nile get-balance++#`
+==== `[.contract-item-name]#++nile get-balance <ADDRESS>++#`
+
+Retrieve the Ether balance for a contract.
+
+===== Arguments
+
+- _ADDRESS_
++
+Specify the address of the contract to query.
+
+===== Options
+
+- _--network_
++
+Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
++
+Default to localhost.
 
 [.contract-item]
 [[run]]
-==== `[.contract-item-name]#++nile run++#`
+==== `[.contract-item-name]#++nile run <PATH_TO_SCRIPT>++#`
+
+Execute a script in the context of NRE.
+
+===== Arguments
+
+- _PATH_TO_SCRIPT_
++
+Path to the script to run.
+
+===== Options
+
+- _--network_
++
+Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
++
+Default to localhost.
 
 [.contract-item]
 [[clean]]
 ==== `[.contract-item-name]#++nile clean++#`
 
+Deletes the *artifacts/* folder and deployment files.
+
 [.contract-item]
 [[init]]
 ==== `[.contract-item-name]#++nile init++#`
 
+Scaffold a simple Nile project.
+
 [.contract-item]
 [[version]]
 ==== `[.contract-item-name]#++nile version++#`
+
+Print out the Nile version.
