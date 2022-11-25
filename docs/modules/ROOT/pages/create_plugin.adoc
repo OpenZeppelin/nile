@@ -49,6 +49,6 @@ def greet():
 +
 . Done! For a better understanding of python entry points through setuptools, https://setuptools.pypa.io/en/latest/userguide/entry_point.html#entry-points-for-plugins[check this documentation].
 
-How to decide if I want to use a plugin or not? Just install / uninstall the plugin dependency from your project 😄.
+How to decide if you want to use a plugin or not? Just install / uninstall the plugin dependency from your project 😄.
 
 Using both cli and nre entry points under the nile_plugins group allows the development of powerful plugins which are easily integrated.

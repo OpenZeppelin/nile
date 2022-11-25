@@ -2,7 +2,7 @@
 
 = Quick Start
 
-We will explore the basics of creating a Nile project with a sample contract, test it locally, deploy an account and the contract to a devnet node, and send transactions through the account to the contract.
+We will explore the basics of creating a Nile project by using a sample contract. We will test it locally, deploy an account and the contract to a devnet node, and send transactions through the account to the contract.
 
 == Installation
 
@@ -43,7 +43,7 @@ nile compile
 
 == Testing
 
-`nile init` creates a sample Cairo contract and tests for you. Check *contracts/contract.cairo* and *tests/test_contract.py* for the source code.
+`nile init` creates a sample Cairo contract and test for you. Check *contracts/contract.cairo* and *tests/test_contract.py* for the source code.
 
 Run `pytest` to run the test suite against the Smart Contracts:
 
@@ -80,7 +80,7 @@ ACCOUNT_1 = 0x1234
 +
 CAUTION: Don't use this Private Key in production environments!
 +
-. Use `nile counterfactual-address` to precompute the deployment address of the Account contract, for the given signer.
+. Use `nile counterfactual-address` to precompute the deployment address of the Account contract for the given signer.
 +
 [,sh]
 ----
@@ -90,7 +90,7 @@ CAUTION: Don't use this Private Key in production environments!
 +
 NOTE: Keep in mind that different salts compute to different addresses, even with the same Private Key.
 +
-. In production, you will need to fund this address with Ether to pay for the deployment fees. In testnets will be mandatory soon. There are multiple bridges and faucets like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
+. In production, you will need to fund this address with Ether to pay for the deployment fees. This will be mandatory in testnets soon. There are multiple bridges and faucets like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
 +
 . After funding the precomputed address, deploy the account using `nile setup`.
 +
@@ -101,7 +101,7 @@ NOTE: Keep in mind that different salts compute to different addresses, even wit
 +
 [IMPORTANT]
 ====
-In StarkNet, only contracts that have been previously declared, can be deployed. {oz-account} is declared soon after every release in testnets and mainnet, but local devnet needs a declaration for every instance, because the contract is not declared by default. For declaring you need an account, so to solve this egg-chicken problem, you need to declare OZ Account in devnet using predeployed accounts through scripts.
+In StarkNet, only previously declared contracts can be deployed. {oz-account} is declared soon after every release in testnets and mainnet, but the local devnet needs a declaration for every instance. This is because the contract is not declared by default; however, you need an account in order to execute a declare transaction. To solve this egg-chicken problem, you need to declare the OZ Account in devnet using predeployed accounts through scripts.
 
 Check xref:scripts.adoc#declare_account[Declare Account] guide.
 ====
