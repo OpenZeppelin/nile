@@ -65,8 +65,17 @@ def test_parse_information():
 def test_get_gateways():
     gateways = get_gateways()
     expected = {**LOCAL_GATEWAY, **DEFAULT_GATEWAYS}
-
     assert gateways == expected
+
+    # Check create_node_json is called with FileNotFoundError
+    with patch("nile.common.create_node_json", return_value=LOCAL_GATEWAY) as mock_create:
+        open_mock = mock_open()
+        with patch("nile.common.open", open_mock):
+            open_mock.side_effect = FileNotFoundError
+            gateways = get_gateways()
+
+            mock_create.assert_called_once()
+            assert gateways == expected
 
 
 @pytest.mark.parametrize(
@@ -80,7 +89,7 @@ def test_create_node_json(args, gateway):
         else:
             create_node_json(*args)
 
-    expected = json.dumps({**gateway, **DEFAULT_GATEWAYS}, indent=2)
+    expected = json.dumps({**gateway})
 
     open_mock.assert_called_with(NODE_FILENAME, "w")
     open_mock.return_value.write.assert_called_once_with(expected)
