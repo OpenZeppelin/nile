@@ -68,7 +68,9 @@ def test_get_gateways():
     assert gateways == expected
 
     # Check create_node_json is called with FileNotFoundError
-    with patch("nile.common.create_node_json", return_value=LOCAL_GATEWAY) as mock_create:
+    with patch(
+        "nile.common.create_node_json", return_value=LOCAL_GATEWAY
+    ) as mock_create:
         open_mock = mock_open()
         with patch("nile.common.open", open_mock):
             open_mock.side_effect = FileNotFoundError
