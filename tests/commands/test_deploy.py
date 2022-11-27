@@ -203,6 +203,7 @@ async def test_deploy_contract(
             max_fee=max_fee,
         )
         mock_register.assert_called_once_with(exp_address, exp_abi, NETWORK, ALIAS)
+        mock_return_account.assert_called_once_with(CONTRACT, None)
 
         # check logs
         assert f"🚀 Deploying {CONTRACT}" in caplog.text
