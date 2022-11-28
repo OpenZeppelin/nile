@@ -33,7 +33,6 @@ class NileRuntimeEnvironment:
         overriding_path=None,
         abi=None,
         mainnet_token=None,
-        watch_mode=None,
     ):
         """Deploy a smart contract."""
         return deploy(
@@ -44,7 +43,6 @@ class NileRuntimeEnvironment:
             overriding_path=overriding_path,
             abi=abi,
             mainnet_token=mainnet_token,
-            watch_mode=watch_mode,
         )
 
     def call(self, address_or_alias, method, params=None, abi=None):
@@ -67,9 +65,9 @@ class NileRuntimeEnvironment:
             address_or_alias = normalize_number(address_or_alias)
         return next(deployments.load_class(address_or_alias, self.network))
 
-    def get_or_deploy_account(self, signer, watch_mode=None):
+    def get_or_deploy_account(self, signer):
         """Get or deploy an Account contract."""
-        return Account(signer=signer, network=self.network, watch_mode=watch_mode)
+        return Account(signer=signer, network=self.network)
 
     def get_accounts(self, predeployed=False):
         """Retrieve and manage deployed accounts."""
