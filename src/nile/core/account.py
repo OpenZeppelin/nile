@@ -195,7 +195,7 @@ class Account(AsyncObject):
             deployer_address or UNIVERSAL_DEPLOYER_ADDRESS
         )
 
-        await deploy_with_deployer(
+        return await deploy_with_deployer(
             self,
             contract_name,
             salt,

@@ -193,7 +193,7 @@ async def test_deploy_contract(
         )
         # check return values
         res = await deploy_contract(account, *args)
-        assert res == (exp_address, exp_abi)
+        assert res == (exp_address, TX_HASH, exp_abi)
 
         # check internals
         mock_send.assert_called_once_with(
