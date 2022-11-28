@@ -184,4 +184,4 @@ async def deploy_account(
             deployments.unregister(address, network, alias, abi=register_abi)
             return
 
-    return address, register_abi
+    return address, tx_hash, register_abi
