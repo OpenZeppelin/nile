@@ -304,7 +304,7 @@ def get_counterfactual_address(salt=None, calldata=None, contract="Account"):
 
 
 def set_nile_artifacts_path():
-    """Set path to find Nile precompiled artifacts."""
+    """Set path to find Nile's precompiled artifacts."""
     pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
     overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
     return overriding_path
