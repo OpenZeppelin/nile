@@ -106,8 +106,7 @@ class Account(AsyncObject):
     async def deploy(self, salt=None, max_fee=None, query_type=None, watch_mode=None):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
-        pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
-        overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
+        overriding_path = set_nile_artifacts_path()
 
         class_hash = get_account_class_hash("Account")
         salt = 0 if salt is None else normalize_number(salt)
@@ -152,9 +151,14 @@ class Account(AsyncObject):
         overriding_path=None,
         mainnet_token=None,
         watch_mode=None,
+        nile_account=False,
     ):
         """Declare a contract through an Account."""
         max_fee, nonce, _ = await self._process_arguments(max_fee, nonce)
+
+        if nile_account:
+            assert overriding_path is None
+            overriding_path = set_nile_artifacts_path()
 
         contract_class = get_contract_class(
             contract_name=contract_name, overriding_path=overriding_path
@@ -174,6 +178,7 @@ class Account(AsyncObject):
             alias=alias,
             network=self.network,
             max_fee=max_fee,
+            overriding_path=overriding_path,
             mainnet_token=mainnet_token,
             watch_mode=watch_mode,
         )
@@ -187,6 +192,7 @@ class Account(AsyncObject):
         alias,
         max_fee=None,
         deployer_address=None,
+        overriding_path=None,
         abi=None,
         watch_mode=None,
     ):
@@ -204,6 +210,7 @@ class Account(AsyncObject):
             alias,
             deployer_address,
             max_fee,
+            overriding_path=overriding_path,
             abi=abi,
             watch_mode=watch_mode,
         )
@@ -294,3 +301,10 @@ def get_counterfactual_address(salt=None, calldata=None, contract="Account"):
         constructor_calldata=calldata,
         deployer_address=0,
     )
+
+
+def set_nile_artifacts_path():
+    """Set path to find Nile precompiled artifacts."""
+    pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
+    overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
+    return overriding_path

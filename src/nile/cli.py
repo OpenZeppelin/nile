@@ -159,6 +159,7 @@ async def deploy(
 @click.option("--max_fee", nargs=1)
 @click.option("--alias")
 @click.option("--overriding_path")
+@click.option("--nile_account", is_flag=True)
 @network_option
 @mainnet_token_option
 @watch_option
@@ -171,6 +172,7 @@ async def declare(
     alias,
     overriding_path,
     token,
+    nile_account,
 ):
     """Declare a StarkNet smart contract through an Account."""
     account = await Account(signer, network)
@@ -181,6 +183,7 @@ async def declare(
         overriding_path=overriding_path,
         mainnet_token=token,
         watch_mode=watch_mode,
+        nile_account=nile_account,
     )
 
 
