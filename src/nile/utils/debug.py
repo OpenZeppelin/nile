@@ -39,13 +39,16 @@ async def debug_message(error_message, tx_hash, network, contracts_file=None):
     logging.info(f"🧾 Found contracts: {contracts}")
     logging.info("⏳ Querying the network with identified contracts...")
 
-    return await execute_call(
-        "tx_status",
-        network,
-        hash=hex_class_hash(tx_hash),
-        contracts=",".join(contracts),
-        error_message=True,
-    )
+    try:
+        return await execute_call(
+            "tx_status",
+            network,
+            hash=hex_class_hash(tx_hash),
+            contracts=",".join(contracts),
+            error_message=True,
+        )
+    except FileNotFoundError:
+        return error_message
 
 
 def _get_contracts_data(contracts_file, network, addresses):
