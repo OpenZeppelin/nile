@@ -195,7 +195,7 @@ class Account(AsyncObject):
             deployer_address or UNIVERSAL_DEPLOYER_ADDRESS
         )
 
-        max_fee, _, calldata = await self._process_arguments(max_fee, None, calldata)
+        max_fee, _, calldata = await self._process_arguments(max_fee, 0, calldata)
 
         await deploy_with_deployer(
             self,
