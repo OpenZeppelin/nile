@@ -24,7 +24,6 @@ MOCK_FILE = 123
 ACCEPTED_OUT = b'{"tx_status": "ACCEPTED_ON_L2"}'
 REJECTED_OUT = b'{"tx_failure_reason": {"error_message": "E"}, "tx_status": "REJECTED"}'
 ADDRESSES = {0x123, 0x456}
-FILE = ABI_PATH
 
 
 @pytest.fixture(autouse=True)
