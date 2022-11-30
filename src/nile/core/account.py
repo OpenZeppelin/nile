@@ -137,7 +137,7 @@ class Account(AsyncObject):
         )
 
         if output is not None:
-            address, _ = output
+            address, *_ = output
             accounts.register(
                 self.signer.public_key, address, index, self.alias, self.network
             )
