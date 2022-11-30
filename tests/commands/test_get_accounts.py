@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from requests.exceptions import MissingSchema
 
-from nile.core.account import Account
+from nile.core.types.account import Account
 from nile.utils import hex_address
 from nile.utils import normalize_number as normalize
 from nile.utils.get_accounts import (
@@ -69,7 +69,9 @@ def tmp_working_dir(monkeypatch, tmp_path):
         ([ALIASES[1], PUBKEYS[1]]),
     ],
 )
-@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch(
+    "nile.core.types.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX)
+)
 async def test__check_and_return_account_with_matching_keys(
     mock_deploy, private_keys, public_keys
 ):
@@ -87,7 +89,9 @@ async def test__check_and_return_account_with_matching_keys(
         ([ALIASES[1], PUBKEYS[0]]),
     ],
 )
-@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch(
+    "nile.core.types.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX)
+)
 async def test__check_and_return_account_with_mismatching_keys(
     mock_deploy, private_keys, public_keys
 ):
@@ -99,7 +103,9 @@ async def test__check_and_return_account_with_mismatching_keys(
 
 
 @pytest.mark.asyncio
-@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch(
+    "nile.core.types.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX)
+)
 async def test_get_accounts_no_activated_accounts_feedback(mock_deploy, capsys):
     await get_accounts(NETWORK)
     # This test uses capsys in order to test the print statements (instead of logging)
@@ -115,7 +121,9 @@ async def test_get_accounts_no_activated_accounts_feedback(mock_deploy, capsys):
 
 
 @pytest.mark.asyncio
-@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch(
+    "nile.core.types.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX)
+)
 @patch("nile.utils.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
 @patch("nile.utils.get_accounts.open", MagicMock())
 @patch("nile.utils.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
@@ -137,7 +145,9 @@ async def test_get_accounts_activated_accounts_feedback(mock_deploy, caplog):
 
 
 @pytest.mark.asyncio
-@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch(
+    "nile.core.types.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX)
+)
 @patch("nile.utils.get_accounts.current_index", MagicMock(return_value=len(PUBKEYS)))
 @patch("nile.utils.get_accounts.open", MagicMock())
 @patch("nile.utils.get_accounts.json.load", MagicMock(return_value=MOCK_ACCOUNTS))
@@ -194,7 +204,9 @@ async def test_get_predeployed_accounts(
 
 
 @pytest.mark.asyncio
-@patch("nile.core.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch(
+    "nile.core.types.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX)
+)
 @patch("nile.common.get_gateways", return_value=GATEWAYS)
 @patch("nile.utils.get_accounts._check_and_return_account")
 @patch("requests.get", return_value=MockResponse(JSON_DATA, 200))

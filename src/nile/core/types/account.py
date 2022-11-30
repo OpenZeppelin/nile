@@ -1,4 +1,4 @@
-"""Command to call or invoke StarkNet smart contracts."""
+"""Account module."""
 import logging
 import os
 
@@ -21,10 +21,13 @@ from nile.core.call_or_invoke import call_or_invoke
 from nile.core.declare import declare
 from nile.core.deploy import deploy_account
 from nile.core.deploy import deploy_contract as deploy_with_deployer
+from nile.core.types.utils import get_execute_calldata
+from nile.core.types.transaction import Transaction
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
+from nile.utils.status import status
 
 try:
-    from nile.signer import Signer
+    from nile.core.types.signer import Signer
 except ImportError:
     pass
 
@@ -64,10 +67,10 @@ class Account(AsyncObject):
         """Get or deploy an Account contract for the given private key."""
         try:
             if predeployed_info is None:
-                self.signer = Signer(normalize_number(os.environ[signer]), network)
+                self.signer = Signer(normalize_number(os.environ[signer]))
                 self.alias = signer
             else:
-                self.signer = Signer(signer, network)
+                self.signer = Signer(signer)
                 self.alias = predeployed_info["alias"]
 
             self.network = network
@@ -143,6 +146,44 @@ class Account(AsyncObject):
             )
             return address, index
 
+    async def send(
+        self,
+        address_or_alias,
+        method,
+        calldata,
+        nonce=None,
+        max_fee=None,
+        query_type=None,
+        watch_mode=None,
+    ):
+        """Execute an Account transaction."""
+        target_address = self._get_target_address(address_or_alias)
+        max_fee, nonce, calldata = await self._process_arguments(
+            max_fee, nonce, calldata
+        )
+        execute_calldata = get_execute_calldata(
+            calls=[[target_address, method, calldata]]
+        )
+        tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
+
+        # Create and sign the transaction
+        signed_transaction = Transaction.create_invoke(
+            account_address=self.address,
+            calldata=execute_calldata,
+            max_fee=max_fee,
+            nonce=nonce,
+            network=self.network,
+            version=tx_version,
+        ).sign(self.signer)
+
+        # Execute the transaction
+        tx_hash = await signed_transaction.execute()
+
+        if not query_type and watch_mode:
+            return await status(tx_hash, self.network, watch_mode)
+        else:
+            return tx_hash
+
     async def declare(
         self,
         contract_name,
@@ -151,33 +192,30 @@ class Account(AsyncObject):
         alias=None,
         overriding_path=None,
         mainnet_token=None,
+        query_type=None,
         watch_mode=None,
     ):
         """Declare a contract through an Account."""
         max_fee, nonce, _ = await self._process_arguments(max_fee, nonce)
+        tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
 
-        contract_class = get_contract_class(
-            contract_name=contract_name, overriding_path=overriding_path
-        )
-
-        sig_r, sig_s = self.signer.sign_declare(
-            sender=self.address,
-            contract_class=contract_class,
+        # Create and sign transaction
+        signed_transaction = Transaction.create_declare(
+            account_address=self.address,
+            contract_to_declare=contract_name,
+            max_fee=max_fee,
             nonce=nonce,
-            max_fee=max_fee,
-        )
-
-        return await declare(
-            sender=self.address,
-            contract_name=contract_name,
-            signature=[sig_r, sig_s],
-            alias=alias,
             network=self.network,
-            max_fee=max_fee,
-            overriding_path=overriding_path,
-            mainnet_token=mainnet_token,
-            watch_mode=watch_mode,
-        )
+            version=tx_version,
+        ).sign(self.signer)
+
+        # Execute the transaction
+        tx_hash = await signed_transaction.execute()
+
+        if not query_type and watch_mode:
+            return await status(tx_hash, self.network, watch_mode)
+        else:
+            return tx_hash
 
     async def deploy_contract(
         self,
@@ -190,6 +228,7 @@ class Account(AsyncObject):
         deployer_address=None,
         overriding_path=None,
         abi=None,
+        query_type=None,
         watch_mode=None,
     ):
         """Deploy a contract through an Account."""
@@ -197,7 +236,7 @@ class Account(AsyncObject):
             deployer_address or UNIVERSAL_DEPLOYER_ADDRESS
         )
 
-        await deploy_with_deployer(
+        return deploy_with_deployer(
             self,
             contract_name,
             salt,
@@ -208,47 +247,6 @@ class Account(AsyncObject):
             max_fee,
             overriding_path=overriding_path,
             abi=abi,
-            watch_mode=watch_mode,
-        )
-
-    async def send(
-        self,
-        address_or_alias,
-        method,
-        calldata,
-        nonce=None,
-        max_fee=None,
-        query_type=None,
-        watch_mode=None,
-    ):
-        """Execute or simulate an Account transaction."""
-        target_address = self._get_target_address(address_or_alias)
-
-        # process and parse arguments
-        max_fee, nonce, calldata = await self._process_arguments(
-            max_fee, nonce, calldata
-        )
-
-        tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
-
-        calldata, sig_r, sig_s = self.signer.sign_invoke(
-            sender=self.address,
-            calls=[[target_address, method, calldata]],
-            nonce=nonce,
-            max_fee=max_fee,
-            version=tx_version,
-        )
-
-        return await call_or_invoke(
-            contract=self.address,
-            type="invoke",
-            method="__execute__",
-            abi=self.abi_path,
-            params=calldata,
-            network=self.network,
-            signature=[sig_r, sig_s],
-            max_fee=max_fee,
-            query_flag=query_type,
             watch_mode=watch_mode,
         )
 

@@ -6,7 +6,6 @@ import os
 import asyncclick as click
 
 from nile.common import is_alias
-from nile.core.account import Account, get_counterfactual_address
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
@@ -16,8 +15,9 @@ from nile.core.node import node as node_command
 from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
+from nile.core.types.account import Account, get_counterfactual_address
+from nile.core.types.signer import Signer
 from nile.core.version import version as version_command
-from nile.signer import Signer
 from nile.utils import hex_address, normalize_number, shorten_address
 from nile.utils.get_accounts import get_accounts as get_accounts_command
 from nile.utils.get_accounts import (

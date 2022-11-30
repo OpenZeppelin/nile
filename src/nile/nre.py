@@ -1,11 +1,11 @@
 """nile runtime environment."""
 from nile import deployments
 from nile.common import is_alias
-from nile.core.account import Account
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
 from nile.core.deploy import deploy
 from nile.core.plugins import get_installed_plugins, skip_click_exit
+from nile.core.types.account import Account
 from nile.utils import normalize_number
 from nile.utils.get_accounts import get_accounts, get_predeployed_accounts
 from nile.utils.get_balance import get_balance

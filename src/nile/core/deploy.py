@@ -1,10 +1,6 @@
 """Command to deploy StarkNet smart contracts."""
 import logging
 
-from starkware.cairo.common.hash_chain import compute_hash_chain
-from starkware.starknet.core.os.contract_address.contract_address import (
-    calculate_contract_address_from_hash,
-)
 from starkware.starknet.services.api.gateway.transaction import DeployAccount
 
 from nile import deployments
@@ -14,9 +10,9 @@ from nile.common import (
     QUERY_VERSION,
     TRANSACTION_VERSION,
     get_account_class_hash,
-    get_class_hash,
     parse_information,
 )
+from nile.core.types.transaction import Transaction
 from nile.starknet_cli import execute_call, get_gateway_response
 from nile.utils import hex_address
 from nile.utils.status import status
@@ -89,32 +85,25 @@ async def deploy_contract(
         overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
     )
     register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
-    deployer_for_address_generation = 0
 
-    if salt is None:
-        salt = 0
-
-    _salt = salt
-
-    if unique:
-        # Match UDC address generation
-        _salt = compute_hash_chain(data=[account.address, salt])
-        deployer_for_address_generation = deployer_address
-
-    class_hash = get_class_hash(contract_name, overriding_path)
-
-    address = calculate_contract_address_from_hash(
-        _salt, class_hash, calldata, deployer_for_address_generation
-    )
-
-    output = await account.send(
+    # Create the transaction
+    unsigned_transaction, address = Transaction.create_udc_deploy(
+        account,
+        contract_name,
+        salt,
+        unique,
+        calldata,
         deployer_address,
-        method="deployContract",
-        calldata=[class_hash, salt, unique, len(calldata), *calldata],
-        max_fee=max_fee,
+        max_fee,
+        overriding_path=None,
     )
 
-    _, tx_hash = parse_information(output)
+    # Sign the transaction
+    signed_transaction = unsigned_transaction.sign(account.signer)
+
+    # Execute the transaction
+    tx_hash = await signed_transaction.execute()
+
     logging.info(
         f"⏳ ️Deployment of {contract_name} successfully sent at {hex_address(address)}"
     )
@@ -128,7 +117,7 @@ async def deploy_contract(
             deployments.unregister(address, account.network, alias, abi=register_abi)
             return
 
-    return address, register_abi
+    return tx_hash, address, register_abi
 
 
 async def deploy_account(
