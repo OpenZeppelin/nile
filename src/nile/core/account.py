@@ -174,6 +174,7 @@ class Account(AsyncObject):
             alias=alias,
             network=self.network,
             max_fee=max_fee,
+            overriding_path=overriding_path,
             mainnet_token=mainnet_token,
             watch_mode=watch_mode,
         )
@@ -187,6 +188,7 @@ class Account(AsyncObject):
         alias,
         max_fee=None,
         deployer_address=None,
+        overriding_path=None,
         abi=None,
         watch_mode=None,
     ):
@@ -206,6 +208,7 @@ class Account(AsyncObject):
             alias,
             deployer_address,
             max_fee,
+            overriding_path=overriding_path,
             abi=abi,
             watch_mode=watch_mode,
         )
