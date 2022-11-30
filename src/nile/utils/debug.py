@@ -39,24 +39,40 @@ async def debug_message(error_message, tx_hash, network, contracts_file=None):
     logging.info(f"🧾 Found contracts: {contracts}")
     logging.info("⏳ Querying the network with identified contracts...")
 
+    execute_args = {
+        "cmd_name": "tx_status",
+        "network": network,
+        "hash": hex_class_hash(tx_hash),
+        "contracts": ",".join(contracts),
+        "error_message": True,
+    }
+
     try:
-        return await execute_call(
-            "tx_status",
-            network,
-            hash=hex_class_hash(tx_hash),
-            contracts=",".join(contracts),
-            error_message=True,
-        )
+        return await execute_call(**execute_args)
     except FileNotFoundError:
-        return error_message
+        # Change path in contracts to locate Nile artifacts
+        contracts = _get_contracts_data(contracts_file, network, addresses, True)
+        execute_args["contracts"] = ",".join(contracts)
+        return await execute_call(**execute_args)
 
 
-def _get_contracts_data(contracts_file, network, addresses):
+def _get_contracts_data(contracts_file, network, addresses, nile_artifacts=False):
     file = contracts_file or f"{network}.{DEPLOYMENTS_FILENAME}"
     # contracts_file should already link to compiled contracts and not ABIs
-    to_contract = (lambda x: x) if contracts_file else _abi_to_build_path
+    to_contract = (
+        (lambda x: x)
+        if contracts_file
+        else _abi_to_nile_artifacts_path
+        if nile_artifacts
+        else _abi_to_build_path
+    )
     contracts = _locate_error_lines_with_abis(file, addresses, to_contract)
     return contracts
+
+
+def _abi_to_nile_artifacts_path(filename):
+    pt = os.path.dirname(os.path.realpath(__file__)).replace("/utils", "/artifacts")
+    return os.path.join(pt, os.path.basename(filename))
 
 
 def _abi_to_build_path(filename):
