@@ -149,18 +149,24 @@ async def test_declare(mock_declare, mock_get_class, mock_hash, mock_deploy):
 @pytest.mark.parametrize("deployer_address", [None, 0xDE0])
 @pytest.mark.parametrize("watch_mode", [None, "debug"])
 @pytest.mark.parametrize("abi", [None, "TEST_ABI"])
+@pytest.mark.parametrize("calldata", [["0x123", 456]])
 @patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.core.deploy.get_class_hash", return_value=0x434343)
 @patch("nile.core.account.deploy_with_deployer")
 async def test_deploy_contract(
-    mock_deploy_contract, mock_get_class, mock_deploy, abi, watch_mode, deployer_address
+    mock_deploy_contract,
+    mock_get_class,
+    mock_deploy,
+    calldata,
+    abi,
+    watch_mode,
+    deployer_address,
 ):
     account = await Account(KEY, NETWORK)
 
     contract_name = "contract"
     salt = 4
     unique = True
-    calldata = []
     alias = "my_contract"
     max_fee = 1
 
@@ -180,12 +186,14 @@ async def test_deploy_contract(
         deployer_address = normalize_number(UNIVERSAL_DEPLOYER_ADDRESS)
 
     # Check values are correctly passed to 'deploy_with_deployer'
+    exp_calldata = [normalize_number(x) for x in calldata]
+
     mock_deploy_contract.assert_called_with(
         account,
         contract_name,
         salt,
         unique,
-        calldata,
+        exp_calldata,
         alias,
         deployer_address,
         max_fee,
