@@ -6,8 +6,13 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.common import BUILD_DIRECTORY
-from nile.utils.debug import _abi_to_build_path, _locate_error_lines_with_abis
+from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
+from nile.utils.debug import (
+    _abi_to_build_path,
+    _abi_to_nile_artifacts_path,
+    _get_contracts_data,
+    _locate_error_lines_with_abis,
+)
 from nile.utils.status import status
 
 MOCK_HASH = 1234
@@ -18,6 +23,8 @@ ALIAS = "contract_alias"
 MOCK_FILE = 123
 ACCEPTED_OUT = b'{"tx_status": "ACCEPTED_ON_L2"}'
 REJECTED_OUT = b'{"tx_failure_reason": {"error_message": "E"}, "tx_status": "REJECTED"}'
+ADDRESSES = {0x123, 0x456}
+FILE = ABI_PATH
 
 
 @pytest.fixture(autouse=True)
@@ -87,3 +94,19 @@ async def test_status_feedback_with_message(mock_output, output, expected, caplo
     await status(MOCK_HASH, NETWORK, "debug")
 
     assert expected in caplog.text
+
+
+@pytest.mark.parametrize(
+    "use_nile_artifacts, expected",
+    [
+        (False, _abi_to_build_path),
+        (True, _abi_to_nile_artifacts_path),
+    ],
+)
+@patch("nile.utils.debug._locate_error_lines_with_abis")
+def test__get_contracts_data(mock_locate, use_nile_artifacts, expected):
+    _get_contracts_data(None, NETWORK, ADDRESSES, use_nile_artifacts)
+
+    mock_locate.assert_called_with(
+        f"{NETWORK}.{DEPLOYMENTS_FILENAME}", ADDRESSES, expected
+    )
