@@ -244,8 +244,10 @@ class Transaction:
             **kwargs,
         )
 
-        match = re.search(r"The estimated fee is: (0x[\d]{1,64})", output)
-        output_value = match.groups()[0] if match else None
+        match = re.search(r"The estimated fee is: [\d]{1,64}", output)
+        output_value = (
+            int(match.group(0).replace("The estimated fee is: ", "")) if match else None
+        )
 
         logging.info(output)
         return output_value
