@@ -129,7 +129,7 @@ async def deploy(
 ):
     """Deploy a StarkNet smart contract."""
     if not ignore_account:
-        account = await Account(signer, network)
+        account = await Account(signer, network, watch_mode=watch_mode)
         await account.deploy_contract(
             contract_name,
             salt,
@@ -175,7 +175,7 @@ async def declare(
     nile_account,
 ):
     """Declare a StarkNet smart contract through an Account."""
-    account = await Account(signer, network)
+    account = await Account(signer, network, watch_mode=watch_mode)
     await account.declare(
         contract_name,
         alias=alias,
@@ -231,7 +231,7 @@ async def send(
     watch_mode,
 ):
     """Invoke a contract's method through an Account."""
-    account = await Account(signer, network)
+    account = await Account(signer, network, watch_mode=watch_mode)
     print(
         "Calling {} on {} with params: {}".format(
             method, address_or_alias, [x for x in params]
