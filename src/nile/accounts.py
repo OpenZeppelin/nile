@@ -43,22 +43,6 @@ def unregister(address, network):
         json.dump(accounts, file, indent=4)
 
 
-def deregister(address, network):
-    """Deregister account."""
-    file = f"{network}.{ACCOUNTS_FILENAME}"
-
-    with open(file, "r") as fp:
-        accounts = json.load(fp)
-        to_delete
-        for pubkey, data in accounts.items():
-            if address == data["address"]:
-                to_delete = pubkey
-        accounts.pop(to_delete, None)
-
-    with open(file, "w") as file:
-        json.dump(accounts, file, indent=4)
-
-
 def exists(pubkey, network):
     """Return whether an account exists or not."""
     account = next(load(pubkey, network), None)
