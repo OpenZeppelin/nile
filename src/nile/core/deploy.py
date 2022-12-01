@@ -7,8 +7,7 @@ from starkware.starknet.core.os.contract_address.contract_address import (
 )
 from starkware.starknet.services.api.gateway.transaction import DeployAccount
 
-from nile import accounts
-from nile import deployments
+from nile import accounts, deployments
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
