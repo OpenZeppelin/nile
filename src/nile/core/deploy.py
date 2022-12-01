@@ -101,7 +101,7 @@ async def deploy_contract(
         _salt = compute_hash_chain(data=[account.address, salt])
         deployer_for_address_generation = deployer_address
 
-    class_hash = get_class_hash(contract_name=contract_name)
+    class_hash = get_class_hash(contract_name, overriding_path)
 
     address = calculate_contract_address_from_hash(
         _salt, class_hash, calldata, deployer_for_address_generation

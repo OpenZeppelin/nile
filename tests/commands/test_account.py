@@ -25,6 +25,7 @@ MAX_FEE = 10
 SALT = 444
 SIGNATURE = [111, 222]
 CLASS_HASH = 12345
+PATH = ("src/nile/artifacts", "src/nile/artifacts/abis")
 
 
 @pytest.fixture(autouse=True)
@@ -151,6 +152,7 @@ async def test_declare(mock_declare, mock_get_class, mock_hash, mock_deploy):
         network=NETWORK,
         alias=alias,
         max_fee=max_fee,
+        overriding_path=overriding_path,
         mainnet_token=None,
         watch_mode=None,
     )
@@ -160,6 +162,7 @@ async def test_declare(mock_declare, mock_get_class, mock_hash, mock_deploy):
 @pytest.mark.parametrize("deployer_address", [None, 0xDE0])
 @pytest.mark.parametrize("watch_mode", [None, "debug"])
 @pytest.mark.parametrize("abi", [None, "TEST_ABI"])
+@pytest.mark.parametrize("overriding_path", [None, PATH])
 @patch(
     "nile.core.account.deploy_account",
     return_value=(MOCK_ADDRESS, MOCK_TX_HASH, MOCK_ABI),
@@ -170,7 +173,13 @@ async def test_declare(mock_declare, mock_get_class, mock_hash, mock_deploy):
     return_value=(MOCK_ADDRESS, MOCK_TX_HASH, MOCK_ABI),
 )
 async def test_deploy_contract(
-    mock_deploy_contract, mock_get_class, mock_deploy, abi, watch_mode, deployer_address
+    mock_deploy_contract,
+    mock_get_class,
+    mock_deploy,
+    overriding_path,
+    abi,
+    watch_mode,
+    deployer_address,
 ):
     account = await Account(KEY, NETWORK)
 
@@ -189,8 +198,9 @@ async def test_deploy_contract(
         alias,
         max_fee,
         deployer_address,
-        abi,
-        watch_mode,
+        overriding_path=overriding_path,
+        abi=abi,
+        watch_mode=watch_mode,
     )
 
     # Check return values
@@ -209,6 +219,7 @@ async def test_deploy_contract(
         alias,
         deployer_address,
         max_fee,
+        overriding_path=overriding_path,
         abi=abi,
         watch_mode=watch_mode,
     )
