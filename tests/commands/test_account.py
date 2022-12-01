@@ -11,7 +11,7 @@ from nile.common import (
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
 )
-from nile.core.account import Account
+from nile.core.account import Account, set_nile_artifacts_path
 from nile.utils import normalize_number
 
 KEY = "TEST_KEY"
@@ -144,6 +144,45 @@ async def test_declare(mock_declare, mock_get_class, mock_hash, mock_deploy):
         overriding_path=overriding_path,
         mainnet_token=None,
         watch_mode=None,
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "nile_account, overriding_path", [(False, None), (True, set_nile_artifacts_path())]
+)
+@patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.get_account_class_hash", return_value=CLASS_HASH)
+@patch("nile.core.account.get_contract_class", return_value="ContractClass")
+@patch("nile.core.account.declare")
+async def test_declare_account(
+    mock_declare, mock_get_class, mock_hash, mock_deploy, nile_account, overriding_path
+):
+    account = await Account(KEY, NETWORK)
+
+    signature = [999, 888]
+    nonce = 4
+    max_fee = 1
+    contract_name = "contract"
+    alias = "my_contract"
+
+    account.signer.sign_declare = MagicMock(return_value=signature)
+
+    args = {
+        "contract_name": contract_name,
+        "max_fee": max_fee,
+        "nonce": nonce,
+        "alias": alias,
+    }
+
+    if nile_account:
+        args["nile_account"] = True
+
+    await account.declare(**args)
+
+    # Check 'get_contract_class' call
+    mock_get_class.assert_called_once_with(
+        contract_name=contract_name, overriding_path=overriding_path
     )
 
 
