@@ -273,6 +273,22 @@ class Transaction:
             method=self.entry_point,
         )
 
+    async def simulate(self):
+        """Estimate the fee of execution."""
+        assert self.signature is not None, "Attempt to execute an unsigned transaction"
+
+        await execute_call(
+            self.tx_type,
+            self.network,
+            inputs=self.calldata,
+            signature=self.signature,
+            max_fee=self.max_fee,
+            query_flag="simulate",
+            address=hex_address(self.account_address),
+            abi=f"{pt}/artifacts/abis/Account.json",
+            method=self.entry_point,
+        )
+
     def _validate(self):
         """Validate the transaction object."""
         assert hash != 0, "Transaction hash is empty after transaction creation!"
