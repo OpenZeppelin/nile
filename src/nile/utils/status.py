@@ -24,6 +24,7 @@ async def status(
     Optionally track until resolved (accepted on L2 or rejected) and/or
     use available artifacts to help locate the error. Debug implies track.
     """
+    logging.info(f"⏳ Transaction hash: {hex_class_hash(tx_hash)}")
     logging.info("⏳ Querying the network for transaction status...")
 
     while True:

@@ -12,7 +12,6 @@ from nile.common import (
     get_account_class_hash,
     parse_information,
 )
-from nile.core.types.transaction import Transaction
 from nile.starknet_cli import execute_call, get_gateway_response
 from nile.utils import hex_address
 from nile.utils.status import status
@@ -66,19 +65,17 @@ async def deploy(
 
 
 async def deploy_contract(
-    account,
-    contract_name,
-    salt,
-    unique,
-    calldata,
+    transaction,
+    signer,
     alias,
-    deployer_address,
-    max_fee,
     overriding_path=None,
     abi=None,
     watch_mode=None,
 ):
     """Deploy StarkNet smart contracts."""
+    network = transaction.network
+    contract_name = transaction.contract_to_submit
+
     logging.info(f"🚀 Deploying {contract_name}")
 
     base_path = (
@@ -86,38 +83,20 @@ async def deploy_contract(
     )
     register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
 
-    # Create the transaction
-    unsigned_transaction, address = Transaction.create_udc_deploy(
-        account,
-        contract_name,
-        salt,
-        unique,
-        calldata,
-        deployer_address,
-        max_fee,
-        overriding_path=None,
-    )
-
-    # Sign the transaction
-    signed_transaction = unsigned_transaction.sign(account.signer)
-
     # Execute the transaction
-    tx_hash = await signed_transaction.execute()
+    tx_status, output = await transaction.execute(signer=signer, watch_mode=watch_mode)
 
-    logging.info(
-        f"⏳ ️Deployment of {contract_name} successfully sent at {hex_address(address)}"
-    )
-    logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
+    address = transaction.udc_deployment_address()
 
-    deployments.register(address, register_abi, account.network, alias)
+    if not tx_status.status.is_rejected:
+        deployments.register(address, register_abi, network, alias)
+        logging.info(
+            f"⏳ ️Deployment of {contract_name} "
+            + f"successfully sent at {hex_address(address)}"
+        )
+        logging.info(f"🧾 Transaction hash: {hex(tx_status.tx_hash)}")
 
-    if watch_mode is not None:
-        tx_status = await status(tx_hash, account.network, watch_mode)
-        if tx_status.status.is_rejected:
-            deployments.unregister(address, account.network, alias, abi=register_abi)
-            return
-
-    return tx_hash, address, register_abi
+    return tx_status, address, register_abi
 
 
 async def deploy_account(

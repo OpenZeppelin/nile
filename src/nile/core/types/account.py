@@ -3,28 +3,29 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from starkware.starknet.core.os.contract_address.contract_address import (
-    calculate_contract_address_from_hash,
-)
+from starkware.starknet.definitions.general_config import StarknetChainId
 
 from nile import accounts, deployments
 from nile.common import (
-    QUERY_VERSION,
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
     get_account_class_hash,
-    get_contract_class,
     is_alias,
     normalize_number,
 )
-from nile.core.call_or_invoke import call_or_invoke
-from nile.core.declare import declare
 from nile.core.deploy import deploy_account
-from nile.core.deploy import deploy_contract as deploy_with_deployer
-from nile.core.types.utils import get_execute_calldata
+from nile.core.types.account_tx_wrappers import (
+    DeclareTxWrapper,
+    DeployContractTxWrapper,
+    InvokeTxWrapper,
+)
 from nile.core.types.transaction import Transaction
+from nile.core.types.utils import (
+    get_counterfactual_address,
+    get_deploy_account_hash,
+    get_execute_calldata,
+)
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
-from nile.utils.status import status
 
 try:
     from nile.core.types.signer import Signer
@@ -119,14 +120,24 @@ class Account(AsyncObject):
 
         contract_address = get_counterfactual_address(salt, calldata)
 
-        [sig_r, sig_s] = self.signer.sign_deployment(
+        chain_id = (
+            StarknetChainId.MAINNET.value
+            if self.network == "mainnet"
+            else StarknetChainId.TESTNET.value
+        )
+
+        tx_hash = get_deploy_account_hash(
             contract_address,
             class_hash,
             calldata,
             salt,
             max_fee,
             0,  # nonce starts at 0
+            TRANSACTION_VERSION,
+            chain_id,
         )
+
+        [sig_r, sig_s] = self.signer.sign(tx_hash)
 
         output = await deploy_account(
             network=self.network,
@@ -153,10 +164,9 @@ class Account(AsyncObject):
         calldata,
         nonce=None,
         max_fee=None,
-        query_type=None,
         watch_mode=None,
     ):
-        """Execute an Account transaction."""
+        """Return an InvokeTxWrapper object."""
         target_address = self._get_target_address(address_or_alias)
         max_fee, nonce, calldata = await self._process_arguments(
             max_fee, nonce, calldata
@@ -164,25 +174,21 @@ class Account(AsyncObject):
         execute_calldata = get_execute_calldata(
             calls=[[target_address, method, calldata]]
         )
-        tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
 
-        # Create and sign the transaction
-        signed_transaction = Transaction.create_invoke(
+        # Create the transaction
+        transaction = Transaction.create_invoke(
             account_address=self.address,
             calldata=execute_calldata,
             max_fee=max_fee,
             nonce=nonce,
             network=self.network,
-            version=tx_version,
-        ).sign(self.signer)
+        )
 
-        # Execute the transaction
-        tx_hash = await signed_transaction.execute()
-
-        if not query_type and watch_mode:
-            return await status(tx_hash, self.network, watch_mode)
-        else:
-            return tx_hash
+        return InvokeTxWrapper(
+            tx=transaction,
+            account=self,
+            watch_mode=watch_mode,
+        )
 
     async def declare(
         self,
@@ -192,30 +198,28 @@ class Account(AsyncObject):
         alias=None,
         overriding_path=None,
         mainnet_token=None,
-        query_type=None,
         watch_mode=None,
     ):
-        """Declare a contract through an Account."""
+        """Return a DeclareTxWrapper for declaring a contract through an Account."""
         max_fee, nonce, _ = await self._process_arguments(max_fee, nonce)
-        tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
 
-        # Create and sign transaction
-        signed_transaction = Transaction.create_declare(
+        # Create the transaction
+        transaction = Transaction.create_declare(
             account_address=self.address,
-            contract_to_declare=contract_name,
+            contract_to_submit=contract_name,
             max_fee=max_fee,
             nonce=nonce,
             network=self.network,
-            version=tx_version,
-        ).sign(self.signer)
+        )
 
-        # Execute the transaction
-        tx_hash = await signed_transaction.execute()
-
-        if not query_type and watch_mode:
-            return await status(tx_hash, self.network, watch_mode)
-        else:
-            return tx_hash
+        return DeclareTxWrapper(
+            tx=transaction,
+            account=self,
+            alias=alias,
+            overriding_path=overriding_path,
+            mainnet_token=mainnet_token,
+            watch_mode=watch_mode,
+        )
 
     async def deploy_contract(
         self,
@@ -228,7 +232,6 @@ class Account(AsyncObject):
         deployer_address=None,
         overriding_path=None,
         abi=None,
-        query_type=None,
         watch_mode=None,
     ):
         """Deploy a contract through an Account."""
@@ -236,30 +239,24 @@ class Account(AsyncObject):
             deployer_address or UNIVERSAL_DEPLOYER_ADDRESS
         )
 
-        return deploy_with_deployer(
-            self,
-            contract_name,
-            salt,
-            unique,
-            calldata,
-            alias,
-            deployer_address,
-            max_fee,
+        # Create the transaction
+        transaction = await Transaction.create_udc_deploy(
+            account=self,
+            contract_name=contract_name,
+            salt=salt,
+            unique=unique,
+            calldata=calldata,
+            deployer_address=deployer_address,
+            max_fee=max_fee,
             overriding_path=overriding_path,
-            abi=abi,
-            watch_mode=watch_mode,
         )
 
-    def simulate(self, address_or_alias, method, calldata, max_fee=None, nonce=None):
-        """Simulate a tx going through an Account contract."""
-        return self.send(address_or_alias, method, calldata, max_fee, nonce, "simulate")
-
-    def estimate_fee(
-        self, address_or_alias, method, calldata, max_fee=None, nonce=None
-    ):
-        """Estimate fee for a tx going through an Account contract."""
-        return self.send(
-            address_or_alias, method, calldata, max_fee, nonce, "estimate_fee"
+        return DeployContractTxWrapper(
+            tx=transaction,
+            account=self,
+            alias=alias,
+            overriding_path=overriding_path,
+            watch_mode=watch_mode,
         )
 
     def _get_target_address(self, address_or_alias):
@@ -282,16 +279,3 @@ class Account(AsyncObject):
             calldata = [normalize_number(x) for x in calldata]
 
         return max_fee, nonce, calldata
-
-
-def get_counterfactual_address(salt=None, calldata=None, contract="Account"):
-    """Precompute a contract's address for a given class, salt, and calldata."""
-    class_hash = get_account_class_hash(contract)
-    salt = 0 if salt is None else int(salt)
-    calldata = [] if calldata is None else calldata
-    return calculate_contract_address_from_hash(
-        salt=salt,
-        class_hash=class_hash,
-        constructor_calldata=calldata,
-        deployer_address=0,
-    )

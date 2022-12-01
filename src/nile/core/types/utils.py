@@ -1,5 +1,8 @@
 """Utils for handling types logic."""
 
+from starkware.starknet.core.os.contract_address.contract_address import (
+    calculate_contract_address_from_hash,
+)
 from starkware.starknet.core.os.transaction_hash.transaction_hash import (
     TransactionHashPrefix,
     calculate_declare_transaction_hash,
@@ -7,6 +10,8 @@ from starkware.starknet.core.os.transaction_hash.transaction_hash import (
     calculate_transaction_hash_common,
 )
 from starkware.starknet.public.abi import get_selector_from_name
+
+from nile.common import get_account_class_hash
 
 
 def get_execute_calldata(calls):
@@ -42,7 +47,7 @@ def from_call_to_call_array(calls):
 def get_invoke_hash(account, calldata, max_fee, nonce, version, chain_id):
     """Compute the hash of an invoke transaction."""
     return calculate_transaction_hash_common(
-        tx_hash_prefix=TransactionHashPrefix,
+        tx_hash_prefix=TransactionHashPrefix.INVOKE,
         version=version,
         contract_address=account,
         entry_point_selector=0,
@@ -78,4 +83,17 @@ def get_deploy_account_hash(
         nonce=nonce,
         salt=salt,
         chain_id=chain_id,
+    )
+
+
+def get_counterfactual_address(salt=None, calldata=None, contract="Account"):
+    """Precompute a contract's address for a given class, salt, and calldata."""
+    class_hash = get_account_class_hash(contract)
+    salt = 0 if salt is None else int(salt)
+    calldata = [] if calldata is None else calldata
+    return calculate_contract_address_from_hash(
+        salt=salt,
+        class_hash=class_hash,
+        constructor_calldata=calldata,
+        deployer_address=0,
     )

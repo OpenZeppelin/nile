@@ -51,6 +51,13 @@ def watch_option(f):
     return f
 
 
+def query_option(f):
+    """Handle simulate and estimate_fee options for the cli."""
+    f = click.option("--simulate", "query", flag_value="simulate")(f)
+    f = click.option("--estimate_fee", "query", flag_value="estimate_fee")(f)
+    return f
+
+
 def mainnet_token_option(f):
     """Configure TOKEN option for the cli."""
     return click.option(
@@ -111,6 +118,7 @@ async def run(path, network):
 )
 @mainnet_token_option
 @network_option
+@query_option
 @watch_option
 async def deploy(
     signer,
@@ -125,12 +133,13 @@ async def deploy(
     ignore_account,
     token,
     network,
+    query,
     watch_mode,
 ):
     """Deploy a StarkNet smart contract."""
     if not ignore_account:
         account = await Account(signer, network)
-        await account.deploy_contract(
+        transaction = await account.deploy_contract(
             contract_name,
             salt,
             unique,
@@ -141,6 +150,13 @@ async def deploy(
             abi=abi,
             watch_mode=watch_mode,
         )
+
+        if query == "estimate_fee":
+            await transaction.estimate_fee()
+        elif query == "simulate":
+            await transaction.simulate()
+        else:
+            await transaction.execute()
     else:
         await deploy_command(
             contract_name,
@@ -161,20 +177,23 @@ async def deploy(
 @click.option("--overriding_path")
 @network_option
 @mainnet_token_option
+@query_option
 @watch_option
 async def declare(
     signer,
     contract_name,
     network,
     max_fee,
-    watch_mode,
     alias,
     overriding_path,
     token,
+    query,
+    watch_mode,
 ):
     """Declare a StarkNet smart contract through an Account."""
     account = await Account(signer, network)
-    await account.declare(
+
+    transaction = await account.declare(
         contract_name,
         alias=alias,
         max_fee=max_fee,
@@ -182,6 +201,13 @@ async def declare(
         mainnet_token=token,
         watch_mode=watch_mode,
     )
+
+    if query == "estimate_fee":
+        await transaction.estimate_fee()
+    elif query == "simulate":
+        await transaction.simulate()
+    else:
+        await transaction.execute()
 
 
 @cli.command()
@@ -213,9 +239,8 @@ def counterfactual_address(signer, salt):
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @click.option("--max_fee", nargs=1)
-@click.option("--simulate", "query", flag_value="simulate")
-@click.option("--estimate_fee", "query", flag_value="estimate_fee")
 @network_option
+@query_option
 @watch_option
 async def send(
     signer,
@@ -234,16 +259,21 @@ async def send(
             method, address_or_alias, [x for x in params]
         )
     )
-    # address_or_alias is not normalized first here because
-    # Account.send is part of Nile's public API and can accept hex addresses
-    await account.send(
+
+    transaction = await account.send(
         address_or_alias,
         method,
         params,
         max_fee=max_fee,
-        query_type=query,
         watch_mode=watch_mode,
     )
+
+    if query == "estimate_fee":
+        await transaction.estimate_fee()
+    elif query == "simulate":
+        await transaction.simulate()
+    else:
+        await transaction.execute()
 
 
 @cli.command()
