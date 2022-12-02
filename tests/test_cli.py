@@ -146,9 +146,9 @@ async def test_node_forwards_args(mock_subprocess):
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-async def test_node_runs_gateway(opts, expected):
+async def test_node_runs_gateway(opts, expected, capfd):
     # Node life
-    seconds = 15
+    seconds = 20
 
     host = opts.get("--host", "127.0.0.1")
     port = opts.get("--port", "5050")
@@ -176,11 +176,16 @@ async def test_node_runs_gateway(opts, expected):
     p.join()
     assert status == 200
 
+    # Check that node displays correct gateway_url
+    out, _ = capfd.readouterr()
+    assert f"Listening on {expected}" in out
+
     # Assert network and gateway_url is correct in node.json file
-    file = NODE_FILENAME
-    with open(file, "r") as f:
-        gateway = json.load(f)
-    assert gateway.get(network) == expected
+    if expected != "http://127.0.0.1:5050/":
+        file = NODE_FILENAME
+        with open(file, "r") as f:
+            gateway = json.load(f)
+        assert gateway.get(network) == expected
 
 
 @pytest.mark.asyncio
