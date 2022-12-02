@@ -1,6 +1,5 @@
 """Tests for common library."""
 import json
-from unittest.mock import mock_open, patch
 
 import pytest
 
@@ -21,7 +20,12 @@ LIST2 = [1, 2, 3, [4, 5, 6]]
 LIST3 = [1, 2, 3, [4, 5, 6, [7, 8, 9]]]
 STDOUT_1 = "SDTOUT_1"
 STDOUT_2 = "SDTOUT_2"
-LOCAL_GATEWAY = {"localhost": "http://127.0.0.1:5050/"}
+
+
+@pytest.fixture(autouse=True)
+def tmp_working_dir(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    return tmp_path
 
 
 @pytest.mark.parametrize(
@@ -62,36 +66,44 @@ def test_parse_information():
     assert _a, _b == (a, b)
 
 
-def test_get_gateways():
+@pytest.mark.parametrize(
+    "network, url, gateway",
+    [
+        (None, None, {}),
+        ("localhost", "5051", {"localhost": "5051"}),
+        ("host", "port", {"host": "port"}),
+    ],
+)
+def test_get_gateways(network, url, gateway):
+    if network is not None:
+        create_node_json(network, url)
+
     gateways = get_gateways()
-    expected = {**LOCAL_GATEWAY, **DEFAULT_GATEWAYS}
+    expected = {**DEFAULT_GATEWAYS, **gateway}
     assert gateways == expected
 
-    # Check create_node_json is called with FileNotFoundError
-    with patch(
-        "nile.common.create_node_json", return_value=LOCAL_GATEWAY
-    ) as mock_create:
-        open_mock = mock_open()
-        with patch("nile.common.open", open_mock):
-            open_mock.side_effect = FileNotFoundError
-            gateways = get_gateways()
-
-            mock_create.assert_called_once()
-            assert gateways == expected
+    # Check that node.json gateway returns in the case of duplicate keys
+    if network == "localhost":
+        assert expected["localhost"] != "5050"
+        assert expected["localhost"] == "5051"
 
 
 @pytest.mark.parametrize(
-    "args, gateway", [(None, LOCAL_GATEWAY), (["a", "b"], {"a": "b"})]
+    "args1, args2, gateways",
+    [
+        (
+            ["NETWORK1", "URL1"],
+            ["NETWORK2", "URL2"],
+            {"NETWORK1": "URL1", "NETWORK2": "URL2"},
+        ),
+    ],
 )
-def test_create_node_json(args, gateway):
-    open_mock = mock_open()
-    with patch("nile.common.open", open_mock, create=True):
-        if args is None:
-            create_node_json()
-        else:
-            create_node_json(*args)
+def test_create_node_json(args1, args2, gateways):
+    # Check that node.json is created and adds keys
+    create_node_json(*args1)
+    create_node_json(*args2)
 
-    expected = json.dumps({**gateway})
-
-    open_mock.assert_called_with(NODE_FILENAME, "w")
-    open_mock.return_value.write.assert_called_once_with(expected)
+    with open(NODE_FILENAME, "r") as fp:
+        result = fp.read()
+        expected = json.dumps(gateways, indent=2)
+        assert result == expected
