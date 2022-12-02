@@ -162,17 +162,13 @@ async def test_declare_account(
 
     signature = [999, 888]
     nonce = 4
-    max_fee = 1
-    contract_name = "contract"
-    alias = "my_contract"
+    contract_name = "Account"
 
     account.signer.sign_declare = MagicMock(return_value=signature)
 
     args = {
         "contract_name": contract_name,
-        "max_fee": max_fee,
         "nonce": nonce,
-        "alias": alias,
     }
 
     if nile_account:
