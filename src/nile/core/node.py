@@ -2,7 +2,7 @@
 import logging
 import subprocess
 
-from nile.common import create_node_json
+from nile.common import DEFAULT_GATEWAYS, create_node_json
 
 
 def node(host="127.0.0.1", port=5050, seed=None, lite_mode=False):
@@ -14,7 +14,8 @@ def node(host="127.0.0.1", port=5050, seed=None, lite_mode=False):
         else:
             network = host
         gateway_url = f"http://{host}:{port}/"
-        create_node_json(network, gateway_url)
+        if DEFAULT_GATEWAYS.get(network) != gateway_url:
+            create_node_json(network, gateway_url)
 
         command = ["starknet-devnet", "--host", host, "--port", str(port)]
 
