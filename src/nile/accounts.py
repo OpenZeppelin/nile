@@ -36,7 +36,6 @@ def unregister(address, network):
         for pubkey, data in accounts.items():
             if address == data["address"]:
                 to_delete = pubkey
-                break
         accounts.pop(to_delete, None)
 
     with open(file, "w") as file:
