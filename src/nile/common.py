@@ -29,6 +29,7 @@ UNIVERSAL_DEPLOYER_ADDRESS = (
     "0x041a78e741e5af2fec34b695679bc6891742439f7afb8484ecd7766661ad02bf"
 )
 DEFAULT_GATEWAYS = {
+    "localhost": "http://127.0.0.1:5050/",
     "goerli2": "https://alpha4-2.starknet.io",
     "integration": "https://external.integration.starknet.io",
 }
@@ -36,23 +37,27 @@ DEFAULT_GATEWAYS = {
 
 def get_gateways():
     """Get the StarkNet node details."""
-    try:
+    if os.path.exists(NODE_FILENAME):
         with open(NODE_FILENAME, "r") as f:
             gateway = json.load(f)
-            gateways = {**gateway, **DEFAULT_GATEWAYS}
+            gateways = {**DEFAULT_GATEWAYS, **gateway}
             return gateways
-    except FileNotFoundError:
-        gateway = create_node_json()
-        gateways = {**gateway, **DEFAULT_GATEWAYS}
-        return gateways
+    else:
+        return DEFAULT_GATEWAYS
 
 
-def create_node_json(network="localhost", gateway_url="http://127.0.0.1:5050/"):
-    """Create node.json and return gateways."""
-    with open(NODE_FILENAME, "w") as f:
-        gateway = {network: gateway_url}
-        f.write(json.dumps(gateway))
-        return gateway
+def create_node_json(network, gateway_url):
+    """Create or update node.json with custom network."""
+    if not os.path.exists(NODE_FILENAME):
+        with open(NODE_FILENAME, "w") as fp:
+            json.dump({network: gateway_url}, fp)
+    else:
+        with open(NODE_FILENAME, "r") as fp:
+            gateways = json.load(fp)
+            gateways[network] = gateway_url
+
+        with open(NODE_FILENAME, "w") as fp:
+            json.dump(gateways, fp, indent=2)
 
 
 GATEWAYS = get_gateways()
