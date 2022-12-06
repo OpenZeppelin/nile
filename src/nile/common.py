@@ -46,7 +46,7 @@ def get_gateways():
         return DEFAULT_GATEWAYS
 
 
-def create_node_json(network, gateway_url):
+def write_node_json(network, gateway_url):
     """Create or update node.json with custom network."""
     if not os.path.exists(NODE_FILENAME):
         with open(NODE_FILENAME, "w") as fp:
