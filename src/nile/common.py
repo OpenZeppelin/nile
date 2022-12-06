@@ -52,11 +52,10 @@ def write_node_json(network, gateway_url):
         with open(NODE_FILENAME, "w") as fp:
             json.dump({network: gateway_url}, fp)
     else:
-        with open(NODE_FILENAME, "r") as fp:
+        with open(NODE_FILENAME, "r+") as fp:
             gateways = json.load(fp)
             gateways[network] = gateway_url
-
-        with open(NODE_FILENAME, "w") as fp:
+            fp.seek(0)
             json.dump(gateways, fp, indent=2)
 
 

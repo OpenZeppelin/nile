@@ -6,7 +6,7 @@ import pytest
 from nile.common import (
     DEFAULT_GATEWAYS,
     NODE_FILENAME,
-    create_node_json,
+    write_node_json,
     get_gateways,
     parse_information,
     prepare_params,
@@ -76,7 +76,7 @@ def test_parse_information():
 )
 def test_get_gateways(network, url, gateway):
     if network is not None:
-        create_node_json(network, url)
+        write_node_json(network, url)
 
     gateways = get_gateways()
     expected = {**DEFAULT_GATEWAYS, **gateway}
@@ -98,10 +98,10 @@ def test_get_gateways(network, url, gateway):
         ),
     ],
 )
-def test_create_node_json(args1, args2, gateways):
+def test_write_node_json(args1, args2, gateways):
     # Check that node.json is created and adds keys
-    create_node_json(*args1)
-    create_node_json(*args2)
+    write_node_json(*args1)
+    write_node_json(*args2)
 
     with open(NODE_FILENAME, "r") as fp:
         result = fp.read()
