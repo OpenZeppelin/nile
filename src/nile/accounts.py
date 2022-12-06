@@ -23,7 +23,7 @@ def register(pubkey, address, index, alias, network):
             "alias": alias,
         }
     with open(file, "w") as file:
-        json.dump(accounts, file)
+        json.dump(accounts, file, indent=2)
 
 
 def unregister(address, network):
@@ -39,7 +39,7 @@ def unregister(address, network):
         accounts.pop(to_delete, None)
 
     with open(file, "w") as file:
-        json.dump(accounts, file, indent=4)
+        json.dump(accounts, file, indent=2)
 
 
 def exists(pubkey, network):
