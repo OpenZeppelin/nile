@@ -28,6 +28,7 @@ ACCOUNT_1 = {
 ACCOUNT_2 = {
     hex(PUBKEYS[2]): {"address": hex_address(ADDRESSES[2]), "index": 2, "alias": "A3"}
 }
+ALL_ACCOUNTS = {**ACCOUNT_0, **ACCOUNT_1, **ACCOUNT_2}
 
 
 @pytest.fixture(autouse=True)
@@ -42,10 +43,9 @@ def test_unregister():
     register(*ARGS_2)
 
     # Check dict
-    accounts = {**ACCOUNT_0, **ACCOUNT_1, **ACCOUNT_2}
     with open(f"{NETWORK}.{ACCOUNTS_FILENAME}", "r") as fp:
         lines = fp.read()
-        expected = json.dumps(accounts, indent=2)
+        expected = json.dumps(ALL_ACCOUNTS, indent=2)
         assert lines == expected
 
     unregister(hex_address(ADDRESSES[1]), NETWORK)
@@ -57,3 +57,17 @@ def test_unregister():
         expected = json.dumps(new_accounts, indent=2)
         assert lines == expected
         assert hex(PUBKEYS[1]) not in lines
+
+
+def test_unregister_with_wrong_address():
+    register(*ARGS_0)
+    register(*ARGS_1)
+    register(*ARGS_2)
+
+    unregister(hex_address("0xbad"), NETWORK)
+
+    # Check dict
+    with open(f"{NETWORK}.{ACCOUNTS_FILENAME}", "r") as fp:
+        lines = fp.read()
+        expected = json.dumps(ALL_ACCOUNTS, indent=2)
+        assert lines == expected
