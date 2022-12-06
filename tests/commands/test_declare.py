@@ -107,7 +107,7 @@ async def test_declare(
         mock_cli_call.return_value = CALL_OUTPUT
         # check return value
         res = await declare(*args)
-        assert res == hex_class_hash(HASH)
+        assert res == (hex_class_hash(HASH), TX_HASH)
 
         # check internals
         mock_cli_call.assert_called_once_with("declare", NETWORK, **cmd_args)

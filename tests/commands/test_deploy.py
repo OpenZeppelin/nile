@@ -191,7 +191,7 @@ async def test_deploy_contract(
         )
         # check return values
         res = await deploy_contract(account, *args)
-        assert res == (exp_address, exp_abi)
+        assert res == (exp_address, TX_HASH, exp_abi)
 
         # check internals
         mock_send.assert_called_once_with(
@@ -288,7 +288,7 @@ async def test_deploy_account(
 
     # check return values
     res = await deploy_account(*args)
-    assert res == (ADDRESS, exp_abi)
+    assert res == (ADDRESS, TX_HASH, exp_abi)
 
     # check internals
     mock_register.assert_called_once_with(ADDRESS, exp_abi, NETWORK, ALIAS)

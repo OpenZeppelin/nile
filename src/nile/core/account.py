@@ -137,7 +137,7 @@ class Account(AsyncObject):
         )
 
         if output is not None:
-            address, _ = output
+            address, *_ = output
             accounts.register(
                 self.signer.public_key, address, index, self.alias, self.network
             )
@@ -199,7 +199,7 @@ class Account(AsyncObject):
 
         max_fee, _, calldata = await self._process_arguments(max_fee, 0, calldata)
 
-        await deploy_with_deployer(
+        return await deploy_with_deployer(
             self,
             contract_name,
             salt,
