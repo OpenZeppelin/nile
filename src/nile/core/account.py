@@ -96,7 +96,7 @@ class Account(AsyncObject):
             )
             if output is not None:
                 address, index = output
-                self.address = address
+                self.address = normalize_number(address)
                 self.index = index
 
         # we should replace this with static type checks
@@ -137,7 +137,7 @@ class Account(AsyncObject):
         )
 
         if output is not None:
-            address, _ = output
+            address, *_ = output
             accounts.register(
                 self.signer.public_key, address, index, self.alias, self.network
             )
@@ -174,6 +174,7 @@ class Account(AsyncObject):
             alias=alias,
             network=self.network,
             max_fee=max_fee,
+            overriding_path=overriding_path,
             mainnet_token=mainnet_token,
             watch_mode=watch_mode,
         )
@@ -187,6 +188,7 @@ class Account(AsyncObject):
         alias,
         max_fee=None,
         deployer_address=None,
+        overriding_path=None,
         abi=None,
         watch_mode=None,
     ):
@@ -195,7 +197,9 @@ class Account(AsyncObject):
             deployer_address or UNIVERSAL_DEPLOYER_ADDRESS
         )
 
-        await deploy_with_deployer(
+        max_fee, _, calldata = await self._process_arguments(max_fee, 0, calldata)
+
+        return await deploy_with_deployer(
             self,
             contract_name,
             salt,
@@ -204,6 +208,7 @@ class Account(AsyncObject):
             alias,
             deployer_address,
             max_fee,
+            overriding_path=overriding_path,
             abi=abi,
             watch_mode=watch_mode,
         )

@@ -19,16 +19,6 @@ def tmp_working_dir(monkeypatch, tmp_path):
     return tmp_path
 
 
-EXP_SALTS = [
-    2575391846029882800677169842619299590487820636126802982795520479739126412818,
-    2557841322555501036413859939246042028937187876697248667793106475357514195630,
-]
-EXP_CLASS_HASHES = [
-    0x434343,
-    0x464646,
-    0x494949,
-    0x525252,
-]
 MOCK_ACC_ADDRESS = 0x123
 MOCK_ACC_INDEX = 0
 CONTRACT = "contract"
@@ -46,6 +36,24 @@ CALL_OUTPUT = [ADDRESS, TX_HASH]
 SIGNATURE = [111, 333]
 SALT = 555
 FEE = 666
+
+DEPLOY_ARGS = [
+    # name, salt, unique, calldata, alias, deployer, max_fee, [overriding_path], [abi]
+    [CONTRACT, 0, True, [], ALIAS, 0x424242, 5],
+    [CONTRACT, 1, False, [1], ALIAS, 0x454545, 0],
+    [CONTRACT, 3, True, [1, 2], ALIAS, 0x484848, 0],
+    [CONTRACT, 3, False, [1, 2, 3], ALIAS, 0x515151, 0, None, ABI_OVERRIDE],
+]
+EXP_SALTS = [
+    2575391846029882800677169842619299590487820636126802982795520479739126412818,
+    2557841322555501036413859939246042028937187876697248667793106475357514195630,
+]
+EXP_CLASS_HASHES = [
+    0x434343,
+    0x464646,
+    0x494949,
+    0x525252,
+]
 
 
 @pytest.mark.asyncio
@@ -125,35 +133,25 @@ async def test_deploy(mock_register, mock_parse, caplog, args, cmd_args, exp_abi
     "args, exp_class_hash, exp_salt, exp_abi",
     [
         (
-            [CONTRACT, 0, True, [], ALIAS, 0x424242, 5],  # args
+            DEPLOY_ARGS[0],
             EXP_CLASS_HASHES[0],
             EXP_SALTS[0],
             ABI,
         ),
         (
-            [CONTRACT, 1, False, [1], ALIAS, 0x454545, 0],  # args
+            DEPLOY_ARGS[1],
             EXP_CLASS_HASHES[1],
             1,
             ABI,
         ),
         (
-            [CONTRACT, 3, True, [1, 2], ALIAS, 0x484848, 0],  # args
+            DEPLOY_ARGS[2],
             EXP_CLASS_HASHES[2],
             EXP_SALTS[1],
             ABI,
         ),
         (
-            [
-                CONTRACT,
-                3,
-                False,
-                [1, 2, 3],
-                ALIAS,
-                0x515151,
-                0,
-                None,
-                ABI_OVERRIDE,
-            ],  # args
+            DEPLOY_ARGS[3],
             EXP_CLASS_HASHES[3],
             3,
             ABI_OVERRIDE,
@@ -193,7 +191,7 @@ async def test_deploy_contract(
         )
         # check return values
         res = await deploy_contract(account, *args)
-        assert res == (exp_address, exp_abi)
+        assert res == (exp_address, TX_HASH, exp_abi)
 
         # check internals
         mock_send.assert_called_once_with(
@@ -203,6 +201,7 @@ async def test_deploy_contract(
             max_fee=max_fee,
         )
         mock_register.assert_called_once_with(exp_address, exp_abi, NETWORK, ALIAS)
+        mock_return_account.assert_called_once_with(CONTRACT, None)
 
         # check logs
         assert f"🚀 Deploying {CONTRACT}" in caplog.text
@@ -289,7 +288,7 @@ async def test_deploy_account(
 
     # check return values
     res = await deploy_account(*args)
-    assert res == (ADDRESS, exp_abi)
+    assert res == (ADDRESS, TX_HASH, exp_abi)
 
     # check internals
     mock_register.assert_called_once_with(ADDRESS, exp_abi, NETWORK, ALIAS)

@@ -52,7 +52,7 @@ async def declare(
             deployments.unregister(class_hash, network, alias, is_declaration=True)
             return
 
-    return padded_hash
+    return padded_hash, tx_hash
 
 
 def alias_exists(alias, network):
