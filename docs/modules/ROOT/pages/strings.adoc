@@ -8,7 +8,7 @@ From {cairo-lang} docs:
 
 == Nile integration
 
-In Nile, arguments to contract calls (calldata) that are neither integers nor hexadecimals, are treated as short strings and converted automatically to the corresponding felt representation.
+In Nile, contract call arguments (calldata) that are neither integers nor hexadecimals, are treated as short strings and converted automatically to the corresponding felt representation.
 
 Because of this, you can run the following from the CLI:
 

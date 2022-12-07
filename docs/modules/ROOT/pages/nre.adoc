@@ -1,6 +1,6 @@
-= NRE and Scripting
+= NRE and scripting
 
-Nile provides a Runtime Environment for scripting that you can use for multiple tasks. The Script is any python file implementing an asynchronous `run(nre)` function to receive a NileRuntimeEnvironment object exposing Nile's scripting API.
+Nile provides a Runtime Environment for scripting that you can use for multiple tasks. The script is any python file implementing an asynchronous `run(nre)` function to receive a NileRuntimeEnvironment object exposing Nile's scripting API.
 
 == Running a script
 
