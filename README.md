@@ -9,54 +9,40 @@
 
 Nile is a CLI tool to develop or interact with StarkNet projects written in Cairo. It consists of different components for developing, compiling, testing, and deploying your smart contracts and dApps, providing a CLI for executing tasks, and a Runtime Environment (NRE) for scripting. The package is designed to be extensible and very customizable by using plugins.
 
+## Installation
 
-## Documentation
+> Current supported Python versions are >=3.8 and <3.10.
 
-Check our [documentation site](https://docs.openzeppelin.com/nile) recipes, CLI/API references, and more.
-
-## Quickstart
-
-We will explore the basics of creating a Nile project by using a sample contract. We will test it locally, deploy an account and the contract to a devnet node, and send transactions through the account to the contract.
-
-### Requirements
-
-#### GMP for fastecdsa
-
-Before installing Cairo on your machine, you need to install gmp:
+1. Install `gmp` on your machine (Cairo requirement).
 
 ```
 sudo apt install -y libgmp3-dev # linux
 brew install gmp # mac
 ```
 
-> **_NOTE:_** If you have any trouble installing gmp on your Apple M1 computer, [here’s a list of potential solutions.](https://github.com/OpenZeppelin/nile/issues/22)
+If you have any trouble installing it on your Apple M1 computer, [here’s a list of potential solutions.](https://github.com/OpenZeppelin/nile/issues/22)
 
-#### Supported Python versions
 
-Some Nile dependencies have specific python version requirements, therefore we recommend using a python version manager like pyenv, and virtual environments to avoid conflicts.
-
-Current supported Python versions are >=3.8 and <3.10.
-
-### Installation
-
-Create a folder for your project and cd into it:
+2. Create a folder for your project and cd into it:
 
 ```
 mkdir myproject && cd myproject
 ```
 
-Create a virtualenv and activate it:
+3. Create a virtualenv and activate it:
 
 ```
 python3 -m venv env
 source env/bin/activate
 ```
 
-Install Nile:
+4. Install Nile:
 
 ```
 (env): pip install cairo-nile
 ```
+
+## Quick usage
 
 Use `nile init` to quickly set up your development environment:
 
@@ -68,30 +54,16 @@ Use `nile init` to quickly set up your development environment:
 nile compile
 ```
 
-### Compiling
+## Documentation
 
-Use `nile compile` to compile contracts under the **contracts/** folder by default.
+On our official docsite you can find:
 
-```
-(env): nile compile
-🤖 Compiling all Cairo contracts in the contracts directory
-🔨 Compiling contracts/contract.cairo
-✅ Done
-```
+- A Quickstart walkthrough with commands examples
+- Guides on how to master development with Nile
+- Useful script examples
+- Plugins list
 
-For a full reference of nile command options, check the [CLI Reference]() section.
-
-### Testing
-
-`nile init` creates a sample Cairo contract and test for you. Check **contracts/contract.cairo** and **tests/test_contract.py** for the source code.
-
-Run pytest to run the test suite against the Smart Contracts:
-
-```
-(env): pytest tests/
-```
-
-For a more in deep guide on testing with parallelism and coverage, check our [Testing]() guide.
+Check our [documentation site](https://docs.openzeppelin.com/nile) for recipes, CLI/API references, and more.
 
 
 ## Contribute
