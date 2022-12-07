@@ -157,7 +157,7 @@ class Account(AsyncObject):
         max_fee, nonce, _ = await self._process_arguments(max_fee, nonce)
 
         if nile_account:
-            assert overriding_path is None
+            assert overriding_path is None, "Cannot override path to Nile account."
             overriding_path = set_nile_artifacts_path()
 
         contract_class = get_contract_class(
