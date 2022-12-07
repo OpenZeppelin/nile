@@ -8,8 +8,7 @@ import pytest
 
 from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
 from nile.utils.debug import (
-    _abi_to_build_path,
-    _abi_to_nile_artifacts_path,
+    _abi_to_path,
     _get_contracts_data,
     _locate_error_lines_with_abis,
 )
@@ -32,10 +31,11 @@ def tmp_working_dir(monkeypatch, tmp_path):
     return tmp_path
 
 
-def test__abi_to_build_path():
+def test__abi_to_path():
     Path(BUILD_DIRECTORY).mkdir()
-    filename = "contract"
-    assert f"{BUILD_DIRECTORY}/{filename}" == _abi_to_build_path(filename)
+    open(f"{BUILD_DIRECTORY}/contract.json", "w")
+
+    assert f"{BUILD_DIRECTORY}/contract.json" == _abi_to_path("contract.json")
 
 
 @pytest.mark.parametrize(
@@ -45,7 +45,7 @@ def test__abi_to_build_path():
         ([f"{DEBUG_ADDRESS}:{ABI_PATH}:{ALIAS}"], [int(DEBUG_ADDRESS, 16)]),
     ],
 )
-@patch("nile.utils.debug._abi_to_build_path", return_value=ABI_PATH)
+@patch("nile.utils.debug._abi_to_path", return_value=ABI_PATH)
 def test__locate_error_lines_with_abis_with_and_without_alias(
     mock_path, file, address_set
 ):
@@ -59,7 +59,7 @@ def test__locate_error_lines_with_abis_with_and_without_alias(
         assert return_array == [f"{DEBUG_ADDRESS}:{ABI_PATH}"]
 
 
-@patch("nile.utils.debug._abi_to_build_path", return_value=ABI_PATH)
+@patch("nile.utils.debug._abi_to_path", return_value=ABI_PATH)
 def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     logging.getLogger().setLevel(logging.INFO)
 
@@ -96,16 +96,20 @@ async def test_status_feedback_with_message(mock_output, output, expected, caplo
 
 
 @pytest.mark.parametrize(
-    "use_nile_artifacts, expected",
+    "contracts_file, expected",
     [
-        (False, _abi_to_build_path),
-        (True, _abi_to_nile_artifacts_path),
+        (None, _abi_to_path),
+        ("contracts_file.json", "contracts_file.json"),
     ],
 )
 @patch("nile.utils.debug._locate_error_lines_with_abis")
-def test__get_contracts_data(mock_locate, use_nile_artifacts, expected):
-    _get_contracts_data(None, NETWORK, ADDRESSES, use_nile_artifacts)
+def test__get_contracts_data(mock_locate, contracts_file, expected):
+    _get_contracts_data(contracts_file, NETWORK, ADDRESSES)
 
-    mock_locate.assert_called_with(
-        f"{NETWORK}.{DEPLOYMENTS_FILENAME}", ADDRESSES, expected
-    )
+    if not contracts_file:
+        mock_locate.assert_called_once_with(
+            f"{NETWORK}.{DEPLOYMENTS_FILENAME}", ADDRESSES, expected
+        )
+    else:
+        _contracts_file = mock_locate.call_args[0][0]
+        assert _contracts_file == expected
