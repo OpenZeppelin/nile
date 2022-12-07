@@ -13,6 +13,8 @@ async def run(nre):
     print("First Account:", accounts[0])
 ----
 +
+TIP: Check xref:api.adoc#get_accounts[get_accounts] from the API Reference.
++
 . Run a devnet node with `nile node`
 +
 [,sh]
@@ -27,6 +29,9 @@ async def run(nre):
 (env): nile run scripts/test_script.py
 ----
 
-TIP: Change the script's target network with the `--network` option.
+[NOTE]
+====
+You can change the script's target network with the `--network` option.
 
-NOTE: For a full reference of NRE exposed members check the xref:api.adoc[API Reference] section.
+For a full reference of NRE exposed members check the xref:api.adoc[API Reference] section.
+====
