@@ -1,10 +1,4 @@
 * xref:index.adoc[Overview]
-* xref:quickstart.adoc[Quick Start]
-
-* Guides
-** xref:testing.adoc[Testing with Nile]
-** xref:strings.adoc[Short string literals]
-
 * xref:commands.adoc[CLI Reference]
 
 * xref:nre.adoc[NRE and Scripting]
@@ -15,6 +9,6 @@
 ** xref:create_plugin.adoc[Extending Nile]
 ** xref:plugins.adoc[Useful Plugins]
 
-
-
-
+* Guides
+** xref:testing.adoc[Testing with Nile]
+** xref:strings.adoc[Short string literals]
