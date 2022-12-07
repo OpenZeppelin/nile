@@ -9,38 +9,49 @@
 
 Nile is a CLI tool to develop or interact with StarkNet projects written in Cairo. It consists of different components for developing, compiling, testing, and deploying your smart contracts and dApps, providing a CLI for executing tasks, and a Runtime Environment (NRE) for scripting. The package is designed to be extensible and very customizable by using plugins.
 
+## Documentation
+
+On our [Official Docsite](https://docs.openzeppelin.com/nile) you can find:
+
+- [A Quickstart walkthrough with commands examples]()
+- [Guides on how to master development with Nile]()
+- [Useful script examples]()
+- [Plugins list]()
+
+And more.
+
 ## Installation
 
-> Current supported Python versions are >=3.8 and <3.10.
+Current supported Python versions are >=3.8 and <3.10.
 
 1. Install `gmp` on your machine (Cairo requirement).
 
-```
-sudo apt install -y libgmp3-dev # linux
-brew install gmp # mac
-```
+    ```
+    sudo apt install -y libgmp3-dev # linux
+    brew install gmp # mac
+    ```
 
-If you have any trouble installing it on your Apple M1 computer, [here’s a list of potential solutions.](https://github.com/OpenZeppelin/nile/issues/22)
+    If you have any trouble installing it on your Apple M1 computer, [here’s a list of potential solutions.](https://github.com/OpenZeppelin/nile/issues/22)
 
 
 2. Create a folder for your project and cd into it:
 
-```
-mkdir myproject && cd myproject
-```
+    ```
+    mkdir myproject && cd myproject
+    ```
 
 3. Create a virtualenv and activate it:
 
-```
-python3 -m venv env
-source env/bin/activate
-```
+    ```
+    python3 -m venv env
+    source env/bin/activate
+    ```
 
 4. Install Nile:
 
-```
-(env): pip install cairo-nile
-```
+    ```
+    (env): pip install cairo-nile
+    ```
 
 ## Quick usage
 
@@ -53,18 +64,6 @@ Use `nile init` to quickly set up your development environment:
 
 nile compile
 ```
-
-## Documentation
-
-On our official docsite you can find:
-
-- A Quickstart walkthrough with commands examples
-- Guides on how to master development with Nile
-- Useful script examples
-- Plugins list
-
-Check our [documentation site](https://docs.openzeppelin.com/nile) for recipes, CLI/API references, and more.
-
 
 ## Contribute
 
