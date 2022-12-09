@@ -26,7 +26,7 @@ nile deploy MyToken 0x4d79546f6b656e206e616d65 0x4d79546f6b656e2073796d626f6c ..
 
 [NOTE]
 ====
-If you want to pass the token name as a hex or an int, you need to provide the felt representation directly because these values are not interpreted as short strings. You can open a python terminal, import and use the `str_to_felt` util.
+If you want to pass the token name as a hex or an int, you need to provide the felt representation directly because these values are not interpreted as short strings. You can open a python terminal, import, and use the `str_to_felt` util.
 
 [,sh]
 ----

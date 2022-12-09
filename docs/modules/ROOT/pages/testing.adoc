@@ -56,7 +56,7 @@ TIP: For a reference on how to test complex projects, you can check the link:htt
 
 == Handling slow tests
 
-An issue we are very aware of, is how slow running tests can become when you have a considerable ammount of them. We strongly recommed using link:https://pytest-xdist.readthedocs.io/en/latest/[pytest-xdist] to speed up the process.
+An issue we are very aware of, is how slow running tests can become when you have a considerable amount of them. We strongly recommend using link:https://pytest-xdist.readthedocs.io/en/latest/[pytest-xdist] to speed up the process.
 
 === Parallelism with xdist
 
@@ -79,7 +79,7 @@ addopts = -n auto
 
 == Coverage Reports
 
-By default, Nile doesn't support coverage reports, but you can use link:https://github.com/ericnordelo/nile-coverage[nile-coverage] plugin to easily integrate this feature.
+By default, Nile doesn't support coverage reports, but you can use link:https://github.com/ericnordelo/nile-coverage[nile-coverage] plugin to integrate this feature easily.
 
 . Install nile-coverage in your project.
 +

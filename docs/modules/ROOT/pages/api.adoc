@@ -1,6 +1,6 @@
 == API Reference
 
-Here you can find a full reference of the functions provided by the NileRuntimeEnvironment.
+Here you can find a complete reference of the functions provided by the NileRuntimeEnvironment.
 
 [.contract-index]
 .Functions
@@ -30,7 +30,7 @@ Compile a list of contracts.
 List of contracts to compile.
 - _cairo_path_
 +
-Specify a set of directory for the cairo compiler to resolve imports.
+Specify a set of directories for the Cairo compiler to resolve imports.
 
 [.contract-item]
 [[deploy]]
@@ -45,7 +45,7 @@ Deploy a smart contract (Deprecated in favor of deployments through accounts).
 Contract to deploy.
 - _arguments_
 +
-List of argument for the constructor (calldata).
+List of arguments for the constructor (calldata).
 - _alias_
 +
 Alias for deployment registration.
@@ -57,7 +57,7 @@ Override for the path to artifacts and abis.
 Use a different abi for registration (useful for proxies).
 - _mainnet_token_
 +
-Token for mainnets deployments.
+Token for mainnet deployments.
 - _watch_mode_
 +
 Either `track` or `debug` (check `status` command).
@@ -66,10 +66,10 @@ Either `track` or `debug` (check `status` command).
 
 - _address_
 +
-The address of the new contract.
+Address of the new contract.
 - _abi_
 +
-The abi registered in deployments.
+Abi registered in deployments.
 
 [.contract-item]
 [[call]]
@@ -96,7 +96,7 @@ Override for the abi if necessary.
 
 - _output_
 +
-The output from the underlaying starknet cli call.
+Output from the underlaying starknet cli call.
 
 [.contract-item]
 [[get_deployment]]
@@ -108,17 +108,17 @@ Get a deployment by its identifier.
 
 - _address_or_alias_
 +
-The contract identifier.
+Contract identifier.
 
 ===== Return values
 
 - _address_
 +
-The registered contract address.
+Registered contract address.
 
 - _abi_
 +
-The registered contract abi.
+Registered contract abi.
 
 [.contract-item]
 [[get_declaration]]
@@ -132,13 +132,13 @@ WARNING: DEPRECATED. Will be replaced soon.
 
 - _address_or_alias_
 +
-The contract identifier.
+Contract identifier.
 
 ===== Return values
 
 - _class_hash_
 +
-The declared contract class hash.
+Declared contract class hash.
 
 [.contract-item]
 [[get_or_deploy_account]]
@@ -150,7 +150,7 @@ Get or deploy an Account contract.
 
 - _signer_
 +
-The alias representing the private key associated.
+Alias representing the private key associated.
 - _watch_mode_
 +
 Either None, track or debug. Block the execution to query the status of the deployment transaction if needed.
@@ -159,7 +159,7 @@ Either None, track or debug. Block the execution to query the status of the depl
 
 - _account_
 +
-The account matching the signer.
+Account matching the signer.
 
 [.contract-item]
 [[get_accounts]]
@@ -177,7 +177,7 @@ Get predeployed accounts from a starknet-devnet node.
 
 - _accounts_
 +
-The registered accounts.
+Registered accounts.
 
 [.contract-item]
 [[get_nonce]]
@@ -189,13 +189,13 @@ Retrieve the nonce for a contract.
 
 - _contract_address_
 +
-The address of the contract to query.
+Address of the contract to query.
 
 ===== Return values
 
 - _current_nonce_
 +
-The nonce of the contract.
+Nonce of the contract.
 
 [.contract-item]
 [[get_balance]]
@@ -207,10 +207,10 @@ Get the Ether balance of an address.
 
 - _contract_address_
 +
-The address of the contract to query.
+Address of the contract to query.
 
 ===== Return values
 
 - _balance_
 +
-The balance of the contract.
+Balance of the contract.

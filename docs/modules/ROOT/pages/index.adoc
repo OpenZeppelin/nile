@@ -12,7 +12,7 @@ TIP: You can get a list of plugins extending Nile functionality from the xref:pl
 
 == Quickstart
 
-We will explore the basics of creating a Nile project by using a sample contract. We will test it locally, deploy an account and the contract to a devnet node, and send transactions through the account to the contract.
+Using a sample contract, we will explore the basics of creating a Nile project. We will test it locally, deploy an account and the contract to a devnet node, and send transactions through the account to the contract.
 
 === Requirements
 
@@ -30,9 +30,9 @@ TIP: If you have any trouble installing gmp on your Apple M1 computer, https://g
 
 ==== Supported Python versions
 
-Some Nile dependencies have specific python version requirements, therefore we recommend using a python version manager like {pyenv}, and virtual environments to avoid conflicts.
+Some Nile dependencies have specific python version requirements. Therefore we recommend using a python version manager like {pyenv}, and virtual environments to avoid conflicts.
 
-IMPORTANT: Current supported Python versions are >=3.8 and <3.10.
+IMPORTANT: Currently supported Python versions are >=3.8 and <3.10.
 
 === Installation
 
@@ -82,7 +82,7 @@ Run `pytest` to run the test suite against the Smart Contracts:
 (env): pytest tests/
 ----
 
-TIP: For a more in deep guide on testing with parallelism and coverage, check our xref:testing.adoc[Testing] guide.
+TIP: For a more in-deep guide on testing with parallelism and coverage, check our xref:testing.adoc[Testing] guide.
 
 === Compiling
 
@@ -96,7 +96,7 @@ Use `nile compile` to compile contracts under the *contracts/* folder by default
 ✅ Done
 ----
 
-TIP: For a full reference of nile command options, check the xref:commands.adoc[CLI Reference] section.
+TIP: For a full reference of Nile command options, check the xref:commands.adoc[CLI Reference] section.
 
 === Deploying an account
 
@@ -118,9 +118,9 @@ CAUTION: Don't use this Private Key in production environments!
 0x057792c44b1e9e349ee549ed018f7225f927bd2b01b6277a1cb94da5fb9421ed
 ----
 +
-NOTE: Keep in mind that different salts compute to different addresses, even with the same Private Key.
+NOTE: Different salts compute to different addresses, even with the same Private Key.
 +
-. In production, you will need to fund this address with Ether to pay for the deployment fees. This will be mandatory in testnets soon. There are multiple bridges and faucets like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
+. In production, you will need to fund this address with Ether to pay for the deployment fees, which will be mandatory in testnets soon. There are multiple bridges and faucets, like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
 +
 . After funding the precomputed address, deploy the account using `nile setup`.
 +
@@ -131,7 +131,7 @@ NOTE: Keep in mind that different salts compute to different addresses, even wit
 +
 [IMPORTANT]
 ====
-In StarkNet, only previously declared contracts can be deployed. {oz-account} is declared soon after every release in testnets and mainnet, but the local devnet needs a declaration for every instance. This is because the contract is not declared by default; however, you need an account in order to execute a declare transaction. To solve this egg-chicken problem, you need to declare the OZ Account in devnet using predeployed accounts through scripts.
+In StarkNet, users can deploy only previously declared contracts. {oz-account} is declared soon after every release in testnets and mainnet, but the local devnet needs a declaration for every instance, because the contract is not declared by default; however, you need an account to execute a declare transaction. To solve this egg-chicken problem, you can declare the OZ Account in devnet using predeployed accounts through scripts.
 
 Check xref:scripts.adoc#declare_account[Declare Account] guide.
 ====

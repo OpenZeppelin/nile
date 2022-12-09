@@ -1,6 +1,6 @@
 = Useful Script Examples
 :sectnums:
-Here you can find some potentially useful script examples.
+Here you can find some potentially helpful script examples.
 
 [#declare_account]
 == Declare Account
