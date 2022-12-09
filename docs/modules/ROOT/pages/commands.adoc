@@ -156,7 +156,7 @@ Watch the status of the account deployment transaction. See the {status} command
 
 [.contract-item]
 [[deploy]]
-==== `[.contract-item-name]#++nile deploy <PRIVATE_KEY_ALIAS> <CONTRACT>++#`
+==== `[.contract-item-name]#++nile deploy <PRIVATE_KEY_ALIAS> <CONTRACT> [arg1, arg2...]++#`
 
 Deploy a contract through an Account.
 
@@ -173,6 +173,9 @@ Specify the alias representing the account to be used.
 - _CONTRACT_
 +
 Specify the name of the contract artifact to be deployed.
+- _ARGS_
++
+Optional calldata arguments for the constructor.
 
 ===== Options
 
@@ -209,7 +212,7 @@ Watch the status of the account deployment transaction. See the {status} command
 
 [.contract-item]
 [[call]]
-==== `[.contract-item-name]#++nile call <CONTRACT_ID> <METHOD>++#`
+==== `[.contract-item-name]#++nile call <CONTRACT_ID> <METHOD> [arg1, arg2...]++#`
 
 Perform reading operations against a network.
 
@@ -221,6 +224,9 @@ Specify the contract to call (either alias or address).
 - _METHOD_
 +
 Specify the method to call.
+- _ARGS_
++
+Optional calldata arguments for the method to query.
 
 ===== Options
 
@@ -232,7 +238,7 @@ Default to localhost.
 
 [.contract-item]
 [[send]]
-==== `[.contract-item-name]#++nile send <PRIVATE_KEY_ALIAS> <CONTRACT_ID> <METHOD>++#`
+==== `[.contract-item-name]#++nile send <PRIVATE_KEY_ALIAS> <CONTRACT_ID> <METHOD> [arg1, arg2...]++#`
 
 Execute a transaction through an Account.
 
@@ -247,6 +253,9 @@ Specify the contract to call (either alias or address).
 - _METHOD_
 +
 Specify the method to execute.
+- _ARGS_
++
+Optional calldata arguments for the method to execute.
 
 ===== Options
 
