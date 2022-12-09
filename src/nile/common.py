@@ -9,11 +9,13 @@ from starkware.starknet.services.api.contract_class import ContractClass
 
 from nile.utils import normalize_number, str_to_felt
 
-pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
 CONTRACTS_DIRECTORY = "contracts"
 BUILD_DIRECTORY = "artifacts"
 TEMP_DIRECTORY = ".temp"
 ABIS_DIRECTORY = f"{BUILD_DIRECTORY}/abis"
+NILE_ROOT_PATH = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
+NILE_BUILD_DIR = f"{NILE_ROOT_PATH}/{BUILD_DIRECTORY}"
+NILE_ABIS_DIR = f"{NILE_ROOT_PATH}/{ABIS_DIRECTORY}"
 DEPLOYMENTS_FILENAME = "deployments.txt"
 DECLARATIONS_FILENAME = "declarations.txt"
 ACCOUNTS_FILENAME = "accounts.json"
@@ -22,7 +24,7 @@ RETRY_AFTER_SECONDS = 30
 TRANSACTION_VERSION = 1
 QUERY_VERSION_BASE = 2**128
 QUERY_VERSION = QUERY_VERSION_BASE + TRANSACTION_VERSION
-ETH_TOKEN_ABI = f"{pt}/artifacts/abis/ERC20.json"
+ETH_TOKEN_ABI = f"{NILE_ABIS_DIR}/ERC20.json"
 ETH_TOKEN_ADDRESS = "0x49D36570D4E46F48E99674BD3FCC84644DDD6B96F7C741B1562B82F9E004DC7"
 UNIVERSAL_DEPLOYER_ADDRESS = (
     # subject to change
@@ -137,8 +139,7 @@ def get_class_hash(contract_name, overriding_path=None):
 
 def get_account_class_hash(contract="Account"):
     """Return the class_hash of an Account contract."""
-    pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
-    overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
+    overriding_path = (NILE_BUILD_DIR, NILE_ABIS_DIR)
     return get_class_hash(contract, overriding_path=overriding_path)
 
 

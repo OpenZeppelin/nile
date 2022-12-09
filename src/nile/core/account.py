@@ -9,6 +9,8 @@ from starkware.starknet.core.os.contract_address.contract_address import (
 
 from nile import accounts, deployments
 from nile.common import (
+    NILE_BUILD_DIR,
+    NILE_ABIS_DIR,
     QUERY_VERSION,
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
@@ -106,7 +108,7 @@ class Account(AsyncObject):
     async def deploy(self, salt=None, max_fee=None, query_type=None, watch_mode=None):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
-        overriding_path = set_nile_artifacts_path()
+        overriding_path = get_nile_artifacts_path()
 
         class_hash = get_account_class_hash("Account")
         salt = 0 if salt is None else normalize_number(salt)
@@ -158,7 +160,7 @@ class Account(AsyncObject):
 
         if nile_account:
             assert overriding_path is None, "Cannot override path to Nile account."
-            overriding_path = set_nile_artifacts_path()
+            overriding_path = get_nile_artifacts_path()
 
         contract_class = get_contract_class(
             contract_name=contract_name, overriding_path=overriding_path
@@ -305,6 +307,4 @@ def get_counterfactual_address(salt=None, calldata=None, contract="Account"):
 
 def get_nile_artifacts_path():
     """Set path to find Nile's precompiled artifacts."""
-    pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
-    overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
-    return overriding_path
+    return NILE_BUILD_DIR, NILE_ABIS_DIR
