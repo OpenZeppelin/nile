@@ -9,8 +9,8 @@ from starkware.starknet.core.os.contract_address.contract_address import (
 
 from nile import accounts, deployments
 from nile.common import (
-    NILE_BUILD_DIR,
     NILE_ABIS_DIR,
+    NILE_BUILD_DIR,
     QUERY_VERSION,
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,

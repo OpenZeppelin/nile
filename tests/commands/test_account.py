@@ -5,10 +5,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from nile.common import (
-    NILE_ABIS_DIR,
-    NILE_BUILD_DIR,
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
+    NILE_ABIS_DIR,
+    NILE_BUILD_DIR,
     QUERY_VERSION,
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
