@@ -5,7 +5,7 @@ Here you can find some potentially useful script examples.
 [#declare_account]
 == Declare Account
 
-Useful if you need to deploy an account in devnet, for previous declariation:
+Useful if you need to deploy an account in devnet, for previous declaration:
 
 [,python]
 ----
