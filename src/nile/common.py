@@ -39,8 +39,8 @@ def get_gateways():
     """Get the StarkNet node details."""
     if os.path.exists(NODE_FILENAME):
         with open(NODE_FILENAME, "r") as f:
-            gateway = json.load(f)
-            gateways = {**DEFAULT_GATEWAYS, **gateway}
+            custom_gateways = json.load(f)
+            gateways = {**DEFAULT_GATEWAYS, **custom_gateways}
             return gateways
     else:
         return DEFAULT_GATEWAYS
