@@ -16,6 +16,7 @@ ABIS_DIRECTORY = f"{BUILD_DIRECTORY}/abis"
 NILE_ROOT_PATH = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
 NILE_BUILD_DIR = f"{NILE_ROOT_PATH}/{BUILD_DIRECTORY}"
 NILE_ABIS_DIR = f"{NILE_ROOT_PATH}/{ABIS_DIRECTORY}"
+NILE_ARTIFACTS_PATH = (NILE_BUILD_DIR, NILE_ABIS_DIR)
 DEPLOYMENTS_FILENAME = "deployments.txt"
 DECLARATIONS_FILENAME = "declarations.txt"
 ACCOUNTS_FILENAME = "accounts.json"

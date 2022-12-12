@@ -9,8 +9,7 @@ from starkware.starknet.core.os.contract_address.contract_address import (
 
 from nile import accounts, deployments
 from nile.common import (
-    NILE_ABIS_DIR,
-    NILE_BUILD_DIR,
+    NILE_ARTIFACTS_PATH,
     QUERY_VERSION,
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
@@ -108,7 +107,7 @@ class Account(AsyncObject):
     async def deploy(self, salt=None, max_fee=None, query_type=None, watch_mode=None):
         """Deploy an Account contract for the given private key."""
         index = accounts.current_index(self.network)
-        overriding_path = get_nile_artifacts_path()
+        overriding_path = NILE_ARTIFACTS_PATH
 
         class_hash = get_account_class_hash("Account")
         salt = 0 if salt is None else normalize_number(salt)
@@ -160,7 +159,7 @@ class Account(AsyncObject):
 
         if nile_account:
             assert overriding_path is None, "Cannot override path to Nile account."
-            overriding_path = get_nile_artifacts_path()
+            overriding_path = NILE_ARTIFACTS_PATH
 
         contract_class = get_contract_class(
             contract_name=contract_name, overriding_path=overriding_path
@@ -303,8 +302,3 @@ def get_counterfactual_address(salt=None, calldata=None, contract="Account"):
         constructor_calldata=calldata,
         deployer_address=0,
     )
-
-
-def get_nile_artifacts_path():
-    """Set path to find Nile's precompiled artifacts."""
-    return NILE_BUILD_DIR, NILE_ABIS_DIR

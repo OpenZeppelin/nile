@@ -8,12 +8,13 @@ from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
     NILE_ABIS_DIR,
+    NILE_ARTIFACTS_PATH,
     NILE_BUILD_DIR,
     QUERY_VERSION,
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
 )
-from nile.core.account import Account, get_nile_artifacts_path
+from nile.core.account import Account
 from nile.utils import normalize_number
 
 KEY = "TEST_KEY"
@@ -146,7 +147,7 @@ async def test_declare(mock_declare, mock_get_class, mock_hash, mock_deploy):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "nile_account, overriding_path", [(False, None), (True, get_nile_artifacts_path())]
+    "nile_account, overriding_path", [(False, None), (True, NILE_ARTIFACTS_PATH)]
 )
 @patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
 @patch("nile.core.account.get_account_class_hash", return_value=CLASS_HASH)
