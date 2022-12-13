@@ -124,7 +124,7 @@ async def test_chain_id(network):
 
 
 @pytest.mark.asyncio
-async def test_chain_id_no_network(network):
+async def test_chain_id_no_network():
     no_network = Signer(PRIVATE_KEY)
     assert no_network.chain_id == StarknetChainId.TESTNET.value
 
