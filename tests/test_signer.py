@@ -119,11 +119,12 @@ async def test_execute():
 @pytest.mark.parametrize("network", NETWORKS)
 @pytest.mark.asyncio
 async def test_chain_id(network):
-    # check all networks
     signer = Signer(PRIVATE_KEY, network)
     assert signer.chain_id == NETWORK_CHAIN_ID[network]
 
-    # check with no network
+
+@pytest.mark.asyncio
+async def test_chain_id_no_network(network):
     no_network = Signer(PRIVATE_KEY)
     assert no_network.chain_id == StarknetChainId.TESTNET.value
 
