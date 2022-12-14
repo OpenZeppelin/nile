@@ -148,7 +148,6 @@ async def deploy(
             deployer_address=deployer_address,
             max_fee=max_fee,
             abi=abi,
-            watch_mode=watch_mode,
         )
 
         if query == "estimate_fee":
@@ -156,7 +155,7 @@ async def deploy(
         elif query == "simulate":
             await transaction.simulate()
         else:
-            await transaction.execute()
+            await transaction.execute(watch_mode=watch_mode)
     else:
         await deploy_command(
             contract_name,
@@ -199,7 +198,6 @@ async def declare(
         max_fee=max_fee,
         overriding_path=overriding_path,
         mainnet_token=token,
-        watch_mode=watch_mode,
     )
 
     if query == "estimate_fee":
@@ -207,7 +205,7 @@ async def declare(
     elif query == "simulate":
         await transaction.simulate()
     else:
-        await transaction.execute()
+        await transaction.execute(watch_mode=watch_mode)
 
 
 @cli.command()
@@ -265,7 +263,6 @@ async def send(
         method,
         params,
         max_fee=max_fee,
-        watch_mode=watch_mode,
     )
 
     if query == "estimate_fee":
@@ -273,7 +270,7 @@ async def send(
     elif query == "simulate":
         await transaction.simulate()
     else:
-        await transaction.execute()
+        await transaction.execute(watch_mode=watch_mode)
 
 
 @cli.command()

@@ -5,6 +5,7 @@ import re
 
 from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
 from starkware.starknet.core.os.class_hash import compute_class_hash
+from starkware.starknet.definitions.general_config import StarknetChainId
 from starkware.starknet.services.api.contract_class import ContractClass
 
 from nile.utils import normalize_number, str_to_felt
@@ -28,6 +29,13 @@ UNIVERSAL_DEPLOYER_ADDRESS = (
     # subject to change
     "0x041a78e741e5af2fec34b695679bc6891742439f7afb8484ecd7766661ad02bf"
 )
+NETWORKS_CHAIN_ID = {
+    "localhost": StarknetChainId.TESTNET.value,
+    "mainnet": StarknetChainId.MAINNET.value,
+    "goerli": StarknetChainId.TESTNET.value,
+    "goerli2": StarknetChainId.TESTNET2.value,
+    "integration": StarknetChainId.TESTNET.value,
+}
 
 
 def get_gateways():
@@ -140,6 +148,14 @@ def get_account_class_hash(contract="Account"):
     pt = os.path.dirname(os.path.realpath(__file__)).replace("/core", "")
     overriding_path = (f"{pt}/artifacts", f"{pt}/artifacts/abis")
     return get_class_hash(contract, overriding_path=overriding_path)
+
+
+def get_chain_id(network):
+    """Return the chain id given a network name."""
+    if network in NETWORKS_CHAIN_ID:
+        return NETWORKS_CHAIN_ID[network]
+    else:
+        return StarknetChainId.TESTNET.value
 
 
 def get_addresses_from_string(string):

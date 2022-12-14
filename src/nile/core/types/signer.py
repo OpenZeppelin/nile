@@ -1,14 +1,7 @@
 """Utility for signing transactions for an Account on Starknet."""
 
 from starkware.crypto.signature.signature import private_to_stark_key, sign
-from starkware.starknet.core.os.transaction_hash.transaction_hash import (
-    TransactionHashPrefix,
-    calculate_declare_transaction_hash,
-    calculate_deploy_account_transaction_hash,
-    calculate_transaction_hash_common,
-)
 from starkware.starknet.definitions.general_config import StarknetChainId
-from starkware.starknet.public.abi import get_selector_from_name
 
 from nile.common import TRANSACTION_VERSION
 from nile.core.types.utils import (

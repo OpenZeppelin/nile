@@ -19,7 +19,8 @@ from nile.core.types.account_tx_wrappers import (
     DeployContractTxWrapper,
     InvokeTxWrapper,
 )
-from nile.core.types.transaction import Transaction
+from nile.core.types.transactions import DeclareTransaction, InvokeTransaction
+from nile.core.types.udc_helpers import create_udc_deploy_transaction
 from nile.core.types.utils import (
     get_counterfactual_address,
     get_deploy_account_hash,
@@ -164,7 +165,6 @@ class Account(AsyncObject):
         calldata,
         nonce=None,
         max_fee=None,
-        watch_mode=None,
     ):
         """Return an InvokeTxWrapper object."""
         target_address = self._get_target_address(address_or_alias)
@@ -176,7 +176,7 @@ class Account(AsyncObject):
         )
 
         # Create the transaction
-        transaction = Transaction.create_invoke(
+        transaction = InvokeTransaction(
             account_address=self.address,
             calldata=execute_calldata,
             max_fee=max_fee,
@@ -187,7 +187,6 @@ class Account(AsyncObject):
         return InvokeTxWrapper(
             tx=transaction,
             account=self,
-            watch_mode=watch_mode,
         )
 
     async def declare(
@@ -198,13 +197,12 @@ class Account(AsyncObject):
         alias=None,
         overriding_path=None,
         mainnet_token=None,
-        watch_mode=None,
     ):
         """Return a DeclareTxWrapper for declaring a contract through an Account."""
         max_fee, nonce, _ = await self._process_arguments(max_fee, nonce)
 
         # Create the transaction
-        transaction = Transaction.create_declare(
+        transaction = DeclareTransaction(
             account_address=self.address,
             contract_to_submit=contract_name,
             max_fee=max_fee,
@@ -218,7 +216,6 @@ class Account(AsyncObject):
             alias=alias,
             overriding_path=overriding_path,
             mainnet_token=mainnet_token,
-            watch_mode=watch_mode,
         )
 
     async def deploy_contract(
@@ -232,7 +229,6 @@ class Account(AsyncObject):
         deployer_address=None,
         overriding_path=None,
         abi=None,
-        watch_mode=None,
     ):
         """Deploy a contract through an Account."""
         deployer_address = normalize_number(
@@ -240,7 +236,7 @@ class Account(AsyncObject):
         )
 
         # Create the transaction
-        transaction = await Transaction.create_udc_deploy(
+        transaction = await create_udc_deploy_transaction(
             account=self,
             contract_name=contract_name,
             salt=salt,
@@ -256,7 +252,6 @@ class Account(AsyncObject):
             account=self,
             alias=alias,
             overriding_path=overriding_path,
-            watch_mode=watch_mode,
         )
 
     def _get_target_address(self, address_or_alias):
