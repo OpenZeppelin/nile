@@ -1,12 +1,9 @@
-import asyncio
+"""Test udc_helpers file."""
+
 import logging
 from unittest.mock import patch
 
 import pytest
-from starkware.cairo.common.hash_chain import compute_hash_chain
-from starkware.starknet.core.os.contract_address.contract_address import (
-    calculate_contract_address_from_hash,
-)
 
 from nile.common import TRANSACTION_VERSION
 from nile.core.types.udc_helpers import create_udc_deploy_transaction
@@ -43,17 +40,6 @@ async def test_create_uc_deploy_transaction(
     with patch("nile.core.types.udc_helpers.get_class_hash") as mock_get_class_hash:
         mock_get_class_hash.return_value = exp_class_hash
 
-        _salt = salt
-        deployer_for_address_generation = 0
-
-        if unique:
-            _salt = compute_hash_chain(data=[account.address, salt])
-            deployer_for_address_generation = deployer_address
-
-        exp_address = calculate_contract_address_from_hash(
-            _salt, exp_class_hash, calldata, deployer_for_address_generation
-        )
-
         exp_execute_calldata = get_execute_calldata(
             calls=[
                 [
@@ -82,7 +68,7 @@ async def test_create_uc_deploy_transaction(
             nonce=nonce,
         )
 
-        assert tx.tx_type == 'invoke'
+        assert tx.tx_type == "invoke"
         assert tx.account_address == account.address
         assert tx.calldata == exp_execute_calldata
         assert tx.max_fee == (max_fee or 0)

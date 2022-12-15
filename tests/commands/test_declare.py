@@ -1,14 +1,13 @@
 """Tests for declare command."""
 import logging
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, DECLARATIONS_FILENAME
 from nile.core.declare import alias_exists, declare
-from nile.core.types.account import Account
 from nile.core.types.transactions import DeclareTransaction
-from nile.utils import hex_address, hex_class_hash
+from nile.utils import hex_class_hash
 from nile.utils.status import TransactionStatus, TxStatus
 from tests.mocks.mock_account import MockAccount
 

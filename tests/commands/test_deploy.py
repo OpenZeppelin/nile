@@ -3,13 +3,9 @@ import logging
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from starkware.starknet.core.os.contract_address.contract_address import (
-    calculate_contract_address_from_hash,
-)
 
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
 from nile.core.deploy import deploy, deploy_account, deploy_contract
-from nile.core.types.account import Account
 from nile.core.types.udc_helpers import create_udc_deploy_transaction
 from nile.utils import hex_address
 from nile.utils.status import TransactionStatus, TxStatus

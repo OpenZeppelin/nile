@@ -1,13 +1,12 @@
 """Tests for account commands."""
 import logging
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
-    QUERY_VERSION,
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
 )
@@ -116,7 +115,13 @@ async def test_deploy_accounts_register(mock_register, mock_hash, mock_deploy):
 @patch("nile.core.types.transactions.get_contract_class", return_value="ContractClass")
 @patch("nile.core.types.account.Account._process_arguments")
 async def test_declare(
-    mock_process_arguments, mock_get_class, contract_name, max_fee, nonce, alias, overriding_path
+    mock_process_arguments,
+    mock_get_class,
+    contract_name,
+    max_fee,
+    nonce,
+    alias,
+    overriding_path,
 ):
     account = await MockAccount(KEY, NETWORK)
     mock_process_arguments.return_value = ((max_fee or 0), nonce, None)
@@ -141,7 +146,7 @@ async def test_declare(
 
         # Check transaction
         tx = tx_wrapper.tx
-        assert tx.tx_type == 'declare'
+        assert tx.tx_type == "declare"
         assert tx.account_address == account.address
         assert tx.contract_to_submit == contract_name
         assert tx.contract_class == "ContractClass"
@@ -237,7 +242,7 @@ async def test_deploy_contract(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("address_or_alias", ["my_contract", 0x123, "0x123"])
 @pytest.mark.parametrize("method", ["method"])
-@pytest.mark.parametrize("calldata", [[1,2,3]])
+@pytest.mark.parametrize("calldata", [[1, 2, 3]])
 @pytest.mark.parametrize("max_fee", [0, None])
 @pytest.mark.parametrize("nonce", [0])
 @patch("nile.core.types.account.Account._process_arguments")
@@ -270,8 +275,8 @@ async def test_send(
 
         # Check transaction
         tx = tx_wrapper.tx
-        assert tx.tx_type == 'invoke'
-        assert tx.entry_point == '__execute__'
+        assert tx.tx_type == "invoke"
+        assert tx.entry_point == "__execute__"
         assert tx.account_address == account.address
         assert tx.max_fee == (max_fee or 0)
         assert tx.nonce == nonce
