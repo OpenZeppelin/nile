@@ -67,14 +67,15 @@ async def deploy(
 async def deploy_contract(
     transaction,
     signer,
+    contract_name,
     alias,
+    predicted_address,
     overriding_path=None,
     abi=None,
     watch_mode=None,
 ):
     """Deploy StarkNet smart contracts."""
     network = transaction.network
-    contract_name = transaction.contract_to_submit
 
     logging.info(f"🚀 Deploying {contract_name}")
 
@@ -86,17 +87,15 @@ async def deploy_contract(
     # Execute the transaction
     tx_status, output = await transaction.execute(signer=signer, watch_mode=watch_mode)
 
-    address = transaction.udc_deployment_address()
-
     if not tx_status.status.is_rejected:
-        deployments.register(address, register_abi, network, alias)
+        deployments.register(predicted_address, register_abi, network, alias)
         logging.info(
             f"⏳ ️Deployment of {contract_name} "
-            + f"successfully sent at {hex_address(address)}"
+            + f"successfully sent at {hex_address(predicted_address)}"
         )
         logging.info(f"🧾 Transaction hash: {hex(tx_status.tx_hash)}")
 
-    return tx_status, address, register_abi
+    return tx_status, predicted_address, register_abi
 
 
 async def deploy_account(

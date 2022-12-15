@@ -44,7 +44,6 @@ class DeclareTxWrapper(BaseTxWrapper):
 
     alias: str = None
     overriding_path: List[str] = None
-    mainnet_token: str = None
 
     async def execute(self, watch_mode=None):
         """Execute the wrapped transaction."""
@@ -53,7 +52,6 @@ class DeclareTxWrapper(BaseTxWrapper):
             signer=self.account.signer,
             alias=self.alias,
             overriding_path=self.overriding_path,
-            mainnet_token=self.mainnet_token,
             watch_mode=watch_mode,
         )
 
@@ -67,14 +65,18 @@ class DeployContractTxWrapper(BaseTxWrapper):
     """
 
     alias: str = None
+    contract_name: str = None
     overriding_path: List[str] = None
+    predicted_address: int = 0
 
     async def execute(self, watch_mode=None):
         """Execute the wrapped transaction."""
         return await deploy_contract(
             transaction=self.tx,
             signer=self.account.signer,
+            contract_name=self.contract_name,
             alias=self.alias,
+            predicted_address=self.predicted_address,
             overriding_path=self.overriding_path,
             watch_mode=watch_mode,
         )

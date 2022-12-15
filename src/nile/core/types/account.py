@@ -14,12 +14,12 @@ from nile.common import (
     normalize_number,
 )
 from nile.core.deploy import deploy_account
-from nile.core.types.account_tx_wrappers import (
+from nile.core.types.transactions import DeclareTransaction, InvokeTransaction
+from nile.core.types.tx_wrappers import (
     DeclareTxWrapper,
     DeployContractTxWrapper,
     InvokeTxWrapper,
 )
-from nile.core.types.transactions import DeclareTransaction, InvokeTransaction
 from nile.core.types.udc_helpers import create_udc_deploy_transaction
 from nile.core.types.utils import (
     get_counterfactual_address,
@@ -196,7 +196,6 @@ class Account(AsyncObject):
         nonce=None,
         alias=None,
         overriding_path=None,
-        mainnet_token=None,
     ):
         """Return a DeclareTxWrapper for declaring a contract through an Account."""
         max_fee, nonce, _ = await self._process_arguments(max_fee, nonce)
@@ -208,6 +207,7 @@ class Account(AsyncObject):
             max_fee=max_fee,
             nonce=nonce,
             network=self.network,
+            overriding_path=overriding_path,
         )
 
         return DeclareTxWrapper(
@@ -215,7 +215,6 @@ class Account(AsyncObject):
             account=self,
             alias=alias,
             overriding_path=overriding_path,
-            mainnet_token=mainnet_token,
         )
 
     async def deploy_contract(
@@ -226,6 +225,7 @@ class Account(AsyncObject):
         calldata,
         alias,
         max_fee=None,
+        nonce=None,
         deployer_address=None,
         overriding_path=None,
         abi=None,
@@ -234,9 +234,12 @@ class Account(AsyncObject):
         deployer_address = normalize_number(
             deployer_address or UNIVERSAL_DEPLOYER_ADDRESS
         )
+        max_fee, nonce, calldata = await self._process_arguments(
+            max_fee, nonce, calldata
+        )
 
         # Create the transaction
-        transaction = await create_udc_deploy_transaction(
+        transaction, predicted_address = await create_udc_deploy_transaction(
             account=self,
             contract_name=contract_name,
             salt=salt,
@@ -244,6 +247,7 @@ class Account(AsyncObject):
             calldata=calldata,
             deployer_address=deployer_address,
             max_fee=max_fee,
+            nonce=nonce,
             overriding_path=overriding_path,
         )
 
@@ -251,6 +255,8 @@ class Account(AsyncObject):
             tx=transaction,
             account=self,
             alias=alias,
+            contract_name=contract_name,
+            predicted_address=predicted_address,
             overriding_path=overriding_path,
         )
 

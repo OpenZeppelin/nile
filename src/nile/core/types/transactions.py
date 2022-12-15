@@ -49,6 +49,7 @@ class Transaction(ABC):
     version: int = TRANSACTION_VERSION
 
     # Public fields not expected in construction time
+    tx_type: int = field(init=False)
     hash: int = field(init=False, default=0)
     query_hash: int = field(init=False, default=0)
     chain_id: int = field(init=False)
