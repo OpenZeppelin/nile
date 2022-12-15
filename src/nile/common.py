@@ -2,6 +2,7 @@
 import json
 import os
 import re
+from pathlib import Path
 
 from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
 from starkware.starknet.core.os.class_hash import compute_class_hash
@@ -36,6 +37,15 @@ NETWORKS_CHAIN_ID = {
     "goerli2": StarknetChainId.TESTNET2.value,
     "integration": StarknetChainId.TESTNET.value,
 }
+_root = Path(__file__).parent.parent
+
+
+def contract_path(name):
+    """Return contract path."""
+    if name.startswith("tests/"):
+        return str(_root / name)
+    else:
+        return str(_root / "src" / name)
 
 
 def get_gateways():

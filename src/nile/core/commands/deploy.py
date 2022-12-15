@@ -12,9 +12,9 @@ from nile.common import (
     get_account_class_hash,
     parse_information,
 )
+from nile.core.commands.status import status
 from nile.starknet_cli import execute_call, get_gateway_response
 from nile.utils import hex_address
-from nile.utils.status import status
 
 
 async def deploy(

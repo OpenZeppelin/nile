@@ -114,7 +114,7 @@ async def test_compile(args, expected):
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-@patch("nile.core.node.subprocess")
+@patch("nile.core.commands.node.subprocess")
 async def test_node_forwards_args(mock_subprocess):
     args = [
         "--host",
@@ -194,7 +194,9 @@ async def test_node_runs_gateway(opts, expected):
     ],
 )
 async def test_status(args):
-    with patch("nile.utils.status.execute_call", new=AsyncMock()) as mock_execute:
+    with patch(
+        "nile.core.commands.status.execute_call", new=AsyncMock()
+    ) as mock_execute:
         mock_execute.return_value = json.dumps({"tx_status": "ACCEPTED_ON_L2"})
 
         result = await CliRunner().invoke(cli, ["status", *args])

@@ -5,10 +5,10 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
-from nile.core.deploy import deploy, deploy_account, deploy_contract
+from nile.core.commands.deploy import deploy, deploy_account, deploy_contract
+from nile.core.commands.status import TransactionStatus, TxStatus
 from nile.core.types.udc_helpers import create_udc_deploy_transaction
 from nile.utils import hex_address
-from nile.utils.status import TransactionStatus, TxStatus
 from tests.mocks.mock_account import MockAccount
 
 
@@ -84,12 +84,14 @@ TX_STATUS = TransactionStatus(TX_HASH, TxStatus.ACCEPTED_ON_L2, None)
         ),
     ],
 )
-@patch("nile.core.deploy.parse_information", return_value=CALL_OUTPUT)
-@patch("nile.core.deploy.deployments.register")
+@patch("nile.core.commands.deploy.parse_information", return_value=CALL_OUTPUT)
+@patch("nile.core.commands.deploy.deployments.register")
 async def test_deploy(mock_register, mock_parse, caplog, args, cmd_args, exp_abi):
     logging.getLogger().setLevel(logging.INFO)
 
-    with patch("nile.core.deploy.execute_call", new=AsyncMock()) as mock_cli_call:
+    with patch(
+        "nile.core.commands.deploy.execute_call", new=AsyncMock()
+    ) as mock_cli_call:
         mock_cli_call.return_value = CALL_OUTPUT
 
         # check return values
@@ -120,8 +122,8 @@ async def test_deploy(mock_register, mock_parse, caplog, args, cmd_args, exp_abi
 @patch(
     "nile.core.types.transactions.Transaction.execute", return_value=(TX_STATUS, None)
 )
-@patch("nile.core.deploy.parse_information", return_value=[ADDRESS, TX_HASH])
-@patch("nile.core.deploy.deployments.register")
+@patch("nile.core.commands.deploy.parse_information", return_value=[ADDRESS, TX_HASH])
+@patch("nile.core.commands.deploy.deployments.register")
 async def test_deploy_contract(
     mock_register,
     mock_parse,
@@ -249,12 +251,12 @@ async def test_deploy_contract(
         ),
     ],
 )
-@patch("nile.core.deploy.deployments.register")
+@patch("nile.core.commands.deploy.deployments.register")
 @patch(
-    "nile.core.deploy.get_gateway_response",
+    "nile.core.commands.deploy.get_gateway_response",
     return_value={"address": ADDRESS, "transaction_hash": TX_HASH},
 )
-@patch("nile.core.deploy.get_account_class_hash", return_value=CLASS_HASH)
+@patch("nile.core.commands.deploy.get_account_class_hash", return_value=CLASS_HASH)
 async def test_deploy_account(
     mock_hash, mock_gateway, mock_register, caplog, args, exp_abi
 ):

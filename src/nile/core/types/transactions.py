@@ -9,6 +9,7 @@ from dataclasses import field
 from typing import List
 
 from nile.common import TRANSACTION_VERSION, get_chain_id, get_contract_class, pt
+from nile.core.commands.status import status
 from nile.core.types.utils import (
     get_declare_hash,
     get_deploy_account_hash,
@@ -16,7 +17,6 @@ from nile.core.types.utils import (
 )
 from nile.starknet_cli import execute_call
 from nile.utils import hex_address
-from nile.utils.status import status
 
 # Version for query calls
 QUERY_VERSION_BASE = 2**128

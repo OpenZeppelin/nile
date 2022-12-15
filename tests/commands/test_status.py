@@ -7,8 +7,11 @@ from unittest.mock import patch
 import pytest
 
 from nile.common import BUILD_DIRECTORY
-from nile.utils.debug import _abi_to_build_path, _locate_error_lines_with_abis
-from nile.utils.status import status
+from nile.core.commands.status import (
+    _abi_to_build_path,
+    _locate_error_lines_with_abis,
+    status,
+)
 
 MOCK_HASH = 1234
 NETWORK = "localhost"
@@ -39,11 +42,11 @@ def test__abi_to_build_path():
         ([f"{DEBUG_ADDRESS}:{ABI_PATH}:{ALIAS}"], [int(DEBUG_ADDRESS, 16)]),
     ],
 )
-@patch("nile.utils.debug._abi_to_build_path", return_value=ABI_PATH)
+@patch("nile.core.commands.status._abi_to_build_path", return_value=ABI_PATH)
 def test__locate_error_lines_with_abis_with_and_without_alias(
     mock_path, file, address_set
 ):
-    with patch("nile.utils.debug.open") as mock_open, patch(
+    with patch("nile.core.commands.status.open") as mock_open, patch(
         "os.path.isfile", return_value=True
     ):
         mock_open.return_value.__enter__.return_value = file
@@ -53,11 +56,11 @@ def test__locate_error_lines_with_abis_with_and_without_alias(
         assert return_array == [f"{DEBUG_ADDRESS}:{ABI_PATH}"]
 
 
-@patch("nile.utils.debug._abi_to_build_path", return_value=ABI_PATH)
+@patch("nile.core.commands.status._abi_to_build_path", return_value=ABI_PATH)
 def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     logging.getLogger().setLevel(logging.INFO)
 
-    with patch("nile.utils.debug.open") as mock_open, patch(
+    with patch("nile.core.commands.status.open") as mock_open, patch(
         "os.path.isfile", return_value=True
     ):
         # The DEBUG_ADDRESS alone without ":" is misformatted
@@ -79,7 +82,7 @@ def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     reason="Issue in cairo-lang. "
     "See https://github.com/starkware-libs/cairo-lang/issues/27",
 )
-@patch("nile.utils.status.execute_call")
+@patch("nile.core.commands.status.execute_call")
 async def test_status_feedback_with_message(mock_output, output, expected, caplog):
     logging.getLogger().setLevel(logging.INFO)
     mock_output.return_value = output
