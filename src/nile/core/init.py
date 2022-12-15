@@ -11,9 +11,6 @@ def init():
 
     copy_tree(Path(__file__).parent.parent / "base_project", ".")
 
-    with open("accounts.json", "w") as file:
-        file.write("{}")
-
     logging.info("⛵️ Nile project ready! Try running:")
     logging.info("")
     logging.info("nile compile")
