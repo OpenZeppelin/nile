@@ -4,7 +4,7 @@ import re
 
 from nile import deployments
 from nile.common import is_alias
-from nile.core.commands.status import status
+from nile.utils.status import status
 from nile.starknet_cli import execute_call
 from nile.utils import hex_address, normalize_number
 

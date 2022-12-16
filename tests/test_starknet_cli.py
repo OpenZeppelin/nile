@@ -146,7 +146,7 @@ def test_get_feeder_url(network, expected):
         (True, TX_RECEIVED),
     ],
 )
-@patch("nile.core.commands.deploy.DeployAccount")
+@patch("nile.core.deploy.DeployAccount")
 async def test_get_gateway_response(mock_tx, success, tx_response):
     with patch(
         "nile.starknet_cli.GatewayClient.add_transaction", new=AsyncMock()

@@ -13,8 +13,8 @@ from nile.common import (
     is_alias,
     normalize_number,
 )
-from nile.core.commands.deploy import deploy_account
-from nile.core.commands.getters.get_nonce import get_nonce_without_log as get_nonce
+from nile.core.deploy import deploy_account
+from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 from nile.core.types.transactions import DeclareTransaction, InvokeTransaction
 from nile.core.types.tx_wrappers import (
     DeclareTxWrapper,

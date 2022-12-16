@@ -9,7 +9,7 @@ from dataclasses import field
 from typing import List
 
 from nile.common import TRANSACTION_VERSION, get_chain_id, get_contract_class, pt
-from nile.core.commands.status import status
+from nile.utils.status import status
 from nile.core.types.utils import (
     get_declare_hash,
     get_deploy_account_hash,

@@ -5,8 +5,8 @@ from unittest.mock import patch
 import pytest
 
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, DECLARATIONS_FILENAME
-from nile.core.commands.declare import alias_exists, declare
-from nile.core.commands.status import TransactionStatus, TxStatus
+from nile.core.declare import alias_exists, declare
+from nile.utils.status import TransactionStatus, TxStatus
 from nile.core.types.transactions import DeclareTransaction
 from nile.utils import hex_class_hash
 from tests.mocks.mock_account import MockAccount
@@ -39,7 +39,7 @@ def test_alias_exists():
     assert alias_exists(ALIAS, NETWORK) is False
 
     # when alias exists
-    with patch("nile.core.commands.declare.deployments.load_class") as mock_load:
+    with patch("nile.core.declare.deployments.load_class") as mock_load:
         mock_load.__iter__.side_effect = hex_class_hash(HASH)
         assert alias_exists(ALIAS, NETWORK) is True
 
@@ -48,8 +48,8 @@ def test_alias_exists():
 @pytest.mark.parametrize("alias", ["my_contract"])
 @pytest.mark.parametrize("overriding_path", [OVERRIDING_PATH, None])
 @pytest.mark.parametrize("watch_mode", ["track", None])
-@patch("nile.core.commands.declare.parse_information", return_value=[HASH, TX_HASH])
-@patch("nile.core.commands.declare.deployments.register_class_hash")
+@patch("nile.core.declare.parse_information", return_value=[HASH, TX_HASH])
+@patch("nile.core.declare.deployments.register_class_hash")
 @patch(
     "nile.core.types.transactions.Transaction.execute",
     return_value=(TX_STATUS, CALL_OUTPUT),
@@ -110,7 +110,7 @@ async def test_declare(
 
 
 @pytest.mark.asyncio
-@patch("nile.core.commands.declare.alias_exists", return_value=True)
+@patch("nile.core.declare.alias_exists", return_value=True)
 async def test_declare_duplicate_hash(mock_alias_check):
     with pytest.raises(Exception) as err:
         await declare(ALIAS, NETWORK)

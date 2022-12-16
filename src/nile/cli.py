@@ -7,21 +7,21 @@ import asyncclick as click
 
 from nile.common import is_alias
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
-from nile.core.commands.clean import clean as clean_command
-from nile.core.commands.compile import compile as compile_command
-from nile.core.commands.deploy import deploy as deploy_command
-from nile.core.commands.getters.get_accounts import get_accounts as get_accounts_command
-from nile.core.commands.getters.get_accounts import (
+from nile.core.clean import clean as clean_command
+from nile.core.compile import compile as compile_command
+from nile.core.deploy import deploy as deploy_command
+from nile.utils.get_accounts import get_accounts as get_accounts_command
+from nile.utils.get_accounts import (
     get_predeployed_accounts as get_predeployed_accounts_command,
 )
-from nile.core.commands.getters.get_balance import get_balance as get_balance_command
-from nile.core.commands.getters.get_nonce import get_nonce as get_nonce_command
-from nile.core.commands.init import init as init_command
-from nile.core.commands.node import node as node_command
-from nile.core.commands.run import run as run_command
-from nile.core.commands.status import status as status_command
-from nile.core.commands.test import test as test_command
-from nile.core.commands.version import version as version_command
+from nile.utils.get_balance import get_balance as get_balance_command
+from nile.utils.get_nonce import get_nonce as get_nonce_command
+from nile.core.init import init as init_command
+from nile.core.node import node as node_command
+from nile.core.run import run as run_command
+from nile.utils.status import status as status_command
+from nile.core.test import test as test_command
+from nile.core.version import version as version_command
 from nile.core.plugins import load_plugins
 from nile.core.types.account import Account, get_counterfactual_address
 from nile.core.types.signer import Signer

@@ -3,8 +3,8 @@
 import dataclasses
 from typing import List
 
-from nile.core.commands.declare import declare
-from nile.core.commands.deploy import deploy_contract
+from nile.core.declare import declare
+from nile.core.deploy import deploy_contract
 
 
 @dataclasses.dataclass
