@@ -19,6 +19,14 @@ from nile.core.types.utils import from_call_to_call_array
 
 PRIVATE_KEY = 12345678987654321
 SIGNER = Signer(PRIVATE_KEY)
+NETWORKS = ["mainnet", "goerli", "goerli2", "integration", "localhost"]
+NETWORK_CHAIN_ID = {
+    "mainnet": StarknetChainId.MAINNET.value,
+    "goerli": StarknetChainId.TESTNET.value,
+    "goerli2": StarknetChainId.TESTNET2.value,
+    "integration": StarknetChainId.TESTNET.value,
+    "localhost": StarknetChainId.TESTNET.value,
+}
 
 
 def get_account_definition():
@@ -109,14 +117,15 @@ async def test_execute():
     assert execution_info.result == (3,)
 
 
+@pytest.mark.parametrize("network", NETWORKS)
 @pytest.mark.asyncio
-async def test_chain_id():
-    mainnet = Signer(PRIVATE_KEY, "mainnet")
-    assert mainnet.chain_id == StarknetChainId.MAINNET.value
+async def test_chain_id(network):
+    signer = Signer(PRIVATE_KEY, network)
+    assert signer.chain_id == NETWORK_CHAIN_ID[network]
 
-    testnet = Signer(PRIVATE_KEY, "testnet")
-    assert testnet.chain_id == StarknetChainId.TESTNET.value
 
+@pytest.mark.asyncio
+async def test_chain_id_no_network():
     no_network = Signer(PRIVATE_KEY)
     assert no_network.chain_id == StarknetChainId.TESTNET.value
 

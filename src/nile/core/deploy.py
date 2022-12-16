@@ -3,7 +3,7 @@ import logging
 
 from starkware.starknet.services.api.gateway.transaction import DeployAccount
 
-from nile import deployments
+from nile import accounts, deployments
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
@@ -149,6 +149,7 @@ async def deploy_account(
         tx_status = await status(tx_hash, network, watch_mode)
         if tx_status.status.is_rejected:
             deployments.unregister(address, network, alias, abi=register_abi)
+            accounts.unregister(address, network)
             return
 
     return address, tx_hash, register_abi

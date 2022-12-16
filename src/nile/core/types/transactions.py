@@ -8,7 +8,12 @@ from abc import ABC, abstractmethod
 from dataclasses import field
 from typing import List
 
-from nile.common import TRANSACTION_VERSION, get_chain_id, get_contract_class, pt
+from nile.common import (
+    NILE_ABIS_DIR,
+    TRANSACTION_VERSION,
+    get_chain_id,
+    get_contract_class,
+)
 from nile.core.types.utils import (
     get_declare_hash,
     get_deploy_account_hash,
@@ -183,7 +188,7 @@ class InvokeTransaction(Transaction):
         return {
             "inputs": self.calldata,
             "address": hex_address(self.account_address),
-            "abi": f"{pt}/artifacts/abis/Account.json",
+            "abi": f"{NILE_ABIS_DIR}/Account.json",
             "method": self.entry_point,
         }
 

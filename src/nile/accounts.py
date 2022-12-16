@@ -23,7 +23,23 @@ def register(pubkey, address, index, alias, network):
             "alias": alias,
         }
     with open(file, "w") as file:
-        json.dump(accounts, file)
+        json.dump(accounts, file, indent=2)
+
+
+def unregister(address, network):
+    """Unregister an account."""
+    file = f"{network}.{ACCOUNTS_FILENAME}"
+
+    with open(file, "r") as fp:
+        accounts = json.load(fp)
+        to_delete = None
+        for pubkey, data in accounts.items():
+            if address == data["address"]:
+                to_delete = pubkey
+        accounts.pop(to_delete, None)
+
+    with open(file, "w") as file:
+        json.dump(accounts, file, indent=2)
 
 
 def exists(pubkey, network):

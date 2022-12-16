@@ -7,6 +7,9 @@ import pytest
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
+    NILE_ABIS_DIR,
+    NILE_ARTIFACTS_PATH,
+    NILE_BUILD_DIR,
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
 )
@@ -68,13 +71,8 @@ async def test_account_init_bad_key(caplog):
 @patch("nile.core.types.account.Signer.sign", return_value=SIGNATURE)
 @patch("nile.core.types.account.os.path.dirname")
 async def test_deploy(mock_path, mock_signer, mock_hash, mock_deploy):
-    test_path = "/overriding_path"
-    overriding_path = (
-        f"{test_path}/artifacts",
-        f"{test_path}/artifacts/abis",
-    )
-
-    mock_path.return_value.replace.return_value = test_path
+    # overriding_path is set to Nile's root path for Nile Account deployments.
+    nile_root_path = NILE_BUILD_DIR, NILE_ABIS_DIR
 
     account = await Account(KEY, NETWORK, salt=SALT, max_fee=MAX_FEE)
     calldata = [account.signer.public_key]
@@ -86,7 +84,7 @@ async def test_deploy(mock_path, mock_signer, mock_hash, mock_deploy):
         signature=SIGNATURE,
         max_fee=MAX_FEE,
         query_type=None,
-        overriding_path=overriding_path,
+        overriding_path=nile_root_path,
         watch_mode=None,
     )
 
@@ -163,6 +161,31 @@ async def test_declare(
 
         # Check '_process_arguments' call
         mock_process_arguments.assert_called_once_with(max_fee, nonce)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "nile_account, overriding_path", [(False, None), (True, NILE_ARTIFACTS_PATH)]
+)
+@patch("nile.core.types.transactions.get_contract_class", return_value="ContractClass")
+@patch("nile.core.types.account.DeclareTransaction", return_value="tx")
+@patch("nile.core.types.account.DeclareTxWrapper")
+async def test_declare_account(
+    mock_tx_wrapper, mock_tx, mock_contract_class, nile_account, overriding_path
+):
+    account = await MockAccount(KEY, NETWORK)
+
+    contract_name = "Account"
+
+    await account.declare(contract_name, nonce=0, nile_account=nile_account)
+
+    # Check 'DeclareTxWrapper' call
+    mock_tx_wrapper.assert_called_once_with(
+        tx="tx",
+        account=account,
+        alias=None,
+        overriding_path=overriding_path,
+    )
 
 
 @pytest.mark.asyncio
