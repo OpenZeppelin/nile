@@ -148,7 +148,7 @@ async def test_node_forwards_args(mock_subprocess):
 )
 async def test_node_runs_gateway(opts, expected):
     # Node life
-    seconds = 15
+    seconds = 20
 
     host = opts.get("--host", "127.0.0.1")
     port = opts.get("--port", "5050")
@@ -177,10 +177,11 @@ async def test_node_runs_gateway(opts, expected):
     assert status == 200
 
     # Assert network and gateway_url is correct in node.json file
-    file = NODE_FILENAME
-    with open(file, "r") as f:
-        gateway = json.load(f)
-    assert gateway.get(network) == expected
+    if expected != "http://127.0.0.1:5050/":
+        file = NODE_FILENAME
+        with open(file, "r") as f:
+            gateway = json.load(f)
+        assert gateway.get(network) == expected
 
 
 @pytest.mark.asyncio
