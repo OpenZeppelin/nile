@@ -6,9 +6,9 @@ import pytest
 
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
 from nile.core.deploy import deploy, deploy_account, deploy_contract
-from nile.utils.status import TransactionStatus, TxStatus
 from nile.core.types.udc_helpers import create_udc_deploy_transaction
 from nile.utils import hex_address
+from nile.utils.status import TransactionStatus, TxStatus
 from tests.mocks.mock_account import MockAccount
 
 
@@ -89,9 +89,7 @@ TX_STATUS = TransactionStatus(TX_HASH, TxStatus.ACCEPTED_ON_L2, None)
 async def test_deploy(mock_register, mock_parse, caplog, args, cmd_args, exp_abi):
     logging.getLogger().setLevel(logging.INFO)
 
-    with patch(
-        "nile.core.deploy.execute_call", new=AsyncMock()
-    ) as mock_cli_call:
+    with patch("nile.core.deploy.execute_call", new=AsyncMock()) as mock_cli_call:
         mock_cli_call.return_value = CALL_OUTPUT
 
         # check return values

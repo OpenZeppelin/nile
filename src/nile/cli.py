@@ -10,22 +10,22 @@ from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
 from nile.core.deploy import deploy as deploy_command
+from nile.core.init import init as init_command
+from nile.core.node import node as node_command
+from nile.core.plugins import load_plugins
+from nile.core.run import run as run_command
+from nile.core.test import test as test_command
+from nile.core.types.account import Account, get_counterfactual_address
+from nile.core.types.signer import Signer
+from nile.core.version import version as version_command
+from nile.utils import hex_address, normalize_number, shorten_address
 from nile.utils.get_accounts import get_accounts as get_accounts_command
 from nile.utils.get_accounts import (
     get_predeployed_accounts as get_predeployed_accounts_command,
 )
 from nile.utils.get_balance import get_balance as get_balance_command
 from nile.utils.get_nonce import get_nonce as get_nonce_command
-from nile.core.init import init as init_command
-from nile.core.node import node as node_command
-from nile.core.run import run as run_command
 from nile.utils.status import status as status_command
-from nile.core.test import test as test_command
-from nile.core.version import version as version_command
-from nile.core.plugins import load_plugins
-from nile.core.types.account import Account, get_counterfactual_address
-from nile.core.types.signer import Signer
-from nile.utils import hex_address, normalize_number, shorten_address
 
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 logging.getLogger("asyncio").setLevel(logging.WARNING)

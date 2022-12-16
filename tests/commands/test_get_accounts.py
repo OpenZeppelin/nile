@@ -5,14 +5,14 @@ from unittest.mock import MagicMock, patch
 import pytest
 from requests.exceptions import MissingSchema
 
+from nile.core.types.account import Account
+from nile.utils import hex_address
+from nile.utils import normalize_number as normalize
 from nile.utils.get_accounts import (
     _check_and_return_account,
     get_accounts,
     get_predeployed_accounts,
 )
-from nile.core.types.account import Account
-from nile.utils import hex_address
-from nile.utils import normalize_number as normalize
 from tests.mocks.mock_response import MockResponse
 
 NETWORK = "localhost"

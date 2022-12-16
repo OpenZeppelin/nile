@@ -14,7 +14,6 @@ from nile.common import (
     normalize_number,
 )
 from nile.core.deploy import deploy_account
-from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 from nile.core.types.transactions import DeclareTransaction, InvokeTransaction
 from nile.core.types.tx_wrappers import (
     DeclareTxWrapper,
@@ -27,6 +26,7 @@ from nile.core.types.utils import (
     get_deploy_account_hash,
     get_execute_calldata,
 )
+from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:
     from nile.core.types.signer import Signer

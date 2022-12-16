@@ -7,11 +7,7 @@ from unittest.mock import patch
 import pytest
 
 from nile.common import BUILD_DIRECTORY
-from nile.utils.status import (
-    _abi_to_build_path,
-    _locate_error_lines_with_abis,
-    status,
-)
+from nile.utils.status import _abi_to_build_path, _locate_error_lines_with_abis, status
 
 MOCK_HASH = 1234
 NETWORK = "localhost"

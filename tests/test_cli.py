@@ -194,9 +194,7 @@ async def test_node_runs_gateway(opts, expected):
     ],
 )
 async def test_status(args):
-    with patch(
-        "nile.utils.status.execute_call", new=AsyncMock()
-    ) as mock_execute:
+    with patch("nile.utils.status.execute_call", new=AsyncMock()) as mock_execute:
         mock_execute.return_value = json.dumps({"tx_status": "ACCEPTED_ON_L2"})
 
         result = await CliRunner().invoke(cli, ["status", *args])

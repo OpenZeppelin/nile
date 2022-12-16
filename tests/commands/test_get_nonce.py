@@ -18,9 +18,7 @@ NETWORK = "localhost"
 async def test_get_nonce(contract_address, network, caplog):
     logging.getLogger().setLevel(logging.INFO)
 
-    with patch(
-        "nile.utils.get_nonce.execute_call", new=AsyncMock()
-    ) as mock_cli_call:
+    with patch("nile.utils.get_nonce.execute_call", new=AsyncMock()) as mock_cli_call:
         mock_cli_call.return_value = NONCE
         nonce = await get_nonce(contract_address, network)
         assert nonce == NONCE
@@ -38,9 +36,7 @@ async def test_get_nonce(contract_address, network, caplog):
     ["0x4d2", "1234", 1234],
 )
 async def test_get_nonce_without_log_address_formats(contract_address):
-    with patch(
-        "nile.utils.get_nonce.execute_call", new=AsyncMock()
-    ) as mock_cli_call:
+    with patch("nile.utils.get_nonce.execute_call", new=AsyncMock()) as mock_cli_call:
         mock_cli_call.return_value = NONCE
         await get_nonce_without_log(contract_address, NETWORK)
 
