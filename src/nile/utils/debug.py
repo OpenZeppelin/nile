@@ -50,14 +50,18 @@ async def debug_message(error_message, tx_hash, network, contracts_file=None):
 
 def _get_contracts_data(contracts_file, network, addresses):
     file = contracts_file or f"{network}.{DEPLOYMENTS_FILENAME}"
-    # contracts_file should already link to compiled contracts and not ABIs
-    to_contract = (lambda x: x) if contracts_file else _abi_to_build_path
+    to_contract = (lambda x: x) if contracts_file else _abi_to_path
     contracts = _locate_error_lines_with_abis(file, addresses, to_contract)
     return contracts
 
 
-def _abi_to_build_path(filename):
-    return os.path.join(BUILD_DIRECTORY, os.path.basename(filename))
+def _abi_to_path(filename):
+    build_path = os.path.join(BUILD_DIRECTORY, os.path.basename(filename))
+    if os.path.isfile(build_path):
+        return build_path
+    else:
+        pt = os.path.dirname(os.path.realpath(__file__)).replace("/utils", "/artifacts")
+        return os.path.join(pt, os.path.basename(filename))
 
 
 def _locate_error_lines_with_abis(file, addresses, to_contract):

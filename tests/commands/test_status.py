@@ -6,8 +6,12 @@ from unittest.mock import patch
 
 import pytest
 
-from nile.common import BUILD_DIRECTORY
-from nile.utils.debug import _abi_to_build_path, _locate_error_lines_with_abis
+from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
+from nile.utils.debug import (
+    _abi_to_path,
+    _get_contracts_data,
+    _locate_error_lines_with_abis,
+)
 from nile.utils.status import status
 
 MOCK_HASH = 1234
@@ -18,6 +22,7 @@ ALIAS = "contract_alias"
 MOCK_FILE = 123
 ACCEPTED_OUT = b'{"tx_status": "ACCEPTED_ON_L2"}'
 REJECTED_OUT = b'{"tx_failure_reason": {"error_message": "E"}, "tx_status": "REJECTED"}'
+ADDRESSES = {0x123, 0x456}
 
 
 @pytest.fixture(autouse=True)
@@ -26,10 +31,11 @@ def tmp_working_dir(monkeypatch, tmp_path):
     return tmp_path
 
 
-def test__abi_to_build_path():
+def test__abi_to_path():
     Path(BUILD_DIRECTORY).mkdir()
-    filename = "contract"
-    assert f"{BUILD_DIRECTORY}/{filename}" == _abi_to_build_path(filename)
+    open(f"{BUILD_DIRECTORY}/contract.json", "w")
+
+    assert f"{BUILD_DIRECTORY}/contract.json" == _abi_to_path("contract.json")
 
 
 @pytest.mark.parametrize(
@@ -39,7 +45,7 @@ def test__abi_to_build_path():
         ([f"{DEBUG_ADDRESS}:{ABI_PATH}:{ALIAS}"], [int(DEBUG_ADDRESS, 16)]),
     ],
 )
-@patch("nile.utils.debug._abi_to_build_path", return_value=ABI_PATH)
+@patch("nile.utils.debug._abi_to_path", return_value=ABI_PATH)
 def test__locate_error_lines_with_abis_with_and_without_alias(
     mock_path, file, address_set
 ):
@@ -53,7 +59,7 @@ def test__locate_error_lines_with_abis_with_and_without_alias(
         assert return_array == [f"{DEBUG_ADDRESS}:{ABI_PATH}"]
 
 
-@patch("nile.utils.debug._abi_to_build_path", return_value=ABI_PATH)
+@patch("nile.utils.debug._abi_to_path", return_value=ABI_PATH)
 def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     logging.getLogger().setLevel(logging.INFO)
 
@@ -87,3 +93,23 @@ async def test_status_feedback_with_message(mock_output, output, expected, caplo
     await status(MOCK_HASH, NETWORK, "debug")
 
     assert expected in caplog.text
+
+
+@pytest.mark.parametrize(
+    "contracts_file, expected",
+    [
+        (None, _abi_to_path),
+        ("contracts_file.json", "contracts_file.json"),
+    ],
+)
+@patch("nile.utils.debug._locate_error_lines_with_abis")
+def test__get_contracts_data(mock_locate, contracts_file, expected):
+    _get_contracts_data(contracts_file, NETWORK, ADDRESSES)
+
+    if not contracts_file:
+        mock_locate.assert_called_once_with(
+            f"{NETWORK}.{DEPLOYMENTS_FILENAME}", ADDRESSES, expected
+        )
+    else:
+        _contracts_file = mock_locate.call_args[0][0]
+        assert _contracts_file == expected

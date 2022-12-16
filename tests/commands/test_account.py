@@ -7,6 +7,9 @@ import pytest
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
+    NILE_ABIS_DIR,
+    NILE_ARTIFACTS_PATH,
+    NILE_BUILD_DIR,
     QUERY_VERSION,
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
@@ -66,13 +69,8 @@ async def test_account_init_bad_key(caplog):
 @patch("nile.core.account.Signer.sign_deployment", return_value=SIGNATURE)
 @patch("nile.core.account.os.path.dirname")
 async def test_deploy(mock_path, mock_signer, mock_hash, mock_deploy):
-    test_path = "/overriding_path"
-    overriding_path = (
-        f"{test_path}/artifacts",
-        f"{test_path}/artifacts/abis",
-    )
-
-    mock_path.return_value.replace.return_value = test_path
+    # overriding_path is set to Nile's root path for Nile Account deployments.
+    nile_root_path = NILE_BUILD_DIR, NILE_ABIS_DIR
 
     account = await Account(KEY, NETWORK, salt=SALT, max_fee=MAX_FEE)
     calldata = [account.signer.public_key]
@@ -84,7 +82,7 @@ async def test_deploy(mock_path, mock_signer, mock_hash, mock_deploy):
         signature=SIGNATURE,
         max_fee=MAX_FEE,
         query_type=None,
-        overriding_path=overriding_path,
+        overriding_path=nile_root_path,
         watch_mode=None,
     )
 
@@ -156,6 +154,41 @@ async def test_declare(mock_declare, mock_get_class, mock_hash, mock_deploy):
         overriding_path=overriding_path,
         mainnet_token=None,
         watch_mode=None,
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "nile_account, overriding_path", [(False, None), (True, NILE_ARTIFACTS_PATH)]
+)
+@patch("nile.core.account.deploy_account", return_value=(MOCK_ADDRESS, MOCK_INDEX))
+@patch("nile.core.account.get_account_class_hash", return_value=CLASS_HASH)
+@patch("nile.core.account.get_contract_class", return_value="ContractClass")
+@patch("nile.core.account.declare")
+async def test_declare_account(
+    mock_declare, mock_get_class, mock_hash, mock_deploy, nile_account, overriding_path
+):
+    account = await Account(KEY, NETWORK)
+
+    signature = [999, 888]
+    nonce = 4
+    contract_name = "Account"
+
+    account.signer.sign_declare = MagicMock(return_value=signature)
+
+    args = {
+        "contract_name": contract_name,
+        "nonce": nonce,
+    }
+
+    if nile_account:
+        args["nile_account"] = True
+
+    await account.declare(**args)
+
+    # Check 'get_contract_class' call
+    mock_get_class.assert_called_once_with(
+        contract_name=contract_name, overriding_path=overriding_path
     )
 
 

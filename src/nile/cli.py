@@ -129,7 +129,7 @@ async def deploy(
 ):
     """Deploy a StarkNet smart contract."""
     if not ignore_account:
-        account = await Account(signer, network)
+        account = await Account(signer, network, watch_mode=watch_mode)
         await account.deploy_contract(
             contract_name,
             salt,
@@ -159,6 +159,7 @@ async def deploy(
 @click.option("--max_fee", nargs=1)
 @click.option("--alias")
 @click.option("--overriding_path")
+@click.option("--nile_account", is_flag=True)
 @network_option
 @mainnet_token_option
 @watch_option
@@ -171,9 +172,10 @@ async def declare(
     alias,
     overriding_path,
     token,
+    nile_account,
 ):
     """Declare a StarkNet smart contract through an Account."""
-    account = await Account(signer, network)
+    account = await Account(signer, network, watch_mode=watch_mode)
     await account.declare(
         contract_name,
         alias=alias,
@@ -181,6 +183,7 @@ async def declare(
         overriding_path=overriding_path,
         mainnet_token=token,
         watch_mode=watch_mode,
+        nile_account=nile_account,
     )
 
 
@@ -228,7 +231,7 @@ async def send(
     watch_mode,
 ):
     """Invoke a contract's method through an Account."""
-    account = await Account(signer, network)
+    account = await Account(signer, network, watch_mode=watch_mode)
     print(
         "Calling {} on {} with params: {}".format(
             method, address_or_alias, [x for x in params]
