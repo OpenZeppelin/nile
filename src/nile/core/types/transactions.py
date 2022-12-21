@@ -12,6 +12,7 @@ from nile.common import (
     NILE_ABIS_DIR,
     TRANSACTION_VERSION,
     get_chain_id,
+    get_class_hash,
     get_contract_class,
 )
 from nile.core.types.utils import (
@@ -147,11 +148,18 @@ class Transaction(ABC):
 
         This method must be overrided on each specific implementation.
         """
-        return {}
+
+    @abstractmethod
+    def _get_tx_hash(self, version):
+        """
+        Return the tx hash for the transaction type.
+
+        This method must be overrided on each specific implementation.
+        """
 
     def _validate(self):
         """Validate the transaction object."""
-        assert hash != 0, "Transaction hash is empty after transaction creation!"
+        assert self.hash > 0, "Transaction hash is empty after transaction creation!"
 
 
 @dataclasses.dataclass
@@ -204,7 +212,7 @@ class DeclareTransaction(Transaction):
     """
 
     contract_to_submit: str = None
-    contract_class: str = field(init=False, default=None)
+    contract_class: str = field(init=False)
     overriding_path: str = None
 
     def __post_init__(self):
@@ -250,11 +258,16 @@ class DeployAccountTransaction(Transaction):
     contract_to_submit: str = None
     calldata: List[int] = None
     overriding_path: str = None
-    contract_class: str = field(init=False, default=None)
+    contract_class: str = field(init=False)
+    class_hash: int = field(init=False)
 
     def __post_init__(self):
         """Populate pending fields."""
         self.contract_class = get_contract_class(
+            contract_name=self.contract_to_submit,
+            overriding_path=self.overriding_path,
+        )
+        self.class_hash = get_class_hash(
             contract_name=self.contract_to_submit,
             overriding_path=self.overriding_path,
         )

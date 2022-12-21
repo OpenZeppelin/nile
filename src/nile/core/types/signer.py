@@ -3,7 +3,7 @@
 from starkware.crypto.signature.signature import private_to_stark_key, sign
 from starkware.starknet.definitions.general_config import StarknetChainId
 
-from nile.common import TRANSACTION_VERSION
+from nile.common import TRANSACTION_VERSION, get_chain_id
 from nile.core.types.utils import (
     from_call_to_call_array,
     get_declare_hash,
@@ -19,14 +19,7 @@ class Signer:
         """Construct a Signer object. Takes a private key."""
         self.private_key = private_key
         self.public_key = private_to_stark_key(private_key)
-        if network == "mainnet":
-            self.chain_id = StarknetChainId.MAINNET.value
-        else:
-            self.chain_id = (
-                StarknetChainId.TESTNET2.value
-                if network == "goerli2"
-                else StarknetChainId.TESTNET.value
-            )
+        self.chain_id = get_chain_id(network)
 
     def sign(self, message_hash):
         """Sign a message hash."""
