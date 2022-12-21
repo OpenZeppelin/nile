@@ -1,7 +1,6 @@
 """Utility for signing transactions for an Account on Starknet."""
 
 from starkware.crypto.signature.signature import private_to_stark_key, sign
-from starkware.starknet.definitions.general_config import StarknetChainId
 
 from nile.common import TRANSACTION_VERSION, get_chain_id
 from nile.core.types.utils import (

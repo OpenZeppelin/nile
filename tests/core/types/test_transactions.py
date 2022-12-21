@@ -1,5 +1,4 @@
 """Tests for transactions module."""
-import asyncio
 import logging
 from unittest.mock import patch
 
@@ -200,10 +199,10 @@ async def test_invoke_transaction_init_defaults():
 
         assert tx.tx_type == "invoke"
         assert tx.entry_point == "__execute__"
-        assert tx.calldata == None
+        assert tx.calldata is None
         assert tx.account_address == 0
         assert tx.max_fee == 0
-        assert tx.nonce == None
+        assert tx.nonce is None
         assert tx.network == "localhost"
         assert tx.version == TRANSACTION_VERSION
         assert tx.hash == TX_HASH
@@ -222,12 +221,12 @@ async def test_declare_transaction_init_defaults(mock_get_contract_class):
         tx = DeclareTransaction()
 
         assert tx.tx_type == "declare"
-        assert tx.contract_to_submit == None
+        assert tx.contract_to_submit is None
         assert tx.contract_class == "ContractClass"
-        assert tx.overriding_path == None
+        assert tx.overriding_path is None
         assert tx.account_address == 0
         assert tx.max_fee == 0
-        assert tx.nonce == None
+        assert tx.nonce is None
         assert tx.network == "localhost"
         assert tx.version == TRANSACTION_VERSION
         assert tx.hash == TX_HASH
@@ -249,21 +248,21 @@ async def test_deploy_account_transaction_init_defaults(
         tx = DeployAccountTransaction()
 
         assert tx.tx_type == "deploy_account"
-        assert tx.contract_to_submit == None
-        assert tx.calldata == None
+        assert tx.contract_to_submit is None
+        assert tx.calldata is None
         assert tx.contract_class == "ContractClass"
         assert tx.class_hash == 777
-        assert tx.overriding_path == None
+        assert tx.overriding_path is None
         assert tx.account_address == 0
         assert tx.max_fee == 0
-        assert tx.nonce == None
+        assert tx.nonce is None
         assert tx.network == "localhost"
         assert tx.version == TRANSACTION_VERSION
         assert tx.hash == TX_HASH
         assert tx.query_hash == TX_HASH
         assert tx.chain_id == NETWORKS_CHAIN_ID["localhost"]
 
-        assert tx.overriding_path == None
+        assert tx.overriding_path is None
 
 
 @pytest.mark.asyncio
@@ -365,7 +364,6 @@ async def test_transaction_simulate(mock_call_args, mock_get_tx_hash, caplog):
 
     account = await MockAccount(KEY, NETWORK)
     mock_sig_r, mock_sig_s = account.signer.sign(TX_HASH)
-    exp_output = 1000
     with patch("nile.core.types.transactions.execute_call") as mock_execute_call:
         mock_execute_call.return_value = '\n\n\n\n{"response" : "simulated"}'
 
