@@ -15,7 +15,7 @@ NETWORK = "localhost"
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("contract_name", ["contract"])
-@pytest.mark.parametrize("salt", [0, 1, 15])
+@pytest.mark.parametrize("salt", [0, 15, None])
 @pytest.mark.parametrize("unique", [True, False])
 @pytest.mark.parametrize("calldata", [[]])
 @pytest.mark.parametrize("deployer_address", [0x678])
@@ -47,7 +47,7 @@ async def test_create_uc_deploy_transaction(
                     "deployContract",
                     [
                         exp_class_hash,
-                        salt,
+                        salt or 0,
                         1 if unique else 0,
                         len(calldata),
                         *calldata,
