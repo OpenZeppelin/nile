@@ -11,8 +11,8 @@ from nile.core.types.transactions import (
 from nile.core.types.tx_wrappers import (
     BaseTxWrapper,
     DeclareTxWrapper,
-    DeployContractTxWrapper,
     DeployAccountTxWrapper,
+    DeployContractTxWrapper,
 )
 from tests.mocks.mock_account import MockAccount
 
@@ -219,4 +219,4 @@ async def test_deploy_account_wrapper_execute(
         ret = await wrapper.execute(watch_mode=watch_mode)
 
         # Pending implementation
-        assert ret == None
+        assert ret is None
