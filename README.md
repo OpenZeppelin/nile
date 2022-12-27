@@ -14,9 +14,9 @@ Nile is a CLI tool to develop or interact with StarkNet projects written in Cair
 On our [documentation site](https://docs.openzeppelin.com/nile) you can find:
 
 - [A Quickstart walkthrough with commands examples](https://docs.openzeppelin.com/nile#quickstart)
-- [Guides on how to master development with Nile](https://docs.openzeppelin.com/testing)
-- [Useful script examples](https://docs.openzeppelin.com/scripts)
-- [Plugins](https://docs.openzeppelin.com/plugins)
+- [Guides on how to master development with Nile](https://docs.openzeppelin.com/nile/testing)
+- [Useful script examples](https://docs.openzeppelin.com/nile/scripts#useful_script_examples)
+- [Plugins](https://docs.openzeppelin.com/nile/plugins)
 
 And more.
 

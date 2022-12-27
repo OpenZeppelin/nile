@@ -1,9 +1,9 @@
 * xref:index.adoc[Overview]
-* xref:commands.adoc[CLI Reference]
 
-* xref:nre.adoc[NRE and scripting]
-** xref:api.adoc[API Reference]
-** xref:scripts.adoc[Useful Script Examples]
+* xref:scripts.adoc[NRE and scripting]
+* API Reference
+** xref:cli.adoc[CLI Reference]
+** xref:nre.adoc[NRE Reference]
 
 * Plugins
 ** xref:create_plugin.adoc[Extending Nile]

@@ -1,10 +1,47 @@
-= Useful Script Examples
-:sectnums:
+= NRE and scripting
 
-Here you can find some potentially helpful script examples.
+Nile provides an API to build scripts leveraging the Nile Runtime Environment (NRE), an object exposing Nile's functionality from compilation to account and deployment management. Nile scripts implement an asynchronous `def run(nre)` function that receives the `NileRuntimeEnvironment` object.
+
+== Running a script
+
+. Create a file named `test_script.py` inside the `scripts/` directory at the root of your project with the following contents.
++
+[,python]
+----
+async def run(nre):
+    accounts = await nre.get_accounts(predeployed=True)
+    print("First Account:", accounts[0])
+----
++
+NOTE: The `predeployed` parameter leverages the accounts that come already deployed with the local node. Read xref:nre.adoc#get_accounts[get_accounts's API Reference] to learn more.
++
+. Run a devnet node with `nile node`
++
+[,sh]
+----
+(env): nile node
+----
++
+. Run the script by using `nile run`
++
+[,sh]
+----
+(env): nile run scripts/test_script.py
+----
+
+[NOTE]
+====
+You can change the script's target network with the `--network` option.
+
+For a full reference of NRE exposed members check the xref:nre.adoc[NRE Reference] section.
+====
+
+== Useful Script Examples
+
+In this section you can find some potentially helpful script examples.
 
 [#declare_account]
-== Declare Account
+=== Declare Account
 
 Useful if you need to deploy an account in devnet, for previous declaration:
 
@@ -19,7 +56,7 @@ async def run(nre):
 
 NOTE: This script assumes there is an link:https://github.com/OpenZeppelin/nile/tree/main/src/nile/artifacts[Account artifact] in your project. You can add the contract to the contracts folder, and compile with `nile compile` to get the artifact.
 
-== Transfer funds from predeployed devnet account
+=== Transfer funds from predeployed devnet account
 
 Useful for funding addresses in devnet:
 
