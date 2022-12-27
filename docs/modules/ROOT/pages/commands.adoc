@@ -39,7 +39,7 @@ Run a local {starknet-devnet} node.
 
 - _--host_
 +
-Specify the address to listen at. 
+Specify the address to listen at.
 +
 Defaults to 127.0.0.1 (use the address the program outputs on start).
 - _--port_
