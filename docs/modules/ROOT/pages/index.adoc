@@ -95,7 +95,20 @@ Use `nile compile` to compile contracts under the `contracts/` folder by default
 
 TIP: For a full reference of Nile command options, check the xref:cli.adoc[CLI Reference] section.
 
-=== Deploying an account
+=== Interacting with Starknet
+
+==== Running a local node
+
+By default, nile commands interacting directly with starknet nodes assume that you are using a local one if you don't specify the network using the `--network` option (default to `localhost`).
+
+Use `nile node` to run a local devnet node for local development.
+
+[,sh]
+----
+(env): nile node
+----
+
+==== Deploying an account
 
 . Add an environment variable with the account's private pey to the `.env` file.
 +
@@ -135,7 +148,7 @@ In StarkNet, users can deploy only previously declared contracts. {oz-account} i
 Check xref:scripts.adoc#declare_account[Declare Account] script.
 ====
 
-=== Deploying a contract
+==== Deploying a contract
 
 . First, declare the contract to register the class hash on the network. You only need to do this once as long as the contract bytecode doesn't change.
 +
@@ -153,7 +166,7 @@ Check xref:scripts.adoc#declare_account[Declare Account] script.
 +
 NOTE: The alias option allows you to interact with the contract later without using the address.
 
-=== Reading from a contract
+==== Reading from a contract
 
 Use `nile call` to read from a contract view function.
 
@@ -164,7 +177,7 @@ Use `nile call` to read from a contract view function.
 0
 ----
 
-=== Writing to a contract
+==== Writing to a contract
 
 Use `nile send` to execute a transaction.
 
