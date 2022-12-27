@@ -70,7 +70,7 @@ nile compile
 
 === Testing
 
-`nile init` creates a sample Cairo contract and test for you. Check *contracts/contract.cairo* and *tests/test_contract.py* for the source code.
+`nile init` creates a sample Cairo contract and test for you. Check `contracts/contract.cairo` and `tests/test_contract.py` for the source code.
 
 Run `pytest` to run the test suite against the Smart Contracts:
 
@@ -83,7 +83,7 @@ TIP: For a more in-deep guide on testing with parallelism and coverage, check ou
 
 === Compiling
 
-Use `nile compile` to compile contracts under the *contracts/* folder by default.
+Use `nile compile` to compile contracts under the `contracts/` folder by default.
 
 [,sh]
 ----

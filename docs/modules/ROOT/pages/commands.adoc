@@ -58,7 +58,7 @@ Applies all lite-mode optimizations by disabling features such as block hash and
 
 Compile Cairo contracts.
 
-Compilation artifacts are written into the *artifacts/* directory.
+Compilation artifacts are written into the `artifacts/` directory.
 
 ===== Arguments
 
@@ -73,7 +73,7 @@ Specify the path to a contract for compiling.
 Specify a directory to compile contracts from.
 - _--account_contract_
 +
-As of {cairo-lang} v0.8.0, users must compile account contracts with the `--account_contract` flag. Nile automatically inserts the flag if the contract's name ends with Account. i.e. *Account.cairo*, *EthAccount.cairo*. Otherwise, the flag must be included by the user.
+As of {cairo-lang} v0.8.0, users must compile account contracts with the `--account_contract` flag. Nile automatically inserts the flag if the contract's name ends with Account. i.e. `Account.cairo`, `EthAccount.cairo`. Otherwise, the flag must be included by the user.
 +
 [,sh]
 ----
@@ -98,8 +98,8 @@ IMPORTANT: This command takes an alias instead of the actual private key to avoi
 
 [NOTE]
 ====
-. This creates or updates *localhost.accounts.json* file storing all data related to accounts management.
-. This creates or updates *localhost.deployments.txt* file storing all data related to deployments.
+. Creates or updates `localhost.accounts.json` file storing all data related to accounts management.
+. Creates or updates `localhost.deployments.txt` file storing all data related to deployments.
 ====
 
 ===== Arguments
@@ -162,7 +162,7 @@ Deploy a contract through an Account.
 
 [NOTE]
 ====
-. This creates or updates *localhost.deployments.txt* file storing all data related to deployments.
+. Creates or updates `localhost.deployments.txt` file storing all data related to deployments.
 ====
 
 ===== Arguments
@@ -326,7 +326,7 @@ Implies `--track`.
 +
 Override the deployments file to query the contract artifacts from.
 +
-Default to *<NETWORK>.deployments.txt*.
+Default to `<NETWORK>.deployments.txt`.
 
 [.contract-item]
 [[debug]]
@@ -342,7 +342,7 @@ Retrieve a list of ready-to-use accounts which allows for easy scripting integra
 
 [NOTE]
 ====
-The list of accounts includes only those that exist in the local *<NETWORK>.accounts.json* file. In a recent release we added a flag to the command, to get predeployed accounts if the network you are connected to is a starknet-devnet instance.
+The list of accounts includes only those that exist in the local `<NETWORK>.accounts.json` file. In a recent release we added a flag to the command, to get predeployed accounts if the network you are connected to is a starknet-devnet instance.
 
 Sending transactions through predeployed accounts can be done through scripting, but the current CLI version doesn't allow using these accounts for `nile send`.
 ====

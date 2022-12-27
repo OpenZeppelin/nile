@@ -45,7 +45,7 @@ async def test_increase_balance():
     assert execution_info.result == (30,)
 ----
 
-Following the pytest requirements, test files must start with *test_* or end with *_test*. You can run the test suite by running pytest.
+Following the pytest requirements, test files must start with `test_` or end with `_test`. You can run the test suite by running pytest.
 
 [,sh]
 ----
@@ -67,7 +67,7 @@ An issue we are very aware of, is how slow running tests can become when you hav
 (env): python -m pip install pytest-xdist
 ----
 +
-. Add a *pytest.ini* file in the root of your project with the following configuration:
+. Add a `pytest.ini` file in the root of your project with the following configuration:
 +
 [,sh]
 ----
