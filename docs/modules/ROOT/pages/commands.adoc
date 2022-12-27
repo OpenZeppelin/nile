@@ -422,7 +422,7 @@ Default to localhost.
 [[clean]]
 ==== `[.contract-item-name]#++nile clean++#`
 
-Deletes the *artifacts/* folder and deployment files.
+Deletes the `artifacts/` folder and deployments files.
 
 [.contract-item]
 [[init]]
