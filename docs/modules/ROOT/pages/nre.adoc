@@ -13,7 +13,7 @@ async def run(nre):
     print("First Account:", accounts[0])
 ----
 +
-TIP: Check xref:api.adoc#get_accounts[get_accounts] from the API Reference.
+NOTE: The `predeployed` parameter leverages the accounts that come already deployed with the local node. Read xref:api.adoc#get_accounts[get_accounts's API Reference] to learn more.
 +
 . Run a devnet node with `nile node`
 +
