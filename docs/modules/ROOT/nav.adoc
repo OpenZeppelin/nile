@@ -7,7 +7,7 @@
 
 * Plugins
 ** xref:create_plugin.adoc[Extending Nile]
-** xref:plugins.adoc[Useful Plugins]
+** xref:plugins.adoc[Relevant Plugins]
 
 * Guides
 ** xref:testing.adoc[Testing with Nile]
