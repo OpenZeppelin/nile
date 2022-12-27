@@ -4,7 +4,7 @@ Nile also provides an API to build scripts leveraging the Nile Runtime Environme
 
 == Running a script
 
-. Create a file named *test_script.py* inside the **scripts/** directory at the root of your project with the following contents.
+. Create a file named `test_script.py` inside the `scripts/` directory at the root of your project with the following contents.
 +
 [,python]
 ----
