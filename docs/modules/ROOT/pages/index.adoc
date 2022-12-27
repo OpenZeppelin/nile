@@ -117,7 +117,7 @@ CAUTION: Don't use this private key in production environments!
 0x057792c44b1e9e349ee549ed018f7225f927bd2b01b6277a1cb94da5fb9421ed
 ----
 +
-NOTE: Different salts compute to different addresses, even with the same Private Key.
+NOTE: Different salts compute to different addresses, even with the same private key.
 +
 . In production, you will need to fund this address with Ether to pay for the deployment fees, which will be mandatory in testnets soon. There are multiple bridges and faucets, like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
 +
