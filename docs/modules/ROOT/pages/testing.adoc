@@ -8,7 +8,7 @@ NOTE: Keep in mind that different modules for testing can be integrated in the f
 
 == Overview
 
-An example of a test file is the following, provided in the base project created form `nile init`:
+Here's the example test file provided in the base project (created by `nile init`):
 
 [,python]
 ----
