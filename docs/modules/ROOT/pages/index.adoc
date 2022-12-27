@@ -99,7 +99,7 @@ TIP: For a full reference of Nile command options, check the xref:commands.adoc[
 
 === Deploying an account
 
-. Add an environment variable with the Account Private Key to the *.env* file.
+. Add an environment variable with the account's private pey to the `.env` file.
 +
 [,sh]
 ----
