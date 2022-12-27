@@ -65,7 +65,7 @@ class NileRuntimeEnvironment:
         """Get a declared class by its identifier (class hash or alias)."""
         if not is_alias(hash_or_alias):
             hash_or_alias = normalize_number(hash_or_alias)
-        return next(deployments.load_class(address_or_alias, self.network))
+        return next(deployments.load_class(hash_or_alias, self.network))
 
     def get_or_deploy_account(self, signer, watch_mode=None):
         """Get or deploy an Account contract."""
