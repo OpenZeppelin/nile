@@ -36,7 +36,9 @@ Specify a set of directories for the Cairo compiler to resolve imports.
 [[deploy]]
 ==== `[.contract-item-name]#++deploy++#++(contract, arguments=None, alias=None, overriding_path=None, abi=None, mainnet_token=None, watch_mode=None) → (address, abi)++`
 
-Deploy a smart contract (Deprecated in favor of deployments through accounts).
+Deploy a smart contract.
+
+WARNING: Deprecated in favor of deployments through accounts.
 
 ===== Arguments
 
@@ -122,15 +124,13 @@ Registered contract abi.
 
 [.contract-item]
 [[get_declaration]]
-==== `[.contract-item-name]#++get_declaration++#++(address_or_alias) → class_hash++`
+==== `[.contract-item-name]#++get_declaration++#++(hash_or_alias) → class_hash++`
 
 Get a declared class by its identifier.
 
-WARNING: DEPRECATED. Will be replaced soon.
-
 ===== Arguments
 
-- _address_or_alias_
+- _hash_or_alias_
 +
 Contract identifier.
 

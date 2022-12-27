@@ -2,7 +2,7 @@
 
 = Testing with Nile
 
-With Nile, you will usually use link:https://docs.pytest.org/[pytest] and {starknet-testing} frameworks for testing.
+With Nile, you will usually use link:https://docs.pytest.org/[pytest] and {starknet-testing} frameworks for testing, even when is framework agnostic and doesn't interfere with other tools including testing frameworks.
 
 NOTE: Keep in mind that different modules for testing can be integrated in the future through plugins.
 

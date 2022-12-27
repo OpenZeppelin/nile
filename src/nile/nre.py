@@ -61,10 +61,10 @@ class NileRuntimeEnvironment:
             address_or_alias = normalize_number(address_or_alias)
         return next(deployments.load(address_or_alias, self.network))
 
-    def get_declaration(self, address_or_alias):
+    def get_declaration(self, hash_or_alias):
         """Get a declared class by its identifier (class hash or alias)."""
-        if not is_alias(address_or_alias):
-            address_or_alias = normalize_number(address_or_alias)
+        if not is_alias(hash_or_alias):
+            hash_or_alias = normalize_number(hash_or_alias)
         return next(deployments.load_class(address_or_alias, self.network))
 
     def get_or_deploy_account(self, signer, watch_mode=None):

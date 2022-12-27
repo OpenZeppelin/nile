@@ -11,12 +11,12 @@ Nile is a CLI tool to develop or interact with StarkNet projects written in Cair
 
 ## Documentation
 
-On our [Official Docsite](https://docs.openzeppelin.com/nile) you can find:
+On our [documentation site](https://docs.openzeppelin.com/nile) you can find:
 
-- [A Quickstart walkthrough with commands examples]()
-- [Guides on how to master development with Nile]()
-- [Useful script examples]()
-- [Plugins list]()
+- [A Quickstart walkthrough with commands examples](https://docs.openzeppelin.com/nile#quickstart)
+- [Guides on how to master development with Nile](https://docs.openzeppelin.com/testing)
+- [Useful script examples](https://docs.openzeppelin.com/scripts)
+- [Plugins](https://docs.openzeppelin.com/plugins)
 
 And more.
 
@@ -27,8 +27,9 @@ Current supported Python versions are >=3.8 and <3.10.
 1. Install `gmp` on your machine (Cairo requirement).
 
     ```
-    sudo apt install -y libgmp3-dev # linux
-    brew install gmp # mac
+    $ sudo apt install -y libgmp3-dev # linux
+    or
+    $ brew install gmp # mac
     ```
 
     If you have any trouble installing it on your Apple M1 computer, [here’s a list of potential solutions.](https://github.com/OpenZeppelin/nile/issues/22)
@@ -37,28 +38,28 @@ Current supported Python versions are >=3.8 and <3.10.
 2. Create a folder for your project and cd into it:
 
     ```
-    mkdir myproject && cd myproject
+    $ mkdir myproject && cd myproject
     ```
 
 3. Create a virtualenv and activate it:
 
     ```
-    python3 -m venv env
-    source env/bin/activate
+    $ python3 -m venv env
+    $ source env/bin/activate
     ```
 
 4. Install Nile:
 
     ```
-    (env): pip install cairo-nile
+    $ (env): pip install cairo-nile
     ```
 
-## Quick usage
+## Quickstart
 
 Use `nile init` to quickly set up your development environment:
 
 ```
-(env): nile init
+$ nile init
 🗄 Creating project directory tree
 ⛵️ Nile project ready! Try running:
 
