@@ -14,7 +14,7 @@ Deploy and manage upgradeable contracts on StarkNet.
 
 == Community plugins
 
-Subset of plugins developed by community members.
+Community maintained plugins.
 
 - link:https://github.com/ericnordelo/nile-coverage[nile-coverage]
 +
