@@ -112,7 +112,7 @@ Specify the private key that will own the account to be deployed. Looks for an e
 
 - `*--network*`
 +
-Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
+Select network: one of (localhost, integration, goerli, goerli2, mainnet).
 +
 Default to localhost.
 - `*--debug*` and `*--track*`
@@ -138,7 +138,7 @@ Specify the name of the contract artifact to be declared.
 
 - `*--network*`
 +
-Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
+Select network: one of (localhost, integration, goerli, goerli2, mainnet).
 +
 Default to localhost.
 - `*--max_fee*`
@@ -181,7 +181,7 @@ Optional calldata arguments for the constructor.
 
 - `*--network*`
 +
-Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
+Select network: one of (localhost, integration, goerli, goerli2, mainnet).
 +
 Default to localhost.
 - `*--max_fee*`
@@ -232,7 +232,7 @@ Optional calldata arguments for the method to query.
 
 - `*--network*`
 +
-Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
+Select network: one of (localhost, integration, goerli, goerli2, mainnet).
 +
 Default to localhost.
 
@@ -261,7 +261,7 @@ Optional calldata arguments for the method to execute.
 
 - `*--network*`
 +
-Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
+Select network: one of (localhost, integration, goerli, goerli2, mainnet).
 +
 Default to localhost.
 - `*--max_fee*`
@@ -311,7 +311,7 @@ Specify the hash of the transaction to query.
 
 - `*--network*`
 +
-Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
+Select network: one of (localhost, integration, goerli, goerli2, mainnet).
 +
 Default to localhost.
 - `*--track*`
@@ -351,7 +351,7 @@ Sending transactions through predeployed accounts can be done through scripting,
 
 - `*--network*`
 +
-Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
+Select network: one of (localhost, integration, goerli, goerli2, mainnet).
 +
 Default to localhost.
 - `*--predeployed*`
@@ -374,7 +374,7 @@ Specify the address of the contract to query.
 
 - `*--network*`
 +
-Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
+Select network: one of (localhost, integration, goerli, goerli2, mainnet).
 +
 Default to localhost.
 
@@ -394,7 +394,7 @@ Specify the address of the contract to query.
 
 - `*--network*`
 +
-Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
+Select network: one of (localhost, integration, goerli, goerli2, mainnet).
 +
 Default to localhost.
 
@@ -414,7 +414,7 @@ Path to the script to run.
 
 - `*--network*`
 +
-Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
+Select network: one of (localhost, integration, goerli, goerli2, mainnet).
 +
 Default to localhost.
 
