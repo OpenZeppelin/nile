@@ -1,6 +1,6 @@
 == NRE Reference
 
-Here you can find a complete reference of the functions provided by the NileRuntimeEnvironment.
+Here you can find a complete reference of the functions provided by the Nile Runtime Environment.
 
 [.contract-index]
 .Functions
