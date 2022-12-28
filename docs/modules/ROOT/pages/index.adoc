@@ -132,7 +132,7 @@ NOTE: Different salts compute to different addresses, even with the same private
 +
 . In production, you will need to fund this address with Ether to pay for the deployment fees, which will be mandatory in testnets soon. There are multiple bridges and faucets, like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
 +
-For local development using devnet nodes, you can use predeployed accounts to fund your address by using xref:scripts.adoc#transfer_funds_from_predeployed_devnet_account[this script].
+For local development using a devnet node, you can use predeployed accounts to fund your address by using xref:scripts.adoc#transfer_funds_from_predeployed_devnet_account[this script].
 +
 . After funding the precomputed address, deploy the account using `nile setup`.
 +
