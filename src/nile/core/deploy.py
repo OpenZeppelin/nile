@@ -99,57 +99,35 @@ async def deploy_contract(
 
 
 async def deploy_account(
-    network,
-    salt,
-    calldata,
-    signature,
-    contract_name="Account",
-    max_fee=None,
-    abi=None,
+    transaction,
+    signer,
+    contract_name,
+    alias,
+    predicted_address,
     overriding_path=None,
-    alias=None,
-    query_type=None,
-    mainnet_token=None,
+    abi=None,
     watch_mode=None,
 ):
-    """Deploy StarkNet smart contracts."""
+    """Deploy StarkNet account."""
+    network = transaction.network
     logging.info(f"🚀 Deploying {contract_name}")
 
-    tx_version = QUERY_VERSION if query_type else TRANSACTION_VERSION
     base_path = (
         overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
     )
     register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
 
-    class_hash = get_account_class_hash(contract_name)
+    # Execute the transaction
+    tx_status, output = await transaction.execute(signer=signer, watch_mode=watch_mode)
 
-    tx = DeployAccount(
-        class_hash=class_hash,
-        constructor_calldata=calldata,
-        contract_address_salt=salt,
-        max_fee=max_fee,
-        nonce=0,
-        signature=signature,
-        version=tx_version,
-    )
+    if not tx_status.status.is_rejected:
+        index = accounts.current_index(network)
 
-    response = await get_gateway_response(network, tx, mainnet_token)
+        deployments.register(predicted_address, register_abi, network, alias)
+        accounts.register(signer.public_key, predicted_address, index, alias, network)
+        logging.info(
+            f"⏳ ️Deployment of {contract_name} successfully sent at {hex_address(predicted_address)}"
+        )
+        logging.info(f"🧾 Transaction hash: {hex(tx_status.tx_hash)}")
 
-    address = response["address"]
-    tx_hash = response["transaction_hash"]
-
-    logging.info(
-        f"⏳ ️Deployment of {contract_name} successfully sent at {hex_address(address)}"
-    )
-    logging.info(f"🧾 Transaction hash: {tx_hash}")
-
-    deployments.register(address, register_abi, network, alias)
-
-    if watch_mode is not None:
-        tx_status = await status(tx_hash, network, watch_mode)
-        if tx_status.status.is_rejected:
-            deployments.unregister(address, network, alias, abi=register_abi)
-            accounts.unregister(address, network)
-            return
-
-    return address, tx_hash, register_abi
+    return tx_status, predicted_address, register_abi

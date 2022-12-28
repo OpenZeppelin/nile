@@ -4,7 +4,7 @@ import dataclasses
 from typing import List
 
 from nile.core.declare import declare
-from nile.core.deploy import deploy_contract
+from nile.core.deploy import deploy_account, deploy_contract
 
 
 @dataclasses.dataclass
@@ -66,8 +66,9 @@ class DeployContractTxWrapper(BaseTxWrapper):
 
     alias: str = None
     contract_name: str = None
-    overriding_path: List[str] = None
     predicted_address: int = 0
+    overriding_path: List[str] = None
+    abi: str = None
 
     async def execute(self, watch_mode=None):
         """Execute the wrapped transaction."""
@@ -78,6 +79,7 @@ class DeployContractTxWrapper(BaseTxWrapper):
             alias=self.alias,
             predicted_address=self.predicted_address,
             overriding_path=self.overriding_path,
+            abi=self.abi,
             watch_mode=watch_mode,
         )
 
@@ -91,8 +93,20 @@ class DeployAccountTxWrapper(BaseTxWrapper):
     """
 
     alias: str = None
+    contract_name: str = None
+    predicted_address: int = 0
     overriding_path: List[str] = None
+    abi: str = None
 
     async def execute(self, watch_mode=None):
-        """Pending implementation."""
-        pass
+        """Execute the wrapped transaction."""
+        return await deploy_account(
+            transaction=self.tx,
+            signer=self.account.signer,
+            contract_name=self.contract_name,
+            alias=self.alias,
+            predicted_address=self.predicted_address,
+            overriding_path=self.overriding_path,
+            abi=self.abi,
+            watch_mode=watch_mode,
+        )

@@ -15,9 +15,14 @@ from nile.common import (
     normalize_number,
 )
 from nile.core.deploy import deploy_account
-from nile.core.types.transactions import DeclareTransaction, InvokeTransaction
+from nile.core.types.transactions import (
+    DeclareTransaction,
+    DeployAccountTransaction,
+    InvokeTransaction,
+)
 from nile.core.types.tx_wrappers import (
     DeclareTxWrapper,
+    DeployAccountTxWrapper,
     DeployContractTxWrapper,
     InvokeTxWrapper,
 )
@@ -85,10 +90,6 @@ class Account(AsyncObject):
             )
             return
 
-        self.abi_path = os.path.dirname(os.path.realpath(__file__)).replace(
-            "/core", "/artifacts/abis/Account.json"
-        )
-
         if predeployed_info is not None:
             self.address = predeployed_info["address"]
             self.index = predeployed_info["index"]
@@ -97,66 +98,46 @@ class Account(AsyncObject):
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         else:
-            output = await self.deploy(
-                salt=salt, max_fee=max_fee, watch_mode=watch_mode
-            )
-            if output is not None:
-                address, index = output
+            tx = await self.deploy(salt=salt, max_fee=max_fee, watch_mode=watch_mode)
+            self.index = accounts.current_index(network)
+            tx_status, address, _ = await tx.execute(watch_mode="track")
+
+            if not tx_status.status.is_rejected:
                 self.address = normalize_number(address)
-                self.index = index
 
         # we should replace this with static type checks
         if hasattr(self, "address"):
             assert type(self.address) == int
 
-    async def deploy(self, salt=None, max_fee=None, query_type=None, watch_mode=None):
+    async def deploy(
+        self, salt=None, max_fee=None, abi=None, query_type=None, watch_mode=None
+    ):
         """Deploy an Account contract for the given private key."""
-        index = accounts.current_index(self.network)
-        overriding_path = NILE_ARTIFACTS_PATH
-
-        class_hash = get_account_class_hash("Account")
         salt = 0 if salt is None else normalize_number(salt)
-        max_fee = 0 if max_fee is None else normalize_number(max_fee)
         calldata = [self.signer.public_key]
+        contract_name = "Account"
+        predicted_address = get_counterfactual_address(salt, calldata)
 
-        contract_address = get_counterfactual_address(salt, calldata)
+        max_fee, _, calldata = await self._process_arguments(max_fee, 0, calldata)
 
-        chain_id = (
-            StarknetChainId.MAINNET.value
-            if self.network == "mainnet"
-            else StarknetChainId.TESTNET.value
-        )
-
-        tx_hash = get_deploy_account_hash(
-            contract_address,
-            class_hash,
-            calldata,
-            salt,
-            max_fee,
-            0,  # nonce starts at 0
-            TRANSACTION_VERSION,
-            chain_id,
-        )
-
-        [sig_r, sig_s] = self.signer.sign(tx_hash)
-
-        output = await deploy_account(
-            network=self.network,
-            salt=salt,
+        # Create the transaction
+        transaction = DeployAccountTransaction(
+            contract_to_submit=contract_name,
+            predicted_address=predicted_address,
             calldata=calldata,
-            signature=[sig_r, sig_s],
             max_fee=max_fee,
-            query_type=query_type,
-            overriding_path=overriding_path,
-            watch_mode=watch_mode,
+            network=self.network,
         )
 
-        if output is not None:
-            address, *_ = output
-            accounts.register(
-                self.signer.public_key, address, index, self.alias, self.network
-            )
-            return address, index
+        return DeployAccountTxWrapper(
+            tx=transaction,
+            account=self,
+            alias=self.alias,
+            contract_name=contract_name,
+            predicted_address=predicted_address,
+            overriding_path=NILE_ARTIFACTS_PATH,
+            abi=abi,
+        )
 
     async def send(
         self,

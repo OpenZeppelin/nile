@@ -50,7 +50,7 @@ class Transaction(ABC):
 
     account_address: int = 0
     max_fee: int = 0
-    nonce: int = None
+    nonce: int = 0
     network: str = "localhost"
     version: int = TRANSACTION_VERSION
 
@@ -249,24 +249,23 @@ class DeployAccountTransaction(Transaction):
     """
     Starknet deploy_account transaction abstraction.
 
+    @param salt: Deployed account address salt.
     @param contract_to_submit: Contract name for declarations or deployments.
+    @param predicted_address: Counterfactual address of the account to deploy.
     @param calldata: The parameters for the call.
     @param overriding_path: Utility for artifacts resolution.
     @param contract_class: Contract class required for declarations.
     """
 
+    salt: int = 0
     contract_to_submit: str = None
+    predicted_address: int = 0
     calldata: List[int] = None
     overriding_path: str = None
-    contract_class: str = field(init=False)
     class_hash: int = field(init=False)
 
     def __post_init__(self):
         """Populate pending fields."""
-        self.contract_class = get_contract_class(
-            contract_name=self.contract_to_submit,
-            overriding_path=self.overriding_path,
-        )
         self.class_hash = get_class_hash(
             contract_name=self.contract_to_submit,
             overriding_path=self.overriding_path,
@@ -279,9 +278,10 @@ class DeployAccountTransaction(Transaction):
             version = self.version
 
         return get_deploy_account_hash(
-            self.account_address,
+            self.predicted_address,
             self.class_hash,
             self.calldata,
+            self.salt,
             self.max_fee,
             self.nonce,
             version,
@@ -289,4 +289,8 @@ class DeployAccountTransaction(Transaction):
         )
 
     def _execute_call_args(self):
-        return {}
+        return {
+            "salt": self.salt,
+            "contract_name": self.contract_to_submit,
+            "calldata": self.calldata,
+        }
