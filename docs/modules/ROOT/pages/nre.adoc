@@ -25,10 +25,10 @@ Compile a list of contracts.
 
 ===== Arguments
 
-- _contracts_
+- `*contracts*`
 +
 List of contracts to compile.
-- _cairo_path_
+- `*cairo_path*`
 +
 Specify a set of directories for the Cairo compiler to resolve imports.
 
@@ -42,34 +42,34 @@ WARNING: Deprecated in favor of deployments through accounts.
 
 ===== Arguments
 
-- _contract_
+- `*contract*`
 +
 Contract to deploy.
-- _arguments_
+- `*arguments*`
 +
 List of arguments for the constructor (calldata).
-- _alias_
+- `*alias*`
 +
 Alias for deployment registration.
-- _overriding_path_
+- `*overriding_path*`
 +
 Override for the path to artifacts and abis.
-- _abi_
+- `*abi*`
 +
 Use a different abi for registration (useful for proxies).
-- _mainnet_token_
+- `*mainnet_token*`
 +
 Token for mainnet deployments.
-- _watch_mode_
+- `*watch_mode*`
 +
 Either `track` or `debug` (check `status` command).
 
 ===== Return values
 
-- _address_
+- `*address*`
 +
 Address of the new contract.
-- _abi_
+- `*abi*`
 +
 Abi registered in deployments.
 
@@ -81,22 +81,22 @@ Call a view function in a smart contract.
 
 ===== Arguments
 
-- _address_or_alias_
+- `*address_or_alias*`
 +
 Identifier for the contract to call (alias needs to be registered in deployments).
-- _method_
+- `*method*`
 +
 Method to call.
-- _params_
+- `*params*`
 +
 Arguments for the call.
-- _abi_
+- `*abi*`
 +
 Override for the abi if necessary.
 
 ===== Return values
 
-- _output_
+- `*output*`
 +
 Output from the underlaying starknet cli call.
 
@@ -108,17 +108,17 @@ Get a deployment by its identifier.
 
 ===== Arguments
 
-- _address_or_alias_
+- `*address_or_alias*`
 +
 Contract identifier.
 
 ===== Return values
 
-- _address_
+- `*address*`
 +
 Registered contract address.
 
-- _abi_
+- `*abi*`
 +
 Registered contract abi.
 
@@ -130,13 +130,13 @@ Get a declared class by its identifier.
 
 ===== Arguments
 
-- _hash_or_alias_
+- `*hash_or_alias*`
 +
 Contract identifier.
 
 ===== Return values
 
-- _class_hash_
+- `*class_hash*`
 +
 Declared contract class hash.
 
@@ -148,16 +148,16 @@ Get or deploy an Account contract.
 
 ===== Arguments
 
-- _signer_
+- `*signer*`
 +
 Alias representing the private key associated.
-- _watch_mode_
+- `*watch_mode*`
 +
 Either None, track or debug. Block the execution to query the status of the deployment transaction if needed.
 
 ===== Return values
 
-- _account_
+- `*account*`
 +
 Account matching the signer.
 
@@ -169,13 +169,13 @@ Retrieve and manage deployed accounts.
 
 ===== Arguments
 
-- _predeployed_
+- `*predeployed*`
 +
 Get predeployed accounts from a starknet-devnet node.
 
 ===== Return values
 
-- _accounts_
+- `*accounts*`
 +
 Registered accounts.
 
@@ -187,13 +187,13 @@ Retrieve the nonce for a contract.
 
 ===== Arguments
 
-- _contract_address_
+- `*contract_address*`
 +
 Address of the contract to query.
 
 ===== Return values
 
-- _current_nonce_
+- `*current_nonce*`
 +
 Nonce of the contract.
 
@@ -205,12 +205,12 @@ Get the Ether balance of an address.
 
 ===== Arguments
 
-- _contract_address_
+- `*contract_address*`
 +
 Address of the contract to query.
 
 ===== Return values
 
-- _balance_
+- `*balance*`
 +
 Balance of the contract.

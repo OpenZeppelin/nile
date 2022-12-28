@@ -2,7 +2,7 @@
 
 This is a list of relevant plugins providing extra functionality to Nile.
 
-TIP: If you are a plugin developer and your project is not listed, feel free to open a PR!
+TIP: If you are a plugin developer and your project is not listed, you can link:https://github.com/OpenZeppelin/nile/issues/new[open a new issue] to be added.
 
 == OpenZeppelin plugins
 

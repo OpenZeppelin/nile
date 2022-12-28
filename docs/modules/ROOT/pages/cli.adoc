@@ -37,18 +37,18 @@ Run a local {starknet-devnet} node.
 
 ===== Options
 
-- _--host_
+- `*--host*`
 +
 Specify the address to listen at.
 +
 Defaults to 127.0.0.1 (use the address the program outputs on start).
-- _--port_
+- `*--port*`
 +
 Specify the port to listen at. Defaults to 5050.
-- _--seed_
+- `*--seed*`
 +
 Specify the seed for randomness of accounts to be deployed.
-- _--lite-mode_
+- `*--lite-mode*`
 +
 Applies all lite-mode optimizations by disabling features such as block hash and deploy hash calculation.
 
@@ -62,16 +62,16 @@ Compilation artifacts are written into the `artifacts/` directory.
 
 ===== Arguments
 
-- _PATH_TO_CONTRACT_
+- `*PATH_TO_CONTRACT*`
 +
 Specify the path to a contract for compiling.
 
 ===== Options
 
-- _--directory_
+- `*--directory*`
 +
 Specify a directory to compile contracts from.
-- _--account_contract_
+- `*--account_contract*`
 +
 As of {cairo-lang} v0.8.0, users must compile account contracts with the `--account_contract` flag. Nile automatically inserts the flag if the contract's name ends with Account. i.e. `Account.cairo`, `EthAccount.cairo`. Otherwise, the flag must be included by the user.
 +
@@ -79,12 +79,12 @@ As of {cairo-lang} v0.8.0, users must compile account contracts with the `--acco
 ----
 nile compile contracts/NewAccountType.cairo --account_contract # compiles account contract
 ----
-- _--cairo_path_
+- `*--cairo_path*`
 +
 Specify which directories the compiler must use to resolve imports from Cairo.
 +
 TIP: Check {imports} from StarkNet documentation.
-- _--disable-hint-validation_
+- `*--disable-hint-validation*`
 +
 Compile allowing unwhitelisted hints.
 
@@ -104,18 +104,18 @@ IMPORTANT: This command takes an alias instead of the actual private key to avoi
 
 ===== Arguments
 
-- _PRIVATE_KEY_ALIAS_
+- `*PRIVATE_KEY_ALIAS*`
 +
 Specify the private key that will own the account to be deployed. Looks for an environment variable with the name of the private key alias.
 
 ===== Options
 
-- _--network_
+- `*--network*`
 +
-Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet'). 
+Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
 +
 Default to localhost.
-- _--debug_ and _--track_
+- `*--debug_*` and `*--track*`
 +
 Watch the status of the account deployment transaction. See the {status} command for a complete description.
 
@@ -127,30 +127,30 @@ Declare a contract through an Account.
 
 ===== Arguments
 
-- _PRIVATE_KEY_ALIAS_
+- `*PRIVATE_KEY_ALIAS*`
 +
 Specify the alias representing the account to be used.
-- _CONTRACT_NAME_
+- `*CONTRACT_NAME*`
 +
 Specify the name of the contract artifact to be declared.
 
 ===== Options
 
-- _--network_
+- `*--network*`
 +
 Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
 +
 Default to localhost.
-- _--max_fee_
+- `*--max_fee*`
 +
 Specify the max fee you are willing to pay for the transaction.
-- _--overriding_path_
+- `*--overriding_path*`
 +
 Override the directory path for artifacts discovery.
-- _--token_
+- `*--token*`
 +
 Used for declaring contracts to Alpha Mainnet.
-- _--debug_ and _--track_
+- `*--debug_*` and `*--track*`
 +
 Watch the status of the account deployment transaction. See the {status} command for a complete description.
 
@@ -167,45 +167,45 @@ Deploy a contract through an Account.
 
 ===== Arguments
 
-- _PRIVATE_KEY_ALIAS_
+- `*PRIVATE_KEY_ALIAS*`
 +
 Specify the alias representing the account to be used.
-- _CONTRACT_
+- `*CONTRACT*`
 +
 Specify the name of the contract artifact to be deployed.
-- _ARGS_
+- `*ARGS*`
 +
 Optional calldata arguments for the constructor.
 
 ===== Options
 
-- _--network_
+- `*--network*`
 +
 Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
 +
 Default to localhost.
-- _--max_fee_
+- `*--max_fee*`
 +
 Specify the max fee you are willing to pay for the transaction.
-- _--salt_
+- `*--salt*`
 +
 Set the base salt for address generation.
-- _--unique_
+- `*--unique*`
 +
 Specify that the account address should be taken into account for target address generation.
-- _--abi_
+- `*--abi*`
 +
 Override artifact abi to be registered. Useful for proxies.
-- _--deployer_address_
+- `*--deployer_address*`
 +
 Specify the deployer contract if needed.
-- _--ignore_account_
+- `*--ignore_account*`
 +
 Deploy without using an account (DEPRECATED).
-- _--token_
+- `*--token*`
 +
 Used for deploying contracts to Alpha Mainnet.
-- _--debug_ and _--track_
+- `*--debug_*` and `*--track*`
 +
 Watch the status of the account deployment transaction. See the {status} command for a complete description.
 
@@ -218,19 +218,19 @@ Perform reading operations against a network.
 
 ===== Arguments
 
-- _CONTRACT_ID_
+- `*CONTRACT_ID*`
 +
 Specify the contract to call (either alias or address).
-- _METHOD_
+- `*METHOD*`
 +
 Specify the method to call.
-- _ARGS_
+- `*ARGS*`
 +
 Optional calldata arguments for the method to query.
 
 ===== Options
 
-- _--network_
+- `*--network*`
 +
 Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
 +
@@ -244,33 +244,33 @@ Execute a transaction through an Account.
 
 ===== Arguments
 
-- _PRIVATE_KEY_ALIAS_
+- `*PRIVATE_KEY_ALIAS*`
 +
 Specify the alias representing the account to be used.
-- _CONTRACT_ID_
+- `*CONTRACT_ID*`
 +
 Specify the contract to call (either alias or address).
-- _METHOD_
+- `*METHOD*`
 +
 Specify the method to execute.
-- _ARGS_
+- `*ARGS*`
 +
 Optional calldata arguments for the method to execute.
 
 ===== Options
 
-- _--network_
+- `*--network*`
 +
 Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
 +
 Default to localhost.
-- _--max_fee_
+- `*--max_fee*`
 +
 Specify the max fee you are willing to pay for the transaction.
-- _--simulate_ and _--estimate_fee_
+- `*--simulate_*` and `*--estimate_fee*`
 +
 Flags for querying the network without executing the transaction.
-- _--debug_ and _--track_
+- `*--debug_*` and `*--track*`
 +
 Watch the status of the account deployment transaction. See the {status} command for a complete description.
 
@@ -283,13 +283,13 @@ Precompute the deployment address of an Account contract.
 
 ===== Arguments
 
-- _PRIVATE_KEY_ALIAS_
+- `*PRIVATE_KEY_ALIAS*`
 +
 Specify the alias representing the private key to be used.
 
 ===== Options
 
-- _--salt_
+- `*--salt*`
 +
 Specify the salt for the address generation.
 +
@@ -303,26 +303,26 @@ Query the current status of a transaction.
 
 ===== Arguments
 
-- _TX_HASH_
+- `*TX_HASH*`
 +
 Specify the hash of the transaction to query.
 
 ===== Options
 
-- _--network_
+- `*--network*`
 +
 Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
 +
 Default to localhost.
-- _--track_
+- `*--track*`
 +
 Continue probing the network in case of pending transaction states.
-- _--debug_
+- `*--debug*`
 +
 Use locally available contracts to make error messages from rejected transactions more explicit.
 +
 Implies `--track`.
-- _--contracts_file_
+- `*--contracts_file*`
 +
 Override the deployments file to query the contract artifacts from.
 +
@@ -349,12 +349,12 @@ Sending transactions through predeployed accounts can be done through scripting,
 
 ===== Options
 
-- _--network_
+- `*--network*`
 +
 Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
 +
 Default to localhost.
-- _--predeployed_
+- `*--predeployed*`
 +
 Query a devnet node for predeployed accounts.
 
@@ -366,13 +366,13 @@ Retrieve the nonce for a contract (usually an account).
 
 ===== Arguments
 
-- _ADDRESS_
+- `*ADDRESS*`
 +
 Specify the address of the contract to query.
 
 ===== Options
 
-- _--network_
+- `*--network*`
 +
 Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
 +
@@ -386,13 +386,13 @@ Retrieve the Ether balance for a contract.
 
 ===== Arguments
 
-- _ADDRESS_
+- `*ADDRESS*`
 +
 Specify the address of the contract to query.
 
 ===== Options
 
-- _--network_
+- `*--network*`
 +
 Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
 +
@@ -406,13 +406,13 @@ Execute a script in the context of NRE.
 
 ===== Arguments
 
-- _PATH_TO_SCRIPT_
+- `*PATH_TO_SCRIPT*`
 +
 Path to the script to run.
 
 ===== Options
 
-- _--network_
+- `*--network*`
 +
 Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
 +
