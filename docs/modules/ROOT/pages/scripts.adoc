@@ -51,10 +51,8 @@ Useful if you need to deploy an account in devnet, for previous declaration:
 async def run(nre):
   accounts = await nre.get_accounts(predeployed=True)
   declarer_account = accounts[0]
-  print(await declarer_account.declare("Account"))
+  print(await declarer_account.declare("Account", nile_account=True))
 ----
-
-NOTE: This script assumes there is an link:https://github.com/OpenZeppelin/nile/tree/main/src/nile/artifacts[Account artifact] in your project. You can add the contract to the contracts folder, and compile with `nile compile` to get the artifact.
 
 === Transfer funds from predeployed devnet account
 
