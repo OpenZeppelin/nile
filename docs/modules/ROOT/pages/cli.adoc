@@ -115,7 +115,7 @@ Specify the private key that will own the account to be deployed. Looks for an e
 Select network: one of ('localhost', 'integration', 'goerli', 'goerli2', 'mainnet').
 +
 Default to localhost.
-- `*--debug_*` and `*--track*`
+- `*--debug*` and `*--track*`
 +
 Watch the status of the account deployment transaction. See the {status} command for a complete description.
 
@@ -150,7 +150,7 @@ Override the directory path for artifacts discovery.
 - `*--token*`
 +
 Used for declaring contracts to Alpha Mainnet.
-- `*--debug_*` and `*--track*`
+- `*--debug*` and `*--track*`
 +
 Watch the status of the account deployment transaction. See the {status} command for a complete description.
 
@@ -205,7 +205,7 @@ Deploy without using an account (DEPRECATED).
 - `*--token*`
 +
 Used for deploying contracts to Alpha Mainnet.
-- `*--debug_*` and `*--track*`
+- `*--debug*` and `*--track*`
 +
 Watch the status of the account deployment transaction. See the {status} command for a complete description.
 
@@ -267,10 +267,10 @@ Default to localhost.
 - `*--max_fee*`
 +
 Specify the max fee you are willing to pay for the transaction.
-- `*--simulate_*` and `*--estimate_fee*`
+- `*--simulate*` and `*--estimate_fee*`
 +
 Flags for querying the network without executing the transaction.
-- `*--debug_*` and `*--track*`
+- `*--debug*` and `*--track*`
 +
 Watch the status of the account deployment transaction. See the {status} command for a complete description.
 
