@@ -3,18 +3,14 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from starkware.starknet.definitions.general_config import StarknetChainId
 
 from nile import accounts, deployments
 from nile.common import (
     NILE_ARTIFACTS_PATH,
-    TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
-    get_account_class_hash,
     is_alias,
     normalize_number,
 )
-from nile.core.deploy import deploy_account
 from nile.core.types.transactions import (
     DeclareTransaction,
     DeployAccountTransaction,
@@ -27,11 +23,7 @@ from nile.core.types.tx_wrappers import (
     InvokeTxWrapper,
 )
 from nile.core.types.udc_helpers import create_udc_deploy_transaction
-from nile.core.types.utils import (
-    get_counterfactual_address,
-    get_deploy_account_hash,
-    get_execute_calldata,
-)
+from nile.core.types.utils import get_counterfactual_address, get_execute_calldata
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 try:

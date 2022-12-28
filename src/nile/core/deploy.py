@@ -1,18 +1,9 @@
 """Command to deploy StarkNet smart contracts."""
 import logging
 
-from starkware.starknet.services.api.gateway.transaction import DeployAccount
-
 from nile import accounts, deployments
-from nile.common import (
-    ABIS_DIRECTORY,
-    BUILD_DIRECTORY,
-    QUERY_VERSION,
-    TRANSACTION_VERSION,
-    get_account_class_hash,
-    parse_information,
-)
-from nile.starknet_cli import execute_call, get_gateway_response
+from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, parse_information
+from nile.starknet_cli import execute_call
 from nile.utils import hex_address
 from nile.utils.status import status
 
@@ -126,7 +117,8 @@ async def deploy_account(
         deployments.register(predicted_address, register_abi, network, alias)
         accounts.register(signer.public_key, predicted_address, index, alias, network)
         logging.info(
-            f"⏳ ️Deployment of {contract_name} successfully sent at {hex_address(predicted_address)}"
+            f"⏳ ️Deployment of {contract_name} successfully"
+            + " sent at {hex_address(predicted_address)}"
         )
         logging.info(f"🧾 Transaction hash: {hex(tx_status.tx_hash)}")
 

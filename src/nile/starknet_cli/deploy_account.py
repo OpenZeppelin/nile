@@ -5,12 +5,12 @@ from typing import List, Optional
 
 from starkware.starknet.cli.starknet_cli import (
     add_deploy_account_tx_arguments,
+    assert_tx_received,
     compute_max_fee,
     get_gateway_client,
     need_simulate_tx,
     simulate_or_estimate_fee,
     validate_max_fee,
-    assert_tx_received
 )
 from starkware.starknet.services.api.gateway.transaction import DeployAccount
 
@@ -19,6 +19,7 @@ from nile.core.types.utils import get_counterfactual_address
 
 
 async def deploy_account_no_wallet(args: argparse.Namespace, command_args: List[str]):
+    """Override for straknet_cli deploy_account."""
     parser = argparse.ArgumentParser(
         description=(
             "Deploys an initialized account contract to StarkNet. "
@@ -40,7 +41,8 @@ async def deploy_account_no_wallet(args: argparse.Namespace, command_args: List[
             return
 
     assert args.block_hash is None and args.block_number is None, (
-        "--block_hash and --block_number should only be passed when either --simulate or "
+        "--block_hash and --block_number should only "
+        "be passed when either --simulate or "
         "--estimate_fee flag are used."
     )
     max_fee = await compute_max_fee(
@@ -65,7 +67,6 @@ async def deploy_account_no_wallet(args: argparse.Namespace, command_args: List[
         "Are you using the correct version of the CLI?"
     )
 
-    # Don't end sentences with '.', to allow easy double-click copy-pasting of the values.
     print(
         f"""\
 Sent deploy account contract transaction.
