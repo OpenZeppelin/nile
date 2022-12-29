@@ -5,7 +5,7 @@ import os
 
 import asyncclick as click
 
-from nile.common import is_alias
+from nile.common import is_alias, try_get_account
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
@@ -138,24 +138,25 @@ async def deploy(
 ):
     """Deploy a StarkNet smart contract."""
     if not ignore_account:
-        account = await Account(signer, network, watch_mode=watch_mode)
-        transaction = await account.deploy_contract(
-            contract_name,
-            salt,
-            unique,
-            params,
-            alias,
-            deployer_address=deployer_address,
-            max_fee=max_fee,
-            abi=abi,
-        )
+        account = await try_get_account(signer, network, watch_mode="track")
+        if account is not None:
+            transaction = await account.deploy_contract(
+                contract_name,
+                salt,
+                unique,
+                params,
+                alias,
+                deployer_address=deployer_address,
+                max_fee=max_fee,
+                abi=abi,
+            )
 
-        if query == "estimate_fee":
-            await transaction.estimate_fee()
-        elif query == "simulate":
-            await transaction.simulate()
-        else:
-            await transaction.execute(watch_mode=watch_mode)
+            if query == "estimate_fee":
+                await transaction.estimate_fee()
+            elif query == "simulate":
+                await transaction.simulate()
+            else:
+                await transaction.execute(watch_mode=watch_mode)
     else:
         await deploy_command(
             contract_name,
@@ -192,23 +193,23 @@ async def declare(
     watch_mode,
 ):
     """Declare a StarkNet smart contract through an Account."""
-    account = await Account(signer, network, watch_mode=watch_mode)
+    account = await try_get_account(signer, network, watch_mode="track")
+    if account is not None:
+        transaction = await account.declare(
+            contract_name,
+            alias=alias,
+            max_fee=max_fee,
+            overriding_path=overriding_path,
+            mainnet_token=token,
+            nile_account=nile_account,
+        )
 
-    transaction = await account.declare(
-        contract_name,
-        alias=alias,
-        max_fee=max_fee,
-        overriding_path=overriding_path,
-        mainnet_token=token,
-        nile_account=nile_account,
-    )
-
-    if query == "estimate_fee":
-        await transaction.estimate_fee()
-    elif query == "simulate":
-        await transaction.simulate()
-    else:
-        await transaction.execute(watch_mode=watch_mode)
+        if query == "estimate_fee":
+            await transaction.estimate_fee()
+        elif query == "simulate":
+            await transaction.simulate()
+        else:
+            await transaction.execute(watch_mode=watch_mode)
 
 
 @cli.command()
@@ -220,23 +221,16 @@ async def declare(
 @watch_option
 async def setup(signer, network, salt, max_fee, query, watch_mode):
     """Set up an Account contract."""
-    try:
-        account = await Account(signer, network, auto_deploy=False)
-    except KeyError:
-        logging.error(
-            f"\n❌ Cannot find {signer} in env."
-            "\nCheck spelling and that it exists."
-            "\nTry moving the .env to the root of your project."
-        )
+    account = await try_get_account(signer, network, auto_deploy=False)
+    if account is not None:
+        transaction = await account.deploy(salt, max_fee)
 
-    transaction = await account.deploy(salt, max_fee)
-
-    if query == "estimate_fee":
-        await transaction.estimate_fee()
-    elif query == "simulate":
-        await transaction.simulate()
-    else:
-        await transaction.execute(watch_mode=watch_mode)
+        if query == "estimate_fee":
+            await transaction.estimate_fee()
+        elif query == "simulate":
+            await transaction.simulate()
+        else:
+            await transaction.execute(watch_mode=watch_mode)
 
 
 @cli.command()
@@ -271,26 +265,27 @@ async def send(
     watch_mode,
 ):
     """Invoke a contract's method through an Account."""
-    account = await Account(signer, network, watch_mode=watch_mode)
-    print(
-        "Calling {} on {} with params: {}".format(
-            method, address_or_alias, [x for x in params]
+    account = await try_get_account(signer, network, watch_mode="track")
+    if account is not None:
+        print(
+            "Calling {} on {} with params: {}".format(
+                method, address_or_alias, [x for x in params]
+            )
         )
-    )
 
-    transaction = await account.send(
-        address_or_alias,
-        method,
-        params,
-        max_fee=max_fee,
-    )
+        transaction = await account.send(
+            address_or_alias,
+            method,
+            params,
+            max_fee=max_fee,
+        )
 
-    if query == "estimate_fee":
-        await transaction.estimate_fee()
-    elif query == "simulate":
-        await transaction.simulate()
-    else:
-        await transaction.execute(watch_mode=watch_mode)
+        if query == "estimate_fee":
+            await transaction.estimate_fee()
+        elif query == "simulate":
+            await transaction.simulate()
+        else:
+            await transaction.execute(watch_mode=watch_mode)
 
 
 @cli.command()

@@ -185,3 +185,34 @@ def get_addresses_from_string(string):
     return set(
         int(address, 16) for address in re.findall("0x[\\da-f]{1,64}", str(string))
     )
+
+
+async def try_get_account(
+    signer,
+    network,
+    salt=None,
+    max_fee=None,
+    predeployed_info=None,
+    watch_mode=None,
+    auto_deploy=True,
+):
+    """Avoid reverting on KeyError."""
+    account = None
+    try:
+        account = await Account(
+            signer,
+            network,
+            salt=salt,
+            max_fee=max_fee,
+            predeployed_info=predeployed_info,
+            watch_mode=watch_mode,
+            auto_deploy=auto_deploy,
+        )
+    except KeyError:
+        logging.error(
+            f"\n❌ Cannot find {signer} in env."
+            "\nCheck spelling and that it exists."
+            "\nTry moving the .env to the root of your project."
+        )
+
+    return account
