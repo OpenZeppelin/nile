@@ -75,7 +75,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
 )
 @patch(
     "nile.core.types.tx_wrappers.DeployAccountTxWrapper.execute",
-    return_value=(TX_STATUS, MOCK_ADDRESS, ""),
+    return_value=(TX_STATUS, MOCK_ADDRESS, "", MOCK_INDEX),
 )
 @patch(
     "nile.core.types.account.Account.deploy", return_value=MOCK_DEPLOY_ACC_TX_WRAPPER
@@ -99,7 +99,7 @@ async def test__check_and_return_account_with_matching_keys(
 )
 @patch(
     "nile.core.types.tx_wrappers.DeployAccountTxWrapper.execute",
-    return_value=(TX_STATUS, MOCK_ADDRESS, ""),
+    return_value=(TX_STATUS, MOCK_ADDRESS, "", MOCK_INDEX),
 )
 @patch(
     "nile.core.types.account.Account.deploy", return_value=MOCK_DEPLOY_ACC_TX_WRAPPER
@@ -144,7 +144,7 @@ async def test_get_accounts_no_activated_accounts_feedback(mock_deploy, capsys):
 )
 @patch(
     "nile.core.types.tx_wrappers.DeployAccountTxWrapper.execute",
-    return_value=(TX_STATUS, MOCK_ADDRESS, ""),
+    return_value=(TX_STATUS, MOCK_ADDRESS, "", MOCK_INDEX),
 )
 @patch(
     "nile.core.types.account.Account.deploy", return_value=MOCK_DEPLOY_ACC_TX_WRAPPER

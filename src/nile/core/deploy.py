@@ -111,6 +111,7 @@ async def deploy_account(
     # Execute the transaction
     tx_status, _ = await transaction.execute(signer=signer, watch_mode=watch_mode)
 
+    index = None
     if not tx_status.status.is_rejected:
         index = accounts.current_index(network)
 
@@ -122,4 +123,4 @@ async def deploy_account(
         )
         logging.info(f"🧾 Transaction hash: {hex(tx_status.tx_hash)}")
 
-    return tx_status, predicted_address, register_abi
+    return tx_status, predicted_address, register_abi, index

@@ -63,6 +63,7 @@ class Account(AsyncObject):
         max_fee=None,
         predeployed_info=None,
         watch_mode=None,
+        auto_deploy=True,
     ):
         """Get or deploy an Account contract for the given private key."""
         try:
@@ -89,13 +90,13 @@ class Account(AsyncObject):
             signer_data = next(accounts.load(self.signer.public_key, network))
             self.address = signer_data["address"]
             self.index = signer_data["index"]
-        else:
+        elif auto_deploy:
             tx = await self.deploy(salt=salt, max_fee=max_fee, watch_mode=watch_mode)
-            self.index = accounts.current_index(network)
-            tx_status, address, _ = await tx.execute(watch_mode="track")
+            tx_status, address, _, index = await tx.execute(watch_mode="track")
 
             if not tx_status.status.is_rejected:
                 self.address = normalize_number(address)
+                self.index = index
 
         # we should replace this with static type checks
         if hasattr(self, "address"):

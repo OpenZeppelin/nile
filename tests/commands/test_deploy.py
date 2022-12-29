@@ -240,7 +240,7 @@ async def test_deploy_account(
             abi=abi,
             watch_mode=watch_mode,
         )
-        assert res == (TX_STATUS, ADDRESS, exp_abi)
+        assert res == (TX_STATUS, ADDRESS, exp_abi, MOCK_ACC_INDEX)
 
         # check internals
         mock_deployments_register.assert_called_once_with(

@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 import pytest
 
-from nile import accounts
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
@@ -44,7 +43,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
 @pytest.mark.asyncio
 @patch(
     "nile.core.types.tx_wrappers.DeployAccountTxWrapper.execute",
-    return_value=(TX_STATUS, MOCK_ADDRESS, ""),
+    return_value=(TX_STATUS, MOCK_ADDRESS, "", MOCK_INDEX),
 )
 @patch(
     "nile.core.types.account.Account.deploy", return_value=MOCK_DEPLOY_ACC_TX_WRAPPER
@@ -52,10 +51,8 @@ def tmp_working_dir(monkeypatch, tmp_path):
 async def test_account_init(mock_deploy, mock_execute):
     account = await Account(KEY, NETWORK)
 
-    index = accounts.current_index(NETWORK)
-
     assert account.address == MOCK_ADDRESS
-    assert account.index == index
+    assert account.index == MOCK_INDEX
 
     mock_execute.assert_called_once()
 
