@@ -143,7 +143,7 @@ For local development using a devnet node, you can use predeployed accounts to f
 +
 [IMPORTANT]
 ====
-In StarkNet, users can deploy only previously declared contracts. {oz-account} is declared soon after every release in devnet, testnets and mainnet, but sometimes there is an out-of-sync period between account update release and devnet release. Then you can declare the OZ Account using predeployed accounts through scripts.
+In StarkNet, users can deploy only previously declared contracts. {oz-account} is declared soon after every release in devnet, testnets and mainnet, but there could be an out-of-sync period between account update release and devnet release. Then you can declare the OZ Account using predeployed accounts through scripts.
 
 Check xref:scripts.adoc#declare_account[Declare Account] script.
 ====
