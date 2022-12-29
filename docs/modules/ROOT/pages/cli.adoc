@@ -8,25 +8,41 @@
 Here you can find a complete reference of the core commands Nile provides by default.
 
 [.contract-index]
-.Core Commands
+.Transactions
 --
-* xref:#node[`++node++`]
-* xref:#compile[`++compile++`]
 * xref:#setup[`++setup++`]
 * xref:#declare[`++declare++`]
 * xref:#deploy[`++deploy++`]
-* xref:#call[`++call++`]
 * xref:#send[`++send++`]
-* xref:#counterfactual-address[`++counterfactual-address++`]
 * xref:#status[`++status++`]
 * xref:#debug[`++debug++`]
-* xref:#get-accounts[`++get-accounts++`]
+--
+
+[.contract-index]
+.Queries
+--
+* xref:#call[`++call++`]
 * xref:#get-nonce[`++get-nonce++`]
 * xref:#get-balance[`++get-balance++`]
+--
+
+[.contract-index]
+.Project management
+--
+* xref:#init[`++init++`]
+* xref:#node[`++node++`]
+* xref:#compile[`++compile++`]
+* xref:#setup[`++setup++`]
 * xref:#run[`++run++`]
 * xref:#clean[`++clean++`]
-* xref:#init[`++init++`]
 * xref:#version[`++version++`]
+--
+
+[.contract-index]
+.Utils
+--
+* xref:#get-accounts[`++get-accounts++`]
+* xref:#counterfactual-address[`++counterfactual-address++`]
 --
 
 [.contract-item]
