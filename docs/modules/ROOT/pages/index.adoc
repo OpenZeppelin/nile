@@ -54,14 +54,18 @@ Install Nile:
 
 [,sh]
 ----
-(env): pip install cairo-nile
+pip install cairo-nile
 ----
 
 Use `nile init` to quickly set up your development environment:
 
 [,sh]
 ----
-$ (env): nile init
+nile init
+----
+
+[,sh]
+----
 🗄 Creating project directory tree
 ⛵️ Nile project ready! Try running:
 
@@ -76,7 +80,7 @@ Run `pytest` to run the test suite against the Smart Contracts:
 
 [,sh]
 ----
-(env): pytest tests/
+pytest tests/
 ----
 
 TIP: For a more in-deep guide on testing with parallelism and coverage, check our xref:testing.adoc[testing guide].
@@ -87,7 +91,11 @@ Use `nile compile` to compile contracts under the `contracts/` folder by default
 
 [,sh]
 ----
-(env): nile compile
+nile compile
+----
+
+[,sh]
+----
 🤖 Compiling all Cairo contracts in the contracts directory
 🔨 Compiling contracts/contract.cairo
 ✅ Done
@@ -105,7 +113,7 @@ Use `nile node` to run a local devnet node for development.
 
 [,sh]
 ----
-(env): nile node
+nile node
 ----
 
 ==== Deploying an account
@@ -124,8 +132,7 @@ CAUTION: Don't use this private key in production environments!
 +
 [,sh]
 ----
-(env): nile counterfactual-address ACCOUNT_1 --salt 123
-0x057792c44b1e9e349ee549ed018f7225f927bd2b01b6277a1cb94da5fb9421ed
+nile counterfactual-address ACCOUNT_1 --salt 123
 ----
 +
 NOTE: Different salts compute to different addresses, even with the same private key.
@@ -138,7 +145,7 @@ For local development using a devnet node, you can use predeployed accounts to f
 +
 [,sh]
 ----
-(env): nile setup ACCOUNT_1 --salt 123
+nile setup ACCOUNT_1 --salt 123
 ----
 +
 [IMPORTANT]
@@ -154,14 +161,14 @@ Check xref:scripts.adoc#declare_account[Declare Account] script.
 +
 [,sh]
 ----
-(env): nile declare ACCOUNT_1 contract
+nile declare ACCOUNT_1 contract
 ----
 +
 . Use `nile deploy` to deploy the contract.
 +
 [,sh]
 ----
-(env): nile deploy ACCOUNT_1 contract --alias my_contract
+nile deploy ACCOUNT_1 contract --alias my_contract
 ----
 +
 NOTE: The alias option allows you to interact with the contract later without using the address.
@@ -172,9 +179,7 @@ Use `nile call` to read from a contract view function.
 
 [,sh]
 ----
-(env): nile call my_contract get_balance
-
-0
+nile call my_contract get_balance
 ----
 
 ==== Writing to a contract
@@ -183,5 +188,5 @@ Use `nile send` to execute a transaction.
 
 [,sh]
 ----
-(env): nile send ACCOUNT_1 my_contract increase_balance 2
+nile send ACCOUNT_1 my_contract increase_balance 2
 ----

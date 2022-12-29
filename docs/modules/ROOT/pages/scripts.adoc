@@ -19,14 +19,14 @@ NOTE: The `predeployed` parameter leverages the accounts that come already deplo
 +
 [,sh]
 ----
-(env): nile node
+nile node
 ----
 +
 . Run the script by using `nile run`
 +
 [,sh]
 ----
-(env): nile run scripts/test_script.py
+nile run scripts/test_script.py
 ----
 
 [NOTE]
@@ -51,7 +51,10 @@ Useful if you need to deploy an account in devnet, for previous declaration:
 async def run(nre):
   accounts = await nre.get_accounts(predeployed=True)
   declarer_account = accounts[0]
-  print(await declarer_account.declare("Account", nile_account=True))
+
+  # nile_account flag tells Nile to use its pre-packed artifact
+  output = await declarer_account.declare("Account", nile_account=True)
+  print(output)
 ----
 
 === Transfer funds from predeployed devnet account

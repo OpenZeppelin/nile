@@ -49,7 +49,7 @@ Following the pytest requirements, test files must start with `test_` or end wit
 
 [,sh]
 ----
-(env): pytest
+pytest
 ----
 
 TIP: For a reference on how to test complex projects, you can check the link:https://github.com/OpenZeppelin/cairo-contracts[cairo-contracts] repository.
@@ -64,7 +64,7 @@ An issue we are very aware of, is how slow running tests can become when you hav
 +
 [,sh]
 ----
-(env): python -m pip install pytest-xdist
+python -m pip install pytest-xdist
 ----
 +
 . Add a `pytest.ini` file in the root of your project with the following configuration:
@@ -85,14 +85,14 @@ By default, Nile doesn't support coverage reports, but you can use link:https://
 +
 [,sh]
 ----
-(env): python -m pip install nile-coverage
+python -m pip install nile-coverage
 ----
 +
 . Use coverage command (from the plugin) to generate a coverage report.
 +
 [,sh]
 ----
-(env): nile coverage
+nile coverage
 
 Filename                    Stmts    Miss  Cover    Missing
 ------------------------  -------  ------  -------  ---------
