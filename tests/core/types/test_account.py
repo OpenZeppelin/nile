@@ -58,15 +58,9 @@ async def test_account_init(mock_deploy, mock_execute):
 
 
 @pytest.mark.asyncio
-async def test_account_init_bad_key(caplog):
-    logging.getLogger().setLevel(logging.INFO)
-
-    await Account("BAD_KEY", NETWORK)
-    assert (
-        "\n❌ Cannot find BAD_KEY in env."
-        "\nCheck spelling and that it exists."
-        "\nTry moving the .env to the root of your project."
-    ) in caplog.text
+async def test_account_init_bad_key():
+    with pytest.raises(KeyError):
+        await Account("BAD_KEY", NETWORK)
 
 
 @pytest.mark.asyncio

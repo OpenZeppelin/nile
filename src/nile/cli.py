@@ -220,7 +220,14 @@ async def declare(
 @watch_option
 async def setup(signer, network, salt, max_fee, query, watch_mode):
     """Set up an Account contract."""
-    account = await Account(signer, network, auto_deploy=False)
+    try:
+        account = await Account(signer, network, auto_deploy=False)
+    except KeyError:
+        logging.error(
+            f"\n❌ Cannot find {signer} in env."
+            "\nCheck spelling and that it exists."
+            "\nTry moving the .env to the root of your project."
+        )
 
     transaction = await account.deploy(salt, max_fee)
 

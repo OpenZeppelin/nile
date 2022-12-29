@@ -66,22 +66,11 @@ class Account(AsyncObject):
         auto_deploy=True,
     ):
         """Get or deploy an Account contract for the given private key."""
-        try:
-            if predeployed_info is None:
-                self.signer = Signer(normalize_number(os.environ[signer]))
-                self.alias = signer
-            else:
-                self.signer = Signer(signer)
-                self.alias = predeployed_info["alias"]
+        signer, alias = _get_signer_and_alias(signer, predeployed_info)
 
-            self.network = network
-        except KeyError:
-            logging.error(
-                f"\n❌ Cannot find {signer} in env."
-                "\nCheck spelling and that it exists."
-                "\nTry moving the .env to the root of your project."
-            )
-            return
+        self.signer = signer
+        self.alias = alias
+        self.network = network
 
         if predeployed_info is not None:
             self.address = predeployed_info["address"]
@@ -258,3 +247,14 @@ class Account(AsyncObject):
             calldata = [normalize_number(x) for x in calldata]
 
         return max_fee, nonce, calldata
+
+
+def _get_signer_and_alias(signer, predeployed_info):
+    if predeployed_info is None:
+        alias = signer
+        signer = Signer(normalize_number(os.environ[signer]))
+    else:
+        signer = Signer(signer)
+        alias = predeployed_info["alias"]
+
+    return signer, alias
