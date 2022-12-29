@@ -91,8 +91,8 @@ class Account(AsyncObject):
             self.address = signer_data["address"]
             self.index = signer_data["index"]
         elif auto_deploy:
-            tx = await self.deploy(salt=salt, max_fee=max_fee, watch_mode=watch_mode)
-            tx_status, address, _, index = await tx.execute(watch_mode="track")
+            tx = await self.deploy(salt=salt, max_fee=max_fee)
+            tx_status, address, _, index = await tx.execute(watch_mode=watch_mode)
 
             if not tx_status.status.is_rejected:
                 self.address = normalize_number(address)
@@ -102,9 +102,7 @@ class Account(AsyncObject):
         if hasattr(self, "address"):
             assert type(self.address) == int
 
-    async def deploy(
-        self, salt=None, max_fee=None, abi=None, query_type=None, watch_mode=None
-    ):
+    async def deploy(self, salt=None, max_fee=None, abi=None):
         """Deploy an Account contract for the given private key."""
         salt = 0 if salt is None else normalize_number(salt)
         calldata = [self.signer.public_key]

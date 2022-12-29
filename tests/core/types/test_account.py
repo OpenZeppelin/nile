@@ -73,8 +73,6 @@ async def test_account_init_bad_key(caplog):
 @pytest.mark.parametrize("salt", [0, 1])
 @pytest.mark.parametrize("max_fee", [0, 15, None])
 @pytest.mark.parametrize("abi", [None, "TEST_ABI"])
-@pytest.mark.parametrize("query_type", [None, "simulate", "estimate_fee"])
-@pytest.mark.parametrize("watch_mode", [None, "track", "debug"])
 @patch("nile.core.types.transactions.get_class_hash", return_value=CLASS_HASH)
 @patch("nile.core.types.account.get_counterfactual_address", return_value=MOCK_ADDRESS)
 @patch("nile.core.types.account.Account._process_arguments")
@@ -85,8 +83,6 @@ async def test_deploy(
     salt,
     max_fee,
     abi,
-    query_type,
-    watch_mode,
 ):
     account = await MockAccount(KEY, NETWORK)
     calldata = [account.signer.public_key]
@@ -101,8 +97,6 @@ async def test_deploy(
             salt=salt,
             max_fee=max_fee,
             abi=abi,
-            query_type=query_type,
-            watch_mode=watch_mode,
         )
 
         # Check transaction wrapper

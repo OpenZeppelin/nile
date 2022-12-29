@@ -113,4 +113,7 @@ def update_deploy_account_context(args: SimpleNamespace, **kwargs):
     for arg in extension:
         setattr(args, arg, kwargs.get(arg))
 
+    if kwargs.get("query_flag"):
+        setattr(args, kwargs.get("query_flag"), True)
+
     return args

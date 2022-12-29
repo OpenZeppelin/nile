@@ -216,10 +216,20 @@ async def declare(
 @click.option("--salt", nargs=1)
 @click.option("--max_fee", nargs=1)
 @network_option
+@query_option
 @watch_option
-async def setup(signer, network, salt, max_fee, watch_mode):
+async def setup(signer, network, salt, max_fee, query, watch_mode):
     """Set up an Account contract."""
-    await Account(signer, network, salt, max_fee, watch_mode=watch_mode)
+    account = await Account(signer, network, auto_deploy=False)
+
+    transaction = await account.deploy(salt, max_fee)
+
+    if query == "estimate_fee":
+        await transaction.estimate_fee()
+    elif query == "simulate":
+        await transaction.simulate()
+    else:
+        await transaction.execute(watch_mode=watch_mode)
 
 
 @cli.command()
