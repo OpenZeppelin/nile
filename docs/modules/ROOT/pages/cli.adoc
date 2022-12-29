@@ -110,14 +110,9 @@ Specify the private key that will own the account to be deployed. Looks for an e
 
 ===== Options
 
-- `*--network*`
+include::snippets.adoc[tag=network-options]
 +
-Select network: one of (localhost, integration, goerli, goerli2, mainnet).
-+
-Default to localhost.
-- `*--debug*` and `*--track*`
-+
-Watch the status of the account deployment transaction. See the {status} command for a complete description.
+include::snippets.adoc[tag=status-options]
 
 [.contract-item]
 [[declare]]
@@ -136,9 +131,7 @@ Specify the name of the contract artifact to be declared.
 
 ===== Options
 
-- `*--network*`
-+
-Select network: one of (localhost, integration, goerli, goerli2, mainnet).
+include::snippets.adoc[tag=network-options]
 +
 Default to localhost.
 - `*--max_fee*`
@@ -150,9 +143,8 @@ Override the directory path for artifacts discovery.
 - `*--token*`
 +
 Used for declaring contracts to Alpha Mainnet.
-- `*--debug*` and `*--track*`
 +
-Watch the status of the account deployment transaction. See the {status} command for a complete description.
+include::snippets.adoc[tag=status-options]
 
 [.contract-item]
 [[deploy]]
@@ -179,9 +171,7 @@ Optional calldata arguments for the constructor.
 
 ===== Options
 
-- `*--network*`
-+
-Select network: one of (localhost, integration, goerli, goerli2, mainnet).
+include::snippets.adoc[tag=network-options]
 +
 Default to localhost.
 - `*--max_fee*`
@@ -205,9 +195,8 @@ Deploy without using an account (DEPRECATED).
 - `*--token*`
 +
 Used for deploying contracts to Alpha Mainnet.
-- `*--debug*` and `*--track*`
 +
-Watch the status of the account deployment transaction. See the {status} command for a complete description.
+include::snippets.adoc[tag=status-options]
 
 
 [.contract-item]
@@ -230,9 +219,7 @@ Optional calldata arguments for the method to query.
 
 ===== Options
 
-- `*--network*`
-+
-Select network: one of (localhost, integration, goerli, goerli2, mainnet).
+include::snippets.adoc[tag=network-options]
 +
 Default to localhost.
 
@@ -259,9 +246,7 @@ Optional calldata arguments for the method to execute.
 
 ===== Options
 
-- `*--network*`
-+
-Select network: one of (localhost, integration, goerli, goerli2, mainnet).
+include::snippets.adoc[tag=network-options]
 +
 Default to localhost.
 - `*--max_fee*`
@@ -270,9 +255,8 @@ Specify the max fee you are willing to pay for the transaction.
 - `*--simulate*` and `*--estimate_fee*`
 +
 Flags for querying the network without executing the transaction.
-- `*--debug*` and `*--track*`
 +
-Watch the status of the account deployment transaction. See the {status} command for a complete description.
+include::snippets.adoc[tag=status-options]
 
 
 [.contract-item]
@@ -309,9 +293,7 @@ Specify the hash of the transaction to query.
 
 ===== Options
 
-- `*--network*`
-+
-Select network: one of (localhost, integration, goerli, goerli2, mainnet).
+include::snippets.adoc[tag=network-options]
 +
 Default to localhost.
 - `*--track*`
@@ -349,9 +331,7 @@ Sending transactions through predeployed accounts can be done through scripting,
 
 ===== Options
 
-- `*--network*`
-+
-Select network: one of (localhost, integration, goerli, goerli2, mainnet).
+include::snippets.adoc[tag=network-options]
 +
 Default to localhost.
 - `*--predeployed*`
@@ -372,9 +352,7 @@ Specify the address of the contract to query.
 
 ===== Options
 
-- `*--network*`
-+
-Select network: one of (localhost, integration, goerli, goerli2, mainnet).
+include::snippets.adoc[tag=network-options]
 +
 Default to localhost.
 
@@ -392,9 +370,7 @@ Specify the address of the contract to query.
 
 ===== Options
 
-- `*--network*`
-+
-Select network: one of (localhost, integration, goerli, goerli2, mainnet).
+include::snippets.adoc[tag=network-options]
 +
 Default to localhost.
 
@@ -412,9 +388,7 @@ Path to the script to run.
 
 ===== Options
 
-- `*--network*`
-+
-Select network: one of (localhost, integration, goerli, goerli2, mainnet).
+include::snippets.adoc[tag=network-options]
 +
 Default to localhost.
 

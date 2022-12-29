@@ -1,0 +1,15 @@
+= Snippets
+
+// tag::network-options[]
+- `*--network*`
++
+Select network: one of (`localhost`, `integration`, `goerli`, `goerli2`, `mainnet`).
++
+Default to localhost.
+// end::network-options[]
+
+// tag::status-options[]
+- `*--debug*` and `*--track*`
++
+Watch the status of the account deployment transaction. See the {status} command for a complete description.
+// tag::status-options[]
