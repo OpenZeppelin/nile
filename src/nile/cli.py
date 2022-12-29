@@ -2,10 +2,11 @@
 """Nile CLI entry point."""
 import logging
 import os
+from functools import update_wrapper
 
 import asyncclick as click
 
-from nile.common import is_alias, try_get_account
+from nile.common import is_alias
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
@@ -15,7 +16,7 @@ from nile.core.node import node as node_command
 from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
-from nile.core.types.account import get_counterfactual_address
+from nile.core.types.account import get_counterfactual_address, try_get_account
 from nile.core.types.signer import Signer
 from nile.core.version import version as version_command
 from nile.utils import hex_address, normalize_number, shorten_address
@@ -31,6 +32,26 @@ logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 logging.getLogger("asyncio").setLevel(logging.WARNING)
 
 NETWORKS = ("localhost", "integration", "goerli", "goerli2", "mainnet")
+
+
+def enable_stack_trace(f):
+    """Enable stack trace swapping for commands."""
+
+    @click.pass_context
+    async def new_func(ctx, *args, **kwargs):
+        if ctx.obj["STACK_TRACE"]:
+            return await ctx.invoke(f, ctx.obj, *args, **kwargs)
+        else:
+            try:
+                return await ctx.invoke(f, ctx.obj, *args, **kwargs)
+            except Exception as e:
+                logging.error(
+                    "The following exception occured while "
+                    f"trying to execute the command:\n\n{repr(e)}\n\n"
+                    "Try the --stack_trace option for the full stack trace."
+                )
+
+    return update_wrapper(new_func, f)
 
 
 def network_option(f):
@@ -82,13 +103,20 @@ def _validate_network(_ctx, _param, value):
 
 
 @click.group()
-def cli():
+@click.option("--stack_trace/--no_stack_trace", default=False)
+@click.pass_context
+def cli(ctx, stack_trace):
     """Nile CLI group."""
-    pass
+    # ensure that ctx.obj exists and is a dict (in case `cli()` is called
+    # by means other than the `if` block below)
+    ctx.ensure_object(dict)
+
+    ctx.obj["STACK_TRACE"] = stack_trace
 
 
 @cli.command()
-def init():
+@enable_stack_trace
+def init(ctx):
     """Nile CLI group."""
     init_command()
 
@@ -96,7 +124,8 @@ def init():
 @cli.command()
 @click.argument("path", nargs=1)
 @network_option
-async def run(path, network):
+@enable_stack_trace
+async def run(ctx, path, network):
     """Run Nile scripts with NileRuntimeEnvironment."""
     await run_command(path, network)
 
@@ -120,7 +149,9 @@ async def run(path, network):
 @network_option
 @query_option
 @watch_option
+@enable_stack_trace
 async def deploy(
+    ctx,
     signer,
     contract_name,
     salt,
@@ -180,7 +211,9 @@ async def deploy(
 @mainnet_token_option
 @query_option
 @watch_option
+@enable_stack_trace
 async def declare(
+    ctx,
     signer,
     contract_name,
     network,
@@ -219,7 +252,8 @@ async def declare(
 @network_option
 @query_option
 @watch_option
-async def setup(signer, network, salt, max_fee, query, watch_mode):
+@enable_stack_trace
+async def setup(ctx, signer, network, salt, max_fee, query, watch_mode):
     """Set up an Account contract."""
     account = await try_get_account(signer, network, auto_deploy=False)
     if account is not None:
@@ -236,7 +270,8 @@ async def setup(signer, network, salt, max_fee, query, watch_mode):
 @cli.command()
 @click.argument("signer", nargs=1)
 @click.option("--salt", nargs=1, default=None)
-def counterfactual_address(signer, salt):
+@enable_stack_trace
+def counterfactual_address(ctx, signer, salt):
     """Precompute the address of an Account contract."""
     _signer = Signer(normalize_number(os.environ[signer]))
     address = hex_address(
@@ -254,7 +289,9 @@ def counterfactual_address(signer, salt):
 @network_option
 @query_option
 @watch_option
+@enable_stack_trace
 async def send(
+    ctx,
     signer,
     address_or_alias,
     method,
@@ -293,7 +330,8 @@ async def send(
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
 @network_option
-async def call(address_or_alias, method, params, network):
+@enable_stack_trace
+async def call(ctx, address_or_alias, method, params, network):
     """Call functions of StarkNet smart contracts."""
     if not is_alias(address_or_alias):
         address_or_alias = normalize_number(address_or_alias)
@@ -327,8 +365,9 @@ def test(contracts):
 @click.option("--cairo_path")
 @click.option("--account_contract", is_flag="True")
 @click.option("--disable-hint-validation", is_flag=True)
+@enable_stack_trace
 def compile(
-    contracts, directory, cairo_path, account_contract, disable_hint_validation
+    ctx, contracts, directory, cairo_path, account_contract, disable_hint_validation
 ):
     """
     Compile cairo contracts.
@@ -348,7 +387,8 @@ def compile(
 
 
 @cli.command()
-def clean():
+@enable_stack_trace
+def clean(ctx):
     """Remove default build directory."""
     clean_command()
 
@@ -358,7 +398,8 @@ def clean():
 @click.option("--port", default=5050)
 @click.option("--seed", type=int)
 @click.option("--lite_mode", is_flag=True)
-def node(host, port, seed, lite_mode):
+@enable_stack_trace
+def node(ctx, host, port, seed, lite_mode):
     """Start StarkNet local network.
 
     $ nile node
@@ -378,7 +419,8 @@ def node(host, port, seed, lite_mode):
 
 @cli.command()
 @click.version_option()
-def version():
+@enable_stack_trace
+def version(ctx):
     """Print out toolchain version."""
     version_command()
 
@@ -387,7 +429,8 @@ def version():
 @click.argument("tx_hash", nargs=1)
 @click.option("--contracts_file", nargs=1)
 @network_option
-async def debug(tx_hash, network, contracts_file):
+@enable_stack_trace
+async def debug(ctx, tx_hash, network, contracts_file):
     """
     Locate an error in a transaction using available contracts.
 
@@ -401,7 +444,8 @@ async def debug(tx_hash, network, contracts_file):
 @click.option("--contracts_file", nargs=1)
 @network_option
 @watch_option
-async def status(tx_hash, network, watch_mode, contracts_file):
+@enable_stack_trace
+async def status(ctx, tx_hash, network, watch_mode, contracts_file):
     """
     Get the status of a transaction.
 
@@ -425,7 +469,8 @@ async def status(tx_hash, network, watch_mode, contracts_file):
 @cli.command()
 @click.option("--predeployed/--registered", default=False)
 @network_option
-async def get_accounts(network, predeployed):
+@enable_stack_trace
+async def get_accounts(ctx, network, predeployed):
     """Retrieve and manage deployed accounts."""
     if not predeployed:
         await get_accounts_command(network)
@@ -436,7 +481,8 @@ async def get_accounts(network, predeployed):
 @cli.command()
 @click.argument("contract_address")
 @network_option
-async def get_balance(contract_address, network):
+@enable_stack_trace
+async def get_balance(ctx, contract_address, network):
     """Retrieve the Ether balance for a given contract."""
     balance = await get_balance_command(
         normalize_number(contract_address), network=network
@@ -453,7 +499,8 @@ async def get_balance(contract_address, network):
 @cli.command()
 @click.argument("contract_address")
 @network_option
-async def get_nonce(contract_address, network):
+@enable_stack_trace
+async def get_nonce(ctx, contract_address, network):
     """Retrieve the nonce for a contract."""
     await get_nonce_command(normalize_number(contract_address), network)
 

@@ -1,6 +1,5 @@
 """nile common module."""
 import json
-import logging
 import os
 import re
 from pathlib import Path
@@ -10,7 +9,6 @@ from starkware.starknet.core.os.class_hash import compute_class_hash
 from starkware.starknet.definitions.general_config import StarknetChainId
 from starkware.starknet.services.api.contract_class import ContractClass
 
-from nile.core.types.account import Account
 from nile.utils import normalize_number, str_to_felt
 
 CONTRACTS_DIRECTORY = "contracts"
@@ -187,34 +185,3 @@ def get_addresses_from_string(string):
     return set(
         int(address, 16) for address in re.findall("0x[\\da-f]{1,64}", str(string))
     )
-
-
-async def try_get_account(
-    signer,
-    network,
-    salt=None,
-    max_fee=None,
-    predeployed_info=None,
-    watch_mode=None,
-    auto_deploy=True,
-):
-    """Avoid reverting on KeyError."""
-    account = None
-    try:
-        account = await Account(
-            signer,
-            network,
-            salt=salt,
-            max_fee=max_fee,
-            predeployed_info=predeployed_info,
-            watch_mode=watch_mode,
-            auto_deploy=auto_deploy,
-        )
-    except KeyError:
-        logging.error(
-            f"\n❌ Cannot find {signer} in env."
-            "\nCheck spelling and that it exists."
-            "\nTry moving the .env to the root of your project."
-        )
-
-    return account

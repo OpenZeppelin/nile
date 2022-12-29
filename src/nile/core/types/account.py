@@ -1,4 +1,5 @@
 """Account module."""
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -257,3 +258,34 @@ def _get_signer_and_alias(signer, predeployed_info):
         alias = predeployed_info["alias"]
 
     return signer, alias
+
+
+async def try_get_account(
+    signer,
+    network,
+    salt=None,
+    max_fee=None,
+    predeployed_info=None,
+    watch_mode=None,
+    auto_deploy=True,
+):
+    """Avoid reverting on KeyError."""
+    account = None
+    try:
+        account = await Account(
+            signer,
+            network,
+            salt=salt,
+            max_fee=max_fee,
+            predeployed_info=predeployed_info,
+            watch_mode=watch_mode,
+            auto_deploy=auto_deploy,
+        )
+    except KeyError:
+        logging.error(
+            f"\n❌ Cannot find {signer} in env."
+            "\nCheck spelling and that it exists."
+            "\nTry moving the .env to the root of your project."
+        )
+
+    return account
