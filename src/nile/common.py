@@ -1,5 +1,6 @@
 """nile common module."""
 import json
+import logging
 import os
 import re
 from pathlib import Path
@@ -9,6 +10,7 @@ from starkware.starknet.core.os.class_hash import compute_class_hash
 from starkware.starknet.definitions.general_config import StarknetChainId
 from starkware.starknet.services.api.contract_class import ContractClass
 
+from nile.core.types.account import Account
 from nile.utils import normalize_number, str_to_felt
 
 CONTRACTS_DIRECTORY = "contracts"
