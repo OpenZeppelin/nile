@@ -4,17 +4,18 @@ from unittest.mock import patch
 
 import pytest
 
+from nile import accounts
 from nile.common import (
     ABIS_DIRECTORY,
     BUILD_DIRECTORY,
-    NILE_ABIS_DIR,
     NILE_ARTIFACTS_PATH,
-    NILE_BUILD_DIR,
     TRANSACTION_VERSION,
     UNIVERSAL_DEPLOYER_ADDRESS,
 )
 from nile.core.types.account import Account
+from nile.core.types.tx_wrappers import DeployAccountTxWrapper
 from nile.utils import normalize_number
+from nile.utils.status import TransactionStatus, TxStatus
 from tests.mocks.mock_account import MockAccount
 
 KEY = "TEST_KEY"
@@ -29,7 +30,9 @@ SALT = 444
 SIGNATURE = [111, 222]
 CLASS_HASH = 12345
 PATH = ("src/nile/artifacts", "src/nile/artifacts/abis")
-DEPLOY_ACCOUNT_RESPONSE = (MOCK_ADDRESS, MOCK_TX_HASH, MOCK_ABI)
+TX_STATUS = TransactionStatus(MOCK_TX_HASH, TxStatus.ACCEPTED_ON_L2, None)
+DEPLOY_ACCOUNT_RESPONSE = (TX_STATUS, MOCK_ADDRESS, MOCK_ABI)
+MOCK_DEPLOY_ACC_TX_WRAPPER = DeployAccountTxWrapper(None, None)
 
 
 @pytest.fixture(autouse=True)
@@ -40,14 +43,21 @@ def tmp_working_dir(monkeypatch, tmp_path):
 
 @pytest.mark.asyncio
 @patch(
-    "nile.core.types.account.Account.deploy", return_value=(MOCK_ADDRESS, MOCK_INDEX)
+    "nile.core.types.tx_wrappers.DeployAccountTxWrapper.execute",
+    return_value=(TX_STATUS, MOCK_ADDRESS, ""),
 )
-async def test_account_init(mock_deploy):
+@patch(
+    "nile.core.types.account.Account.deploy", return_value=MOCK_DEPLOY_ACC_TX_WRAPPER
+)
+async def test_account_init(mock_deploy, mock_execute):
     account = await Account(KEY, NETWORK)
 
+    index = accounts.current_index(NETWORK)
+
     assert account.address == MOCK_ADDRESS
-    assert account.index == MOCK_INDEX
-    mock_deploy.assert_called_once()
+    assert account.index == index
+
+    mock_execute.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -63,40 +73,83 @@ async def test_account_init_bad_key(caplog):
 
 
 @pytest.mark.asyncio
-@patch(
-    "nile.core.types.account.deploy_account",
-    return_value=DEPLOY_ACCOUNT_RESPONSE,
-)
-@patch("nile.common.get_class_hash", return_value=CLASS_HASH)
-@patch("nile.core.types.account.Signer.sign", return_value=SIGNATURE)
-@patch("nile.core.types.account.os.path.dirname")
-async def test_deploy(mock_path, mock_signer, mock_hash, mock_deploy):
-    # overriding_path is set to Nile's root path for Nile Account deployments.
-    nile_root_path = NILE_BUILD_DIR, NILE_ABIS_DIR
-
-    account = await Account(KEY, NETWORK, salt=SALT, max_fee=MAX_FEE)
+@pytest.mark.parametrize("salt", [0, 1])
+@pytest.mark.parametrize("max_fee", [0, 15, None])
+@pytest.mark.parametrize("abi", [None, "TEST_ABI"])
+@pytest.mark.parametrize("query_type", [None, "simulate", "estimate_fee"])
+@pytest.mark.parametrize("watch_mode", [None, "track", "debug"])
+@patch("nile.core.types.transactions.get_class_hash", return_value=CLASS_HASH)
+@patch("nile.core.types.account.get_counterfactual_address", return_value=MOCK_ADDRESS)
+@patch("nile.core.types.account.Account._process_arguments")
+async def test_deploy(
+    mock_process_arguments,
+    mock_address,
+    mock_class_hash,
+    salt,
+    max_fee,
+    abi,
+    query_type,
+    watch_mode,
+):
+    account = await MockAccount(KEY, NETWORK)
     calldata = [account.signer.public_key]
+    mock_process_arguments.return_value = ((max_fee or 0), 0, calldata)
 
-    mock_deploy.assert_called_with(
-        network=NETWORK,
-        salt=SALT,
-        calldata=calldata,
-        signature=SIGNATURE,
-        max_fee=MAX_FEE,
-        query_type=None,
-        overriding_path=nile_root_path,
-        watch_mode=None,
-    )
+    with patch(
+        "nile.core.types.transactions.DeployAccountTransaction._get_tx_hash"
+    ) as mock_get_tx_hash:
+        mock_get_tx_hash.return_value = 0x777
+
+        tx_wrapper = await account.deploy(
+            salt=salt,
+            max_fee=max_fee,
+            abi=abi,
+            query_type=query_type,
+            watch_mode=watch_mode,
+        )
+
+        # Check transaction wrapper
+        assert tx_wrapper.account == account
+        assert tx_wrapper.alias == account.alias
+        assert tx_wrapper.contract_name == "Account"
+        assert tx_wrapper.predicted_address == MOCK_ADDRESS
+        assert tx_wrapper.overriding_path == NILE_ARTIFACTS_PATH
+        assert tx_wrapper.abi == abi
+
+        # Check transaction
+        tx = tx_wrapper.tx
+        assert tx.tx_type == "deploy_account"
+        assert tx.account_address == 0
+        assert tx.contract_to_submit == "Account"
+        assert tx.predicted_address == MOCK_ADDRESS
+        assert tx.calldata == calldata
+        assert tx.class_hash == CLASS_HASH
+        assert tx.overriding_path == NILE_ARTIFACTS_PATH
+        assert tx.max_fee == (max_fee or 0)
+        assert tx.nonce == 0
+        assert tx.network == account.network
+        assert tx.version == TRANSACTION_VERSION
+
+        # Check internals
+        mock_class_hash.assert_called_once_with(
+            contract_name="Account", overriding_path=NILE_ARTIFACTS_PATH
+        )
+
+        # Check '_process_arguments' call
+        mock_process_arguments.assert_called_once_with(max_fee, 0, calldata)
 
 
 @pytest.mark.asyncio
 @patch(
-    "nile.core.types.account.deploy_account",
-    return_value=DEPLOY_ACCOUNT_RESPONSE,
+    "nile.core.types.transactions.Transaction.execute",
+    return_value=(TX_STATUS, "output"),
 )
-@patch("nile.core.types.account.get_account_class_hash", return_value=CLASS_HASH)
-@patch("nile.core.types.account.accounts.register")
-async def test_deploy_accounts_register(mock_register, mock_hash, mock_deploy):
+@patch("nile.core.types.account.get_counterfactual_address", return_value=MOCK_ADDRESS)
+@patch("nile.core.types.transactions.get_class_hash", return_value=CLASS_HASH)
+@patch("nile.core.deploy.accounts.register")
+async def test_deploy_accounts_register(
+    mock_register, mock_hash, mock_address, mock_deploy
+):
     account = await Account(KEY, NETWORK)
 
     mock_register.assert_called_once_with(

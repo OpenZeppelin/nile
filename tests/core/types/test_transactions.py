@@ -138,11 +138,9 @@ async def test_declare_transaction_init(
 @pytest.mark.parametrize("calldata", [[]])
 @pytest.mark.parametrize("overriding_path", [None])
 @patch("nile.core.types.transactions.Transaction._validate")
-@patch("nile.core.types.transactions.get_contract_class", return_value="ContractClass")
 @patch("nile.core.types.transactions.get_class_hash", return_value=777)
 async def test_deploy_account_transaction_init(
     mock_get_class_hash,
-    mock_get_contract_class,
     mock_validate,
     account_address,
     max_fee,
@@ -172,7 +170,6 @@ async def test_deploy_account_transaction_init(
         assert tx.tx_type == "deploy_account"
         assert tx.contract_to_submit == contract_to_submit
         assert tx.calldata == calldata
-        assert tx.contract_class == "ContractClass"
         assert tx.class_hash == 777
         assert tx.overriding_path == overriding_path
         assert tx.account_address == account_address
@@ -202,7 +199,7 @@ async def test_invoke_transaction_init_defaults():
         assert tx.calldata is None
         assert tx.account_address == 0
         assert tx.max_fee == 0
-        assert tx.nonce is None
+        assert tx.nonce == 0
         assert tx.network == "localhost"
         assert tx.version == TRANSACTION_VERSION
         assert tx.hash == TX_HASH
@@ -226,7 +223,7 @@ async def test_declare_transaction_init_defaults(mock_get_contract_class):
         assert tx.overriding_path is None
         assert tx.account_address == 0
         assert tx.max_fee == 0
-        assert tx.nonce is None
+        assert tx.nonce == 0
         assert tx.network == "localhost"
         assert tx.version == TRANSACTION_VERSION
         assert tx.hash == TX_HASH
@@ -235,11 +232,8 @@ async def test_declare_transaction_init_defaults(mock_get_contract_class):
 
 
 @pytest.mark.asyncio
-@patch("nile.core.types.transactions.get_contract_class", return_value="ContractClass")
 @patch("nile.core.types.transactions.get_class_hash", return_value=777)
-async def test_deploy_account_transaction_init_defaults(
-    mock_get_class_hash, mock_get_contract_class
-):
+async def test_deploy_account_transaction_init_defaults(mock_get_class_hash):
     with patch(
         "nile.core.types.transactions.DeployAccountTransaction._get_tx_hash"
     ) as mock_get_tx_hash:
@@ -250,12 +244,11 @@ async def test_deploy_account_transaction_init_defaults(
         assert tx.tx_type == "deploy_account"
         assert tx.contract_to_submit is None
         assert tx.calldata is None
-        assert tx.contract_class == "ContractClass"
         assert tx.class_hash == 777
         assert tx.overriding_path is None
         assert tx.account_address == 0
         assert tx.max_fee == 0
-        assert tx.nonce is None
+        assert tx.nonce == 0
         assert tx.network == "localhost"
         assert tx.version == TRANSACTION_VERSION
         assert tx.hash == TX_HASH
@@ -474,9 +467,10 @@ async def test_deploy_account_get_tx_hash(
 
     # Assert call for tx_hash
     mock_get_deploy_account_hash.assert_any_call(
-        tx.account_address,
+        tx.predicted_address,
         tx.class_hash,
         tx.calldata,
+        tx.salt,
         tx.max_fee,
         tx.nonce,
         TRANSACTION_VERSION,
@@ -485,9 +479,10 @@ async def test_deploy_account_get_tx_hash(
 
     # Assert call for query_hash
     mock_get_deploy_account_hash.assert_any_call(
-        tx.account_address,
+        tx.predicted_address,
         tx.class_hash,
         tx.calldata,
+        tx.salt,
         tx.max_fee,
         tx.nonce,
         QUERY_VERSION_BASE + TRANSACTION_VERSION,
@@ -537,4 +532,8 @@ async def test_deploy_account_execute_call_args(
 
     result = tx._execute_call_args()
 
-    assert result == {}
+    assert result == {
+        "salt": tx.salt,
+        "contract_name": tx.contract_to_submit,
+        "calldata": tx.calldata,
+    }

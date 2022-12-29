@@ -116,6 +116,7 @@ class Account(AsyncObject):
         transaction = DeployAccountTransaction(
             contract_to_submit=contract_name,
             predicted_address=predicted_address,
+            overriding_path=NILE_ARTIFACTS_PATH,
             calldata=calldata,
             max_fee=max_fee,
             network=self.network,

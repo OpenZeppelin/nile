@@ -184,6 +184,7 @@ async def test_deploy_contract_wrapper_execute(
             alias=wrapper.alias,
             predicted_address=wrapper.predicted_address,
             overriding_path=wrapper.overriding_path,
+            abi=None,
             watch_mode=watch_mode,
         )
 
@@ -216,7 +217,6 @@ async def test_deploy_account_wrapper_execute(
         assert wrapper.alias == "alias"
         assert wrapper.overriding_path == "path"
 
-        ret = await wrapper.execute(watch_mode=watch_mode)
-
         # Pending implementation
-        assert ret is None
+        # ret = await wrapper.execute(watch_mode=watch_mode)
+        # assert ret is None

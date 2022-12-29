@@ -6,6 +6,7 @@ import pytest
 
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
 from nile.core.deploy import deploy, deploy_account, deploy_contract
+from nile.core.types.transactions import DeployAccountTransaction
 from nile.core.types.udc_helpers import create_udc_deploy_transaction
 from nile.utils import hex_address
 from nile.utils.status import TransactionStatus, TxStatus
@@ -188,89 +189,74 @@ async def test_deploy_contract(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "args, exp_abi",
-    [
-        (
-            [
-                NETWORK,
-                SALT,
-                ARGS,
-                SIGNATURE,
-                CONTRACT,
-                FEE,
-                None,
-                None,
-                ALIAS,
-            ],  # args
-            ABI,  # expected ABI
-        ),
-        (
-            [
-                NETWORK,
-                SALT,
-                ARGS,
-                SIGNATURE,
-                CONTRACT,
-                FEE,
-                None,
-                PATH_OVERRIDE,
-                ALIAS,
-            ],  # args
-            ABI,  # expected ABI
-        ),
-        (
-            [
-                NETWORK,
-                SALT,
-                ARGS,
-                SIGNATURE,
-                CONTRACT,
-                FEE,
-                ABI_OVERRIDE,
-                None,
-                ALIAS,
-            ],  # args
-            ABI_OVERRIDE,  # expected ABI
-        ),
-        (
-            [
-                NETWORK,
-                SALT,
-                ARGS,
-                SIGNATURE,
-                CONTRACT,
-                FEE,
-                ABI_OVERRIDE,
-                PATH_OVERRIDE,
-                ALIAS,
-            ],  # args
-            ABI_OVERRIDE,  # expected ABI
-        ),
-    ],
-)
-@patch("nile.core.deploy.deployments.register")
+@pytest.mark.parametrize("contract_name", [CONTRACT])
+@pytest.mark.parametrize("alias", [ALIAS])
+@pytest.mark.parametrize("predicted_address", [ADDRESS])
+@pytest.mark.parametrize("overriding_path", [None, PATH_OVERRIDE])
+@pytest.mark.parametrize("abi", [None, ABI_OVERRIDE])
+@pytest.mark.parametrize("watch_mode", [None, "track", "debug"])
 @patch(
-    "nile.core.deploy.get_gateway_response",
-    return_value={"address": ADDRESS, "transaction_hash": TX_HASH},
+    "nile.core.types.transactions.Transaction.execute",
+    return_value=(TX_STATUS, "output"),
 )
-@patch("nile.core.deploy.get_account_class_hash", return_value=CLASS_HASH)
+@patch("nile.core.types.transactions.get_class_hash", return_value=CLASS_HASH)
+@patch("nile.core.deploy.deployments.register")
+@patch("nile.core.deploy.accounts.register")
+@patch("nile.accounts.current_index", return_value=MOCK_ACC_INDEX)
 async def test_deploy_account(
-    mock_hash, mock_gateway, mock_register, caplog, args, exp_abi
+    mock_index,
+    mock_accounts_register,
+    mock_deployments_register,
+    mock_get_class_hash,
+    mock_execute,
+    caplog,
+    contract_name,
+    alias,
+    predicted_address,
+    overriding_path,
+    abi,
+    watch_mode,
 ):
     logging.getLogger().setLevel(logging.INFO)
 
-    # check return values
-    res = await deploy_account(*args)
-    assert res == (ADDRESS, TX_HASH, exp_abi)
+    account = await MockAccount("TEST_KEY", NETWORK)
+    exp_abi = ABI if abi is None else abi
 
-    # check internals
-    mock_register.assert_called_once_with(ADDRESS, exp_abi, NETWORK, ALIAS)
+    with patch(
+        "nile.core.types.transactions.DeployAccountTransaction._get_tx_hash"
+    ) as mock_get_tx_hash:
+        mock_get_tx_hash.return_value = 0x777
 
-    # check logs
-    assert f"🚀 Deploying {CONTRACT}" in caplog.text
-    assert (
-        f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(ADDRESS)}"
-        in caplog.text
-    )
-    assert f"🧾 Transaction hash: {TX_HASH}" in caplog.text
+        transaction = DeployAccountTransaction()
+
+        # check return values
+        res = await deploy_account(
+            transaction=transaction,
+            signer=account.signer,
+            contract_name=contract_name,
+            alias=alias,
+            predicted_address=predicted_address,
+            overriding_path=overriding_path,
+            abi=abi,
+            watch_mode=watch_mode,
+        )
+        assert res == (TX_STATUS, ADDRESS, exp_abi)
+
+        # check internals
+        mock_deployments_register.assert_called_once_with(
+            ADDRESS, exp_abi, NETWORK, ALIAS
+        )
+        mock_accounts_register.assert_called_once_with(
+            account.signer.public_key, ADDRESS, MOCK_ACC_INDEX, ALIAS, NETWORK
+        )
+        mock_execute.assert_called_once_with(
+            signer=account.signer, watch_mode=watch_mode
+        )
+
+        # check logs
+        assert f"🚀 Deploying {CONTRACT}" in caplog.text
+        assert (
+            f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(ADDRESS)}"
+            in caplog.text
+        )
+        assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
