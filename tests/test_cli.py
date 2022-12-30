@@ -1,6 +1,7 @@
 """Tests for cli.py."""
 import itertools
 import json
+import logging
 import shutil
 import sys
 from multiprocessing import Process
@@ -208,3 +209,54 @@ async def test_status(args):
         command_args = {"hash": hex_class_hash(MOCK_HASH)}
 
         mock_execute.assert_called_once_with("tx_status", network, **command_args)
+
+
+@pytest.mark.asyncio
+async def test_stack_trace_option(caplog):
+    logging.getLogger().setLevel(logging.INFO)
+
+    command = [
+        "counterfactual-address",
+        "INVALID_ACCOUNT",
+    ]
+
+    result = await CliRunner().invoke(cli, ["--stack_trace", *command])
+    assert result.exit_code == 1
+
+
+@pytest.mark.asyncio
+async def test_no_stack_trace_option(caplog):
+    logging.getLogger().setLevel(logging.INFO)
+
+    command = [
+        "counterfactual-address",
+        "INVALID_ACCOUNT",
+    ]
+
+    # Test
+    result = await CliRunner().invoke(cli, ["--no_stack_trace", *command])
+    assert result.exit_code == 0
+    assert (
+        "The following exception occured while "
+        "trying to execute the command:\n\nKeyError('INVALID_ACCOUNT')\n\n"
+        "Try the --stack_trace option for the full stack trace."
+    ) in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_default_stack_trace_option(caplog):
+    logging.getLogger().setLevel(logging.INFO)
+
+    command = [
+        "counterfactual-address",
+        "INVALID_ACCOUNT",
+    ]
+
+    # Test
+    result = await CliRunner().invoke(cli, [*command])
+    assert result.exit_code == 0
+    assert (
+        "The following exception occured while "
+        "trying to execute the command:\n\nKeyError('INVALID_ACCOUNT')\n\n"
+        "Try the --stack_trace option for the full stack trace."
+    ) in caplog.text
