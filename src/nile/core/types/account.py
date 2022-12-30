@@ -81,13 +81,10 @@ class Account(AsyncObject):
             self.index = signer_data["index"]
         elif auto_deploy:
             tx = await self.deploy(salt=salt, max_fee=max_fee)
-            tx_status, address, _, index = await tx.execute(watch_mode=watch_mode)
+            # DeployAccountTxWrapper.execute updates account's address and index
+            await tx.execute(watch_mode=watch_mode)
 
-            if not tx_status.status.is_rejected:
-                self.address = normalize_number(address)
-                self.index = index
-
-        # we should replace this with static type checks
+        # We should replace this with static type checks
         if hasattr(self, "address"):
             assert type(self.address) == int
 

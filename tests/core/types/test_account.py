@@ -40,23 +40,6 @@ def tmp_working_dir(monkeypatch, tmp_path):
 
 
 @pytest.mark.asyncio
-@patch(
-    "nile.core.types.tx_wrappers.DeployAccountTxWrapper.execute",
-    return_value=(TX_STATUS, MOCK_ADDRESS, "", MOCK_INDEX),
-)
-@patch(
-    "nile.core.types.account.Account.deploy", return_value=MOCK_DEPLOY_ACC_TX_WRAPPER
-)
-async def test_account_init(mock_deploy, mock_execute):
-    account = await Account(KEY, NETWORK)
-
-    assert account.address == MOCK_ADDRESS
-    assert account.index == MOCK_INDEX
-
-    mock_execute.assert_called_once()
-
-
-@pytest.mark.asyncio
 async def test_account_init_bad_key():
     with pytest.raises(KeyError):
         await Account("BAD_KEY", NETWORK)

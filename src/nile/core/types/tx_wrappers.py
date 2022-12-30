@@ -102,7 +102,7 @@ class DeployAccountTxWrapper(BaseTxWrapper):
         """Execute the wrapped transaction."""
         return await deploy_account(
             transaction=self.tx,
-            signer=self.account.signer,
+            account=self.account,
             contract_name=self.contract_name,
             alias=self.alias,
             predicted_address=self.predicted_address,

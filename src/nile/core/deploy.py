@@ -91,7 +91,7 @@ async def deploy_contract(
 
 async def deploy_account(
     transaction,
-    signer,
+    account,
     contract_name,
     alias,
     predicted_address,
@@ -109,18 +109,23 @@ async def deploy_account(
     register_abi = abi if abi is not None else f"{base_path[1]}/{contract_name}.json"
 
     # Execute the transaction
-    tx_status, _ = await transaction.execute(signer=signer, watch_mode=watch_mode)
+    tx_status, _ = await transaction.execute(
+        signer=account.signer, watch_mode=watch_mode
+    )
 
-    index = None
     if not tx_status.status.is_rejected:
-        index = accounts.current_index(network)
+        # Update Account
+        account.address = predicted_address
+        account.index = accounts.current_index(network)
 
         deployments.register(predicted_address, register_abi, network, alias)
-        accounts.register(signer.public_key, predicted_address, index, alias, network)
+        accounts.register(
+            account.signer.public_key, predicted_address, account.index, alias, network
+        )
         logging.info(
             f"⏳ ️Deployment of {contract_name} successfully"
             + f" sent at {hex_address(predicted_address)}"
         )
         logging.info(f"🧾 Transaction hash: {hex(tx_status.tx_hash)}")
 
-    return tx_status, predicted_address, register_abi, index
+    return tx_status, predicted_address, register_abi

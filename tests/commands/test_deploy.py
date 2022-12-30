@@ -20,7 +20,7 @@ def tmp_working_dir(monkeypatch, tmp_path):
 
 
 MOCK_ACC_ADDRESS = 0x123
-MOCK_ACC_INDEX = 0
+MOCK_ACC_INDEX = 5
 CONTRACT = "contract"
 NETWORK = "localhost"
 ALIAS = "alias"
@@ -229,10 +229,12 @@ async def test_deploy_account(
 
         transaction = DeployAccountTransaction()
 
-        # check return values
+        assert account.address != predicted_address
+        assert account.index != MOCK_ACC_INDEX
+
         res = await deploy_account(
             transaction=transaction,
-            signer=account.signer,
+            account=account,
             contract_name=contract_name,
             alias=alias,
             predicted_address=predicted_address,
@@ -240,14 +242,19 @@ async def test_deploy_account(
             abi=abi,
             watch_mode=watch_mode,
         )
-        assert res == (TX_STATUS, ADDRESS, exp_abi, MOCK_ACC_INDEX)
+        # check return values
+        assert res == (TX_STATUS, predicted_address, exp_abi)
+
+        # check account update
+        assert account.address == predicted_address
+        assert account.index == MOCK_ACC_INDEX
 
         # check internals
         mock_deployments_register.assert_called_once_with(
-            ADDRESS, exp_abi, NETWORK, ALIAS
+            predicted_address, exp_abi, NETWORK, ALIAS
         )
         mock_accounts_register.assert_called_once_with(
-            account.signer.public_key, ADDRESS, MOCK_ACC_INDEX, ALIAS, NETWORK
+            account.signer.public_key, predicted_address, MOCK_ACC_INDEX, ALIAS, NETWORK
         )
         mock_execute.assert_called_once_with(
             signer=account.signer, watch_mode=watch_mode
