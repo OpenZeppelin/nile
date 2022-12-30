@@ -208,7 +208,6 @@ async def deploy(
 @click.option("--overriding_path")
 @click.option("--nile_account", is_flag=True)
 @network_option
-@mainnet_token_option
 @query_option
 @watch_option
 @enable_stack_trace
@@ -220,7 +219,6 @@ async def declare(
     max_fee,
     alias,
     overriding_path,
-    token,
     query,
     nile_account,
     watch_mode,
@@ -233,7 +231,6 @@ async def declare(
             alias=alias,
             max_fee=max_fee,
             overriding_path=overriding_path,
-            mainnet_token=token,
             nile_account=nile_account,
         )
 
