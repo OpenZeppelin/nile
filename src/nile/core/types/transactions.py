@@ -154,7 +154,7 @@ class Transaction(ABC):
         """
         Return the tx hash for the transaction type.
 
-        This method must be overrided on each specific implementation.
+        This method must be overridden on each specific implementation.
         """
 
     def _validate(self):
