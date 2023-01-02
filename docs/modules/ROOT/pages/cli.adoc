@@ -1,0 +1,426 @@
+:starknet-devnet: link:https://github.com/Shard-Labs/starknet-devnet/[starknet-devnet]
+:cairo-lang: link:https://github.com/starkware-libs/cairo-lang[cairo-lang]
+:imports: link:https://starknet.io/docs/how_cairo_works/imports.html?highlight=cairo%20path#import-search-paths[Import search paths]
+:status: link:#status[status]
+
+== CLI Reference
+
+Here you can find a complete reference of the core commands Nile provides by default.
+
+[.contract-index]
+.Transactions
+--
+* xref:#setup[`++setup++`]
+* xref:#declare[`++declare++`]
+* xref:#deploy[`++deploy++`]
+* xref:#send[`++send++`]
+* xref:#status[`++status++`]
+* xref:#debug[`++debug++`]
+--
+
+[.contract-index]
+.Queries
+--
+* xref:#call[`++call++`]
+* xref:#get-nonce[`++get-nonce++`]
+* xref:#get-balance[`++get-balance++`]
+--
+
+[.contract-index]
+.Project management
+--
+* xref:#init[`++init++`]
+* xref:#node[`++node++`]
+* xref:#compile[`++compile++`]
+* xref:#run[`++run++`]
+* xref:#clean[`++clean++`]
+* xref:#version[`++version++`]
+--
+
+[.contract-index]
+.Utils
+--
+* xref:#get-accounts[`++get-accounts++`]
+* xref:#counterfactual-address[`++counterfactual-address++`]
+--
+
+[.contract-item]
+[[node]]
+==== `[.contract-item-name]#++nile node++#`
+
+Run a local {starknet-devnet} node.
+
+===== Options
+
+- `*--host*`
++
+Specify the address to listen at.
++
+Defaults to 127.0.0.1 (use the address the program outputs on start).
+- `*--port*`
++
+Specify the port to listen at. Defaults to 5050.
+- `*--seed*`
++
+Specify the seed for randomness of accounts to be deployed.
+- `*--lite-mode*`
++
+Applies all lite-mode optimizations by disabling features such as block hash and deploy hash calculation.
+
+[.contract-item]
+[[compile]]
+==== `[.contract-item-name]#++nile compile [PATH_TO_CONTRACT]++#`
+
+Compile Cairo contracts.
+
+Compilation artifacts are written into the `artifacts/` directory.
+
+===== Arguments
+
+- `*PATH_TO_CONTRACT*`
++
+Specify the path to a contract for compiling.
+
+===== Options
+
+- `*--directory*`
++
+Specify a directory to compile contracts from.
+- `*--account_contract*`
++
+As of {cairo-lang} v0.8.0, users must compile account contracts with the `--account_contract` flag. Nile automatically inserts the flag if the contract's name ends with Account. i.e. `Account.cairo`, `EthAccount.cairo`. Otherwise, the flag must be included by the user.
++
+[,sh]
+----
+nile compile contracts/NewAccountType.cairo --account_contract # compiles account contract
+----
+- `*--cairo_path*`
++
+Specify which directories the compiler must use to resolve imports from Cairo.
++
+TIP: Check {imports} from StarkNet documentation.
+- `*--disable-hint-validation*`
++
+Compile allowing unwhitelisted hints.
+
+[.contract-item]
+[[setup]]
+==== `[.contract-item-name]#++nile setup <PRIVATE_KEY_ALIAS>++#`
+
+Deploy an Account associated with a given private key.
+
+IMPORTANT: This command takes an alias instead of the actual private key to avoid accidentally leaking private keys. This alias is associated with an environmental variable of the same name, whose value is the private key.
+
+[NOTE]
+====
+. Creates or updates `localhost.accounts.json` file storing all data related to accounts management.
+. Creates or updates `localhost.deployments.txt` file storing all data related to deployments.
+====
+
+===== Arguments
+
+- `*PRIVATE_KEY_ALIAS*`
++
+Specify the private key that will own the account to be deployed. Looks for an environment variable with the name of the private key alias.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
++
+include::snippets.adoc[tag=status-options]
+
+[.contract-item]
+[[declare]]
+==== `[.contract-item-name]#++nile declare  <PRIVATE_KEY_ALIAS> <CONTRACT_NAME>++#`
+
+Declare a contract through an Account.
+
+===== Arguments
+
+- `*PRIVATE_KEY_ALIAS*`
++
+Specify the alias representing the account to be used.
+- `*CONTRACT_NAME*`
++
+Specify the name of the contract artifact to be declared.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
++
+Default to localhost.
+- `*--max_fee*`
++
+Specify the max fee you are willing to pay for the transaction.
+- `*--overriding_path*`
++
+Override the directory path for artifacts discovery.
+- `*--token*`
++
+Used for declaring contracts to Alpha Mainnet.
++
+include::snippets.adoc[tag=status-options]
+
+[.contract-item]
+[[deploy]]
+==== `[.contract-item-name]#++nile deploy <PRIVATE_KEY_ALIAS> <CONTRACT> [arg1, arg2...]++#`
+
+Deploy a contract through an Account.
+
+[NOTE]
+====
+. Creates or updates `localhost.deployments.txt` file storing all data related to deployments.
+====
+
+===== Arguments
+
+- `*PRIVATE_KEY_ALIAS*`
++
+Specify the alias representing the account to be used.
+- `*CONTRACT*`
++
+Specify the name of the contract artifact to be deployed.
+- `*ARGS*`
++
+Optional calldata arguments for the constructor.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
++
+Default to localhost.
+- `*--max_fee*`
++
+Specify the max fee you are willing to pay for the transaction.
+- `*--salt*`
++
+Set the base salt for address generation.
+- `*--unique*`
++
+Specify that the account address should be taken into account for target address generation.
+- `*--abi*`
++
+Override artifact abi to be registered. Useful for proxies.
+- `*--deployer_address*`
++
+Specify the deployer contract if needed.
+- `*--ignore_account*`
++
+Deploy without using an account (DEPRECATED).
+- `*--token*`
++
+Used for deploying contracts to Alpha Mainnet.
++
+include::snippets.adoc[tag=status-options]
+
+
+[.contract-item]
+[[call]]
+==== `[.contract-item-name]#++nile call <CONTRACT_ID> <METHOD> [arg1, arg2...]++#`
+
+Perform reading operations against a network.
+
+===== Arguments
+
+- `*CONTRACT_ID*`
++
+Specify the contract to call (either alias or address).
+- `*METHOD*`
++
+Specify the method to call.
+- `*ARGS*`
++
+Optional calldata arguments for the method to query.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
++
+Default to localhost.
+
+[.contract-item]
+[[send]]
+==== `[.contract-item-name]#++nile send <PRIVATE_KEY_ALIAS> <CONTRACT_ID> <METHOD> [arg1, arg2...]++#`
+
+Execute a transaction through an Account.
+
+===== Arguments
+
+- `*PRIVATE_KEY_ALIAS*`
++
+Specify the alias representing the account to be used.
+- `*CONTRACT_ID*`
++
+Specify the contract to call (either alias or address).
+- `*METHOD*`
++
+Specify the method to execute.
+- `*ARGS*`
++
+Optional calldata arguments for the method to execute.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
++
+Default to localhost.
+- `*--max_fee*`
++
+Specify the max fee you are willing to pay for the transaction.
+- `*--simulate*` and `*--estimate_fee*`
++
+Flags for querying the network without executing the transaction.
++
+include::snippets.adoc[tag=status-options]
+
+
+[.contract-item]
+[[counterfactual-address]]
+==== `[.contract-item-name]#++nile counterfactual-address <PRIVATE_KEY_ALIAS>++#`
+
+Precompute the deployment address of an Account contract.
+
+===== Arguments
+
+- `*PRIVATE_KEY_ALIAS*`
++
+Specify the alias representing the private key to be used.
+
+===== Options
+
+- `*--salt*`
++
+Specify the salt for the address generation.
++
+Default to 0.
+
+[.contract-item]
+[[status]]
+==== `[.contract-item-name]#++nile status <TX_HASH>++#`
+
+Query the current status of a transaction.
+
+===== Arguments
+
+- `*TX_HASH*`
++
+Specify the hash of the transaction to query.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
++
+Default to localhost.
+- `*--track*`
++
+Continue probing the network in case of pending transaction states.
+- `*--debug*`
++
+Use locally available contracts to make error messages from rejected transactions more explicit.
++
+Implies `--track`.
+- `*--contracts_file*`
++
+Override the deployments file to query the contract artifacts from.
++
+Default to `<NETWORK>.deployments.txt`.
+
+[.contract-item]
+[[debug]]
+==== `[.contract-item-name]#++nile debug <TX_HASH>++#`
+
+Alias for `nile status --debug`.
+
+[.contract-item]
+[[get-accounts]]
+==== `[.contract-item-name]#++nile get-accounts++#`
+
+Retrieve a list of ready-to-use accounts which allows for easy scripting integration.
+
+[NOTE]
+====
+The list of accounts includes only those that exist in the local `<NETWORK>.accounts.json` file. In a recent release we added a flag to the command, to get predeployed accounts if the network you are connected to is a starknet-devnet instance.
+
+Sending transactions through predeployed accounts can be done through scripting, but the current CLI version doesn't allow using these accounts for `nile send`.
+====
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
++
+Default to localhost.
+- `*--predeployed*`
++
+Query a devnet node for predeployed accounts.
+
+[.contract-item]
+[[get-nonce]]
+==== `[.contract-item-name]#++nile get-nonce <ADDRESS>++#`
+
+Retrieve the nonce for a contract (usually an account).
+
+===== Arguments
+
+- `*ADDRESS*`
++
+Specify the address of the contract to query.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
++
+Default to localhost.
+
+[.contract-item]
+[[get-balance]]
+==== `[.contract-item-name]#++nile get-balance <ADDRESS>++#`
+
+Retrieve the Ether balance for a contract.
+
+===== Arguments
+
+- `*ADDRESS*`
++
+Specify the address of the contract to query.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
++
+Default to localhost.
+
+[.contract-item]
+[[run]]
+==== `[.contract-item-name]#++nile run <PATH_TO_SCRIPT>++#`
+
+Execute a script in the context of NRE.
+
+===== Arguments
+
+- `*PATH_TO_SCRIPT*`
++
+Path to the script to run.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
++
+Default to localhost.
+
+[.contract-item]
+[[clean]]
+==== `[.contract-item-name]#++nile clean++#`
+
+Deletes the `artifacts/` folder and deployments files.
+
+[.contract-item]
+[[init]]
+==== `[.contract-item-name]#++nile init++#`
+
+Scaffold a simple Nile project.
+
+[.contract-item]
+[[version]]
+==== `[.contract-item-name]#++nile version++#`
+
+Print out the Nile version.

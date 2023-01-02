@@ -1,0 +1,14 @@
+* xref:index.adoc[Overview]
+
+* xref:scripts.adoc[NRE and scripting]
+* API Reference
+** xref:cli.adoc[CLI Reference]
+** xref:nre.adoc[NRE Reference]
+
+* Plugins
+** xref:create_plugin.adoc[Extending Nile]
+** xref:plugins.adoc[Relevant Plugins]
+
+* Guides
+** xref:testing.adoc[Testing with Nile]
+** xref:strings.adoc[Short string literals]

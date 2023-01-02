@@ -1,0 +1,52 @@
+= Extending Nile with plugins
+
+Nile can extend its CLI and Nile Runtime Environment functionalities through plugins. You can fork link:https://github.com/franalgaba/nile-plugin-example[this example template] and implement your desired functionality with the provided instructions.
+
+== How it works
+
+This implementation takes advantage of the native extensibility features of link:https://click.palletsprojects.com/[Click]. Using Click and leveraging Python link:https://packaging.python.org/en/latest/specifications/entry-points/[entry points], we have a simple way of natively handling extensions in Python environments through dependencies. The plugin implementation on Nile looks for specific Python entry point constraints for adding commands to either the CLI or NRE.
+
+. Use Click if the plugin provides a CLI command:
++
+[,python]
+----
+# First, import click dependency
+import click
+
+# Decorate the method that will be the command name with `click.command`
+@click.command()
+# Custom parameters can be added as defined in `click`: https://click.palletsprojects.com/en/7.x/options/
+def greet():
+    """
+    Plugin CLI command that does something.
+    """
+    # Done! Now implement the custom functionality in the command
+    click.echo("Hello Nile!")
+----
++
+. Define the plugin entry points (in this case, by using the Poetry plugins feature in the pyproject.toml file):
++
+[,python]
+----
+# We need to specify that Click commands are entry points in the group `nile_plugins`
+[tool.poetry.plugins."nile_plugins.cli"]
+# <command_name> = <package_method_location>
+"greet" = "nile_greet.main.greet"
+----
++
+. Optionally specify plugin entry points for the Nile Runtime Environment. This doesn't require implementing a Click command (remove the cli entry points if not needed):
++
+[,python]
+----
+[tool.poetry.plugins."nile_plugins.cli"]
+"greet" = "nile_greet.main.greet"
+
+[tool.poetry.plugins."nile_plugins.nre"]
+"greet" = "nile_greet.nre.greet"
+----
++
+. Done! To better understand python entry points through setuptools, https://setuptools.pypa.io/en/latest/userguide/entry_point.html#entry-points-for-plugins[check this documentation].
+
+How to decide if you want to use a plugin or not? Just install / uninstall the plugin dependency from your project 😄.
+
+Using both `cli` and `nre` entry points under the `nile_plugins` group allows the development of powerful plugins which are easily integrated.

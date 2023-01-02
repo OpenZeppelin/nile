@@ -1,0 +1,105 @@
+:starknet-testing: link:https://github.com/starkware-libs/cairo-lang/tree/master/src/starkware/starknet/testing[StarkNet Testing]
+
+= Testing with Nile
+
+With Nile, you will usually use link:https://docs.pytest.org/[pytest] and {starknet-testing} frameworks for testing, even when it's framework agnostic and doesn't interfere with other tools.
+
+NOTE: Keep in mind that different modules for testing can be integrated in the future through plugins.
+
+== Overview
+
+Here's the example test file provided in the base project (created by `nile init`):
+
+[,python]
+----
+"""contract.cairo test file."""
+import os
+
+import pytest
+from starkware.starknet.testing.starknet import Starknet
+
+# The path to the contract source code.
+CONTRACT_FILE = os.path.join("contracts", "contract.cairo")
+
+
+# The testing library uses python's asyncio. So the following
+# decorator and the ``async`` keyword are needed.
+@pytest.mark.asyncio
+async def test_increase_balance():
+    """Test increase_balance method."""
+    # Create a new StarkNet class that simulates the StarkNet
+    # system.
+    starknet = await Starknet.empty()
+
+    # Deploy the contract.
+    contract = await starknet.deploy(
+        source=CONTRACT_FILE,
+    )
+
+    # Invoke increase_balance() twice.
+    await contract.increase_balance(amount=10).execute()
+    await contract.increase_balance(amount=20).execute()
+
+    # Check the result of get_balance().
+    execution_info = await contract.get_balance().call()
+    assert execution_info.result == (30,)
+----
+
+Following the pytest requirements, test files must start with `test_` or end with `_test`. You can run the test suite by running pytest.
+
+[,sh]
+----
+pytest
+----
+
+TIP: For a reference on how to test complex projects, you can check the link:https://github.com/OpenZeppelin/cairo-contracts[cairo-contracts] repository.
+
+== Handling slow tests
+
+An issue we are very aware of, is how slow running tests can become when you have a considerable amount of them. We strongly recommend using link:https://pytest-xdist.readthedocs.io/en/latest/[pytest-xdist] to speed up the process.
+
+=== Parallelism with xdist
+
+. Install pytest-xdist in your project.
++
+[,sh]
+----
+python -m pip install pytest-xdist
+----
++
+. Add a `pytest.ini` file in the root of your project with the following configuration:
++
+[,sh]
+----
+# pytest.ini
+[pytest]
+addopts = -n auto
+----
+. Done! Now each time you run tests with `pytest`, they will run in parallel, significantly speeding up the process.
+
+== Coverage Reports
+
+By default, Nile doesn't support coverage reports, but you can use link:https://github.com/ericnordelo/nile-coverage[nile-coverage] plugin to integrate this feature easily.
+
+. Install nile-coverage in your project.
++
+[,sh]
+----
+python -m pip install nile-coverage
+----
++
+. Use coverage command (from the plugin) to generate a coverage report.
++
+[,sh]
+----
+nile coverage
+
+Filename                    Stmts    Miss  Cover    Missing
+------------------------  -------  ------  -------  ---------
+contracts/contract.cairo        8       0  100.00%
+TOTAL                           8       0  100.00%
+----
++
+. Done!
+
+TIP: With nile-coverage, you can easily integrate with tools like link:https://codecov.io[Codecov]. Check the link:https://github.com/ericnordelo/nile-coverage/blob/main/README.md[plugin documentation] for a reference to the options.

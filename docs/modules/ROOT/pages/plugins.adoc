@@ -1,0 +1,25 @@
+= Relevant Plugins
+
+This is a list of relevant plugins providing extra functionality to Nile.
+
+TIP: If you know of a plugin that should be listed but it isn't, please link:https://github.com/OpenZeppelin/nile/issues/new[open a new issue].
+
+== OpenZeppelin plugins
+
+Plugins maintained by OpenZeppelin.
+
+- link:https://github.com/OpenZeppelin/openzeppelin-nile-upgrades[openzeppelin-nile-upgrades]
++
+Deploy and manage upgradeable contracts on StarkNet.
+
+== Community plugins
+
+Community maintained plugins.
+
+- link:https://github.com/ericnordelo/nile-coverage[nile-coverage]
++
+Add coverage reports for Cairo Smart Contracts (from pytest test suite).
++
+- link:https://github.com/martriay/nile-verifier-plugin[nile-verifier-plugin]
++
+Verify contracts on link:https://starkscan.co/[starkscan.co].

@@ -41,7 +41,9 @@ As a contributor, you are expected to fork this repository, work on your own for
     tox -e lint
     ```
 
-4. Add your files, commit, and push to your fork.
+4. Update documentation ([see Documentation section](#documentation)).
+
+5. Add your files, commit, and push to your fork.
 
     ```sh
     git add some_file.py
@@ -49,15 +51,32 @@ As a contributor, you are expected to fork this repository, work on your own for
     git push origin fix/some-bug-#123
     ```
 
-5. Go to [github.com/OpenZeppelin/nile](https://github.com/OpenZeppelin/nile) in your web browser and issue a new pull request.
+6. Go to [github.com/OpenZeppelin/nile](https://github.com/OpenZeppelin/nile) in your web browser and issue a new pull request.
     Begin the body of the PR with "Fixes #123" or "Resolves #123" to link the PR to the issue that it is resolving.
     *IMPORTANT* Read the PR template very carefully and make sure to follow all the instructions. These instructions
     refer to some very important conditions that your PR must meet in order to be accepted, such as making sure that all PR checks pass.
 
-6. Maintainers will review your code and possibly ask for changes before your code is pulled into the main repository. We'll check that all tests pass, review the coding style, and check for general code correctness. If everything is OK, we'll merge your pull request and your code will be part of OpenZeppelin Nile.
+7. Maintainers will review your code and possibly ask for changes before your code is pulled into the main repository. We'll check that all tests pass, review the coding style, and check for general code correctness. If everything is OK, we'll merge your pull request and your code will be part of OpenZeppelin Nile.
 
     *IMPORTANT* Please pay attention to the maintainer's feedback, since it's a necessary step to keep up with the standards OpenZeppelin Nile attains to.
 
+## Documentation
+
+Before submitting the PR, you must update the corresponding documentation entries in the docs folder.
+
+If you want to run the documentation UI locally:
+
+1. Change directory into docs inside the project and run npm install.
+
+    ```bash
+    cd docs && npm i
+    ```
+
+2. Build the docs and run the local server (default to localhost:8080). This will watch for changes in the docs/module folder, and update the UI accordingly.
+
+    ```bash
+    npm run docs:watch
+    ```
 
 ## Design Patterns
 

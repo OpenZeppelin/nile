@@ -1,0 +1,192 @@
+:pyenv: link:https://github.com/OpenZeppelin/cairo-contracts/blob/release-v0.4.0b/src/openzeppelin/access/ownable/library.cairo[pyenv]
+
+= Overview
+
+Nile is a CLI tool to develop or interact with StarkNet projects written in Cairo. It consists of different components for developing, compiling, testing, and deploying your smart contracts and dApps, providing a xref:cli.adoc[CLI] for executing tasks, and a xref:scripts.adoc[Runtime Environment (NRE)] for scripting.
+
+The package is designed to be extensible and very customizable by using plugins. This guide will take you through the installation of our recommended setup, but as we expect a lot of functionality coming from plugins, you are free to customize it.
+
+:oz-account: link:https://github.com/OpenZeppelin/cairo-contracts/blob/main/src/openzeppelin/account/presets/Account.cairo[Openzeppelin Account]
+
+== Quickstart
+
+Using a sample contract, we will explore the basics of creating a Nile project. We will test it locally, deploy an account and the contract to a devnet node, and send transactions through the account to the contract.
+
+=== Requirements
+
+==== GMP for fastecdsa
+
+Before installing Cairo on your machine, you need to install `gmp`:
+
+[,bash]
+----
+sudo apt install -y libgmp3-dev # linux
+brew install gmp # mac
+----
+
+TIP: If you have any trouble installing gmp on your Apple M1 computer, https://github.com/OpenZeppelin/nile/issues/22[here's a list of potential solutions].
+
+==== Supported Python versions
+
+Some Nile dependencies have specific python version requirements. Therefore we recommend using a python version manager like {pyenv}, and virtual environments to avoid conflicts.
+
+IMPORTANT: Currently supported Python versions are >=3.8 and <3.10.
+
+=== Installation
+
+Create a folder for your project and cd into it:
+
+[,sh]
+----
+mkdir myproject && cd myproject
+----
+
+Create a virtualenv and activate it:
+
+[,sh]
+----
+python3 -m venv env
+source env/bin/activate
+----
+
+
+Install Nile:
+
+[,sh]
+----
+pip install cairo-nile
+----
+
+Use `nile init` to quickly set up your development environment:
+
+[,sh]
+----
+nile init
+----
+
+[,sh]
+----
+🗄 Creating project directory tree
+⛵️ Nile project ready! Try running:
+
+nile compile
+----
+
+=== Testing
+
+`nile init` creates a sample Cairo contract and test for you. Check `contracts/contract.cairo` and `tests/test_contract.py` for the source code.
+
+Run `pytest` to run the test suite against the Smart Contracts:
+
+[,sh]
+----
+pytest tests/
+----
+
+TIP: For a more in-deep guide on testing with parallelism and coverage, check our xref:testing.adoc[testing guide].
+
+=== Compiling
+
+Use `nile compile` to compile contracts under the `contracts/` folder by default.
+
+[,sh]
+----
+nile compile
+----
+
+[,sh]
+----
+🤖 Compiling all Cairo contracts in the contracts directory
+🔨 Compiling contracts/contract.cairo
+✅ Done
+----
+
+TIP: For a full reference of Nile command options, check the xref:cli.adoc[CLI Reference] section.
+
+=== Interacting with Starknet
+
+==== Running a local node
+
+By default, nile commands interacting directly with starknet nodes assume that you are using a local one if you don't specify the network using the `--network` option (default to `localhost`).
+
+Use `nile node` to run a local devnet node for development.
+
+[,sh]
+----
+nile node
+----
+
+==== Deploying an account
+
+. Add an environment variable with the account's private key to the `.env` file.
++
+[,sh]
+----
+# .env
+ACCOUNT_1 = 0x1234
+----
++
+CAUTION: Don't use this private key in production environments!
++
+. Use `nile counterfactual-address` to precompute the deployment address of the Account contract for the given signer.
++
+[,sh]
+----
+nile counterfactual-address ACCOUNT_1 --salt 123
+----
++
+NOTE: Different salts compute to different addresses, even with the same private key.
++
+. In production, you will need to fund this address with Ether to pay for the deployment fees, which will be mandatory in testnets soon. There are multiple bridges and faucets, like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
++
+For local development using a devnet node, you can use predeployed accounts to fund your address by using xref:scripts.adoc#transfer_funds_from_predeployed_devnet_account[this script].
++
+. After funding the precomputed address, deploy the account using `nile setup`.
++
+[,sh]
+----
+nile setup ACCOUNT_1 --salt 123
+----
++
+[IMPORTANT]
+====
+In StarkNet, users can deploy only previously declared contracts. {oz-account} is declared soon after every release in devnet, testnets and mainnet, but there could be an out-of-sync period between account update release and devnet release. Then you can declare the OZ Account using predeployed accounts through scripts.
+
+Check xref:scripts.adoc#declare_account[Declare Account] script.
+====
+
+==== Deploying a contract
+
+. First, declare the contract to register the class hash on the network. You only need to do this once as long as the contract bytecode doesn't change.
++
+[,sh]
+----
+nile declare ACCOUNT_1 contract
+----
++
+. Use `nile deploy` to deploy the contract.
++
+[,sh]
+----
+nile deploy ACCOUNT_1 contract --alias my_contract
+----
++
+NOTE: The alias option allows you to interact with the contract later without using the address.
+
+==== Reading from a contract
+
+Use `nile call` to read from a contract view function.
+
+[,sh]
+----
+nile call my_contract get_balance
+----
+
+==== Writing to a contract
+
+Use `nile send` to execute a transaction.
+
+[,sh]
+----
+nile send ACCOUNT_1 my_contract increase_balance 2
+----
