@@ -107,8 +107,7 @@ def _validate_network(_ctx, _param, value):
 @click.pass_context
 def cli(ctx, stack_trace):
     """Nile CLI group."""
-    # ensure that ctx.obj exists and is a dict (in case `cli()` is called
-    # by means other than the `if` block below)
+    # ensure that ctx.obj exists and is a dict
     ctx.ensure_object(dict)
 
     ctx.obj["STACK_TRACE"] = stack_trace
