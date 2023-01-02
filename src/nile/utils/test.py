@@ -16,7 +16,7 @@ async def assert_revert(fun, reverted_with=None):
 
 
 async def assert_revert_entry_point(fun, invalid_selector):
-    """Raise is passed function does not revert with invalid selector."""
+    """Raise if passed function does not revert with invalid selector."""
     selector_hex = hex(get_selector_from_name(invalid_selector))
     entry_point_msg = f"Entry point {selector_hex} not found in contract"
 
