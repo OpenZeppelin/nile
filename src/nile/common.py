@@ -173,7 +173,7 @@ def get_account_class_hash(contract="Account"):
 
 
 def get_chain_id(network):
-    """Return the chain id given a network name."""
+    """Return the chain id given a network name, default to testnet."""
     if network in NETWORKS_CHAIN_ID:
         return NETWORKS_CHAIN_ID[network]
     else:
