@@ -180,6 +180,7 @@ async def deploy(
                 deployer_address=deployer_address,
                 max_fee=max_fee,
                 abi=abi,
+                query=query,
             )
 
             if query == "estimate_fee":
@@ -312,6 +313,7 @@ async def send(
             method,
             params,
             max_fee=max_fee,
+            query=query,
         )
 
         if query == "estimate_fee":
