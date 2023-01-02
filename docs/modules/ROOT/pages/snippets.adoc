@@ -5,7 +5,7 @@
 +
 Select network: one of (`localhost`, `integration`, `goerli`, `goerli2`, `mainnet`).
 +
-Default to localhost.
+Default to `localhost`.
 // end::network-options[]
 
 // tag::status-options[]

@@ -32,7 +32,6 @@ Here you can find a complete reference of the core commands Nile provides by def
 * xref:#init[`++init++`]
 * xref:#node[`++node++`]
 * xref:#compile[`++compile++`]
-* xref:#setup[`++setup++`]
 * xref:#run[`++run++`]
 * xref:#clean[`++clean++`]
 * xref:#version[`++version++`]
