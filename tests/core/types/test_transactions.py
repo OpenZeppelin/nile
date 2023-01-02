@@ -20,6 +20,7 @@ from nile.utils.status import TransactionStatus, TxStatus
 from tests.mocks.mock_account import MockAccount
 
 TX_HASH = 123
+TX_HASH_2 = 1234
 KEY = "TEST_KEY"
 NETWORK = "localhost"
 TX_STATUS = TransactionStatus(TX_HASH, TxStatus.ACCEPTED_ON_L2, None)
@@ -382,6 +383,37 @@ async def test_transaction_simulate(mock_call_args, mock_get_tx_hash, caplog):
 
         # Check logs
         assert '\n\n\n\n{"response" : "simulated"}' in caplog.text
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("max_fee", [0, 15])
+@patch(
+    "nile.core.types.transactions.Transaction.execute", return_value="output"
+)
+async def test_transaction_update_fee(
+    mock_execute, max_fee
+):
+    with patch(
+        "nile.core.types.transactions.InvokeTransaction._get_tx_hash"
+    ) as mock_get_tx_hash:
+        mock_get_tx_hash.return_value = TX_HASH
+
+        tx = InvokeTransaction(max_fee=0)
+
+        mock_get_tx_hash.return_value = TX_HASH_2
+
+        tx.update_fee(max_fee=max_fee)
+
+        assert tx.max_fee == max_fee
+        assert tx.hash == TX_HASH_2
+        assert tx.query_hash == TX_HASH_2
+
+        # Validate chaining is allowed
+        output = await tx.update_fee(max_fee=max_fee + 1).execute()
+
+        assert output == "output"
+
+
 
 
 @pytest.mark.asyncio

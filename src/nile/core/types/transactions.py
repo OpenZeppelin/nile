@@ -69,7 +69,7 @@ class Transaction(ABC):
         # Validate the transaction object
         self._validate()
 
-    async def execute(self, signer, watch_mode=None, **kwargs):
+    async def execute(self, signer, max_fee=None, watch_mode=None, **kwargs):
         """Execute the transaction."""
         sig_r, sig_s = signer.sign(message_hash=self.hash)
 
@@ -140,6 +140,15 @@ class Transaction(ABC):
 
         logging.info(output)
         return output_value
+
+    def update_fee(self, max_fee):
+        """Update the tx from a new max_fee."""
+        self.max_fee = max_fee
+        self.hash = self._get_tx_hash()
+        self.query_hash = self._get_tx_hash(QUERY_VERSION_BASE + self.version)
+
+        # Allow chaining with execute
+        return self
 
     @abstractmethod
     def _execute_call_args(self):
