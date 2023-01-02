@@ -146,7 +146,7 @@ class Transaction(ABC):
         """
         Return specific arguments from transaction type.
 
-        This method must be overrided on each specific implementation.
+        This method must be overridden on each specific implementation.
         """
 
     @abstractmethod
