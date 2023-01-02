@@ -26,6 +26,13 @@ class BaseTxWrapper:
         """Simulate the wrapped transaction."""
         return await self.tx.simulate(signer=self.account.signer)
 
+    def update_fee(self, max_fee):
+        """Update the inner tx from a new max_fee."""
+        self.tx.update_fee(max_fee=max_fee)
+
+        # Allow chaining with execute
+        return self
+
 
 @dataclasses.dataclass
 class InvokeTxWrapper(BaseTxWrapper):

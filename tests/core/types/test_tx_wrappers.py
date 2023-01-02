@@ -104,6 +104,37 @@ async def test_base_wrapper_simulate(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("max_fee", [0, 15])
+@patch("nile.core.types.transactions.Transaction.execute", return_value="ret")
+@patch("nile.core.types.transactions.Transaction.update_fee")
+async def test_base_wrapper_update_fee(
+    mock_update_fee,
+    mock_execute,
+    max_fee,
+):
+    account = await MockAccount(KEY, NETWORK)
+    with patch(
+        "nile.core.types.transactions.InvokeTransaction._get_tx_hash"
+    ) as mock_get_tx_hash:
+        mock_get_tx_hash.return_value = TX_HASH
+
+        tx = InvokeTransaction()
+        base = BaseTxWrapper(tx, account)
+
+        assert base.tx == tx
+        assert base.account == account
+
+        base.update_fee(max_fee=max_fee)
+
+        mock_update_fee.assert_called_once_with(max_fee=max_fee)
+
+        # Validate chaining is allowed
+        output = await base.update_fee(max_fee=max_fee + 1).execute()
+
+        assert output == "ret"
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("watch_mode", [None, "track", "debug"])
 @patch("nile.core.types.transactions.get_contract_class", return_value="ContractClass")
 @patch("nile.core.types.tx_wrappers.declare", return_value="ret")

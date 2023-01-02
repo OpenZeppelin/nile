@@ -387,12 +387,8 @@ async def test_transaction_simulate(mock_call_args, mock_get_tx_hash, caplog):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("max_fee", [0, 15])
-@patch(
-    "nile.core.types.transactions.Transaction.execute", return_value="output"
-)
-async def test_transaction_update_fee(
-    mock_execute, max_fee
-):
+@patch("nile.core.types.transactions.Transaction.execute", return_value="output")
+async def test_transaction_update_fee(mock_execute, max_fee):
     with patch(
         "nile.core.types.transactions.InvokeTransaction._get_tx_hash"
     ) as mock_get_tx_hash:
@@ -412,8 +408,6 @@ async def test_transaction_update_fee(
         output = await tx.update_fee(max_fee=max_fee + 1).execute()
 
         assert output == "output"
-
-
 
 
 @pytest.mark.asyncio
