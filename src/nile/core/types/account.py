@@ -124,6 +124,7 @@ class Account(AsyncObject):
         calldata,
         nonce=None,
         max_fee=None,
+        query=None,
     ):
         """Return an InvokeTxWrapper object."""
         target_address = self._get_target_address(address_or_alias)
@@ -143,10 +144,21 @@ class Account(AsyncObject):
             network=self.network,
         )
 
-        return InvokeTxWrapper(
+        tx_wrapper =  InvokeTxWrapper(
             tx=transaction,
             account=self,
         )
+
+        if max_fee == 0 and query is None:
+            max_fee = await tx_wrapper.estimate_fee()
+            return await self.send(
+                address_or_alias=address_or_alias,
+                calldata=calldata,
+                nonce=nonce,
+                max_fee=max_fee
+            )
+
+        return tx_wrapper
 
     async def declare(
         self,
@@ -193,6 +205,7 @@ class Account(AsyncObject):
         deployer_address=None,
         overriding_path=None,
         abi=None,
+        query=None,
     ):
         """Deploy a contract through an Account."""
         deployer_address = normalize_number(
@@ -215,7 +228,7 @@ class Account(AsyncObject):
             overriding_path=overriding_path,
         )
 
-        return DeployContractTxWrapper(
+        tx_wrapper = DeployContractTxWrapper(
             tx=transaction,
             account=self,
             alias=alias,
@@ -223,6 +236,24 @@ class Account(AsyncObject):
             predicted_address=predicted_address,
             overriding_path=overriding_path,
         )
+
+        if max_fee == 0 and query is None:
+            max_fee = await tx_wrapper.estimate_fee()
+            return await self.deploy_contract(
+                contract_name=contract_name,
+                salt=salt,
+                unique=unique,
+                calldata=calldata,
+                alias=alias,
+                max_fee=max_fee,
+                nonce=nonce,
+                deployer_address=deployer_address,
+                overriding_path=overriding_path,
+                abi=abi,
+                query=query,
+            )
+
+        return tx_wrapper
 
     def _get_target_address(self, address_or_alias):
         if not is_alias(address_or_alias):
