@@ -1,4 +1,4 @@
-"""Wrappers for transactions for adding Nile extra logic."""
+"""Transaction wrappers for extraneous logic."""
 
 import dataclasses
 from typing import List
@@ -101,7 +101,6 @@ class DeployAccountTxWrapper(BaseTxWrapper):
 
     alias: str = None
     contract_name: str = None
-    predicted_address: int = 0
     overriding_path: List[str] = None
     abi: str = None
 
@@ -112,7 +111,7 @@ class DeployAccountTxWrapper(BaseTxWrapper):
             account=self.account,
             contract_name=self.contract_name,
             alias=self.alias,
-            predicted_address=self.predicted_address,
+            predicted_address=self.tx.predicted_address,
             overriding_path=self.overriding_path,
             abi=self.abi,
             watch_mode=watch_mode,

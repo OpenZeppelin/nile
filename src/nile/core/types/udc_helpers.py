@@ -20,7 +20,7 @@ async def create_udc_deploy_transaction(
     max_fee: int,
     nonce: int = None,
     overriding_path=None,
-) -> "InvokeTransaction":
+):
     """Return a transaction representing a UDC deployment."""
     deployer_for_address_generation = 0
 

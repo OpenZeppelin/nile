@@ -10,7 +10,6 @@ from nile.common import is_alias
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
-from nile.core.deploy import deploy as deploy_command
 from nile.core.init import init as init_command
 from nile.core.node import node as node_command
 from nile.core.plugins import load_plugins
@@ -48,7 +47,7 @@ def enable_stack_trace(f):
                 logging.error(
                     "The following exception occured while "
                     f"trying to execute the command:\n\n{repr(e)}\n\n"
-                    "Try the --stack_trace option for the full stack trace."
+                    "Try `nile --stack_trace [COMMAND]` for the full stack trace."
                 )
 
     return update_wrapper(new_func, f)
@@ -85,6 +84,16 @@ def mainnet_token_option(f):
         "--token",
         help="Used for deploying contracts in Alpha Mainnet.",
     )(f)
+
+
+async def run_transaction(tx, query_flag, watch_mode):
+    """Execute or simulate a transaction."""
+    if query_flag == "estimate_fee":
+        await tx.estimate_fee()
+    elif query_flag == "simulate":
+        await tx.simulate()
+    else:
+        await tx.execute(watch_mode=watch_mode)
 
 
 def _validate_network(_ctx, _param, value):
@@ -139,12 +148,6 @@ async def run(ctx, path, network):
 @click.option("--alias")
 @click.option("--abi")
 @click.option("--deployer_address")
-@click.option(
-    "--ignore_account",
-    is_flag=True,
-    help="Deploy without Account.",
-)
-@mainnet_token_option
 @network_option
 @query_option
 @watch_option
@@ -160,43 +163,25 @@ async def deploy(
     alias,
     abi,
     deployer_address,
-    ignore_account,
-    token,
     network,
     query,
     watch_mode,
 ):
     """Deploy a StarkNet smart contract."""
-    if not ignore_account:
-        account = await try_get_account(signer, network, watch_mode="track")
-        if account is not None:
-            transaction = await account.deploy_contract(
-                contract_name,
-                salt,
-                unique,
-                params,
-                alias,
-                deployer_address=deployer_address,
-                max_fee=max_fee,
-                abi=abi,
-            )
-
-            if query == "estimate_fee":
-                await transaction.estimate_fee()
-            elif query == "simulate":
-                await transaction.simulate()
-            else:
-                await transaction.execute(watch_mode=watch_mode)
-    else:
-        await deploy_command(
+    account = await try_get_account(signer, network, watch_mode="track")
+    if account is not None:
+        transaction = await account.deploy_contract(
             contract_name,
+            salt,
+            unique,
             params,
-            network,
             alias,
+            deployer_address=deployer_address,
+            max_fee=max_fee,
             abi=abi,
-            mainnet_token=token,
-            watch_mode=watch_mode,
         )
+
+        await run_transaction(tx=transaction, query_flag=query, watch_mode=watch_mode)
 
 
 @cli.command()
@@ -233,12 +218,7 @@ async def declare(
             nile_account=nile_account,
         )
 
-        if query == "estimate_fee":
-            await transaction.estimate_fee()
-        elif query == "simulate":
-            await transaction.simulate()
-        else:
-            await transaction.execute(watch_mode=watch_mode)
+        await run_transaction(tx=transaction, query_flag=query, watch_mode=watch_mode)
 
 
 @cli.command()
@@ -255,12 +235,7 @@ async def setup(ctx, signer, network, salt, max_fee, query, watch_mode):
     if account is not None:
         transaction = await account.deploy(salt, max_fee)
 
-        if query == "estimate_fee":
-            await transaction.estimate_fee()
-        elif query == "simulate":
-            await transaction.simulate()
-        else:
-            await transaction.execute(watch_mode=watch_mode)
+        await run_transaction(tx=transaction, query_flag=query, watch_mode=watch_mode)
 
 
 @cli.command()
@@ -313,12 +288,7 @@ async def send(
             max_fee=max_fee,
         )
 
-        if query == "estimate_fee":
-            await transaction.estimate_fee()
-        elif query == "simulate":
-            await transaction.simulate()
-        else:
-            await transaction.execute(watch_mode=watch_mode)
+        await run_transaction(tx=transaction, query_flag=query, watch_mode=watch_mode)
 
 
 @cli.command()

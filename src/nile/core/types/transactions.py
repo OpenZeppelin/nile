@@ -10,6 +10,7 @@ from typing import List
 
 from nile.common import (
     NILE_ABIS_DIR,
+    QUERY_VERSION_BASE,
     TRANSACTION_VERSION,
     get_chain_id,
     get_class_hash,
@@ -23,9 +24,6 @@ from nile.core.types.utils import (
 from nile.starknet_cli import execute_call
 from nile.utils import hex_address
 from nile.utils.status import status
-
-# Version for query calls
-QUERY_VERSION_BASE = 2**128
 
 
 @dataclasses.dataclass
@@ -73,7 +71,7 @@ class Transaction(ABC):
         """Execute the transaction."""
         sig_r, sig_s = signer.sign(message_hash=self.hash)
 
-        type_specific_args = self._execute_call_args()
+        type_specific_args = self._get_execute_call_args()
 
         output = await execute_call(
             self.tx_type,
@@ -90,7 +88,7 @@ class Transaction(ABC):
 
         assert output_tx_hash == hex(
             self.hash
-        ), "Missmatching transaction hash in execution"
+        ), "Resulting transaction hash is different than expected"
 
         tx_status = await status(self.hash, self.network, watch_mode)
         return tx_status, output
@@ -99,7 +97,7 @@ class Transaction(ABC):
         """Estimate the fee of execution."""
         sig_r, sig_s = signer.sign(message_hash=self.query_hash)
 
-        type_specific_args = self._execute_call_args()
+        type_specific_args = self._get_execute_call_args()
 
         output = await execute_call(
             self.tx_type,
@@ -123,7 +121,7 @@ class Transaction(ABC):
         """Simulate the execution."""
         sig_r, sig_s = signer.sign(message_hash=self.query_hash)
 
-        type_specific_args = self._execute_call_args()
+        type_specific_args = self._get_execute_call_args()
 
         output = await execute_call(
             self.tx_type,
@@ -151,7 +149,7 @@ class Transaction(ABC):
         return self
 
     @abstractmethod
-    def _execute_call_args(self):
+    def _get_execute_call_args(self):
         """
         Return specific arguments from transaction type.
 
@@ -189,19 +187,16 @@ class InvokeTransaction(Transaction):
         self.tx_type = "invoke"
 
     def _get_tx_hash(self, version=None):
-        if not version:
-            version = self.version
-
         return get_invoke_hash(
             self.account_address,
             self.calldata,
             self.max_fee,
             self.nonce,
-            version,
+            version or self.version,
             self.chain_id,
         )
 
-    def _execute_call_args(self):
+    def _get_execute_call_args(self):
         return {
             "inputs": self.calldata,
             "address": hex_address(self.account_address),
@@ -234,19 +229,16 @@ class DeclareTransaction(Transaction):
         super().__post_init__()
 
     def _get_tx_hash(self, version=None):
-        if not version:
-            version = self.version
-
         return get_declare_hash(
             self.account_address,
             self.contract_class,
             self.max_fee,
             self.nonce,
-            version,
+            version or self.version,
             self.chain_id,
         )
 
-    def _execute_call_args(self):
+    def _get_execute_call_args(self):
         return {
             "contract_name": self.contract_to_submit,
             "sender": hex_address(self.account_address),
@@ -283,9 +275,6 @@ class DeployAccountTransaction(Transaction):
         super().__post_init__()
 
     def _get_tx_hash(self, version=None):
-        if not version:
-            version = self.version
-
         return get_deploy_account_hash(
             self.predicted_address,
             self.class_hash,
@@ -293,11 +282,11 @@ class DeployAccountTransaction(Transaction):
             self.salt,
             self.max_fee,
             self.nonce,
-            version,
+            version or self.version,
             self.chain_id,
         )
 
-    def _execute_call_args(self):
+    def _get_execute_call_args(self):
         return {
             "salt": self.salt,
             "contract_name": self.contract_to_submit,

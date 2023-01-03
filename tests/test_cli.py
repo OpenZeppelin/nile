@@ -239,7 +239,7 @@ async def test_no_stack_trace_option(caplog):
     assert (
         "The following exception occured while "
         "trying to execute the command:\n\nKeyError('INVALID_ACCOUNT')\n\n"
-        "Try the --stack_trace option for the full stack trace."
+        "Try `nile --stack_trace [COMMAND]` for the full stack trace."
     ) in caplog.text
 
 
@@ -258,5 +258,5 @@ async def test_default_stack_trace_option(caplog):
     assert (
         "The following exception occured while "
         "trying to execute the command:\n\nKeyError('INVALID_ACCOUNT')\n\n"
-        "Try the --stack_trace option for the full stack trace."
+        "Try `nile --stack_trace [COMMAND]` for the full stack trace."
     ) in caplog.text

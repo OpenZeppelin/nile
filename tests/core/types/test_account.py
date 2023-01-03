@@ -79,7 +79,6 @@ async def test_deploy(
         assert tx_wrapper.account == account
         assert tx_wrapper.alias == account.alias
         assert tx_wrapper.contract_name == "Account"
-        assert tx_wrapper.predicted_address == MOCK_ADDRESS
         assert tx_wrapper.overriding_path == NILE_ARTIFACTS_PATH
         assert tx_wrapper.abi == abi
 
@@ -262,6 +261,7 @@ async def test_deploy_contract(
         assert tx_wrapper.alias == alias
         assert tx_wrapper.overriding_path == overriding_path
         assert tx_wrapper.predicted_address == predicted_address
+        assert tx_wrapper.abi == abi
 
         # Check internals
         mock_udc_transaction.assert_called_once_with(

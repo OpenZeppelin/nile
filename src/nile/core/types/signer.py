@@ -4,9 +4,9 @@ from starkware.crypto.signature.signature import private_to_stark_key, sign
 
 from nile.common import TRANSACTION_VERSION, get_chain_id
 from nile.core.types.utils import (
-    from_call_to_call_array,
     get_declare_hash,
     get_deploy_account_hash,
+    get_execute_calldata,
     get_invoke_hash,
 )
 
@@ -57,13 +57,7 @@ class Signer:
 
     def sign_invoke(self, sender, calls, nonce, max_fee, version=TRANSACTION_VERSION):
         """Sign an invoke transaction."""
-        call_array, calldata = from_call_to_call_array(calls)
-        execute_calldata = [
-            len(call_array),
-            *[x for t in call_array for x in t],
-            len(calldata),
-            *calldata,
-        ]
+        execute_calldata = get_execute_calldata(calls)
 
         if isinstance(sender, str):
             sender = int(sender, 16)

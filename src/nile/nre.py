@@ -3,7 +3,6 @@ from nile import deployments
 from nile.common import is_alias
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
-from nile.core.deploy import deploy
 from nile.core.plugins import get_installed_plugins, skip_click_exit
 from nile.core.types.account import Account
 from nile.utils import normalize_number
@@ -24,28 +23,6 @@ class NileRuntimeEnvironment:
     def compile(self, contracts, cairo_path=None):
         """Compile a list of contracts."""
         return compile(contracts, cairo_path=cairo_path)
-
-    def deploy(
-        self,
-        contract,
-        arguments=None,
-        alias=None,
-        overriding_path=None,
-        abi=None,
-        mainnet_token=None,
-        watch_mode=None,
-    ):
-        """Deploy a smart contract."""
-        return deploy(
-            contract_name=contract,
-            arguments=arguments,
-            network=self.network,
-            alias=alias,
-            overriding_path=overriding_path,
-            abi=abi,
-            mainnet_token=mainnet_token,
-            watch_mode=watch_mode,
-        )
 
     def call(self, address_or_alias, method, params=None, abi=None):
         """Call a view function in a smart contract."""

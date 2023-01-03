@@ -266,7 +266,7 @@ async def test_deploy_account_transaction_init_defaults(mock_get_class_hash):
     return_value=TX_HASH,
 )
 @patch(
-    "nile.core.types.transactions.InvokeTransaction._execute_call_args",
+    "nile.core.types.transactions.InvokeTransaction._get_execute_call_args",
     return_value={"param": "value"},
 )
 @patch(
@@ -310,7 +310,7 @@ async def test_transaction_execute(
     return_value=TX_HASH,
 )
 @patch(
-    "nile.core.types.transactions.InvokeTransaction._execute_call_args",
+    "nile.core.types.transactions.InvokeTransaction._get_execute_call_args",
     return_value={"param": "value"},
 )
 async def test_transaction_estimate_fee(mock_call_args, mock_get_tx_hash, caplog):
@@ -351,7 +351,7 @@ async def test_transaction_estimate_fee(mock_call_args, mock_get_tx_hash, caplog
     return_value=TX_HASH,
 )
 @patch(
-    "nile.core.types.transactions.InvokeTransaction._execute_call_args",
+    "nile.core.types.transactions.InvokeTransaction._get_execute_call_args",
     return_value={"param": "value"},
 )
 async def test_transaction_simulate(mock_call_args, mock_get_tx_hash, caplog):
@@ -518,10 +518,10 @@ async def test_deploy_account_get_tx_hash(
 
 @pytest.mark.asyncio
 @patch("nile.core.types.transactions.get_invoke_hash", return_value=TX_HASH)
-async def test_invoke_execute_call_args(mock_get_invoke_hash):
+async def test_invoke_get_execute_call_args(mock_get_invoke_hash):
     tx = InvokeTransaction()
 
-    result = tx._execute_call_args()
+    result = tx._get_execute_call_args()
 
     assert result == {
         "inputs": tx.calldata,
@@ -534,12 +534,12 @@ async def test_invoke_execute_call_args(mock_get_invoke_hash):
 @pytest.mark.asyncio
 @patch("nile.core.types.transactions.get_declare_hash", return_value=TX_HASH)
 @patch("nile.core.types.transactions.get_contract_class", return_value="ContractClass")
-async def test_declare_execute_call_args(
+async def test_declare_get_execute_call_args(
     mock_get_contract_class, mock_get_declare_hash
 ):
     tx = DeclareTransaction()
 
-    result = tx._execute_call_args()
+    result = tx._get_execute_call_args()
 
     assert result == {
         "contract_name": tx.contract_to_submit,
@@ -551,12 +551,12 @@ async def test_declare_execute_call_args(
 @patch("nile.core.types.transactions.get_deploy_account_hash", return_value=TX_HASH)
 @patch("nile.core.types.transactions.get_contract_class", return_value="ContractClass")
 @patch("nile.core.types.transactions.get_class_hash", return_value=777)
-async def test_deploy_account_execute_call_args(
+async def test_deploy_account_get_execute_call_args(
     mock_get_class_hash, mock_get_contract_class, mock_get_deploy_account_hash
 ):
     tx = DeployAccountTransaction()
 
-    result = tx._execute_call_args()
+    result = tx._get_execute_call_args()
 
     assert result == {
         "salt": tx.salt,

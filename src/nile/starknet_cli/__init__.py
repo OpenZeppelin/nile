@@ -21,7 +21,6 @@ ARGS = [
     "contracts",
     "contract_address",
     "hash",
-    "mainnet_token",
     "sender",
 ]
 

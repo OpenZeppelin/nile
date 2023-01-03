@@ -1,11 +1,11 @@
 """Tests for deploy command."""
 import logging
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY
-from nile.core.deploy import deploy, deploy_account, deploy_contract
+from nile.core.deploy import deploy_account, deploy_contract
 from nile.core.types.transactions import DeployAccountTransaction
 from nile.core.types.udc_helpers import create_udc_deploy_transaction
 from nile.utils import hex_address
@@ -40,78 +40,6 @@ TX_STATUS = TransactionStatus(TX_HASH, TxStatus.ACCEPTED_ON_L2, None)
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "args, cmd_args, exp_abi",
-    [
-        (
-            [CONTRACT, ARGS, NETWORK, ALIAS],  # args
-            {
-                "contract_name": CONTRACT,
-                "inputs": ARGS,
-                "overriding_path": None,
-                "mainnet_token": None,
-            },
-            ABI,  # expected ABI
-        ),
-        (
-            [CONTRACT, ARGS, NETWORK, ALIAS, PATH_OVERRIDE],  # args
-            {
-                "contract_name": CONTRACT,
-                "inputs": ARGS,
-                "overriding_path": PATH_OVERRIDE,
-                "mainnet_token": None,
-            },
-            ABI,  # expected ABI
-        ),
-        (
-            [CONTRACT, ARGS, NETWORK, ALIAS, None, ABI_OVERRIDE],  # args
-            {
-                "contract_name": CONTRACT,
-                "inputs": ARGS,
-                "overriding_path": None,
-                "mainnet_token": None,
-            },
-            ABI_OVERRIDE,  # expected ABI
-        ),
-        (
-            [CONTRACT, ARGS, NETWORK, ALIAS, PATH_OVERRIDE, ABI_OVERRIDE],  # args
-            {
-                "contract_name": CONTRACT,
-                "inputs": ARGS,
-                "overriding_path": PATH_OVERRIDE,
-                "mainnet_token": None,
-            },
-            ABI_OVERRIDE,  # expected ABI
-        ),
-    ],
-)
-@patch("nile.core.deploy.parse_information", return_value=CALL_OUTPUT)
-@patch("nile.core.deploy.deployments.register")
-async def test_deploy(mock_register, mock_parse, caplog, args, cmd_args, exp_abi):
-    logging.getLogger().setLevel(logging.INFO)
-
-    with patch("nile.core.deploy.execute_call", new=AsyncMock()) as mock_cli_call:
-        mock_cli_call.return_value = CALL_OUTPUT
-
-        # check return values
-        res = await deploy(*args)
-        assert res == (ADDRESS, exp_abi)
-
-        # check internals
-        mock_parse.assert_called_once_with(CALL_OUTPUT)
-        mock_register.assert_called_once_with(ADDRESS, exp_abi, NETWORK, ALIAS)
-        mock_cli_call.assert_called_once_with("deploy", NETWORK, **cmd_args)
-
-        # check logs
-        assert f"🚀 Deploying {CONTRACT}" in caplog.text
-        assert (
-            f"⏳ ️Deployment of {CONTRACT} successfully sent at {hex_address(ADDRESS)}"
-            in caplog.text
-        )
-        assert f"🧾 Transaction hash: {hex(TX_HASH)}" in caplog.text
-
-
-@pytest.mark.asyncio
 @pytest.mark.parametrize("contract_name", [CONTRACT])
 @pytest.mark.parametrize("alias", ["my_contract", None])
 @pytest.mark.parametrize("predicted_address", [0x123, 0x456])
@@ -121,11 +49,9 @@ async def test_deploy(mock_register, mock_parse, caplog, args, cmd_args, exp_abi
 @patch(
     "nile.core.types.transactions.Transaction.execute", return_value=(TX_STATUS, None)
 )
-@patch("nile.core.deploy.parse_information", return_value=[ADDRESS, TX_HASH])
 @patch("nile.core.deploy.deployments.register")
 async def test_deploy_contract(
     mock_register,
-    mock_parse,
     mock_execute,
     caplog,
     contract_name,
