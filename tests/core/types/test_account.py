@@ -289,7 +289,9 @@ async def test_deploy_contract(
 @pytest.mark.parametrize("max_fee", [0, None])
 @pytest.mark.parametrize("nonce", [0])
 @patch("nile.core.types.account.Account._process_arguments")
+@patch("nile.core.types.account.deployments.load")
 async def test_send(
+    mock_load,
     mock_process_arguments,
     address_or_alias,
     method,
@@ -304,6 +306,7 @@ async def test_send(
         "nile.core.types.transactions.InvokeTransaction._get_tx_hash"
     ) as mock_get_tx_hash:
         mock_get_tx_hash.return_value = 0x777
+        mock_load.return_value = iter([(0x123, 0)])
 
         tx_wrapper = await account.send(
             address_or_alias=address_or_alias,

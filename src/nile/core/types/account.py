@@ -223,11 +223,14 @@ class Account(AsyncObject):
 
     def _get_target_address(self, address_or_alias):
         if not is_alias(address_or_alias):
-            address_or_alias = normalize_number(address_or_alias)
+            target_address = normalize_number(address_or_alias)
+        else:
+            target_address, _ = next(
+                deployments.load(address_or_alias, self.network), None
+            ) or (None, None)
 
-        target_address, _ = next(
-            deployments.load(address_or_alias, self.network), None
-        ) or (address_or_alias, None)
+            if type(target_address) != int:
+                raise Exception(f"`{address_or_alias}` alias not found in deployments.")
 
         return target_address
 
