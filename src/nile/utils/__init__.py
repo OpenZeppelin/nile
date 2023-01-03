@@ -1,7 +1,7 @@
 """Utilities for Nile scripting."""
 # flake8: noqa
 
-from .miscellaneous import (
+from .common import (
     _pad_hex_to,
     add_uint,
     div_rem_uint,
