@@ -193,6 +193,7 @@ async def test_deploy_contract_wrapper_execute(
             contract_name="contract",
             overriding_path="path",
             predicted_address=0x345,
+            abi="abi",
         )
 
         assert wrapper.tx == tx
@@ -201,6 +202,7 @@ async def test_deploy_contract_wrapper_execute(
         assert wrapper.overriding_path == "path"
         assert wrapper.contract_name == "contract"
         assert wrapper.predicted_address == 0x345
+        assert wrapper.abi == "abi"
 
         ret = await wrapper.execute(watch_mode=watch_mode)
 
@@ -215,7 +217,7 @@ async def test_deploy_contract_wrapper_execute(
             alias=wrapper.alias,
             predicted_address=wrapper.predicted_address,
             overriding_path=wrapper.overriding_path,
-            abi=None,
+            abi=wrapper.abi,
             watch_mode=watch_mode,
         )
 
@@ -224,7 +226,9 @@ async def test_deploy_contract_wrapper_execute(
 @pytest.mark.parametrize("watch_mode", [None, "track", "debug"])
 @patch("nile.core.types.transactions.get_contract_class", return_value="ContractClass")
 @patch("nile.core.types.transactions.get_class_hash", return_value=777)
+@patch("nile.core.types.tx_wrappers.deploy_account", return_value="ret")
 async def test_deploy_account_wrapper_execute(
+    mock_deploy_account,
     mock_get_class_hash,
     mock_get_contract_class,
     watch_mode,
@@ -240,14 +244,31 @@ async def test_deploy_account_wrapper_execute(
             tx,
             account,
             alias="alias",
+            contract_name="contract",
             overriding_path="path",
+            abi="abi",
         )
 
         assert wrapper.tx == tx
         assert wrapper.account == account
         assert wrapper.alias == "alias"
+        assert wrapper.contract_name == "contract"
         assert wrapper.overriding_path == "path"
+        assert wrapper.abi == "abi"
 
-        # Pending implementation
-        # ret = await wrapper.execute(watch_mode=watch_mode)
-        # assert ret is None
+        ret = await wrapper.execute(watch_mode=watch_mode)
+
+        # Check return value
+        assert ret == "ret"
+
+        # Check internals
+        mock_deploy_account.assert_called_once_with(
+            transaction=wrapper.tx,
+            account=wrapper.account,
+            contract_name=wrapper.contract_name,
+            alias=wrapper.alias,
+            predicted_address=wrapper.tx.predicted_address,
+            overriding_path=wrapper.overriding_path,
+            abi=wrapper.abi,
+            watch_mode=watch_mode,
+        )
