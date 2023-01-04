@@ -1,4 +1,5 @@
 """Tests for account commands."""
+
 from unittest.mock import patch
 
 import pytest

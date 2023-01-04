@@ -1,4 +1,5 @@
-"""Starknet CLI overrides."""
+"""Starknet CLI deploy_account override."""
+
 import argparse
 from types import SimpleNamespace
 from typing import List

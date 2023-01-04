@@ -1,4 +1,5 @@
 """Tests for node command."""
+
 import logging
 from unittest.mock import patch
 

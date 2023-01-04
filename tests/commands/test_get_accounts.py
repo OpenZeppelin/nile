@@ -1,4 +1,5 @@
 """Tests for get-accounts command."""
+
 import logging
 from unittest.mock import MagicMock, patch
 

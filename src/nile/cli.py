@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Nile CLI entry point."""
+
 import logging
 import os
 from functools import update_wrapper

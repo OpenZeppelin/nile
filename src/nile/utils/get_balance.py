@@ -1,4 +1,5 @@
 """Retrieve the Ether balance for a given address."""
+
 from nile.common import ETH_TOKEN_ABI, ETH_TOKEN_ADDRESS
 from nile.core.call_or_invoke import call_or_invoke
 from nile.utils import from_uint, normalize_number

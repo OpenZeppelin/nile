@@ -1,4 +1,5 @@
-"""nile common module."""
+"""Nile accounts module."""
+
 import json
 import os
 

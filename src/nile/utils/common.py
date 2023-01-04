@@ -1,4 +1,5 @@
 """Generic utilities."""
+
 import math
 import re
 

@@ -1,4 +1,5 @@
 """Tests for cli.py."""
+
 import itertools
 import json
 import logging

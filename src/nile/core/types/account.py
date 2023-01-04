@@ -1,4 +1,5 @@
 """Account module."""
+
 import logging
 import os
 

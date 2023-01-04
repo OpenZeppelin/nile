@@ -1,4 +1,5 @@
 """Command to print Nile version."""
+
 from nile import __version__ as nile_version
 
 

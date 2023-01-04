@@ -1,4 +1,5 @@
 """Retrieve nonce for a contract."""
+
 import logging
 
 from nile.starknet_cli import execute_call

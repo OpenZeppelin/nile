@@ -1,4 +1,5 @@
 """Command to clean artifacts from workspace."""
+
 import logging
 import os
 import shutil

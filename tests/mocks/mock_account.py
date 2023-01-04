@@ -1,4 +1,5 @@
 """Account object mock."""
+
 import os
 
 from nile.common import normalize_number

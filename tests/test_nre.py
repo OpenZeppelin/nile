@@ -3,6 +3,7 @@ Tests for nre module.
 
 Only unit tests for now.
 """
+
 from unittest.mock import patch
 
 import click

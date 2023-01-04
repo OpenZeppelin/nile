@@ -1,4 +1,5 @@
 """Command to declare StarkNet smart contracts."""
+
 import logging
 
 from nile import deployments

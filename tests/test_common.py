@@ -1,4 +1,5 @@
 """Tests for common library."""
+
 import json
 
 import pytest

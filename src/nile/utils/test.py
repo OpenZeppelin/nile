@@ -1,4 +1,5 @@
 """Utilities for testing."""
+
 from starkware.starknet.business_logic.execution.objects import Event
 from starkware.starknet.public.abi import get_selector_from_name
 from starkware.starkware_utils.error_handling import StarkException

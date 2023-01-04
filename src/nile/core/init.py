@@ -1,4 +1,5 @@
 """Command to kickstart a Nile project."""
+
 import logging
 from distutils.dir_util import copy_tree
 from pathlib import Path

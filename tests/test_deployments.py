@@ -1,4 +1,5 @@
 """Tests for deployments file."""
+
 import logging
 
 import pytest

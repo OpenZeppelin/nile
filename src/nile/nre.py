@@ -1,4 +1,5 @@
-"""nile runtime environment."""
+"""Nile runtime environment."""
+
 from nile import deployments
 from nile.common import is_alias
 from nile.core.call_or_invoke import call_or_invoke

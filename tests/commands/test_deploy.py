@@ -1,4 +1,5 @@
-"""Tests for deploy command."""
+"""Tests for deploy commands."""
+
 import logging
 from unittest.mock import patch
 

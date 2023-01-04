@@ -1,4 +1,5 @@
 """Tests for starknet_cli module."""
+
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 

@@ -1,4 +1,5 @@
 """Tests for get-nonce command."""
+
 from unittest.mock import patch
 
 import pytest
