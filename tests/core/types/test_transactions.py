@@ -544,6 +544,7 @@ async def test_declare_get_execute_call_args(
 
     assert result == {
         "contract_name": tx.contract_to_submit,
+        "overriding_path": tx.overriding_path,
         "sender": hex_address(tx.account_address),
     }
 
@@ -562,5 +563,6 @@ async def test_deploy_account_get_execute_call_args(
     assert result == {
         "salt": tx.salt,
         "contract_name": tx.contract_to_submit,
+        "overriding_path": tx.overriding_path,
         "calldata": tx.calldata,
     }

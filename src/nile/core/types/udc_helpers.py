@@ -5,7 +5,7 @@ from starkware.starknet.core.os.contract_address.contract_address import (
     calculate_contract_address_from_hash,
 )
 
-from nile.common import TRANSACTION_VERSION, get_class_hash
+from nile.common import get_class_hash
 from nile.core.types.transactions import InvokeTransaction
 from nile.core.types.utils import get_execute_calldata
 
@@ -53,7 +53,6 @@ async def create_udc_deploy_transaction(
         max_fee=max_fee,
         nonce=nonce,
         network=account.network,
-        version=TRANSACTION_VERSION,
     )
 
     predicted_address = calculate_contract_address_from_hash(

@@ -151,12 +151,11 @@ async def test_declare_wrapper_execute(
         mock_get_tx_hash.return_value = TX_HASH
 
         tx = DeclareTransaction()
-        wrapper = DeclareTxWrapper(tx, account, alias="alias", overriding_path="path")
+        wrapper = DeclareTxWrapper(tx, account, alias="alias")
 
         assert wrapper.tx == tx
         assert wrapper.account == account
         assert wrapper.alias == "alias"
-        assert wrapper.overriding_path == "path"
 
         ret = await wrapper.execute(watch_mode=watch_mode)
 
@@ -168,7 +167,6 @@ async def test_declare_wrapper_execute(
             transaction=wrapper.tx,
             signer=wrapper.account.signer,
             alias=wrapper.alias,
-            overriding_path=wrapper.overriding_path,
             watch_mode=watch_mode,
         )
 
@@ -240,21 +238,17 @@ async def test_deploy_account_wrapper_execute(
     ) as mock_get_tx_hash:
         mock_get_tx_hash.return_value = TX_HASH
 
-        tx = DeployAccountTransaction()
+        tx = DeployAccountTransaction(contract_to_submit="contract", overriding_path="path")
         wrapper = DeployAccountTxWrapper(
             tx,
             account,
             alias="alias",
-            contract_name="contract",
-            overriding_path="path",
             abi="abi",
         )
 
         assert wrapper.tx == tx
         assert wrapper.account == account
         assert wrapper.alias == "alias"
-        assert wrapper.contract_name == "contract"
-        assert wrapper.overriding_path == "path"
         assert wrapper.abi == "abi"
 
         ret = await wrapper.execute(watch_mode=watch_mode)
@@ -266,10 +260,10 @@ async def test_deploy_account_wrapper_execute(
         mock_deploy_account.assert_called_once_with(
             transaction=wrapper.tx,
             account=wrapper.account,
-            contract_name=wrapper.contract_name,
+            contract_name=wrapper.tx.contract_to_submit,
             alias=wrapper.alias,
             predicted_address=wrapper.tx.predicted_address,
-            overriding_path=wrapper.overriding_path,
+            overriding_path=wrapper.tx.overriding_path,
             abi=wrapper.abi,
             watch_mode=watch_mode,
         )

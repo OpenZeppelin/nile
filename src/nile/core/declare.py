@@ -11,7 +11,6 @@ async def declare(
     transaction,
     signer,
     alias=None,
-    overriding_path=None,
     watch_mode=None,
 ):
     """Declare StarkNet smart contracts."""
@@ -24,9 +23,7 @@ async def declare(
         file = f"{network}.{DECLARATIONS_FILENAME}"
         raise Exception(f"Alias {alias} already exists in {file}")
 
-    tx_status, output = await transaction.execute(
-        signer=signer, watch_mode=watch_mode, overriding_path=overriding_path
-    )
+    tx_status, output = await transaction.execute(signer=signer, watch_mode=watch_mode)
 
     class_hash, tx_hash = parse_information(output)
     padded_hash = hex_class_hash(class_hash)

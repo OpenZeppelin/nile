@@ -79,8 +79,6 @@ async def test_deploy(
         # Check transaction wrapper
         assert tx_wrapper.account == account
         assert tx_wrapper.alias == account.alias
-        assert tx_wrapper.contract_name == "Account"
-        assert tx_wrapper.overriding_path == NILE_ARTIFACTS_PATH
         assert tx_wrapper.abi == abi
 
         # Check transaction
@@ -160,7 +158,6 @@ async def test_declare(
         # Check transaction wrapper
         assert tx_wrapper.account == account
         assert tx_wrapper.alias == alias
-        assert tx_wrapper.overriding_path == overriding_path
 
         # Check transaction
         tx = tx_wrapper.tx
@@ -199,11 +196,13 @@ async def test_declare_account(
 
     await account.declare(contract_name, nonce=0, nile_account=nile_account)
 
-    # Check 'DeclareTxWrapper' call
-    mock_tx_wrapper.assert_called_once_with(
-        tx="tx",
-        account=account,
-        alias=None,
+    # Check 'DeclareTransaction' call
+    mock_tx.assert_called_once_with(
+        account_address=account.address,
+        contract_to_submit=contract_name,
+        max_fee=0,
+        nonce=0,
+        network=account.network,
         overriding_path=overriding_path,
     )
 

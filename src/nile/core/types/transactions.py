@@ -95,6 +95,7 @@ class Transaction(ABC):
 
     async def estimate_fee(self, signer, **kwargs):
         """Estimate the fee of execution."""
+        print(kwargs)
         sig_r, sig_s = signer.sign(message_hash=self.query_hash)
 
         type_specific_args = self._get_execute_call_args()
@@ -241,6 +242,7 @@ class DeclareTransaction(Transaction):
     def _get_execute_call_args(self):
         return {
             "contract_name": self.contract_to_submit,
+            "overriding_path": self.overriding_path,
             "sender": hex_address(self.account_address),
         }
 
@@ -290,5 +292,6 @@ class DeployAccountTransaction(Transaction):
         return {
             "salt": self.salt,
             "contract_name": self.contract_to_submit,
+            "overriding_path": self.overriding_path,
             "calldata": self.calldata,
         }

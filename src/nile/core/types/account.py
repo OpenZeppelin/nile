@@ -109,8 +109,6 @@ class Account(AsyncObject):
             tx=transaction,
             account=self,
             alias=self.alias,
-            contract_name=contract_name,
-            overriding_path=NILE_ARTIFACTS_PATH,
             abi=abi,
         )
 
@@ -175,7 +173,6 @@ class Account(AsyncObject):
             tx=transaction,
             account=self,
             alias=alias,
-            overriding_path=overriding_path,
         )
 
     async def deploy_contract(

@@ -87,7 +87,6 @@ async def test_declare(
             transaction,
             account.signer,
             alias=alias,
-            overriding_path=overriding_path,
             watch_mode=watch_mode,
         )
         assert res == (TX_STATUS, hex_class_hash(HASH))
@@ -96,7 +95,6 @@ async def test_declare(
         mock_execute.assert_called_once_with(
             signer=account.signer,
             watch_mode=watch_mode,
-            overriding_path=overriding_path,
         )
         mock_parse.assert_called_once_with(CALL_OUTPUT)
         mock_register.assert_called_once_with(HASH, account.network, alias)
