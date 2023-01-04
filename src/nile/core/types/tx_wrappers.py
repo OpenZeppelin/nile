@@ -15,6 +15,7 @@ class BaseTxWrapper:
     account: object
 
     def __getattr__(self, name):
+        """Proxy attributes from transaction to wrapper."""
         return getattr(self.tx, name)
 
     async def execute(self, watch_mode=None):
