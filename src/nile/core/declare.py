@@ -1,58 +1,39 @@
 """Command to declare StarkNet smart contracts."""
+
 import logging
 
 from nile import deployments
 from nile.common import DECLARATIONS_FILENAME, parse_information
-from nile.starknet_cli import execute_call
-from nile.utils import hex_address, hex_class_hash
-from nile.utils.status import status
+from nile.utils import hex_class_hash
 
 
 async def declare(
-    sender,
-    contract_name,
-    signature,
-    network,
+    transaction,
+    signer,
     alias=None,
-    overriding_path=None,
-    max_fee=None,
-    mainnet_token=None,
     watch_mode=None,
 ):
     """Declare StarkNet smart contracts."""
+    contract_name = transaction.contract_to_submit
+    network = transaction.network
+
     logging.info(f"🚀 Declaring {contract_name}")
 
     if alias_exists(alias, network):
         file = f"{network}.{DECLARATIONS_FILENAME}"
         raise Exception(f"Alias {alias} already exists in {file}")
 
-    max_fee = 0 if max_fee is None else int(max_fee)
-
-    output = await execute_call(
-        "declare",
-        network,
-        contract_name=contract_name,
-        signature=signature,
-        max_fee=max_fee,
-        overriding_path=overriding_path,
-        mainnet_token=mainnet_token,
-        sender=hex_address(sender),
-    )
+    tx_status, output = await transaction.execute(signer=signer, watch_mode=watch_mode)
 
     class_hash, tx_hash = parse_information(output)
     padded_hash = hex_class_hash(class_hash)
     logging.info(f"⏳ Successfully sent declaration of {contract_name} as {padded_hash}")
     logging.info(f"🧾 Transaction hash: {hex(tx_hash)}")
 
-    deployments.register_class_hash(class_hash, network, alias)
+    if not tx_status.status.is_rejected:
+        deployments.register_class_hash(class_hash, network, alias)
 
-    if watch_mode is not None:
-        tx_status = await status(tx_hash, network, watch_mode)
-        if tx_status.status.is_rejected:
-            deployments.unregister(class_hash, network, alias, is_declaration=True)
-            return
-
-    return padded_hash, tx_hash
+    return tx_status, padded_hash
 
 
 def alias_exists(alias, network):

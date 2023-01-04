@@ -1,4 +1,5 @@
 """Tests for common library."""
+
 import json
 
 import pytest
@@ -6,11 +7,11 @@ import pytest
 from nile.common import (
     DEFAULT_GATEWAYS,
     NODE_FILENAME,
-    write_node_json,
     get_gateways,
     parse_information,
     prepare_params,
     stringify,
+    write_node_json,
 )
 
 NETWORK = "goerli"

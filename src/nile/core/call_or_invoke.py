@@ -1,4 +1,5 @@
 """Command to call or invoke StarkNet smart contracts."""
+
 import logging
 import re
 

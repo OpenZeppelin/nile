@@ -1,4 +1,5 @@
-"""nile common module."""
+"""Nile deployments module."""
+
 import logging
 import os
 

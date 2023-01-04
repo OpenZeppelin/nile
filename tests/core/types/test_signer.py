@@ -14,7 +14,8 @@ from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.testing.starknet import Starknet
 
 from nile.common import TRANSACTION_VERSION
-from nile.signer import Signer, from_call_to_call_array
+from nile.core.types.signer import Signer
+from nile.core.types.utils import from_call_to_call_array
 
 PRIVATE_KEY = 12345678987654321
 SIGNER = Signer(PRIVATE_KEY)

@@ -1,4 +1,5 @@
 """Nile plugins utility methods."""
+
 import functools
 import importlib
 from typing import Dict

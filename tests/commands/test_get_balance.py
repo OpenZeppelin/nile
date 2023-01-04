@@ -1,4 +1,5 @@
 """Tests for get-nonce command."""
+
 from unittest.mock import patch
 
 import pytest
@@ -21,7 +22,8 @@ EXPECTED_VALUES = [
 @pytest.mark.parametrize("mock_return", EXPECTED_VALUES)
 async def test_get_balance(contract_address, network, mock_return):
     with patch(
-        "nile.utils.get_balance.call_or_invoke", return_value=mock_return[0]
+        "nile.utils.get_balance.call_or_invoke",
+        return_value=mock_return[0],
     ) as mock_call:
         res = await get_balance(contract_address, network)
 

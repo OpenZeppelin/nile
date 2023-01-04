@@ -1,4 +1,5 @@
 """Command to compile cairo files."""
+
 import logging
 import os
 import subprocess

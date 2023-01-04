@@ -1,4 +1,5 @@
 """Tests for accounts file."""
+
 import json
 
 import pytest

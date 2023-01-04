@@ -1,4 +1,5 @@
 """Tests for debug command."""
+
 import logging
 import sys
 from pathlib import Path
@@ -7,12 +8,12 @@ from unittest.mock import patch
 import pytest
 
 from nile.common import BUILD_DIRECTORY, DEPLOYMENTS_FILENAME
-from nile.utils.debug import (
+from nile.utils.status import (
     _abi_to_path,
     _get_contracts_data,
     _locate_error_lines_with_abis,
+    status,
 )
-from nile.utils.status import status
 
 MOCK_HASH = 1234
 NETWORK = "localhost"
@@ -45,11 +46,11 @@ def test__abi_to_path():
         ([f"{DEBUG_ADDRESS}:{ABI_PATH}:{ALIAS}"], [int(DEBUG_ADDRESS, 16)]),
     ],
 )
-@patch("nile.utils.debug._abi_to_path", return_value=ABI_PATH)
+@patch("nile.utils.status._abi_to_path", return_value=ABI_PATH)
 def test__locate_error_lines_with_abis_with_and_without_alias(
     mock_path, file, address_set
 ):
-    with patch("nile.utils.debug.open") as mock_open, patch(
+    with patch("nile.utils.status.open") as mock_open, patch(
         "os.path.isfile", return_value=True
     ):
         mock_open.return_value.__enter__.return_value = file
@@ -59,11 +60,11 @@ def test__locate_error_lines_with_abis_with_and_without_alias(
         assert return_array == [f"{DEBUG_ADDRESS}:{ABI_PATH}"]
 
 
-@patch("nile.utils.debug._abi_to_path", return_value=ABI_PATH)
+@patch("nile.utils.status._abi_to_path", return_value=ABI_PATH)
 def test__locate_error_lines_with_abis_misformatted_line(mock_path, caplog):
     logging.getLogger().setLevel(logging.INFO)
 
-    with patch("nile.utils.debug.open") as mock_open, patch(
+    with patch("nile.utils.status.open") as mock_open, patch(
         "os.path.isfile", return_value=True
     ):
         # The DEBUG_ADDRESS alone without ":" is misformatted
@@ -102,7 +103,7 @@ async def test_status_feedback_with_message(mock_output, output, expected, caplo
         ("contracts_file.json", "contracts_file.json"),
     ],
 )
-@patch("nile.utils.debug._locate_error_lines_with_abis")
+@patch("nile.utils.status._locate_error_lines_with_abis")
 def test__get_contracts_data(mock_locate, contracts_file, expected):
     _get_contracts_data(contracts_file, NETWORK, ADDRESSES)
 

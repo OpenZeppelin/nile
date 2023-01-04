@@ -1,4 +1,5 @@
 """Tests for starknet_cli module."""
+
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -146,7 +147,7 @@ def test_get_feeder_url(network, expected):
         (True, TX_RECEIVED),
     ],
 )
-@patch("nile.core.deploy.DeployAccount")
+@patch("nile.starknet_cli.deploy_account.DeployAccount")
 async def test_get_gateway_response(mock_tx, success, tx_response):
     with patch(
         "nile.starknet_cli.GatewayClient.add_transaction", new=AsyncMock()

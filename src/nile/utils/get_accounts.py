@@ -1,4 +1,5 @@
 """Retrieve and manage deployed accounts."""
+
 import json
 import logging
 
@@ -6,7 +7,7 @@ import requests
 
 from nile.accounts import current_index
 from nile.common import get_gateways
-from nile.core.account import Account
+from nile.core.types.account import Account
 from nile.utils import hex_address, normalize_number
 
 GATEWAYS = get_gateways()

@@ -1,4 +1,5 @@
 """Command to start StarkNet local network."""
+
 import logging
 import subprocess
 

@@ -1,4 +1,5 @@
 """Command to run Nile scripts."""
+
 import logging
 from importlib.machinery import SourceFileLoader
 

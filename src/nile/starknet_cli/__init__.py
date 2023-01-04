@@ -10,6 +10,10 @@ from starkware.starknet.cli.starknet_cli import NETWORKS, assert_tx_received
 from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
 
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS, prepare_params
+from nile.starknet_cli.deploy_account import (
+    deploy_account_no_wallet,
+    update_deploy_account_context,
+)
 
 ARGS = [
     "abi",
@@ -17,7 +21,6 @@ ARGS = [
     "contracts",
     "contract_address",
     "hash",
-    "mainnet_token",
     "sender",
 ]
 
@@ -27,6 +30,11 @@ async def execute_call(cmd_name, network, **kwargs):
     args = set_context(network)
     command_args = set_command_args(**kwargs)
     cmd = getattr(starknet_cli, cmd_name)
+
+    if cmd_name == "deploy_account":
+        args = update_deploy_account_context(args, **kwargs)
+        cmd = deploy_account_no_wallet
+
     return await capture_stdout(cmd(args=args, command_args=command_args))
 
 

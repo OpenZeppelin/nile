@@ -1,4 +1,5 @@
 """Tests for get-nonce command."""
+
 import logging
 from unittest.mock import AsyncMock, patch
 
