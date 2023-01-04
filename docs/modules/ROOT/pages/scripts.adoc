@@ -1,0 +1,83 @@
+= NRE and scripting
+
+Nile provides an API to build scripts leveraging the Nile Runtime Environment (NRE), an object exposing Nile's functionality from compilation to account and deployment management. Nile scripts implement an asynchronous `def run(nre)` function that receives the `NileRuntimeEnvironment` object.
+
+== Running a script
+
+. Create a file named `test_script.py` inside the `scripts/` directory at the root of your project with the following contents. Keep in mind that the `scripts/` directory is a suggested convention but not a requirement.
++
+[,python]
+----
+async def run(nre):
+    accounts = await nre.get_accounts(predeployed=True)
+    print("First Account:", accounts[0])
+----
++
+NOTE: The `predeployed` parameter leverages the accounts that come already deployed with the local node. Read xref:nre.adoc#get_accounts[get_accounts's API Reference] to learn more.
++
+. Run a devnet node with `nile node`
++
+[,sh]
+----
+nile node
+----
++
+. Run the script by using `nile run`
++
+[,sh]
+----
+nile run scripts/test_script.py
+----
+
+[NOTE]
+====
+You can change the script's target network with the `--network` option.
+
+For a full reference of NRE exposed members check the xref:nre.adoc[NRE Reference] section.
+====
+
+== Useful Script Examples
+
+In this section you can find some potentially helpful script examples.
+
+[#declare_account]
+=== Declare Account
+
+Useful if you need to deploy an account in devnet, for previous declaration:
+
+[,python]
+----
+# script.py
+async def run(nre):
+  accounts = await nre.get_accounts(predeployed=True)
+  declarer_account = accounts[0]
+
+  # nile_account flag tells Nile to use its pre-packed artifact
+  output = await declarer_account.declare("Account", nile_account=True)
+  print(output)
+----
+
+=== Transfer funds from predeployed devnet account
+
+Useful for funding addresses in devnet:
+
+[,python]
+----
+from nile.common import ETH_TOKEN_ADDRESS
+
+async def run(nre):
+    accounts = await nre.get_accounts(predeployed=True)
+    account = accounts[0]
+
+    # define the recipient address
+    recipient = "0x053edde5384e39bad137d3c4130c708fb96ee28a4c80bf28049c486d3f369"
+
+    # define the amount to transfer (uint256 format)
+    amount = [2 * 10 ** 18, 0]
+
+    print(f"Transferring {amount} to {recipient} from {hex(account.address)}")
+
+    # send the transfer transaction
+    output = await account.send(ETH_TOKEN_ADDRESS, "transfer", [recipient, *amount])
+    print(output)
+----

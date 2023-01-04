@@ -1,0 +1,216 @@
+== NRE Reference
+
+Here you can find a complete reference of the functions provided by the Nile Runtime Environment.
+
+[.contract-index]
+.Functions
+--
+* xref:#compile[`++compile++`]
+* xref:#deploy[`++deploy++`]
+* xref:#call[`++call++`]
+* xref:#get_deployment[`++get_deployment++`]
+* xref:#get_declaration[`++get_declaration++`]
+* xref:#get_or_deploy_account[`++get_or_deploy_account++`]
+* xref:#get_accounts[`++get_accounts++`]
+* xref:#get_nonce[`++get_nonce++`]
+* xref:#get_balance[`++get_balance++`]
+
+--
+
+[.contract-item]
+[[compile]]
+==== `[.contract-item-name]#++compile++#++(contracts, cairo_path=None) → None++`
+
+Compile a list of contracts.
+
+===== Arguments
+
+- `*contracts*`
++
+List of contracts to compile.
+- `*cairo_path*`
++
+Specify a set of directories for the Cairo compiler to resolve imports.
+
+[.contract-item]
+[[deploy]]
+==== `[.contract-item-name]#++deploy++#++(contract, arguments=None, alias=None, overriding_path=None, abi=None, mainnet_token=None, watch_mode=None) → (address, abi)++`
+
+Deploy a smart contract.
+
+WARNING: Deprecated in favor of deployments through accounts.
+
+===== Arguments
+
+- `*contract*`
++
+Contract to deploy.
+- `*arguments*`
++
+List of arguments for the constructor (calldata).
+- `*alias*`
++
+Alias for deployment registration.
+- `*overriding_path*`
++
+Override for the path to artifacts and abis.
+- `*abi*`
++
+Use a different abi for registration (useful for proxies).
+- `*mainnet_token*`
++
+Token for mainnet deployments.
+- `*watch_mode*`
++
+Either `track` or `debug` (check `status` command).
+
+===== Return values
+
+- `*address*`
++
+Address of the new contract.
+- `*abi*`
++
+Abi registered in deployments.
+
+[.contract-item]
+[[call]]
+==== `[.contract-item-name]#++call++#++(address_or_alias, method, params=None, abi=None) → output++`
+
+Call a view function in a smart contract.
+
+===== Arguments
+
+- `*address_or_alias*`
++
+Identifier for the contract to call (alias needs to be registered in deployments).
+- `*method*`
++
+Method to call.
+- `*params*`
++
+Arguments for the call.
+- `*abi*`
++
+Override for the abi if necessary.
+
+===== Return values
+
+- `*output*`
++
+Output from the underlaying starknet cli call.
+
+[.contract-item]
+[[get_deployment]]
+==== `[.contract-item-name]#++get_deployment++#++(address_or_alias) → (address, abi)++`
+
+Get a deployment by its identifier.
+
+===== Arguments
+
+- `*address_or_alias*`
++
+Contract identifier.
+
+===== Return values
+
+- `*address*`
++
+Registered contract address.
+
+- `*abi*`
++
+Registered contract abi.
+
+[.contract-item]
+[[get_declaration]]
+==== `[.contract-item-name]#++get_declaration++#++(hash_or_alias) → class_hash++`
+
+Get a declared class by its identifier.
+
+===== Arguments
+
+- `*hash_or_alias*`
++
+Contract identifier.
+
+===== Return values
+
+- `*class_hash*`
++
+Declared contract class hash.
+
+[.contract-item]
+[[get_or_deploy_account]]
+==== `[.contract-item-name]#++get_or_deploy_account++#++(signer, watch_mode=None) → account++`
+
+Get or deploy an Account contract.
+
+===== Arguments
+
+- `*signer*`
++
+Alias representing the private key associated.
+- `*watch_mode*`
++
+Either None, track or debug. Block the execution to query the status of the deployment transaction if needed.
+
+===== Return values
+
+- `*account*`
++
+Account matching the signer.
+
+[.contract-item]
+[[get_accounts]]
+==== `[.contract-item-name]#++get_accounts++#++(predeployed=False) → accounts++`
+
+Retrieve and manage deployed accounts.
+
+===== Arguments
+
+- `*predeployed*`
++
+Get predeployed accounts from a starknet-devnet node.
+
+===== Return values
+
+- `*accounts*`
++
+Registered accounts.
+
+[.contract-item]
+[[get_nonce]]
+==== `[.contract-item-name]#++get_nonce++#++(contract_address) → current_nonce++`
+
+Retrieve the nonce for a contract.
+
+===== Arguments
+
+- `*contract_address*`
++
+Address of the contract to query.
+
+===== Return values
+
+- `*current_nonce*`
++
+Nonce of the contract.
+
+[.contract-item]
+[[get_balance]]
+==== `[.contract-item-name]#++get_balance++#++(contract_address) → balance++`
+
+Get the Ether balance of an address.
+
+===== Arguments
+
+- `*contract_address*`
++
+Address of the contract to query.
+
+===== Return values
+
+- `*balance*`
++
+Balance of the contract.

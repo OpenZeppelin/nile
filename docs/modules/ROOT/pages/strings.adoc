@@ -1,0 +1,38 @@
+:cairo-lang: link:https://www.cairo-lang.org/docs/how_cairo_works/consts.html#short-string-literals[cairo-lang]
+
+= Short String Literals
+
+From {cairo-lang} docs:
+
+"A short string is a string whose length is at most 31 characters, and therefore can fit into a single field element".
+
+== Nile integration
+
+In Nile, contract call arguments (calldata) that are neither integers nor hexadecimals, are treated as short strings and converted automatically to the corresponding felt representation.
+
+Because of this, you can run the following from the CLI:
+
+[,sh]
+----
+nile deploy MyToken 'MyToken name' 'MyToken symbol' ...
+----
+
+Which is equivalent to passing the felt representation directly like this:
+
+[,sh]
+----
+nile deploy MyToken 0x4d79546f6b656e206e616d65 0x4d79546f6b656e2073796d626f6c ...
+----
+
+[NOTE]
+====
+If you want to pass the token name as a hex or an int, you need to provide the felt representation directly because these values are not interpreted as short strings. You can use the `str_to_felt` util.
+
+[,sh]
+----
+>>> from nile.utils import str_to_felt
+>>>
+>>> str_to_felt('any string')
+460107418789485453340263
+----
+====
