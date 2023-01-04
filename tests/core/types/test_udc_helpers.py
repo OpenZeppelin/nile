@@ -23,7 +23,7 @@ NETWORK = "localhost"
 @pytest.mark.parametrize("nonce", [0, 30])
 @pytest.mark.parametrize("overriding_path", [None])
 @pytest.mark.parametrize("exp_class_hash", [0x12345])
-async def test_create_uc_deploy_transaction(
+async def test_create_udc_deploy_transaction(
     contract_name,
     salt,
     unique,
