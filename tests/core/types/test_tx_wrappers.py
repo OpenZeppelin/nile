@@ -238,7 +238,9 @@ async def test_deploy_account_wrapper_execute(
     ) as mock_get_tx_hash:
         mock_get_tx_hash.return_value = TX_HASH
 
-        tx = DeployAccountTransaction(contract_to_submit="contract", overriding_path="path")
+        tx = DeployAccountTransaction(
+            contract_to_submit="contract", overriding_path="path"
+        )
         wrapper = DeployAccountTxWrapper(
             tx,
             account,
