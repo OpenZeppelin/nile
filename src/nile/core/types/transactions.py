@@ -95,7 +95,6 @@ class Transaction(ABC):
 
     async def estimate_fee(self, signer, **kwargs):
         """Estimate the fee of execution."""
-        print(kwargs)
         sig_r, sig_s = signer.sign(message_hash=self.query_hash)
 
         type_specific_args = self._get_execute_call_args()

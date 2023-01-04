@@ -14,6 +14,9 @@ class BaseTxWrapper:
     tx: object
     account: object
 
+    def __getattr__(self, name):
+        return getattr(self.tx, name)
+
     async def execute(self, watch_mode=None):
         """Execute the wrapped transaction."""
         return await self.tx.execute(signer=self.account.signer, watch_mode=watch_mode)
