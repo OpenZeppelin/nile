@@ -127,6 +127,12 @@ Specify the private key that will own the account to be deployed. Looks for an e
 
 include::snippets.adoc[tag=network-options]
 +
+include::snippets.adoc[tag=salt]
++
+include::snippets.adoc[tag=max-fee]
++
+include::snippets.adoc[tag=query-options]
++
 include::snippets.adoc[tag=status-options]
 
 [.contract-item]
@@ -148,16 +154,13 @@ Specify the name of the contract artifact to be declared.
 
 include::snippets.adoc[tag=network-options]
 +
-Default to localhost.
-- `*--max_fee*`
+include::snippets.adoc[tag=max-fee]
 +
-Specify the max fee you are willing to pay for the transaction.
 - `*--overriding_path*`
 +
 Override the directory path for artifacts discovery.
-- `*--token*`
 +
-Used for declaring contracts to Alpha Mainnet.
+include::snippets.adoc[tag=query-options]
 +
 include::snippets.adoc[tag=status-options]
 
@@ -188,13 +191,10 @@ Optional calldata arguments for the constructor.
 
 include::snippets.adoc[tag=network-options]
 +
-Default to localhost.
-- `*--max_fee*`
+include::snippets.adoc[tag=salt]
 +
-Specify the max fee you are willing to pay for the transaction.
-- `*--salt*`
+include::snippets.adoc[tag=max-fee]
 +
-Set the base salt for address generation.
 - `*--unique*`
 +
 Specify that the account address should be taken into account for target address generation.
@@ -204,12 +204,8 @@ Override artifact abi to be registered. Useful for proxies.
 - `*--deployer_address*`
 +
 Specify the deployer contract if needed.
-- `*--ignore_account*`
 +
-Deploy without using an account (DEPRECATED).
-- `*--token*`
-+
-Used for deploying contracts to Alpha Mainnet.
+include::snippets.adoc[tag=query-options]
 +
 include::snippets.adoc[tag=status-options]
 
@@ -235,8 +231,6 @@ Optional calldata arguments for the method to query.
 ===== Options
 
 include::snippets.adoc[tag=network-options]
-+
-Default to localhost.
 
 [.contract-item]
 [[send]]
@@ -263,13 +257,9 @@ Optional calldata arguments for the method to execute.
 
 include::snippets.adoc[tag=network-options]
 +
-Default to localhost.
-- `*--max_fee*`
+include::snippets.adoc[tag=max-fee]
 +
-Specify the max fee you are willing to pay for the transaction.
-- `*--simulate*` and `*--estimate_fee*`
-+
-Flags for querying the network without executing the transaction.
+include::snippets.adoc[tag=query-options]
 +
 include::snippets.adoc[tag=status-options]
 
@@ -288,9 +278,7 @@ Specify the alias representing the private key to be used.
 
 ===== Options
 
-- `*--salt*`
-+
-Specify the salt for the address generation.
+include::snippets.adoc[tag=salt]
 +
 Default to 0.
 
@@ -310,7 +298,6 @@ Specify the hash of the transaction to query.
 
 include::snippets.adoc[tag=network-options]
 +
-Default to localhost.
 - `*--track*`
 +
 Continue probing the network in case of pending transaction states.
@@ -348,7 +335,6 @@ Sending transactions through predeployed accounts can be done through scripting,
 
 include::snippets.adoc[tag=network-options]
 +
-Default to localhost.
 - `*--predeployed*`
 +
 Query a devnet node for predeployed accounts.
@@ -368,8 +354,6 @@ Specify the address of the contract to query.
 ===== Options
 
 include::snippets.adoc[tag=network-options]
-+
-Default to localhost.
 
 [.contract-item]
 [[get-balance]]
@@ -386,8 +370,6 @@ Specify the address of the contract to query.
 ===== Options
 
 include::snippets.adoc[tag=network-options]
-+
-Default to localhost.
 
 [.contract-item]
 [[run]]
@@ -404,8 +386,6 @@ Path to the script to run.
 ===== Options
 
 include::snippets.adoc[tag=network-options]
-+
-Default to localhost.
 
 [.contract-item]
 [[clean]]

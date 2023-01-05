@@ -79,14 +79,6 @@ def query_option(f):
     return f
 
 
-def mainnet_token_option(f):
-    """Configure TOKEN option for the cli."""
-    return click.option(
-        "--token",
-        help="Used for deploying contracts in Alpha Mainnet.",
-    )(f)
-
-
 async def run_transaction(tx, query_flag, watch_mode):
     """Execute or simulate a transaction."""
     if query_flag == "estimate_fee":
