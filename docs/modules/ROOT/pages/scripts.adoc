@@ -43,7 +43,7 @@ In this section you can find some potentially helpful script examples.
 [#declare_account]
 === Declare the OZ account
 
-Useful if you need to deploy an account in a local devnet node, for previous declaration:
+Useful if you need to deploy the account in a local devnet node, for previous declaration:
 
 [,python]
 ----
