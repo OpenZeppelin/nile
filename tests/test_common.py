@@ -1,19 +1,19 @@
 """Tests for common library."""
 
 import json
+from unittest.mock import AsyncMock
 
 import pytest
-from unittest.mock import AsyncMock
 
 from nile.common import (
     DEFAULT_GATEWAYS,
     NODE_FILENAME,
+    estimate_fee_if_zero,
     get_gateways,
     parse_information,
     prepare_params,
     stringify,
     write_node_json,
-    estimate_fee_if_zero
 )
 
 NETWORK = "goerli"
@@ -113,7 +113,10 @@ def test_write_node_json(args1, args2, gateways):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("max_fee", [0, 1],)
+@pytest.mark.parametrize(
+    "max_fee",
+    [0, 1],
+)
 async def test_estimate_fee_when_zero(max_fee):
     mock = AsyncMock()
     mock.tx.max_fee = max_fee
