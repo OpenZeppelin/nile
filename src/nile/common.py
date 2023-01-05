@@ -193,4 +193,3 @@ async def estimate_fee_if_zero(tx):
     if tx.tx.max_fee == 0:
         max_fee = await tx.estimate_fee()
         tx.update_fee(max_fee)
-        return max_fee
