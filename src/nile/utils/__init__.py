@@ -2,7 +2,6 @@
 # flake8: noqa
 
 from .common import (
-    _pad_hex_to,
     add_uint,
     div_rem_uint,
     felt_to_str,
