@@ -133,3 +133,12 @@ dmypy.json
 
 # vscode project settings
 .vscode/
+
+# nile
+*node.json*
+
+# node
+**/node_modules/
+
+# docs
+docs/build/

@@ -43,7 +43,7 @@ In this section you can find some potentially helpful script examples.
 [#declare_account]
 === Declare Account
 
-Useful if you need to deploy an account in devnet, for previous declaration:
+Useful if you need to deploy an account in a local devnet node, for previous declaration:
 
 [,python]
 ----
@@ -53,8 +53,13 @@ async def run(nre):
   declarer_account = accounts[0]
 
   # nile_account flag tells Nile to use its pre-packed artifact
-  output = await declarer_account.declare("Account", nile_account=True)
-  print(output)
+  tx = await declarer_account.declare("Account", nile_account=True)
+
+  # estimate the max fee
+  max_fee = await tx.estimate_fee()
+
+  # tx.update_fee will update the tx.max_fee and the tx.hash as well
+  tx_status, *_ = await tx.update_fee(max_fee).execute(watch_mode="track")
 ----
 
 === Transfer funds from predeployed devnet account
