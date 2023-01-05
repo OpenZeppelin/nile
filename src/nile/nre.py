@@ -1,7 +1,7 @@
 """Nile runtime environment."""
 
 from nile import deployments
-from nile.common import is_alias
+from nile.common import is_alias, estimate_fee_if_zero
 from nile.core.call_or_invoke import call_or_invoke
 from nile.core.compile import compile
 from nile.core.plugins import get_installed_plugins, skip_click_exit
@@ -32,6 +32,12 @@ class NileRuntimeEnvironment:
         return call_or_invoke(
             address_or_alias, "call", method, params, self.network, abi=abi
         )
+
+    async def execute_tx(self, tx_wrapper, watch_mode=None):
+        """Add estimated max_fee (if max_fee is zero) and execute transaction."""
+        tx = await tx_wrapper
+        await estimate_fee_if_zero(tx)
+        return await tx.execute(watch_mode=watch_mode)
 
     def get_deployment(self, address_or_alias):
         """Get a deployment by its identifier (address or alias)."""
