@@ -7,7 +7,7 @@ from functools import update_wrapper
 
 import asyncclick as click
 
-from nile.common import is_alias
+from nile.common import is_alias, estimate_fee_if_zero
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
@@ -94,6 +94,7 @@ async def run_transaction(tx, query_flag, watch_mode):
     elif query_flag == "simulate":
         await tx.simulate()
     else:
+        await estimate_fee_if_zero(tx)
         await tx.execute(watch_mode=watch_mode)
 
 
