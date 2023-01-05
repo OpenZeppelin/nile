@@ -21,6 +21,7 @@ Before installing Cairo on your machine, you need to install `gmp`:
 [,bash]
 ----
 sudo apt install -y libgmp3-dev # linux
+or
 brew install gmp # mac
 ----
 

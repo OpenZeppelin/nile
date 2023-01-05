@@ -117,7 +117,10 @@ def _abi_to_path(filename):
 def _locate_error_lines_with_abis(file, addresses, to_contract):
     contracts = []
     if not os.path.isfile(file):
-        raise IOError(f"Contracts file {file} not found.")
+        raise IOError(
+            f"Contracts file {file} not found "
+            "while trying to debug REJECTED transaction."
+        )
 
     with open(file) as file_stream:
         for line_idx, line in enumerate(file_stream):
