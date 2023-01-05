@@ -143,8 +143,8 @@ async def run(ctx, path, network):
 @click.argument("signer", nargs=1)
 @click.argument("contract_name", nargs=1)
 @click.argument("params", nargs=-1)
-@click.option("--max_fee", nargs=1)
-@click.option("--salt", nargs=1, default=0)
+@click.option("--max_fee", type=int, nargs=1)
+@click.option("--salt", type=int, nargs=1, default=0)
 @click.option("--unique", is_flag=True)
 @click.option("--alias")
 @click.option("--abi")
@@ -188,7 +188,7 @@ async def deploy(
 @cli.command()
 @click.argument("signer", nargs=1)
 @click.argument("contract_name", nargs=1)
-@click.option("--max_fee", nargs=1)
+@click.option("--max_fee", type=int, nargs=1)
 @click.option("--alias")
 @click.option("--overriding_path")
 @click.option("--nile_account", is_flag=True)
@@ -224,8 +224,8 @@ async def declare(
 
 @cli.command()
 @click.argument("signer", nargs=1)
-@click.option("--salt", nargs=1)
-@click.option("--max_fee", nargs=1)
+@click.option("--salt", type=int, nargs=1)
+@click.option("--max_fee", type=int, nargs=1)
 @network_option
 @query_option
 @watch_option
@@ -241,7 +241,7 @@ async def setup(ctx, signer, network, salt, max_fee, query, watch_mode):
 
 @cli.command()
 @click.argument("signer", nargs=1)
-@click.option("--salt", nargs=1, default=None)
+@click.option("--salt", type=int, nargs=1)
 @enable_stack_trace
 def counterfactual_address(ctx, signer, salt):
     """Precompute the address of an Account contract."""
@@ -257,7 +257,7 @@ def counterfactual_address(ctx, signer, salt):
 @click.argument("address_or_alias", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
-@click.option("--max_fee", nargs=1)
+@click.option("--max_fee", type=int, nargs=1)
 @network_option
 @query_option
 @watch_option
