@@ -3,6 +3,7 @@
 import json
 
 import pytest
+from unittest.mock import AsyncMock
 
 from nile.common import (
     DEFAULT_GATEWAYS,
@@ -12,6 +13,7 @@ from nile.common import (
     prepare_params,
     stringify,
     write_node_json,
+    estimate_fee_if_zero
 )
 
 NETWORK = "goerli"
@@ -108,3 +110,24 @@ def test_write_node_json(args1, args2, gateways):
         result = fp.read()
         expected = json.dumps(gateways, indent=2)
         assert result == expected
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("max_fee", [0, 1],)
+async def test_estimate_fee_when_zero(max_fee):
+    mock = AsyncMock()
+    mock.tx.max_fee = max_fee
+    estimated_fee = 5
+
+    mock_estimate = mock.estimate_fee
+    mock_estimate.return_value = estimated_fee
+    mock_update_fee = mock.update_fee
+
+    await estimate_fee_if_zero(mock)
+
+    if max_fee == 0:
+        mock_estimate.assert_called_once()
+        mock_update_fee.assert_called_once_with(estimated_fee)
+    else:
+        mock_estimate.assert_not_called()
+        mock_update_fee.assert_not_called()
