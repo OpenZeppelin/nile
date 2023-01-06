@@ -8,7 +8,7 @@ import pytest
 from nile.common import (
     DEFAULT_GATEWAYS,
     NODE_FILENAME,
-    estimate_fee_if_zero,
+    set_estimated_fee_if_zero,
     get_gateways,
     parse_information,
     prepare_params,
@@ -117,16 +117,16 @@ def test_write_node_json(args1, args2, gateways):
     "max_fee",
     [0, 1],
 )
-async def test_estimate_fee_when_zero(max_fee):
+async def test_set_estimated_fee_if_zero(max_fee):
     mock = AsyncMock()
-    mock.tx.max_fee = max_fee
+    mock.max_fee = max_fee
     estimated_fee = 5
 
     mock_estimate = mock.estimate_fee
     mock_estimate.return_value = estimated_fee
     mock_update_fee = mock.update_fee
 
-    await estimate_fee_if_zero(mock)
+    await set_estimated_fee_if_zero(mock)
 
     if max_fee == 0:
         mock_estimate.assert_called_once()
