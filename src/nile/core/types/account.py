@@ -146,8 +146,8 @@ class Account(AsyncObject):
     async def declare(
         self,
         contract_name,
-        max_fee=None,
         nonce=None,
+        max_fee=None,
         alias=None,
         overriding_path=None,
         nile_account=False,
@@ -181,10 +181,10 @@ class Account(AsyncObject):
         salt,
         unique,
         calldata,
-        alias,
-        max_fee=None,
         nonce=None,
+        max_fee=None,
         deployer_address=None,
+        alias=None,
         overriding_path=None,
         abi=None,
     ):

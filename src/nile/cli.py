@@ -168,8 +168,8 @@ async def deploy(
             salt,
             unique,
             params,
-            alias,
             deployer_address=deployer_address,
+            alias=alias,
             max_fee=max_fee,
             abi=abi,
         )
@@ -205,8 +205,8 @@ async def declare(
     if account is not None:
         transaction = await account.declare(
             contract_name,
-            alias=alias,
             max_fee=max_fee,
+            alias=alias,
             overriding_path=overriding_path,
             nile_account=nile_account,
         )

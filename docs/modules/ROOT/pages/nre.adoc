@@ -1,21 +1,13 @@
-== NRE Reference
+= NRE Reference
 
-Here you can find a complete reference of the functions provided by the Nile Runtime Environment.
+Here you can find a complete reference of the functions provided by the Nile Runtime Environment, and
+a reference of the Account methods.
 
-[.contract-index]
-.Functions
---
-* xref:#compile[`++compile++`]
-* xref:#deploy[`++deploy++`]
-* xref:#call[`++call++`]
-* xref:#get_deployment[`++get_deployment++`]
-* xref:#get_declaration[`++get_declaration++`]
-* xref:#get_or_deploy_account[`++get_or_deploy_account++`]
-* xref:#get_accounts[`++get_accounts++`]
-* xref:#get_nonce[`++get_nonce++`]
-* xref:#get_balance[`++get_balance++`]
+== NRE API
 
---
+Functions provided within the NRE object.
+
+=== `compile`
 
 [.contract-item]
 [[compile]]
@@ -32,46 +24,7 @@ List of contracts to compile.
 +
 Specify a set of directories for the Cairo compiler to resolve imports.
 
-[.contract-item]
-[[deploy]]
-==== `[.contract-item-name]#++deploy++#++(contract, arguments=None, alias=None, overriding_path=None, abi=None, mainnet_token=None, watch_mode=None) → (address, abi)++`
-
-Deploy a smart contract.
-
-WARNING: Deprecated in favor of deployments through accounts.
-
-===== Arguments
-
-- `*contract*`
-+
-Contract to deploy.
-- `*arguments*`
-+
-List of arguments for the constructor (calldata).
-- `*alias*`
-+
-Alias for deployment registration.
-- `*overriding_path*`
-+
-Override for the path to artifacts and abis.
-- `*abi*`
-+
-Use a different abi for registration (useful for proxies).
-- `*mainnet_token*`
-+
-Token for mainnet deployments.
-- `*watch_mode*`
-+
-Either `track` or `debug` (check `status` command).
-
-===== Return values
-
-- `*address*`
-+
-Address of the new contract.
-- `*abi*`
-+
-Abi registered in deployments.
+=== `call`
 
 [.contract-item]
 [[call]]
@@ -100,6 +53,8 @@ Override for the abi if necessary.
 +
 Output from the underlaying starknet cli call.
 
+=== `get_deployment`
+
 [.contract-item]
 [[get_deployment]]
 ==== `[.contract-item-name]#++get_deployment++#++(address_or_alias) → (address, abi)++`
@@ -122,6 +77,8 @@ Registered contract address.
 +
 Registered contract abi.
 
+=== `get_declaration`
+
 [.contract-item]
 [[get_declaration]]
 ==== `[.contract-item-name]#++get_declaration++#++(hash_or_alias) → class_hash++`
@@ -139,6 +96,8 @@ Contract identifier.
 - `*class_hash*`
 +
 Declared contract class hash.
+
+=== `get_or_deploy_account`
 
 [.contract-item]
 [[get_or_deploy_account]]
@@ -159,7 +118,9 @@ Either None, track or debug. Block the execution to query the status of the depl
 
 - `*account*`
 +
-Account matching the signer.
+An link:#account_api[Account] instance matching the signer.
+
+=== `get_accounts`
 
 [.contract-item]
 [[get_accounts]]
@@ -177,7 +138,9 @@ Get predeployed accounts from a starknet-devnet node.
 
 - `*accounts*`
 +
-Registered accounts.
+A list of registered link:#account_api[Accounts].
+
+=== `get_nonce`
 
 [.contract-item]
 [[get_nonce]]
@@ -197,6 +160,8 @@ Address of the contract to query.
 +
 Nonce of the contract.
 
+=== `get_balance`
+
 [.contract-item]
 [[get_balance]]
 ==== `[.contract-item-name]#++get_balance++#++(contract_address) → balance++`
@@ -214,3 +179,208 @@ Address of the contract to query.
 - `*balance*`
 +
 Balance of the contract.
+
+== Account API
+
+Public API of the Account abstraction.
+
+=== `send`
+
+[.contract-item]
+[[send]]
+==== `[.contract-item-name]#++async send++#++(self, address_or_alias, method, calldata, nonce=None, max_fee=None) → transaction++`
+
+Return a Transaction instance representing an invoke transaction.
+
+===== Arguments
+
+- `*address_or_alias*`
++
+Target contract identifier (alias needs to be registered in deployments).
+- `*method*`
++
+Method to execute.
+- `*calldata*`
++
+Arguments for the call.
+- `*nonce*`
++
+Account nonce. Is automatically computed when is left as `None`.
+- `*max_fee*`
++
+The max fee you are willing to pay for the transaction execution.
++
+This value will be usually left as `None`, because
+the returned transaction allows to estimate and update the fee later.
+
+===== Return values
+
+- `*transaction*`
++
+A link:#transaction_api[Transaction] instance.
+
+=== `declare`
+
+[.contract-item]
+[[declare]]
+==== `[.contract-item-name]#++async declare++#++(self, contract_name,  nonce=None, max_fee=None, alias=None, overriding_path=None, nile_account=False) → transaction++`
+
+Return a Transaction instance representing a declare transaction.
+
+===== Arguments
+
+- `*contract_name*`
++
+The name of the contract to declare (for artifacts resolution).
+- `*nonce*`
++
+Account nonce. Is automatically computed when is left as `None`.
+- `*max_fee*`
++
+The max fee you are willing to pay for the transaction execution.
++
+This value will be usually left as `None`, because
+the returned transaction allows to estimate and update the fee later.
+- `*alias*`
++
+The alias for registering the declared class_hash (DEPRECATED).
+- `*overriding_path*`
++
+Path override for artifacts and abi resolution.
+- `*nile_account*`
++
+Wheter to use the OZ account artifact.
+
+===== Return values
+
+- `*transaction*`
++
+A link:#transaction_api[Transaction] instance.
+
+=== `deploy_contract`
+
+[.contract-item]
+[[deploy_contract]]
+==== `[.contract-item-name]#++async deploy_contract++#++(self, contract_name, salt, unique, calldata, nonce=None, max_fee=None, deployer_address=None, alias=None, overriding_path=None, abi=None) → transaction++`
+
+Return a Transaction instance representing a deploy through UDC transaction. See the link:https://docs.openzeppelin.com/contracts-cairo/udc#api_specification#[Universal Deployer Contract] documentation.
+
+===== Arguments
+
+- `*contract_name*`
++
+The name of the contract to deploy (for artifacts resolution).
+- `*salt*` and `*unique*`
++
+UDC specific arguments for address generation.
+- `*calldata*`
++
+Contract to deploy constructor arguments.
+- `*nonce*`
++
+Account nonce. Is automatically computed when is left as `None`.
+- `*max_fee*`
++
+The max fee you are willing to pay for the transaction execution.
++
+This value will be usually left as `None`, because
+the returned transaction allows to estimate and update the fee later.
+- `*deployer_address*`
++
+Specify a different deployer address.
++
+Default to the UDC address.
+- `*alias*`
++
+The alias for deployment registration.
+- `*overriding_path*`
++
+Path override for artifacts and abi resolution.
+- `*abi*`
++
+Override for the contract ABI (for deployment registration).
+
+===== Return values
+
+- `*transaction*`
++
+A link:#transaction_api[Transaction] instance.
+
+== Transaction API
+
+Public API of the Transaction abstraction.
+
+=== `estimate_fee`
+
+[.contract-item]
+[[estimate_fee]]
+==== `[.contract-item-name]#++async estimate_fee++#++(self) → max_fee++`
+
+Return the estimated fee of executing the transaction.
+
+===== Return values
+
+- `*max_fee*`
++
+The estimated fee.
+
+=== `simulate`
+
+[.contract-item]
+[[simulate]]
+==== `[.contract-item-name]#++async simulate++#++(self) → trace++`
+
+Return a trace of the simulated execution.
+
+===== Return values
+
+- `*trace*`
++
+An object representing the simulation.
+
+=== `execute`
+
+[.contract-item]
+[[execute]]
+==== `[.contract-item-name]#++async execute++#++(self, watch_mode=None) → (tx_status, log_output)++`
+
+Execute the transaction.
+
+===== Arguments
+
+- `*watch_mode*`
++
+Allow waiting for the transaction to be included in a block.
+Either `None`, `track` or `debug`. `track` to continue probing the network in case of pending transaction states. `debug` to use locally available contracts to make error messages from rejected transactions more explicit (Implies `track`).
++
+Default to `None` (non blocking).
+
+===== Return values
+
+- `*tx_status*`
++
+A Transaction Status object.
++
+- `*log_output*`
++
+A string representing the output of the inner call.
+
+=== `update_fee`
+
+[.contract-item]
+[[update_fee]]
+==== `[.contract-item-name]#++update_fee++#++(self, max_fee) → self++`
+
+Update the max_fee modifying the transaction hash.
+
+===== Arguments
+
+- `*max_fee*`
++
+The new max_fee to set.
+
+===== Return values
+
+- `*self*`
++
+Return self to allow chaining with execute.

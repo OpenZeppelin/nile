@@ -3,105 +3,15 @@
 :imports: link:https://starknet.io/docs/how_cairo_works/imports.html?highlight=cairo%20path#import-search-paths[Import search paths]
 :status: link:#status[status]
 
-== CLI Reference
+= CLI Reference
 
 Here you can find a complete reference of the core commands Nile provides by default.
 
-[.contract-index]
-.Transactions
---
-* xref:#setup[`++setup++`]
-* xref:#declare[`++declare++`]
-* xref:#deploy[`++deploy++`]
-* xref:#send[`++send++`]
-* xref:#status[`++status++`]
-* xref:#debug[`++debug++`]
---
+== Transaction execution
 
-[.contract-index]
-.Queries
---
-* xref:#call[`++call++`]
-* xref:#get-nonce[`++get-nonce++`]
-* xref:#get-balance[`++get-balance++`]
---
+Commands for executing or querying the status of a transaction.
 
-[.contract-index]
-.Project management
---
-* xref:#init[`++init++`]
-* xref:#node[`++node++`]
-* xref:#compile[`++compile++`]
-* xref:#run[`++run++`]
-* xref:#clean[`++clean++`]
-* xref:#version[`++version++`]
---
-
-[.contract-index]
-.Utils
---
-* xref:#get-accounts[`++get-accounts++`]
-* xref:#counterfactual-address[`++counterfactual-address++`]
---
-
-[.contract-item]
-[[node]]
-==== `[.contract-item-name]#++nile node++#`
-
-Run a local {starknet-devnet} node.
-
-===== Options
-
-- `*--host*`
-+
-Specify the address to listen at.
-+
-Defaults to 127.0.0.1 (use the address the program outputs on start).
-- `*--port*`
-+
-Specify the port to listen at. Defaults to 5050.
-- `*--seed*`
-+
-Specify the seed for randomness of accounts to be deployed.
-- `*--lite-mode*`
-+
-Applies all lite-mode optimizations by disabling features such as block hash and deploy hash calculation.
-
-[.contract-item]
-[[compile]]
-==== `[.contract-item-name]#++nile compile [PATH_TO_CONTRACT]++#`
-
-Compile Cairo contracts.
-
-Compilation artifacts are written into the `artifacts/` directory.
-
-===== Arguments
-
-- `*PATH_TO_CONTRACT*`
-+
-Specify the path to a contract for compiling.
-
-===== Options
-
-- `*--directory*`
-+
-Specify a directory to compile contracts from.
-- `*--account_contract*`
-+
-As of {cairo-lang} v0.8.0, users must compile account contracts with the `--account_contract` flag. Nile automatically inserts the flag if the contract's name ends with Account. i.e. `Account.cairo`, `EthAccount.cairo`. Otherwise, the flag must be included by the user.
-+
-[,sh]
-----
-nile compile contracts/NewAccountType.cairo --account_contract # compiles account contract
-----
-- `*--cairo_path*`
-+
-Specify which directories the compiler must use to resolve imports from Cairo.
-+
-TIP: Check {imports} from StarkNet documentation.
-- `*--disable-hint-validation*`
-+
-Compile allowing unwhitelisted hints.
+=== `setup`
 
 [.contract-item]
 [[setup]]
@@ -135,6 +45,8 @@ include::snippets.adoc[tag=query-options]
 +
 include::snippets.adoc[tag=status-options]
 
+=== `declare`
+
 [.contract-item]
 [[declare]]
 ==== `[.contract-item-name]#++nile declare  <PRIVATE_KEY_ALIAS> <CONTRACT_NAME>++#`
@@ -163,6 +75,8 @@ Override the directory path for artifacts discovery.
 include::snippets.adoc[tag=query-options]
 +
 include::snippets.adoc[tag=status-options]
+
+=== `deploy`
 
 [.contract-item]
 [[deploy]]
@@ -209,28 +123,7 @@ include::snippets.adoc[tag=query-options]
 +
 include::snippets.adoc[tag=status-options]
 
-
-[.contract-item]
-[[call]]
-==== `[.contract-item-name]#++nile call <CONTRACT_ID> <METHOD> [arg1, arg2...]++#`
-
-Perform reading operations against a network.
-
-===== Arguments
-
-- `*CONTRACT_ID*`
-+
-Specify the contract to call (either alias or address).
-- `*METHOD*`
-+
-Specify the method to call.
-- `*ARGS*`
-+
-Optional calldata arguments for the method to query.
-
-===== Options
-
-include::snippets.adoc[tag=network-options]
+=== `send`
 
 [.contract-item]
 [[send]]
@@ -263,24 +156,7 @@ include::snippets.adoc[tag=query-options]
 +
 include::snippets.adoc[tag=status-options]
 
-
-[.contract-item]
-[[counterfactual-address]]
-==== `[.contract-item-name]#++nile counterfactual-address <PRIVATE_KEY_ALIAS>++#`
-
-Precompute the deployment address of an Account contract.
-
-===== Arguments
-
-- `*PRIVATE_KEY_ALIAS*`
-+
-Specify the alias representing the private key to be used.
-
-===== Options
-
-include::snippets.adoc[tag=salt]
-+
-Default to 0.
+=== `status`
 
 [.contract-item]
 [[status]]
@@ -318,6 +194,185 @@ Default to `<NETWORK>.deployments.txt`.
 
 Alias for `nile status --debug`.
 
+== Queries
+
+Utilities for querying the blockchain.
+
+=== `call`
+
+[.contract-item]
+[[call]]
+==== `[.contract-item-name]#++nile call <CONTRACT_ID> <METHOD> [arg1, arg2...]++#`
+
+Perform reading operations against a network.
+
+===== Arguments
+
+- `*CONTRACT_ID*`
++
+Specify the contract to call (either alias or address).
+- `*METHOD*`
++
+Specify the method to call.
+- `*ARGS*`
++
+Optional calldata arguments for the method to query.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
+
+=== `get-nonce`
+
+[.contract-item]
+[[get-nonce]]
+==== `[.contract-item-name]#++nile get-nonce <ADDRESS>++#`
+
+Retrieve the nonce for a contract (usually an account).
+
+===== Arguments
+
+- `*ADDRESS*`
++
+Specify the address of the contract to query.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
+
+=== `get-balance`
+
+[.contract-item]
+[[get-balance]]
+==== `[.contract-item-name]#++nile get-balance <ADDRESS>++#`
+
+Retrieve the Ether balance for a contract.
+
+===== Arguments
+
+- `*ADDRESS*`
++
+Specify the address of the contract to query.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
+
+== Project management
+
+Utilities for managing the project.
+
+=== `init`
+
+[.contract-item]
+[[init]]
+==== `[.contract-item-name]#++nile init++#`
+
+Scaffold a simple Nile project.
+
+=== `node`
+
+[.contract-item]
+[[node]]
+==== `[.contract-item-name]#++nile node++#`
+
+Run a local {starknet-devnet} node.
+
+===== Options
+
+- `*--host*`
++
+Specify the address to listen at.
++
+Defaults to 127.0.0.1 (use the address the program outputs on start).
+- `*--port*`
++
+Specify the port to listen at. Defaults to 5050.
+- `*--seed*`
++
+Specify the seed for randomness of accounts to be deployed.
+- `*--lite-mode*`
++
+Applies all lite-mode optimizations by disabling features such as block hash and deploy hash calculation.
+
+=== `compile`
+
+[.contract-item]
+[[compile]]
+==== `[.contract-item-name]#++nile compile [PATH_TO_CONTRACT]++#`
+
+Compile Cairo contracts.
+
+Compilation artifacts are written into the `artifacts/` directory.
+
+===== Arguments
+
+- `*PATH_TO_CONTRACT*`
++
+Specify the path to a contract for compiling.
+
+===== Options
+
+- `*--directory*`
++
+Specify a directory to compile contracts from.
+- `*--account_contract*`
++
+As of {cairo-lang} v0.8.0, users must compile account contracts with the `--account_contract` flag. Nile automatically inserts the flag if the contract's name ends with Account. i.e. `Account.cairo`, `EthAccount.cairo`. Otherwise, the flag must be included by the user.
++
+[,sh]
+----
+nile compile contracts/NewAccountType.cairo --account_contract # compiles account contract
+----
+- `*--cairo_path*`
++
+Specify which directories the compiler must use to resolve imports from Cairo.
++
+TIP: Check {imports} from StarkNet documentation.
+- `*--disable-hint-validation*`
++
+Compile allowing unwhitelisted hints.
+
+=== `run`
+
+[.contract-item]
+[[run]]
+==== `[.contract-item-name]#++nile run <PATH_TO_SCRIPT>++#`
+
+Execute a script in the context of NRE.
+
+===== Arguments
+
+- `*PATH_TO_SCRIPT*`
++
+Path to the script to run.
+
+===== Options
+
+include::snippets.adoc[tag=network-options]
+
+=== `clean`
+
+[.contract-item]
+[[clean]]
+==== `[.contract-item-name]#++nile clean++#`
+
+Deletes the `artifacts/` folder and deployments files.
+
+=== `version`
+
+[.contract-item]
+[[version]]
+==== `[.contract-item-name]#++nile version++#`
+
+Print out the Nile version.
+
+== Utils
+
+Other utilities.
+
+=== `get-accounts`
+
 [.contract-item]
 [[get-accounts]]
 ==== `[.contract-item-name]#++nile get-accounts++#`
@@ -339,68 +394,22 @@ include::snippets.adoc[tag=network-options]
 +
 Query a devnet node for predeployed accounts.
 
-[.contract-item]
-[[get-nonce]]
-==== `[.contract-item-name]#++nile get-nonce <ADDRESS>++#`
+=== `counterfactual-address`
 
-Retrieve the nonce for a contract (usually an account).
+[.contract-item]
+[[counterfactual-address]]
+==== `[.contract-item-name]#++nile counterfactual-address <PRIVATE_KEY_ALIAS>++#`
+
+Precompute the deployment address of an Account contract.
 
 ===== Arguments
 
-- `*ADDRESS*`
+- `*PRIVATE_KEY_ALIAS*`
 +
-Specify the address of the contract to query.
+Specify the alias representing the private key to be used.
 
 ===== Options
 
-include::snippets.adoc[tag=network-options]
-
-[.contract-item]
-[[get-balance]]
-==== `[.contract-item-name]#++nile get-balance <ADDRESS>++#`
-
-Retrieve the Ether balance for a contract.
-
-===== Arguments
-
-- `*ADDRESS*`
+include::snippets.adoc[tag=salt]
 +
-Specify the address of the contract to query.
-
-===== Options
-
-include::snippets.adoc[tag=network-options]
-
-[.contract-item]
-[[run]]
-==== `[.contract-item-name]#++nile run <PATH_TO_SCRIPT>++#`
-
-Execute a script in the context of NRE.
-
-===== Arguments
-
-- `*PATH_TO_SCRIPT*`
-+
-Path to the script to run.
-
-===== Options
-
-include::snippets.adoc[tag=network-options]
-
-[.contract-item]
-[[clean]]
-==== `[.contract-item-name]#++nile clean++#`
-
-Deletes the `artifacts/` folder and deployments files.
-
-[.contract-item]
-[[init]]
-==== `[.contract-item-name]#++nile init++#`
-
-Scaffold a simple Nile project.
-
-[.contract-item]
-[[version]]
-==== `[.contract-item-name]#++nile version++#`
-
-Print out the Nile version.
+Default to 0.
