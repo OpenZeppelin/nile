@@ -67,8 +67,12 @@ class Transaction(ABC):
         # Validate the transaction object
         self._validate()
 
-    async def execute(self, signer, max_fee=None, watch_mode=None, **kwargs):
+    async def execute(self, signer, watch_mode=None, **kwargs):
         """Execute the transaction."""
+        if self.max_fee == 0:
+            max_fee = await self.estimate_fee(signer)
+            self.update_fee(max_fee)
+
         sig_r, sig_s = signer.sign(message_hash=self.hash)
 
         type_specific_args = self._get_execute_call_args()
