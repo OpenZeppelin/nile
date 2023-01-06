@@ -5,6 +5,7 @@ from typing import List
 
 from nile.core.declare import declare
 from nile.core.deploy import deploy_account, deploy_contract
+from nile.common import set_estimated_fee_if_zero
 
 
 @dataclasses.dataclass
@@ -18,8 +19,10 @@ class BaseTxWrapper:
         """Proxy attributes from transaction to wrapper."""
         return getattr(self.tx, name)
 
-    async def execute(self, watch_mode=None):
+    async def execute(self, auto_fee=False, watch_mode=None):
         """Execute the wrapped transaction."""
+        if auto_fee:
+            await set_estimated_fee_if_zero(self)
         return await self.tx.execute(signer=self.account.signer, watch_mode=watch_mode)
 
     async def estimate_fee(self):
@@ -55,8 +58,10 @@ class DeclareTxWrapper(BaseTxWrapper):
 
     alias: str = None
 
-    async def execute(self, watch_mode=None):
+    async def execute(self, auto_fee=False, watch_mode=None):
         """Execute the wrapped transaction."""
+        if auto_fee:
+            await set_estimated_fee_if_zero(self)
         return await declare(
             transaction=self.tx,
             signer=self.account.signer,
@@ -79,8 +84,10 @@ class DeployContractTxWrapper(BaseTxWrapper):
     overriding_path: List[str] = None
     abi: str = None
 
-    async def execute(self, watch_mode=None):
+    async def execute(self, auto_fee=False, watch_mode=None):
         """Execute the wrapped transaction."""
+        if auto_fee:
+            await set_estimated_fee_if_zero(self)
         return await deploy_contract(
             transaction=self.tx,
             signer=self.account.signer,
@@ -104,8 +111,10 @@ class DeployAccountTxWrapper(BaseTxWrapper):
     alias: str = None
     abi: str = None
 
-    async def execute(self, watch_mode=None):
+    async def execute(self, auto_fee=False, watch_mode=None):
         """Execute the wrapped transaction."""
+        if auto_fee:
+            await set_estimated_fee_if_zero(self)
         return await deploy_account(
             transaction=self.tx,
             account=self.account,
