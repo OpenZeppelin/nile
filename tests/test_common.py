@@ -1,14 +1,12 @@
 """Tests for common library."""
 
 import json
-from unittest.mock import AsyncMock
 
 import pytest
 
 from nile.common import (
     DEFAULT_GATEWAYS,
     NODE_FILENAME,
-    set_estimated_fee_if_zero,
     get_gateways,
     parse_information,
     prepare_params,
@@ -110,27 +108,3 @@ def test_write_node_json(args1, args2, gateways):
         result = fp.read()
         expected = json.dumps(gateways, indent=2)
         assert result == expected
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "max_fee",
-    [0, 1],
-)
-async def test_set_estimated_fee_if_zero(max_fee):
-    mock = AsyncMock()
-    mock.max_fee = max_fee
-    estimated_fee = 5
-
-    mock_estimate = mock.estimate_fee
-    mock_estimate.return_value = estimated_fee
-    mock_update_fee = mock.update_fee
-
-    await set_estimated_fee_if_zero(mock)
-
-    if max_fee == 0:
-        mock_estimate.assert_called_once()
-        mock_update_fee.assert_called_once_with(estimated_fee)
-    else:
-        mock_estimate.assert_not_called()
-        mock_update_fee.assert_not_called()
