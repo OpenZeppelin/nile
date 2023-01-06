@@ -7,7 +7,7 @@ from functools import update_wrapper
 
 import asyncclick as click
 
-from nile.common import set_estimated_fee_if_zero, is_alias
+from nile.common import is_alias
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
