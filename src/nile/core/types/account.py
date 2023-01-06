@@ -233,7 +233,7 @@ class Account(AsyncObject):
         return target_address
 
     async def _process_arguments(self, max_fee, nonce, calldata=None):
-        max_fee = 0 if max_fee is "auto" else int(max_fee)
+        max_fee = 0 if max_fee == "auto" else int(max_fee)
 
         if nonce is None:
             nonce = await get_nonce(self.address, self.network)
