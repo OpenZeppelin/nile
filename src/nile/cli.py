@@ -94,7 +94,6 @@ async def run_transaction(tx, query_flag, watch_mode):
     elif query_flag == "simulate":
         await tx.simulate()
     else:
-        await set_estimated_fee_if_zero(tx)
         await tx.execute(watch_mode=watch_mode)
 
 
@@ -144,7 +143,7 @@ async def run(ctx, path, network):
 @click.argument("signer", nargs=1)
 @click.argument("contract_name", nargs=1)
 @click.argument("params", nargs=-1)
-@click.option("--max_fee", nargs=1)
+@click.option("--max_fee", nargs=1, default="auto")
 @click.option("--salt", nargs=1, default=0)
 @click.option("--unique", is_flag=True)
 @click.option("--alias")
@@ -189,7 +188,7 @@ async def deploy(
 @cli.command()
 @click.argument("signer", nargs=1)
 @click.argument("contract_name", nargs=1)
-@click.option("--max_fee", nargs=1)
+@click.option("--max_fee", nargs=1, default="auto")
 @click.option("--alias")
 @click.option("--overriding_path")
 @click.option("--nile_account", is_flag=True)
@@ -226,7 +225,7 @@ async def declare(
 @cli.command()
 @click.argument("signer", nargs=1)
 @click.option("--salt", nargs=1)
-@click.option("--max_fee", nargs=1)
+@click.option("--max_fee", nargs=1, default="auto")
 @network_option
 @query_option
 @watch_option
@@ -258,7 +257,7 @@ def counterfactual_address(ctx, signer, salt):
 @click.argument("address_or_alias", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
-@click.option("--max_fee", nargs=1)
+@click.option("--max_fee", nargs=1, default="auto")
 @network_option
 @query_option
 @watch_option

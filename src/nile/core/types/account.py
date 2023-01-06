@@ -57,7 +57,7 @@ class Account(AsyncObject):
         signer,
         network,
         salt=0,
-        max_fee=None,
+        max_fee="auto",
         predeployed_info=None,
         watch_mode=None,
         auto_deploy=True,
@@ -85,7 +85,7 @@ class Account(AsyncObject):
         if hasattr(self, "address"):
             assert type(self.address) == int
 
-    async def deploy(self, salt=None, max_fee=None, abi=None):
+    async def deploy(self, salt=None, max_fee="auto", abi=None):
         """Deploy an Account contract for the given private key."""
         salt = 0 if salt is None else normalize_number(salt)
         calldata = [self.signer.public_key]
@@ -118,7 +118,7 @@ class Account(AsyncObject):
         method,
         calldata,
         nonce=None,
-        max_fee=None,
+        max_fee="auto",
     ):
         """Return an InvokeTxWrapper object."""
         target_address = self._get_target_address(address_or_alias)
@@ -146,7 +146,7 @@ class Account(AsyncObject):
     async def declare(
         self,
         contract_name,
-        max_fee=None,
+        max_fee="auto",
         nonce=None,
         alias=None,
         overriding_path=None,
@@ -182,7 +182,7 @@ class Account(AsyncObject):
         unique,
         calldata,
         alias,
-        max_fee=None,
+        max_fee="auto",
         nonce=None,
         deployer_address=None,
         overriding_path=None,
@@ -233,7 +233,7 @@ class Account(AsyncObject):
         return target_address
 
     async def _process_arguments(self, max_fee, nonce, calldata=None):
-        max_fee = 0 if max_fee is None else int(max_fee)
+        max_fee = 0 if max_fee is "auto" else int(max_fee)
 
         if nonce is None:
             nonce = await get_nonce(self.address, self.network)
@@ -259,7 +259,7 @@ async def try_get_account(
     signer,
     network,
     salt=None,
-    max_fee=None,
+    max_fee="auto",
     predeployed_info=None,
     watch_mode=None,
     auto_deploy=True,
