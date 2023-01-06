@@ -138,7 +138,21 @@ nile counterfactual-address ACCOUNT_1 --salt 123
 +
 NOTE: Different salts compute to different addresses, even with the same private key.
 +
-. In production, you will need to fund this address with Ether to pay for the deployment fees, which will be mandatory in testnets soon. There are multiple bridges and faucets, like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
+. Estimate the fee for executing the transaction.
++
+[,sh]
+----
+nile setup ACCOUNT_1 --salt 123 --estimate_fee
+----
++
+[,sh]
+----
+The estimated fee is: 52147932632842 WEI (0.000052 ETH).
+Gas usage: 5063
+Gas price: 10299808934 WEI
+----
++
+In production, you will need to fund the counterfactual address with Ether to pay for the deployment fees, which will be mandatory in testnets soon. There are multiple bridges and faucets, like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
 +
 For local development using a devnet node, you can use predeployed accounts to fund your address by using xref:scripts.adoc#transfer_funds_from_a_predeployed_devnet_account[this script].
 +
@@ -146,8 +160,11 @@ For local development using a devnet node, you can use predeployed accounts to f
 +
 [,sh]
 ----
-nile setup ACCOUNT_1 --salt 123
+nile setup ACCOUNT_1 --salt 123 --max_fee 52147932632842
 ----
++
+NOTE: Nile will estimate the `max_fee` by default if this option is not set. This is valid for other commands
+involving transaction execution, like `declare`, `send`, or `deploy`.
 +
 [IMPORTANT]
 ====
