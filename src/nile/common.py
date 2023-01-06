@@ -188,8 +188,8 @@ def get_addresses_from_string(string):
     )
 
 
-async def estimate_fee_if_zero(tx):
+async def set_estimated_fee_if_zero(tx):
     """Estimate max_fee for transaction if max_fee is zero."""
-    if tx.tx.max_fee == 0:
+    if tx.max_fee == 0:
         max_fee = await tx.estimate_fee()
         tx.update_fee(max_fee)
