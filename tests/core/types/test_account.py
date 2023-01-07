@@ -187,9 +187,16 @@ async def test_declare(
 @patch("nile.core.types.transactions.get_contract_class", return_value="ContractClass")
 @patch("nile.core.types.account.DeclareTransaction", return_value="tx")
 @patch("nile.core.types.account.DeclareTxWrapper")
+@patch("nile.core.types.account._set_estimated_fee_if_none")
 async def test_declare_account(
-    mock_tx_wrapper, mock_tx, mock_contract_class, nile_account, overriding_path
+    mock_set_fee,
+    mock_tx_wrapper,
+    mock_tx,
+    mock_contract_class,
+    nile_account,
+    overriding_path,
 ):
+    # mock_tx_wrapper = AsyncMock()
     account = await MockAccount(KEY, NETWORK)
 
     contract_name = "Account"
@@ -200,7 +207,7 @@ async def test_declare_account(
     mock_tx.assert_called_once_with(
         account_address=account.address,
         contract_to_submit=contract_name,
-        max_fee=0,
+        max_fee=None,
         nonce=0,
         network=account.network,
         overriding_path=overriding_path,

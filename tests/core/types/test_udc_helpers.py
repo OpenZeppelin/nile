@@ -19,7 +19,7 @@ NETWORK = "localhost"
 @pytest.mark.parametrize("unique", [True, False])
 @pytest.mark.parametrize("calldata", [[]])
 @pytest.mark.parametrize("deployer_address", [0x678])
-@pytest.mark.parametrize("max_fee", [0, 25, "auto"])
+@pytest.mark.parametrize("max_fee", [0, 25, None])
 @pytest.mark.parametrize("nonce", [0, 30])
 @pytest.mark.parametrize("overriding_path", [None])
 @pytest.mark.parametrize("exp_class_hash", [0x12345])
@@ -71,10 +71,7 @@ async def test_create_udc_deploy_transaction(
         assert tx.tx_type == "invoke"
         assert tx.account_address == account.address
         assert tx.calldata == exp_execute_calldata
-        if max_fee == "auto":
-            assert tx.max_fee == 0
-        else:
-            assert tx.max_fee == max_fee
+        assert tx.max_fee == (max_fee or 0)
         assert tx.nonce == nonce
         assert tx.network == account.network
         assert tx.version == TRANSACTION_VERSION
