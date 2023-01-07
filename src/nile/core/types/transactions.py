@@ -6,7 +6,7 @@ import logging
 import re
 from abc import ABC, abstractmethod
 from dataclasses import field
-from typing import List
+from typing import List, Union
 
 from nile.common import (
     NILE_ABIS_DIR,
@@ -47,7 +47,7 @@ class Transaction(ABC):
     """
 
     account_address: int = 0
-    max_fee: int = 0
+    max_fee: Union[int, None] = 0
     nonce: int = 0
     network: str = "localhost"
     version: int = TRANSACTION_VERSION
@@ -60,6 +60,10 @@ class Transaction(ABC):
 
     def __post_init__(self):
         """Populate pending fields."""
+        # Normalize max_fee if None
+        if self.max_fee is None:
+            self.max_fee = 0
+
         self.chain_id = get_chain_id(self.network)
         self.hash = self._get_tx_hash()
         self.query_hash = self._get_tx_hash(QUERY_VERSION_BASE + self.version)
