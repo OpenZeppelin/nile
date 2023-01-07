@@ -112,8 +112,9 @@ async def test_deploy(
 @patch("nile.core.types.account.get_counterfactual_address", return_value=MOCK_ADDRESS)
 @patch("nile.core.types.transactions.get_class_hash", return_value=CLASS_HASH)
 @patch("nile.core.deploy.accounts.register")
+@patch("nile.core.types.account._set_estimated_fee_if_none")
 async def test_deploy_accounts_register(
-    mock_register, mock_hash, mock_address, mock_deploy
+    mock_set_fee, mock_register, mock_hash, mock_address, mock_deploy
 ):
     account = await Account(KEY, NETWORK)
 
