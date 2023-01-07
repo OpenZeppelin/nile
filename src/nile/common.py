@@ -186,11 +186,3 @@ def get_addresses_from_string(string):
     return set(
         int(address, 16) for address in re.findall("0x[\\da-f]{1,64}", str(string))
     )
-
-
-
-async def set_estimated_fee_if_auto(tx):
-    """Estimate max_fee for transaction if max_fee is zero."""
-    if tx.max_fee == 0:
-        max_fee = await tx.estimate_fee()
-        tx.update_fee(max_fee)

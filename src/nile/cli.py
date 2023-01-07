@@ -7,7 +7,7 @@ from functools import update_wrapper
 
 import asyncclick as click
 
-from nile.common import is_alias, set_estimated_fee_if_auto
+from nile.common import is_alias
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
@@ -94,7 +94,6 @@ async def run_transaction(tx, query_flag, watch_mode):
     elif query_flag == "simulate":
         await tx.simulate()
     else:
-        await set_estimated_fee_if_auto(tx)
         await tx.execute(watch_mode=watch_mode)
 
 
@@ -144,7 +143,7 @@ async def run(ctx, path, network):
 @click.argument("signer", nargs=1)
 @click.argument("contract_name", nargs=1)
 @click.argument("params", nargs=-1)
-@click.option("--max_fee", nargs=1, default="auto")
+@click.option("--max_fee", nargs=1)
 @click.option("--salt", nargs=1, default=0)
 @click.option("--unique", is_flag=True)
 @click.option("--alias")
@@ -189,7 +188,7 @@ async def deploy(
 @cli.command()
 @click.argument("signer", nargs=1)
 @click.argument("contract_name", nargs=1)
-@click.option("--max_fee", nargs=1, default="auto")
+@click.option("--max_fee", nargs=1)
 @click.option("--alias")
 @click.option("--overriding_path")
 @click.option("--nile_account", is_flag=True)
@@ -226,7 +225,7 @@ async def declare(
 @cli.command()
 @click.argument("signer", nargs=1)
 @click.option("--salt", nargs=1)
-@click.option("--max_fee", nargs=1, default="auto")
+@click.option("--max_fee", nargs=1)
 @network_option
 @query_option
 @watch_option
@@ -258,7 +257,7 @@ def counterfactual_address(ctx, signer, salt):
 @click.argument("address_or_alias", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
-@click.option("--max_fee", nargs=1, default="auto")
+@click.option("--max_fee", nargs=1)
 @network_option
 @query_option
 @watch_option
