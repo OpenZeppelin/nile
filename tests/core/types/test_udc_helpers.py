@@ -64,7 +64,7 @@ async def test_create_udc_deploy_transaction(
             unique,
             calldata,
             deployer_address,
-            max_fee,
+            max_fee or 0,
             nonce=nonce,
         )
 

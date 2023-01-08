@@ -208,7 +208,7 @@ async def test_declare_account(
     mock_tx.assert_called_once_with(
         account_address=account.address,
         contract_to_submit=contract_name,
-        max_fee=None,
+        max_fee=0,
         nonce=0,
         network=account.network,
         overriding_path=overriding_path,

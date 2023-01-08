@@ -65,10 +65,12 @@ async def test_invoke_transaction_init(
         assert tx.entry_point == entry_point
         assert tx.calldata == calldata
         assert tx.account_address == account_address
-        if max_fee is None:
-            assert tx.max_fee == 0
-        else:
-            assert tx.max_fee == max_fee
+        #if max_fee is None:
+        #    assert tx.max_fee == 0
+        #else:
+        #    assert tx.max_fee == max_fee
+        assert tx.max_fee == max_fee or 0
+
         assert tx.nonce == nonce
         assert tx.network == network
         assert tx.version == version
@@ -121,10 +123,11 @@ async def test_declare_transaction_init(
         assert tx.contract_class == "ContractClass"
         assert tx.overriding_path == overriding_path
         assert tx.account_address == account_address
-        if max_fee is None:
-            assert tx.max_fee == 0
-        else:
-            assert tx.max_fee == max_fee
+        #if max_fee is None:
+        #    assert tx.max_fee == 0
+        #else:
+        #    assert tx.max_fee == max_fee
+        assert tx.max_fee == max_fee or 0
         assert tx.nonce == nonce
         assert tx.network == network
         assert tx.version == version
@@ -181,10 +184,8 @@ async def test_deploy_account_transaction_init(
         assert tx.class_hash == 777
         assert tx.overriding_path == overriding_path
         assert tx.account_address == account_address
-        if max_fee is None:
-            assert tx.max_fee == 0
-        else:
-            assert tx.max_fee == max_fee
+        assert tx.max_fee == max_fee or 0
+
         assert tx.nonce == nonce
         assert tx.network == network
         assert tx.version == version
