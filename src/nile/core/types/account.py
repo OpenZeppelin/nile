@@ -271,7 +271,16 @@ def _get_signer_and_alias(signer, predeployed_info):
 async def _set_estimated_fee_if_none(max_fee, tx):
     """Estimate max_fee for transaction if max_fee is None."""
     if max_fee is None:
+        logger = logging.getLogger()
+        current_level = logger.level
+
+        # Avoid logging the fee estimation in CLI
+        logger.setLevel(logging.WARNING)
+
         estimated_fee = await tx.estimate_fee()
+
+        logger.setLevel(current_level)
+
         tx.update_fee(estimated_fee)
 
 
