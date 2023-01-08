@@ -12,7 +12,6 @@ from nile.common import (
     is_alias,
     normalize_number,
 )
-from nile.core.types.signer import Signer
 from nile.core.types.transactions import (
     DeclareTransaction,
     DeployAccountTransaction,
@@ -26,6 +25,7 @@ from nile.core.types.tx_wrappers import (
 )
 from nile.core.types.udc_helpers import create_udc_deploy_transaction
 from nile.core.types.utils import get_counterfactual_address, get_execute_calldata
+from nile.signer import Signer
 from nile.utils.get_nonce import get_nonce_without_log as get_nonce
 
 load_dotenv()

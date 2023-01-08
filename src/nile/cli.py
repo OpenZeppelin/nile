@@ -17,8 +17,8 @@ from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.types.account import get_counterfactual_address, try_get_account
-from nile.core.types.signer import Signer
 from nile.core.version import version as version_command
+from nile.signer import Signer
 from nile.utils import hex_address, normalize_number, shorten_address
 from nile.utils.get_accounts import get_accounts as get_accounts_command
 from nile.utils.get_accounts import (

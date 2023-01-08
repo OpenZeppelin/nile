@@ -4,7 +4,7 @@ import os
 
 from nile.common import normalize_number
 from nile.core.types.account import Account
-from nile.core.types.signer import Signer
+from nile.signer import Signer
 
 MOCK_ADDRESS = 0x890
 
