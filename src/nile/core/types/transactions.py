@@ -6,7 +6,7 @@ import logging
 import re
 from abc import ABC, abstractmethod
 from dataclasses import field
-from typing import List, Union
+from typing import List
 
 from nile.common import (
     NILE_ABIS_DIR,

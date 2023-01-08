@@ -101,7 +101,7 @@ class Account(AsyncObject):
             predicted_address=predicted_address,
             overriding_path=NILE_ARTIFACTS_PATH,
             calldata=calldata,
-            max_fee=max_fee,
+            max_fee=max_fee or 0,
             network=self.network,
         )
 
@@ -136,7 +136,7 @@ class Account(AsyncObject):
         transaction = InvokeTransaction(
             account_address=self.address,
             calldata=execute_calldata,
-            max_fee=max_fee,
+            max_fee=max_fee or 0,
             nonce=nonce,
             network=self.network,
         )
@@ -169,7 +169,7 @@ class Account(AsyncObject):
         transaction = DeclareTransaction(
             account_address=self.address,
             contract_to_submit=contract_name,
-            max_fee=max_fee,
+            max_fee=max_fee or 0,
             nonce=nonce,
             network=self.network,
             overriding_path=overriding_path,
@@ -213,7 +213,7 @@ class Account(AsyncObject):
             unique=unique,
             calldata=calldata,
             deployer_address=deployer_address,
-            max_fee=max_fee,
+            max_fee=max_fee or 0,
             nonce=nonce,
             overriding_path=overriding_path,
         )
