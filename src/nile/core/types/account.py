@@ -101,16 +101,19 @@ class Account(AsyncObject):
             predicted_address=predicted_address,
             overriding_path=NILE_ARTIFACTS_PATH,
             calldata=calldata,
-            max_fee=max_fee,
+            max_fee=max_fee or 0,
             network=self.network,
         )
 
-        return DeployAccountTxWrapper(
+        tx_wrapper = DeployAccountTxWrapper(
             tx=transaction,
             account=self,
             alias=self.alias,
             abi=abi,
         )
+
+        await _set_estimated_fee_if_none(max_fee, tx_wrapper)
+        return tx_wrapper
 
     async def send(
         self,
@@ -133,15 +136,18 @@ class Account(AsyncObject):
         transaction = InvokeTransaction(
             account_address=self.address,
             calldata=execute_calldata,
-            max_fee=max_fee,
+            max_fee=max_fee or 0,
             nonce=nonce,
             network=self.network,
         )
 
-        return InvokeTxWrapper(
+        tx_wrapper = InvokeTxWrapper(
             tx=transaction,
             account=self,
         )
+
+        await _set_estimated_fee_if_none(max_fee, tx_wrapper)
+        return tx_wrapper
 
     async def declare(
         self,
@@ -163,17 +169,20 @@ class Account(AsyncObject):
         transaction = DeclareTransaction(
             account_address=self.address,
             contract_to_submit=contract_name,
-            max_fee=max_fee,
+            max_fee=max_fee or 0,
             nonce=nonce,
             network=self.network,
             overriding_path=overriding_path,
         )
 
-        return DeclareTxWrapper(
+        tx_wrapper = DeclareTxWrapper(
             tx=transaction,
             account=self,
             alias=alias,
         )
+
+        await _set_estimated_fee_if_none(max_fee, tx_wrapper)
+        return tx_wrapper
 
     async def deploy_contract(
         self,
@@ -204,12 +213,12 @@ class Account(AsyncObject):
             unique=unique,
             calldata=calldata,
             deployer_address=deployer_address,
-            max_fee=max_fee,
+            max_fee=max_fee or 0,
             nonce=nonce,
             overriding_path=overriding_path,
         )
 
-        return DeployContractTxWrapper(
+        tx_wrapper = DeployContractTxWrapper(
             tx=transaction,
             account=self,
             alias=alias,
@@ -218,6 +227,9 @@ class Account(AsyncObject):
             overriding_path=overriding_path,
             abi=abi,
         )
+
+        await _set_estimated_fee_if_none(max_fee, tx_wrapper)
+        return tx_wrapper
 
     def _get_target_address(self, address_or_alias):
         if not is_alias(address_or_alias):
@@ -233,7 +245,8 @@ class Account(AsyncObject):
         return target_address
 
     async def _process_arguments(self, max_fee, nonce, calldata=None):
-        max_fee = 0 if max_fee is None else int(max_fee)
+        if max_fee is not None:
+            max_fee = int(max_fee)
 
         if nonce is None:
             nonce = await get_nonce(self.address, self.network)
@@ -253,6 +266,22 @@ def _get_signer_and_alias(signer, predeployed_info):
         alias = predeployed_info["alias"]
 
     return signer, alias
+
+
+async def _set_estimated_fee_if_none(max_fee, tx):
+    """Estimate max_fee for transaction if max_fee is None."""
+    if max_fee is None:
+        logger = logging.getLogger()
+        current_level = logger.level
+
+        # Avoid logging the fee estimation in CLI
+        logger.setLevel(logging.WARNING)
+
+        estimated_fee = await tx.estimate_fee()
+
+        logger.setLevel(current_level)
+
+        tx.update_fee(estimated_fee)
 
 
 async def try_get_account(

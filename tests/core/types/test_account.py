@@ -112,8 +112,9 @@ async def test_deploy(
 @patch("nile.core.types.account.get_counterfactual_address", return_value=MOCK_ADDRESS)
 @patch("nile.core.types.transactions.get_class_hash", return_value=CLASS_HASH)
 @patch("nile.core.deploy.accounts.register")
+@patch("nile.core.types.account._set_estimated_fee_if_none")
 async def test_deploy_accounts_register(
-    mock_register, mock_hash, mock_address, mock_deploy
+    mock_set_fee, mock_register, mock_hash, mock_address, mock_deploy
 ):
     account = await Account(KEY, NETWORK)
 
@@ -187,9 +188,16 @@ async def test_declare(
 @patch("nile.core.types.transactions.get_contract_class", return_value="ContractClass")
 @patch("nile.core.types.account.DeclareTransaction", return_value="tx")
 @patch("nile.core.types.account.DeclareTxWrapper")
+@patch("nile.core.types.account._set_estimated_fee_if_none")
 async def test_declare_account(
-    mock_tx_wrapper, mock_tx, mock_contract_class, nile_account, overriding_path
+    mock_set_fee,
+    mock_tx_wrapper,
+    mock_tx,
+    mock_contract_class,
+    nile_account,
+    overriding_path,
 ):
+    # mock_tx_wrapper = AsyncMock()
     account = await MockAccount(KEY, NETWORK)
 
     contract_name = "Account"
