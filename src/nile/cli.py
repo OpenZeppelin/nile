@@ -17,8 +17,8 @@ from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.types.account import get_counterfactual_address, try_get_account
-from nile.core.types.signer import Signer
 from nile.core.version import version as version_command
+from nile.signer import Signer
 from nile.utils import hex_address, normalize_number, shorten_address
 from nile.utils.get_accounts import get_accounts as get_accounts_command
 from nile.utils.get_accounts import (
@@ -79,14 +79,6 @@ def query_option(f):
     return f
 
 
-def mainnet_token_option(f):
-    """Configure TOKEN option for the cli."""
-    return click.option(
-        "--token",
-        help="Used for deploying contracts in Alpha Mainnet.",
-    )(f)
-
-
 async def run_transaction(tx, query_flag, watch_mode):
     """Execute or simulate a transaction."""
     if query_flag == "estimate_fee":
@@ -143,8 +135,8 @@ async def run(ctx, path, network):
 @click.argument("signer", nargs=1)
 @click.argument("contract_name", nargs=1)
 @click.argument("params", nargs=-1)
-@click.option("--max_fee", nargs=1)
-@click.option("--salt", nargs=1, default=0)
+@click.option("--max_fee", type=int, nargs=1)
+@click.option("--salt", type=int, nargs=1, default=0)
 @click.option("--unique", is_flag=True)
 @click.option("--alias")
 @click.option("--abi")
@@ -176,8 +168,8 @@ async def deploy(
             salt,
             unique,
             params,
-            alias,
             deployer_address=deployer_address,
+            alias=alias,
             max_fee=max_fee,
             abi=abi,
         )
@@ -188,7 +180,7 @@ async def deploy(
 @cli.command()
 @click.argument("signer", nargs=1)
 @click.argument("contract_name", nargs=1)
-@click.option("--max_fee", nargs=1)
+@click.option("--max_fee", type=int, nargs=1)
 @click.option("--alias")
 @click.option("--overriding_path")
 @click.option("--nile_account", is_flag=True)
@@ -213,8 +205,8 @@ async def declare(
     if account is not None:
         transaction = await account.declare(
             contract_name,
-            alias=alias,
             max_fee=max_fee,
+            alias=alias,
             overriding_path=overriding_path,
             nile_account=nile_account,
         )
@@ -224,8 +216,8 @@ async def declare(
 
 @cli.command()
 @click.argument("signer", nargs=1)
-@click.option("--salt", nargs=1)
-@click.option("--max_fee", nargs=1)
+@click.option("--salt", type=int, nargs=1)
+@click.option("--max_fee", type=int, nargs=1)
 @network_option
 @query_option
 @watch_option
@@ -241,7 +233,7 @@ async def setup(ctx, signer, network, salt, max_fee, query, watch_mode):
 
 @cli.command()
 @click.argument("signer", nargs=1)
-@click.option("--salt", nargs=1, default=None)
+@click.option("--salt", type=int, nargs=1)
 @enable_stack_trace
 def counterfactual_address(ctx, signer, salt):
     """Precompute the address of an Account contract."""
@@ -257,7 +249,7 @@ def counterfactual_address(ctx, signer, salt):
 @click.argument("address_or_alias", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
-@click.option("--max_fee", nargs=1)
+@click.option("--max_fee", type=int, nargs=1)
 @network_option
 @query_option
 @watch_option

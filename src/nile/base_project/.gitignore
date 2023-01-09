@@ -133,3 +133,6 @@ dmypy.json
 
 # vscode project settings
 .vscode/
+
+# nile project
+artifacts/

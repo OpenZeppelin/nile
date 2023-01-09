@@ -12,4 +12,22 @@ Default to `localhost`.
 - `*--debug*` and `*--track*`
 +
 Watch the status of the account deployment transaction. See the {status} command for a complete description.
-// tag::status-options[]
+// end::status-options[]
+
+// tag::query-options[]
+- `*--simulate*` and `*--estimate_fee*`
++
+Flags for querying the network without executing the transaction.
+// end::query-options[]
+
+// tag::max-fee[]
+- `*--max_fee*`
++
+Specify the max fee you are willing to pay for the transaction.
+// end::max-fee[]
+
+// tag::salt[]
+- `*--salt*`
++
+Specify the salt for the address generation.
+// end::salt[]

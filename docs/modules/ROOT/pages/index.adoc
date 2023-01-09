@@ -21,6 +21,7 @@ Before installing Cairo on your machine, you need to install `gmp`:
 [,bash]
 ----
 sudo apt install -y libgmp3-dev # linux
+or
 brew install gmp # mac
 ----
 
@@ -137,22 +138,39 @@ nile counterfactual-address ACCOUNT_1 --salt 123
 +
 NOTE: Different salts compute to different addresses, even with the same private key.
 +
-. In production, you will need to fund this address with Ether to pay for the deployment fees, which will be mandatory in testnets soon. There are multiple bridges and faucets, like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
+. Estimate the fee for executing the transaction.
 +
-For local development using a devnet node, you can use predeployed accounts to fund your address by using xref:scripts.adoc#transfer_funds_from_predeployed_devnet_account[this script].
+[,sh]
+----
+nile setup ACCOUNT_1 --salt 123 --estimate_fee
+----
++
+[,sh]
+----
+The estimated fee is: 52147932632842 WEI (0.000052 ETH).
+Gas usage: 5063
+Gas price: 10299808934 WEI
+----
++
+In production, you will need to fund the counterfactual address with Ether to pay for the deployment fees, which will be mandatory in testnets soon. There are multiple bridges and faucets, like link:https://goerli.starkgate.starknet.io/[Starkgate] being implemented at the moment to support the developer experience.
++
+For local development using a devnet node, you can use predeployed accounts to fund your address by using xref:scripts.adoc#transfer_funds_from_a_predeployed_devnet_account[this script].
 +
 . After funding the precomputed address, deploy the account using `nile setup`.
 +
 [,sh]
 ----
-nile setup ACCOUNT_1 --salt 123
+nile setup ACCOUNT_1 --salt 123 --max_fee 52147932632842
 ----
++
+NOTE: Nile will estimate the `max_fee` by default if this option is not set. This is valid for other commands
+involving transaction execution, like `declare`, `send`, or `deploy`.
 +
 [IMPORTANT]
 ====
 In StarkNet, users can deploy only previously declared contracts. {oz-account} is declared soon after every release in devnet, testnets and mainnet, but there could be an out-of-sync period between account update release and devnet release. Then you can declare the OZ Account using predeployed accounts through scripts.
 
-Check xref:scripts.adoc#declare_account[Declare Account] script.
+Check xref:scripts.adoc#declare_account[Declare the OZ Account] script.
 ====
 
 ==== Deploying a contract

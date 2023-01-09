@@ -41,43 +41,64 @@ For a full reference of NRE exposed members check the xref:nre.adoc[NRE Referenc
 In this section you can find some potentially helpful script examples.
 
 [#declare_account]
-=== Declare Account
+=== Declare the OZ account
 
-Useful if you need to deploy an account in devnet, for previous declaration:
+Useful if you need to deploy the account in a local devnet node, for previous declaration:
 
 [,python]
 ----
-# script.py
+# scripts/declare_oz_account.py
 async def run(nre):
   accounts = await nre.get_accounts(predeployed=True)
   declarer_account = accounts[0]
 
   # nile_account flag tells Nile to use its pre-packed artifact
-  output = await declarer_account.declare("Account", nile_account=True)
-  print(output)
+  #
+  # If we don't pass a max_fee, nile will estimate the transaction
+  # fee by default. This line is equivalent to:
+  #
+  # tx = await declarer_account.declare("Account", max_fee=0, nile_account=True)
+  # max_fee = await tx.estimate_fee()
+  # tx.update_fee(max_fee)
+  #
+  # Note that tx.update_fee will update tx.hash and tx.max_fee members
+  tx = await declarer_account.declare("Account", nile_account=True)
+
+  tx_status, *_ = await tx.execute(watch_mode="track")
+
+  print(tx_status.status, tx_status.error_message or "")
 ----
 
-=== Transfer funds from predeployed devnet account
+=== Transfer funds from a predeployed devnet account
 
 Useful for funding addresses in devnet:
 
 [,python]
 ----
+# scripts/transfer_funds.py
 from nile.common import ETH_TOKEN_ADDRESS
+from nile.utils import to_uint, hex_address
 
 async def run(nre):
-    accounts = await nre.get_accounts(predeployed=True)
-    account = accounts[0]
+  accounts = await nre.get_accounts(predeployed=True)
+  account = accounts[0]
 
-    # define the recipient address
-    recipient = "0x053edde5384e39bad137d3c4130c708fb96ee28a4c80bf28049c486d3f369"
+  # define the recipient address
+  recipient = "0x05a0ca51cbc03e5ec8d9fad116f8737a6afe2613b3128ebd515643a1a5e5c52d"
 
-    # define the amount to transfer (uint256 format)
-    amount = [2 * 10 ** 18, 0]
+  # define the amount to transfer
+  amount = 2 * 10 ** 18
 
-    print(f"Transferring {amount} to {recipient} from {hex(account.address)}")
+  print(
+    f"Transferring {amount} WEI\n"
+    f"from {hex_address(account.address)}\n"
+    f"to   {recipient}\n"
+  )
 
-    # send the transfer transaction
-    output = await account.send(ETH_TOKEN_ADDRESS, "transfer", [recipient, *amount])
-    print(output)
+  # If we don't pass a max_fee, nile will estimate the transaction fee by default
+  tx = await account.send(ETH_TOKEN_ADDRESS, "transfer", [recipient, *to_uint(amount)])
+
+  tx_status, *_ = await tx.execute(watch_mode="track")
+
+  print(tx_status.status, tx_status.error_message or "")
 ----
