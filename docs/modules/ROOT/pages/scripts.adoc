@@ -91,8 +91,8 @@ async def run(nre):
 
   print(
     f"Transferring {amount} WEI\n"
-    "from {hex_address(account.address)}\n"
-    "to   {recipient}\n"
+    f"from {hex_address(account.address)}\n"
+    f"to   {recipient}\n"
   )
 
   # If we don't pass a max_fee, nile will estimate the transaction fee by default
