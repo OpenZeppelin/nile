@@ -68,6 +68,10 @@ include::snippets.adoc[tag=network-options]
 +
 include::snippets.adoc[tag=max-fee]
 +
+- `*--alias*`
++
+The alias for registering the declared class_hash (DEPRECATED).
++
 - `*--overriding_path*`
 +
 Override the directory path for artifacts discovery.
@@ -108,6 +112,11 @@ include::snippets.adoc[tag=network-options]
 include::snippets.adoc[tag=salt]
 +
 include::snippets.adoc[tag=max-fee]
++
+- `*--alias*`
++
+Specify the alias for Nile local registration purposes. This allows you to interact with
+the contract later without using the address directly.
 +
 - `*--unique*`
 +
