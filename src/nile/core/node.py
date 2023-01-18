@@ -6,7 +6,7 @@ import subprocess
 from nile.common import DEFAULT_GATEWAYS, write_node_json
 
 
-def node(host="127.0.0.1", port=5050, seed=None, lite_mode=False):
+def node(host="127.0.0.1", port=5050, node_args=None):
     """Start StarkNet local network."""
     try:
         # Save host and port information to be used by other commands
@@ -19,13 +19,8 @@ def node(host="127.0.0.1", port=5050, seed=None, lite_mode=False):
             write_node_json(network, gateway_url)
 
         command = ["starknet-devnet", "--host", host, "--port", str(port)]
-
-        if seed is not None:
-            command.append("--seed")
-            command.append(str(seed))
-
-        if lite_mode:
-            command.append("--lite-mode")
+        if node_args is not None:
+            command += list(node_args)
 
         # Start network
         subprocess.check_call(command)
@@ -35,3 +30,21 @@ def node(host="127.0.0.1", port=5050, seed=None, lite_mode=False):
             "\n\n😰 Could not find starknet-devnet, is it installed? Try with:\n"
             "    pip install starknet-devnet"
         )
+
+
+def get_help_message():
+    """Retrieve and parse the help message from starknet-devnet."""
+    base = """
+Start StarkNet local network.
+
+$ nile node
+  Start StarkNet local network at port 5050
+
+Options:
+    """
+
+    raw_message = subprocess.check_output(["starknet-devnet", "--help"]).decode("utf-8")
+    options_index = raw_message.find("optional arguments:")
+    options = raw_message[options_index + 19 :]
+
+    return base + options
