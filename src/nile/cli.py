@@ -32,6 +32,7 @@ from nile.utils.status import status as status_command
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 logging.getLogger("asyncio").setLevel(logging.WARNING)
 
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 NETWORKS = ("localhost", "integration", "goerli", "goerli2", "mainnet")
 
 
@@ -105,7 +106,7 @@ def _validate_network(_ctx, _param, value):
     raise click.BadParameter(f"'{value}'. Use one of {NETWORKS}")
 
 
-@click.group()
+@click.group(context_settings=CONTEXT_SETTINGS)
 @click.option("--stack_trace/--no_stack_trace", default=False)
 @click.pass_context
 def cli(ctx, stack_trace):
