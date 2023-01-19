@@ -288,21 +288,7 @@ Scaffold a simple Nile project.
 
 Run a local {starknet-devnet} node.
 
-NOTE: Accepts all the options that the starknet-devnet node accepts by default. Check the {devnet-doc} for a full
-list of them.
-
-===== Options
-
-- `*--host*`
-+
-Specify the address to listen at.
-+
-Defaults to 127.0.0.1 (use the address the program outputs on start).
-- `*--port*`
-+
-Specify the port to listen at. Defaults to 5050.
-
-===== Starknet Devnet Options
+===== StarkNet Devnet Options
 
 - _This command exposes all the functionalities provided within the starknet-devnet node, like forking mainnet, or specifying the contract class to be used for predeployed accounts. Check the {devnet-doc} for a full description of the arguments._
 
