@@ -21,7 +21,7 @@ class NileRuntimeEnvironment:
         """Construct NRE object."""
         self.network = network
         for name, object in get_installed_plugins("nre").items():
-            partial_obj = partial(object, nre=self)
+            partial_obj = partial(object, self)
             setattr(self, name, skip_click_exit(partial_obj))
 
     def compile(self, contracts, cairo_path=None):
