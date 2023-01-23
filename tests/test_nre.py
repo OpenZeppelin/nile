@@ -37,7 +37,7 @@ def test_nre_loaded_plugins(mock_plugins, plugin_name_and_object, will_fail):
 
     assert callable(nre.dummy)
 
-    if will_fail is True:
+    if will_fail:
         with pytest.raises(TypeError):
             nre.dummy_params(1, 2)
     else:
