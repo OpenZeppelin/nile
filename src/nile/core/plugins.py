@@ -17,11 +17,8 @@ def skip_click_exit(func):
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        # add standalone_mode=False to command execution
-        # this enables command returns
-        # more info: https://click.palletsprojects.com/en/5.x/commands/?highlight=standalone_mode#command-return-values # noqa: E501
         try:
-            return func(*args, standalone_mode=False, **kwargs)
+            return func(*args, **kwargs)
         # click commands always raise a SystemExit
         # this avoid exiting the command execution in NRE
         except SystemExit:

@@ -38,7 +38,12 @@ def enable_stack_trace(f):
     """Enable stack trace swapping for commands."""
 
     @click.pass_context
-    async def new_func(ctx, *args, **kwargs):
+    async def new_func(ctx, *args, standalone_mode=False, **kwargs):
+        """
+        Add standalone_mode=False to enable command returns in NRE.
+
+        See: https://click.palletsprojects.com/en/5.x/commands/?highlight=standalone_mode#command-return-values # noqa: E501
+        """
         if ctx.obj["STACK_TRACE"]:
             return await ctx.invoke(f, ctx.obj, *args, **kwargs)
         else:
