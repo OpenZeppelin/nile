@@ -197,7 +197,6 @@ async def test_declare_account(
     nile_account,
     overriding_path,
 ):
-    # mock_tx_wrapper = AsyncMock()
     account = await MockAccount(KEY, NETWORK)
 
     contract_name = "Account"
