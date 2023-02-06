@@ -6,28 +6,40 @@ Only unit tests for now.
 
 from unittest.mock import patch
 
-import click
+import pytest
 
 from nile.nre import NileRuntimeEnvironment
 
 
-def test_nre_loaded_plugins():
-    @click.command()
-    def dummy():
-        print("dummy_result")
+def dummy():
+    print("dummy_result")
 
-    @click.command()
-    @click.argument("a", type=int)
-    @click.argument("b", type=int)
-    def dummy_params(a, b):
-        return a + b
 
-    with patch(
-        "nile.nre.get_installed_plugins",
-        return_value={"dummy": dummy, "dummy_params": dummy_params},
-    ):
-        nre = NileRuntimeEnvironment()
-        assert callable(nre.dummy)
+def dummy_params(nre, a, b):
+    return a + b
 
-        nre_result = nre.dummy_params(["1", "2"])
+
+def bad_params(a, b):
+    return a + b
+
+
+@pytest.mark.parametrize(
+    "plugin_name_and_object, will_fail",
+    [
+        ({"dummy": dummy, "dummy_params": dummy_params}, False),
+        ({"dummy": dummy, "dummy_params": bad_params}, True),
+    ],
+)
+@patch("nile.nre.get_installed_plugins")
+def test_nre_loaded_plugins(mock_plugins, plugin_name_and_object, will_fail):
+    mock_plugins.return_value = plugin_name_and_object
+    nre = NileRuntimeEnvironment()
+
+    assert callable(nre.dummy)
+
+    if will_fail:
+        with pytest.raises(TypeError):
+            nre.dummy_params(1, 2)
+    else:
+        nre_result = nre.dummy_params(1, 2)
         assert 3 == nre_result

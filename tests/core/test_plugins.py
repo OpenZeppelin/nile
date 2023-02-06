@@ -12,20 +12,17 @@ from nile.core.plugins import get_installed_plugins, load_plugins, skip_click_ex
 
 
 def test_skip_click_exit():
-    @click.command()
-    @click.argument("a", type=int)
-    @click.argument("b", type=int)
     def dummy_method(a, b):
         return a + b
 
     decorated = skip_click_exit(dummy_method)
-    decorated_result = decorated(["1", "2"])
+    decorated_result = decorated(1, 2)
 
     assert callable(decorated)
     assert decorated_result == 3
 
 
-def testget_installed_plugins():
+def test_get_installed_plugins():
     class Dummy:
         value = "nile.core.plugins.get_installed_plugins"
         name = "get_installed_plugins"
