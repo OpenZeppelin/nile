@@ -277,7 +277,6 @@ async def test_deploy_account_transaction_init_defaults(mock_get_class_hash):
 async def test_transaction_execute(
     mock_status, mock_call_args, mock_get_tx_hash, watch_mode
 ):
-
     account = await MockAccount(KEY, NETWORK)
     mock_sig_r, mock_sig_s = account.signer.sign(TX_HASH)
     with patch("nile.core.types.transactions.execute_call") as mock_execute_call:
@@ -315,7 +314,6 @@ async def test_transaction_execute(
     return_value={"param": "value"},
 )
 async def test_transaction_estimate_fee(mock_call_args, mock_get_tx_hash, caplog):
-
     account = await MockAccount(KEY, NETWORK)
     mock_sig_r, mock_sig_s = account.signer.sign(TX_HASH)
     exp_output = 1000
@@ -356,7 +354,6 @@ async def test_transaction_estimate_fee(mock_call_args, mock_get_tx_hash, caplog
     return_value={"param": "value"},
 )
 async def test_transaction_simulate(mock_call_args, mock_get_tx_hash, caplog):
-
     account = await MockAccount(KEY, NETWORK)
     mock_sig_r, mock_sig_s = account.signer.sign(TX_HASH)
     with patch("nile.core.types.transactions.execute_call") as mock_execute_call:
@@ -566,3 +563,4 @@ async def test_deploy_account_get_execute_call_args(
         "overriding_path": tx.overriding_path,
         "calldata": tx.calldata,
     }
+
