@@ -563,4 +563,3 @@ async def test_deploy_account_get_execute_call_args(
         "overriding_path": tx.overriding_path,
         "calldata": tx.calldata,
     }
-
