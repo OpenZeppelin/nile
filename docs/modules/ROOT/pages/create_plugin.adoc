@@ -44,7 +44,7 @@ def greet():
 [tool.poetry.plugins."nile_plugins.nre"]
 "greet" = "nile_greet.nre.greet"
 ----
-NOTE: Before specifying plugin entry points for the NRE, be sure to set the first parameter of the functon signature as a class instance i.e. `self`.
+NOTE: Before specifying plugin entry points for the NRE, be sure to set the first parameter of the function signature as a class instance i.e. `self`.
 This allows the plugin function to access the NRE instance.
 +
 . Done! To better understand python entry points through setuptools, https://setuptools.pypa.io/en/latest/userguide/entry_point.html#entry-points-for-plugins[check this documentation].
