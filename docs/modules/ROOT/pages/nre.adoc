@@ -51,7 +51,7 @@ Override for the abi if necessary.
 
 - `*output*`
 +
-Output from the underlaying starknet cli call.
+Output from the underlying starknet cli call.
 
 === `get_deployment`
 
@@ -249,7 +249,7 @@ The alias for registering the declared class_hash (DEPRECATED).
 Path override for artifacts and abi resolution.
 - `*nile_account*`
 +
-Wheter to use the OZ account artifact.
+Whether to use the OZ account artifact.
 
 ===== Return values
 
