@@ -1,3 +1,4 @@
 include LICENSE
 recursive-include src/nile/artifacts/ *
 recursive-include src/nile/base_project/ *
+recursive-include src/nile/core/cairo1/compilers/ *

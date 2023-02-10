@@ -8,6 +8,7 @@ from functools import update_wrapper
 import asyncclick as click
 
 from nile.common import is_alias
+from nile.core.cairo1.compile import compile as compile_1_command
 from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
@@ -348,6 +349,15 @@ def compile(
     compile_command(
         contracts, directory, cairo_path, account_contract, disable_hint_validation
     )
+
+
+@cli.command()
+@click.argument("contracts", nargs=-1)
+@click.option("--directory")
+@enable_stack_trace
+def compile_1(ctx, contracts, directory):
+    """Compile cairo1 contracts."""
+    compile_1_command(contracts, directory)
 
 
 @cli.command()
