@@ -27,9 +27,17 @@ def compile(
         )
         all_contracts = get_all_contracts(directory=contracts_directory)
 
-    results = [
-        _compile_to_sierra(contract, contracts_directory) for contract in all_contracts
-    ]
+    results = []
+
+    for contract in all_contracts:
+        status_code, sierra_file, filename = _compile_to_sierra(
+            contract, contracts_directory
+        )
+        results.append(status_code)
+        if status_code == 0:
+            _extract_abi(sierra_file, filename)
+            _compile_to_casm(sierra_file, filename)
+
     failed_contracts = [c for (c, r) in zip(all_contracts, results) if r != 0]
     failures = len(failed_contracts)
 
@@ -63,11 +71,7 @@ def _compile_to_sierra(
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
     process.communicate()
 
-    if process.returncode == 0:
-        _extract_abi(sierra_file, filename)
-        _compile_to_casm(sierra_file, filename)
-
-    return process.returncode
+    return process.returncode, sierra_file, filename
 
 
 def _compile_to_casm(sierra_file, filename):
