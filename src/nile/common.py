@@ -90,7 +90,7 @@ def get_all_contracts(ext=None, directory=None):
         ext = ".cairo"
 
     files = list()
-    for (dirpath, _, filenames) in os.walk(
+    for dirpath, _, filenames in os.walk(
         directory if directory else CONTRACTS_DIRECTORY
     ):
         files += [

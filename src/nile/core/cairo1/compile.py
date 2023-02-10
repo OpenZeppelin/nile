@@ -87,7 +87,6 @@ def _compile_to_casm(sierra_file, filename):
 
 
 def _extract_abi(sierra_file, filename):
-
     with open(sierra_file, "r") as f:
         data = json.load(f)
 
