@@ -62,7 +62,6 @@ async def test_deploy_contract(
     overriding_path,
     watch_mode,
 ):
-
     logging.getLogger().setLevel(logging.INFO)
 
     account = await MockAccount("TEST_KEY", NETWORK)
