@@ -5,6 +5,8 @@
 
 > _Navigate your [StarkNet](https://www.cairo-lang.org/docs/hello_starknet/index.html) projects written in [Cairo](https://cairo-lang.org)._
 
+## Disclaimer: this project is deprecated in favor of [OpenZeppelin/nile-rs](https://github.com/OpenZeppelin/nile-rs) version, and is no longer maintained.
+
 ## Overview
 
 Nile is a CLI tool to develop or interact with StarkNet projects written in Cairo. It consists of different components for developing, compiling, testing, and deploying your smart contracts and dApps, providing a CLI for executing tasks, and a Runtime Environment (NRE) for scripting. The package is designed to be extensible and very customizable by using plugins.
