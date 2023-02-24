@@ -1,11 +1,11 @@
+### Disclaimer: this project is deprecated in favor of [OpenZeppelin/nile-rs](https://github.com/OpenZeppelin/nile-rs) version, and is no longer maintained.
+
 # OpenZeppelin | Nile ⛵
 
 [![Docs](https://img.shields.io/badge/docs-%F0%9F%93%84-blue)](https://docs.openzeppelin.com/nile)
 [![Tests and linter](https://github.com/OpenZeppelin/nile/actions/workflows/ci.yml/badge.svg)](https://github.com/OpenZeppelin/nile/actions/workflows/ci.yml)
 
 > _Navigate your [StarkNet](https://www.cairo-lang.org/docs/hello_starknet/index.html) projects written in [Cairo](https://cairo-lang.org)._
-
-## Disclaimer: this project is deprecated in favor of [OpenZeppelin/nile-rs](https://github.com/OpenZeppelin/nile-rs) version, and is no longer maintained.
 
 ## Overview
 
