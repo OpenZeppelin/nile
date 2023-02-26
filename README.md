@@ -1,3 +1,5 @@
+> Disclaimer: this project is deprecated in favor of [OpenZeppelin/nile-rs](https://github.com/OpenZeppelin/nile-rs), and is no longer maintained.
+
 # OpenZeppelin | Nile ⛵
 
 [![Docs](https://img.shields.io/badge/docs-%F0%9F%93%84-blue)](https://docs.openzeppelin.com/nile)
