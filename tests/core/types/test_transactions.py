@@ -543,6 +543,7 @@ async def test_declare_get_execute_call_args(
         "contract_name": tx.contract_to_submit,
         "overriding_path": tx.overriding_path,
         "sender": hex_address(tx.account_address),
+        "deprecated": True,
     }
 
 

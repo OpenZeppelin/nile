@@ -6,7 +6,8 @@ import sys
 from types import SimpleNamespace
 
 from starkware.starknet.cli import starknet_cli
-from starkware.starknet.cli.starknet_cli import NETWORKS, assert_tx_received
+from starkware.starknet.cli.starknet_cli import assert_tx_received
+from starkware.starknet.cli.starknet_cli_utils import NETWORKS
 from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
 
 from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS, prepare_params
@@ -116,6 +117,9 @@ def set_command_args(**kwargs):
 
     if kwargs.get("arguments"):
         command_args.extend(kwargs.get("arguments"))
+
+    if kwargs.get("deprecated"):
+        command_args.append("--deprecated")
 
     return command_args
 

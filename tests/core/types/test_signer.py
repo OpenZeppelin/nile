@@ -9,7 +9,7 @@ import asyncio
 import pytest
 from starkware.starknet.business_logic.transaction.objects import InternalTransaction
 from starkware.starknet.definitions.general_config import StarknetChainId
-from starkware.starknet.services.api.contract_class import ContractClass
+from starkware.starknet.services.api.contract_class.contract_class import DeprecatedCompiledClass
 from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.testing.starknet import Starknet
 
@@ -31,7 +31,7 @@ NETWORK_CHAIN_ID = {
 
 def get_account_definition():
     with open("src/nile/artifacts/Account.json", "r") as fp:
-        return ContractClass.loads(fp.read())
+        return DeprecatedCompiledClass.loads(fp.read())
 
 
 async def send_transaction(
@@ -57,7 +57,7 @@ async def send_transactions(signer, account, calls, nonce=None, max_fee=0):
 
     # craft invoke and execute tx
     external_tx = InvokeFunction(
-        contract_address=account.contract_address,
+        sender_address=account.contract_address,
         calldata=calldata,
         entry_point_selector=None,
         signature=[sig_r, sig_s],
