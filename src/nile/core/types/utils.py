@@ -5,8 +5,8 @@ from starkware.starknet.core.os.contract_address.contract_address import (
 )
 from starkware.starknet.core.os.transaction_hash.transaction_hash import (
     TransactionHashPrefix,
-    calculate_declare_transaction_hash,
     calculate_deploy_account_transaction_hash,
+    calculate_deprecated_declare_transaction_hash,
     calculate_transaction_hash_common,
 )
 from starkware.starknet.public.abi import get_selector_from_name
@@ -60,7 +60,7 @@ def get_invoke_hash(account, calldata, max_fee, nonce, version, chain_id):
 
 def get_declare_hash(account, contract_class, max_fee, nonce, version, chain_id):
     """Compute the hash of a declare transaction."""
-    return calculate_declare_transaction_hash(
+    return calculate_deprecated_declare_transaction_hash(
         version=version,
         sender_address=account,
         contract_class=contract_class,

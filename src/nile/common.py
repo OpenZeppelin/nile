@@ -6,7 +6,9 @@ import re
 from pathlib import Path
 
 from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
-from starkware.starknet.core.os.contract_class.class_hash import compute_class_hash
+from starkware.starknet.core.os.contract_class.deprecated_class_hash import (
+    compute_deprecated_class_hash,
+)
 from starkware.starknet.definitions.general_config import StarknetChainId
 from starkware.starknet.services.api.contract_class.contract_class import (
     DeprecatedCompiledClass,
@@ -166,7 +168,9 @@ def get_contract_class(contract_name, overriding_path=None):
 def get_class_hash(contract_name, overriding_path=None):
     """Return the class_hash for a given contract name."""
     contract_class = get_contract_class(contract_name, overriding_path)
-    return compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
+    return compute_deprecated_class_hash(
+        contract_class=contract_class, hash_func=pedersen_hash
+    )
 
 
 def get_account_class_hash(contract="Account"):

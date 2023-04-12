@@ -10,7 +10,13 @@ from starkware.starknet.cli.starknet_cli import assert_tx_received
 from starkware.starknet.cli.starknet_cli_utils import NETWORKS
 from starkware.starknet.services.api.gateway.gateway_client import GatewayClient
 
-from nile.common import ABIS_DIRECTORY, BUILD_DIRECTORY, GATEWAYS, prepare_params
+from nile.common import (
+    ABIS_DIRECTORY,
+    BUILD_DIRECTORY,
+    GATEWAYS,
+    get_chain_id,
+    prepare_params,
+)
 from nile.starknet_cli.deploy_account import (
     deploy_account_no_wallet,
     update_deploy_account_context,
@@ -67,8 +73,10 @@ def set_context(network):
         "feeder_gateway_url": get_feeder_url(network),
         "wallet": "",
         "network_id": network,
+        "chain_id": hex(get_chain_id(network)),
         "account_dir": None,
         "account": None,
+        "skip_validate": False,
     }
     ret_obj = SimpleNamespace(**args)
     return ret_obj
