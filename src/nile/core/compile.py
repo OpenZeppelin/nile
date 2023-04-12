@@ -74,7 +74,7 @@ def _compile_contract(
     cairo_path = cairo_path if cairo_path else contracts_directory
 
     cmd = f"""
-    starknet-compile {path} \
+    starknet-compile-deprecated {path} \
         --cairo_path={cairo_path}
         --output {BUILD_DIRECTORY}/{filename}.json \
         --abi {ABIS_DIRECTORY}/{filename}.json
