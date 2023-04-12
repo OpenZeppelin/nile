@@ -9,7 +9,9 @@ import asyncio
 import pytest
 from starkware.starknet.business_logic.transaction.objects import InternalTransaction
 from starkware.starknet.definitions.general_config import StarknetChainId
-from starkware.starknet.services.api.contract_class.contract_class import DeprecatedCompiledClass
+from starkware.starknet.services.api.contract_class.contract_class import (
+    DeprecatedCompiledClass,
+)
 from starkware.starknet.services.api.gateway.transaction import InvokeFunction
 from starkware.starknet.testing.starknet import Starknet
 

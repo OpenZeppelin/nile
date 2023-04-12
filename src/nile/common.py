@@ -8,7 +8,9 @@ from pathlib import Path
 from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
 from starkware.starknet.core.os.contract_class.class_hash import compute_class_hash
 from starkware.starknet.definitions.general_config import StarknetChainId
-from starkware.starknet.services.api.contract_class.contract_class import DeprecatedCompiledClass
+from starkware.starknet.services.api.contract_class.contract_class import (
+    DeprecatedCompiledClass,
+)
 
 from nile.utils import normalize_number, str_to_felt
 
