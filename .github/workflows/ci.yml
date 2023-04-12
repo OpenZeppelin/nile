@@ -32,7 +32,7 @@ jobs:
       - run: python -m pip install -U setuptools
       - run: python -m pip install -e .[testing]
       - run: tox -e lint
-      - run: tox
+      - run: tox -- --disable-warnings
 
   dist:
     runs-on: ubuntu-latest
