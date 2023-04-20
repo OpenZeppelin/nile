@@ -22,7 +22,7 @@ And more.
 
 ## Installation
 
-Current supported Python versions are >=3.8 and <3.10.
+Current supported Python versions are >=3.9 and <3.10.
 
 1. Install `gmp` on your machine (Cairo requirement).
 

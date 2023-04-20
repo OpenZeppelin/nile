@@ -31,7 +31,7 @@ TIP: If you have any trouble installing gmp on your Apple M1 computer, https://g
 
 Some Nile dependencies have specific python version requirements. Therefore we recommend using a python version manager like {pyenv}, and virtual environments to avoid conflicts.
 
-IMPORTANT: Currently supported Python versions are >=3.8 and <3.10.
+IMPORTANT: Currently supported Python versions are >=3.9 and <3.10.
 
 === Installation
 
