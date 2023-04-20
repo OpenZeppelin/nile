@@ -88,7 +88,7 @@ def test__compile_contract(mock_subprocess, is_acct, disable_hint):
     )
 
     expected = [
-        "starknet-compile",
+        "starknet-compile-deprecated",
         path,
         f"--cairo_path={CONTRACTS_DIRECTORY}",
         "--output",
@@ -127,7 +127,7 @@ def test__compile_auto_account_flag(mock_subprocess, contract_name, flag):
     _compile_contract(path)
 
     command = [
-        "starknet-compile",
+        "starknet-compile-deprecated",
         path,
         f"--cairo_path={CONTRACTS_DIRECTORY}",
         "--output",
@@ -166,7 +166,7 @@ def test__compile_cairo_path(
     compile([path], directory=directory, cairo_path=cairo_path)
 
     command = [
-        "starknet-compile",
+        "starknet-compile-deprecated",
         path,
         f"--cairo_path={expected_internal_cairo_path}",
         "--output",

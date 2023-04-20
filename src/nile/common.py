@@ -6,9 +6,13 @@ import re
 from pathlib import Path
 
 from starkware.crypto.signature.fast_pedersen_hash import pedersen_hash
-from starkware.starknet.core.os.class_hash import compute_class_hash
+from starkware.starknet.core.os.contract_class.deprecated_class_hash import (
+    compute_deprecated_class_hash,
+)
 from starkware.starknet.definitions.general_config import StarknetChainId
-from starkware.starknet.services.api.contract_class import ContractClass
+from starkware.starknet.services.api.contract_class.contract_class import (
+    DeprecatedCompiledClass,
+)
 
 from nile.utils import normalize_number, str_to_felt
 
@@ -156,7 +160,7 @@ def get_contract_class(contract_name, overriding_path=None):
         overriding_path if overriding_path else (BUILD_DIRECTORY, ABIS_DIRECTORY)
     )
     with open(f"{base_path[0]}/{contract_name}.json", "r") as fp:
-        contract_class = ContractClass.loads(fp.read())
+        contract_class = DeprecatedCompiledClass.loads(fp.read())
 
     return contract_class
 
@@ -164,7 +168,9 @@ def get_contract_class(contract_name, overriding_path=None):
 def get_class_hash(contract_name, overriding_path=None):
     """Return the class_hash for a given contract name."""
     contract_class = get_contract_class(contract_name, overriding_path)
-    return compute_class_hash(contract_class=contract_class, hash_func=pedersen_hash)
+    return compute_deprecated_class_hash(
+        contract_class=contract_class, hash_func=pedersen_hash
+    )
 
 
 def get_account_class_hash(contract="Account"):

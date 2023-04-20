@@ -19,7 +19,7 @@ jobs:
       matrix:
         # Add '3.10-dev' once frozendict issue is resolved
         # See https://github.com/starkware-libs/cairo-lang/issues/38
-        python_version: [ '3.8', '3.9' ]
+        python_version: [ '3.9' ]
         os: [ubuntu-latest]
     name: ${{ matrix.os }} - Python ${{ matrix.python_version }}
     steps:
@@ -30,9 +30,9 @@ jobs:
           python-version: ${{ matrix.python_version }}
           architecture: x64
       - run: python -m pip install -U setuptools
-      - run: python -m pip install -e .[testing]
+      - run: python -m pip install --pre -e .[testing]
       - run: tox -e lint
-      - run: tox
+      - run: tox -- --disable-warnings
 
   dist:
     runs-on: ubuntu-latest
@@ -42,9 +42,9 @@ jobs:
     - uses: actions/checkout@v1
     - uses: actions/setup-python@v2
       with:
-        python-version: "3.8"
+        python-version: "3.9"
     - run: python -m pip install -U setuptools
-    - run: python -m pip install -e .[testing]
+    - run: python -m pip install --pre -e .[testing]
     - name: Build package
       run: tox -e build
     - uses: actions/upload-artifact@v2

@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from starkware.starkware_utils.error_handling import StarkErrorCode
 
+from nile.common import get_chain_id
 from nile.starknet_cli import (
     _add_args,
     capture_stdout,
@@ -42,6 +43,8 @@ def test_set_context(network, url):
         "feeder_gateway_url": url + "feeder_gateway",
         "wallet": "",
         "network_id": network,
+        "chain_id": hex(get_chain_id(network)),
+        "skip_validate": False,
         "account_dir": None,
         "account": None,
     }

@@ -243,6 +243,7 @@ class DeclareTransaction(Transaction):
             "contract_name": self.contract_to_submit,
             "overriding_path": self.overriding_path,
             "sender": hex_address(self.account_address),
+            "deprecated": True,
         }
 
 
