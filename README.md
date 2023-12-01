@@ -1,4 +1,4 @@
-> Disclaimer: this project is deprecated in favor of [OpenZeppelin/nile-rs](https://github.com/OpenZeppelin/nile-rs), and is no longer maintained.
+> Disclaimer: this project is deprecated and no longer maintained. Check out [scarb](https://docs.swmansion.com/scarb/) instead.
 
 # OpenZeppelin | Nile ⛵
 
