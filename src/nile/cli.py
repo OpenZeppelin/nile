@@ -17,8 +17,9 @@ from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
 from nile.core.test import test as test_command
 from nile.core.types.account import get_counterfactual_address, try_get_account
+from nile.core.types.eth_account import try_get_eth_account
 from nile.core.version import version as version_command
-from nile.signer import Signer
+from nile.signer import Signer, EthSigner
 from nile.utils import hex_address, normalize_number, shorten_address
 from nile.utils.get_accounts import get_accounts as get_accounts_command
 from nile.utils.get_accounts import (
@@ -251,6 +252,19 @@ def counterfactual_address(ctx, signer, salt):
 
 @cli.command()
 @click.argument("signer", nargs=1)
+@click.option("--salt", type=int, nargs=1)
+@enable_stack_trace
+def eth_counterfactual_address(ctx, signer, salt):
+    """Precompute the address of an Account contract."""
+    _signer = EthSigner(normalize_number(os.environ[signer]))
+    address = hex_address(
+        get_counterfactual_address(salt, calldata=[_signer.eth_address], contract="EthAccount")
+    )
+    logging.info(address)
+
+
+@cli.command()
+@click.argument("signer", nargs=1)
 @click.argument("address_or_alias", nargs=1)
 @click.argument("method", nargs=1)
 @click.argument("params", nargs=-1)
@@ -272,6 +286,46 @@ async def send(
 ):
     """Invoke a contract's method through an Account."""
     account = await try_get_account(signer, network, watch_mode="track")
+    if account is not None:
+        print(
+            "Calling {} on {} with params: {}".format(
+                method, address_or_alias, [x for x in params]
+            )
+        )
+
+        transaction = await account.send(
+            address_or_alias,
+            method,
+            params,
+            max_fee=max_fee,
+        )
+
+        await run_transaction(tx=transaction, query_flag=query, watch_mode=watch_mode)
+
+
+@cli.command()
+@click.argument("signer", nargs=1)
+@click.argument("address_or_alias", nargs=1)
+@click.argument("method", nargs=1)
+@click.argument("params", nargs=-1)
+@click.option("--max_fee", type=int, nargs=1)
+@network_option
+@query_option
+@watch_option
+@enable_stack_trace
+async def eth_send(
+    ctx,
+    signer,
+    address_or_alias,
+    method,
+    params,
+    network,
+    max_fee,
+    query,
+    watch_mode,
+):
+    """Invoke a contract's method through an Account."""
+    account = await try_get_eth_account(signer, network, watch_mode="track")
     if account is not None:
         print(
             "Calling {} on {} with params: {}".format(

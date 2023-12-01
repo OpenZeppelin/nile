@@ -9,6 +9,8 @@ from nile.core.types.utils import (
     get_execute_calldata,
     get_invoke_hash,
 )
+import eth_keys
+from nile.utils import to_uint
 
 
 class Signer:
@@ -73,3 +75,20 @@ class Signer:
 
         sig_r, sig_s = self.sign(message_hash=transaction_hash)
         return execute_calldata, sig_r, sig_s
+
+
+class EthSigner:
+    """Utility for signing transactions for an EthAccount on Starknet."""
+
+    def __init__(self, private_key, network="testnet"):
+        p_key = private_key.to_bytes(32, byteorder="big")
+        self.signer = eth_keys.keys.PrivateKey(p_key)
+        self.eth_address = int(self.signer.public_key.to_checksum_address(), 0)
+        self.chain_id = get_chain_id(network)
+
+    def sign(self, message_hash):
+        signature = self.signer.sign_msg_hash(
+            (message_hash).to_bytes(32, byteorder="big"))
+        sig_r = to_uint(signature.r)
+        sig_s = to_uint(signature.s)
+        return [signature.v, *sig_r, *sig_s]
