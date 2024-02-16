@@ -2,6 +2,7 @@
 :cairo-lang: link:https://github.com/starkware-libs/cairo-lang[cairo-lang]
 :imports: link:https://starknet.io/docs/how_cairo_works/imports.html?highlight=cairo%20path#import-search-paths[Import search paths]
 :status: link:#status[status]
+:devnet-doc: link:https://shard-labs.github.io/starknet-devnet/docs/guide/run[starknet-devnet documentation]
 
 = CLI Reference
 
@@ -287,22 +288,9 @@ Scaffold a simple Nile project.
 
 Run a local {starknet-devnet} node.
 
-===== Options
+===== StarkNet Devnet Options
 
-- `*--host*`
-+
-Specify the address to listen at.
-+
-Defaults to 127.0.0.1 (use the address the program outputs on start).
-- `*--port*`
-+
-Specify the port to listen at. Defaults to 5050.
-- `*--seed*`
-+
-Specify the seed for randomness of accounts to be deployed.
-- `*--lite-mode*`
-+
-Applies all lite-mode optimizations by disabling features such as block hash and deploy hash calculation.
+- _This command exposes all the functionalities provided within the starknet-devnet node, like forking mainnet, or specifying the contract class to be used for predeployed accounts. Check the {devnet-doc} for a full description of the arguments._
 
 === `compile`
 

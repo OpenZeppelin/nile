@@ -12,6 +12,7 @@ from nile.core.call_or_invoke import call_or_invoke as call_or_invoke_command
 from nile.core.clean import clean as clean_command
 from nile.core.compile import compile as compile_command
 from nile.core.init import init as init_command
+from nile.core.node import get_help_message
 from nile.core.node import node as node_command
 from nile.core.plugins import load_plugins
 from nile.core.run import run as run_command
@@ -31,6 +32,7 @@ from nile.utils.status import status as status_command
 logging.basicConfig(level=logging.DEBUG, format="%(message)s")
 logging.getLogger("asyncio").setLevel(logging.WARNING)
 
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 NETWORKS = ("localhost", "integration", "goerli", "goerli2", "mainnet")
 
 
@@ -109,7 +111,7 @@ def _validate_network(_ctx, _param, value):
     raise click.BadParameter(f"'{value}'. Use one of {NETWORKS}")
 
 
-@click.group()
+@click.group(context_settings=CONTEXT_SETTINGS)
 @click.option("--stack_trace/--no_stack_trace", default=False)
 @click.pass_context
 def cli(ctx, stack_trace):
@@ -357,28 +359,27 @@ def clean(ctx):
     clean_command()
 
 
-@cli.command()
+class NodeCommand(click.Command):
+    """Command wrapper to override the default help message."""
+
+    def format_help(self, ctx, formatter):
+        """Help message override."""
+        click.echo(get_help_message())
+
+
+@cli.command(
+    context_settings=dict(
+        ignore_unknown_options=True,
+    ),
+    cls=NodeCommand,
+)
 @click.option("--host", default="127.0.0.1")
 @click.option("--port", default=5050)
-@click.option("--seed", type=int)
-@click.option("--lite_mode", is_flag=True)
+@click.argument("node_args", nargs=-1, type=click.UNPROCESSED)
 @enable_stack_trace
-def node(ctx, host, port, seed, lite_mode):
-    """Start StarkNet local network.
-
-    $ nile node
-      Start StarkNet local network at port 5050
-
-    $ nile node --host HOST --port 5001
-      Start StarkNet network on address HOST listening at port 5001
-
-    $ nile node --seed SEED
-      Start StarkNet local network with seed SEED
-
-    $ nile node --lite_mode
-      Start StarkNet network on lite-mode
-    """
-    node_command(host, port, seed, lite_mode)
+def node(ctx, host, port, node_args):
+    """Start StarkNet local network."""
+    node_command(host, port, node_args)
 
 
 @cli.command()
